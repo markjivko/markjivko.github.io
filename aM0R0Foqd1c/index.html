@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Digital Clock</title>
+		<style type="text/css">
+			/*Clock*/
+			[data-role="clock"] {
+				display: block;
+				background: red;
+				width: 1020px;
+				margin: 300px auto 0;	
+			}
+			[data-role="digit"], [data-role="separator"] {
+				float: left;
+				margin-left: 40px;
+			}
+			[data-role="clock"] > [data-role="digit"]:first-child {
+				margin-left: 10px;
+			}
+			[data-role="clock"] > [data-role="digit"]:last-child {
+				margin-right: 10px;
+			}
+			[data-role="separator"], [data-role="separator"]:after {
+				width: 20px;
+				height: 20px;
+				border-radius: 5px;
+				background-color: #0cbaba;
+				background-image: linear-gradient(315deg, #0cbaba 0%, #380036 74%);
+				transform: translate(0, 80px);
+			}
+			[data-role="separator"]:after {
+				content: '';
+				display: block;
+			}
+			
+			/* Digits: definition */
+			[data-role="digit"],
+			[data-role="digit"]:before,
+			[data-role="digit"]:after,
+			[data-role="digit"] > i,
+			[data-role="digit"] > i:before,
+			[data-role="digit"] > i:after {
+				background-color: #0cbaba;
+				background-image: linear-gradient(315deg, #0cbaba 0%, #380036 74%);
+				width: 100px;
+				height: 20px;
+				border-radius: 10px;
+				position: relative;
+				transition: background 0.5s linear;
+			}
+			[data-role="digit"]:before,
+			[data-role="digit"]:after,
+			[data-role="digit"] > i:before,
+			[data-role="digit"] > i:after {
+				content: '';
+				display: block;
+				position: absolute;
+				transform: translate(0, 120px);
+			}
+			[data-role="digit"]:after {
+				transform: translate(0, 200px);
+			}
+			[data-role="digit"] > i {
+				display: block;
+				position: relative;
+				background: transparent;
+				width: 100px;
+				height: 20px;
+				transform: translate(0, 60px) rotate(90deg);
+			}
+			[data-role="digit"] > i:nth-child(2) {
+				transform: translate(0, 160px) rotate(90deg);
+			}
+			[data-role="digit"] > i:before {
+				transform: translate(0px, 50px);
+			}
+			[data-role="digit"] > i:after {
+				transform: translate(0px, -50px);
+			}
+			
+			/* Digits: 1 */
+			[data-role="digit"][data-digit="1"],
+			[data-role="digit"][data-digit="1"]:before,
+			[data-role="digit"][data-digit="1"]:after,
+			[data-role="digit"][data-digit="1"] > i:before,
+			/* Digits: 2 */
+			[data-role="digit"][data-digit="2"] > i:first-child:before,
+			[data-role="digit"][data-digit="2"] > i:nth-child(2):after, 
+			/* Digits: 3 */
+			[data-role="digit"][data-digit="3"] > i:before,
+			/* Digits: 4 */
+			[data-role="digit"][data-digit="4"],
+			[data-role="digit"][data-digit="4"]:after,
+			[data-role="digit"][data-digit="4"] > i:nth-child(2):before,
+			/* Digits: 5 */
+			[data-role="digit"][data-digit="5"] > i:first-child:after,
+			[data-role="digit"][data-digit="5"] > i:nth-child(2):before,
+			/* Digits: 6 */
+			[data-role="digit"][data-digit="6"] > i:first-child:after,
+			/* Digits: 7 */
+			[data-role="digit"][data-digit="7"]:before,
+			[data-role="digit"][data-digit="7"]:after,
+			[data-role="digit"][data-digit="7"] > i:before,
+			/* Digits: 9 */
+			[data-role="digit"][data-digit="9"] > i:nth-child(2):before,
+			/* Digits: 0 */
+			[data-role="digit"][data-digit="0"]:before,
+			/* Digits: none */
+			[data-role="digit"][data-digit="x"],
+			[data-role="digit"][data-digit="x"]:after,
+			[data-role="digit"][data-digit="x"] > i:before,
+			[data-role="digit"][data-digit="x"] > i:after {
+				background: transparent;
+			}
+		</style>
+		<script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
+		<script type="text/javascript" src="https://momentjs.com/downloads/moment.js"></script>
+		<script type="text/javascript">
+			jQuery(document).ready(function(){
+				var $ = jQuery;
+				
+				// Prepare the templates
+				var digitTemplate = '<div data-role="digit" data-digit="x">'
+						+ '<i></i><i></i>'
+					+'</div>';
+				var separatorTemplate = '<div data-role="separator"></div>';
+				
+				// Prepare the objects
+				var clockObject = $('[data-role="clock"]');
+				var digitObjects = [
+					// Hours
+					$(digitTemplate),
+					$(digitTemplate),
+					// Minutes
+					$(digitTemplate),
+					$(digitTemplate),
+					// Seconds
+					$(digitTemplate),
+					$(digitTemplate)
+				];
+				
+				// Create the clock
+				clockObject.append(digitObjects[0]).append(digitObjects[1])
+					.append($(separatorTemplate))
+					.append(digitObjects[2]).append(digitObjects[3])
+					.append($(separatorTemplate))
+					.append(digitObjects[4]).append(digitObjects[5]);
+				
+				// Animate the time
+				window.setInterval(function(){
+					moment().format('hhmmss').split('').forEach(function(digit, key) {
+						if ("undefined" !== typeof digitObjects[key]) {
+							if (digitObjects[key].attr('data-digit') !== digit) {
+								digitObjects[key].attr('data-digit', digit);
+							}
+						}
+					});
+				}, 1000);
+			});
+		</script>
+	</head>
+	<body>
+		<div data-role="clock"></div>
+	</body>
+</html>

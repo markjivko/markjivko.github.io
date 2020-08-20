@@ -1,0 +1,57 @@
+<!doctype html>
+<html>
+	<head>
+		<title>Hexagon</title>
+		<style type="text/css">
+			.hexagon-css, .hexagon-css-inner, .hexagon-css-inner:before {
+				height: 525px;
+				width: 1050px;
+				overflow: hidden;
+			}
+			.hexagon-css {
+				margin: 150px auto 0;
+				transform: rotate(120deg);
+				overflow: hidden;
+			}
+			.hexagon-css-inner {
+				transform: rotate(-60deg);
+			}
+			.hexagon-css-inner:before {
+				content: '';
+				display: block;
+				background: url('./img/pancakes.jpg') no-repeat 50% 0 transparent;
+				background-size: cover;
+				transform: rotate(-60deg);
+			}
+			
+			.hexagon-svg {
+				margin: 150px auto;
+				width: 525px;
+				height: 600px;
+				background: url('./img/pancakes.jpg') no-repeat 50% 0 transparent;
+				background-size: cover;
+				clip-path: url('#hexagon-path');
+			}
+			.svg-defs {
+				width: 0;
+				height: 0;
+			}
+			#hexagon-path {
+				transform: scale(3);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="hexagon-css">
+			<div class="hexagon-css-inner"></div>
+		</div>
+		<div class="hexagon-svg"></div>
+		<svg class="svg-defs" width="175" height="200">
+			<defs>
+				<clipPath id="hexagon-path">
+            		<polyline points="87,0 174,50 174,150 87,200 0,150 0,50 87,0" />
+				</clipPath>
+			</defs>
+        </svg>
+	</body>
+</html>
