@@ -1,0 +1,151 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CSS Only Digit Animation</title>
+        <style type="text/css">
+            body {
+                display: flex;
+                width: 100vw;
+                height: 100vh;
+                margin: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+            [data-role="digit"] {
+                display: grid;
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(9, 1fr);
+                width: 100px;
+                height: 180px;
+                transform: scale(2);
+            }
+            [data-role="digit"]:before,
+            [data-role="digit"]:after {
+                content: '';
+                display: block;
+                background: #000;
+                border-radius: 15px;
+            }
+            [data-role="digit"]:before {
+                grid-row-start: 0;
+                grid-column-start: 2;
+                grid-column-end: 5;
+                box-shadow: 0px 80px 0px 0px #000, 
+                    0px 160px 0px 0px #000;
+                animation: anim-timer-h 10s steps(100) infinite reverse;
+            }
+            [data-role="digit"]:after {
+                grid-column-start: 0;
+                grid-row-start: 2;
+                grid-row-end: 5;
+                box-shadow: 80px 0px 0px 0px #000,
+                    0px 80px 0px 0px #000,
+                    80px 80px 0px 0px #000;
+                animation: anim-timer-v 10s steps(100) infinite reverse;
+            }
+            @keyframes anim-timer-h {
+                0%, 9% {
+                    background: #000;
+                    box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px #000;
+                }
+                10%, 19% {
+                    background: transparent;
+                    box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                }
+                20%, 39% {
+                    background: #000;
+                    box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+                40%, 49% {
+                    background: transparent;
+                    box-shadow: 0px 80px 0px 0px #000,
+                        0px 160px 0px 0px transparent;
+                }
+                50%, 69% {
+                    background: #000;
+                    box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+                70%, 79% {
+                    background: #000;
+                    box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                }
+                80%, 99% {
+                    background: #000;
+                    box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+            }
+            @keyframes anim-timer-v {
+                0%, 9% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                10%, 19% {
+                    background: transparent;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                20%, 29% {
+                    background: transparent;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px transparent;
+                }
+                30%, 39% {
+                    background: transparent;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                40%, 49% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                50%, 59% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                60%, 69% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                70%, 79% {
+                    background: transparent;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                80%, 89% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                90%, 99% {
+                    background: #000;
+                    box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div data-role="digit"></div>
+    </body>
+</html>
