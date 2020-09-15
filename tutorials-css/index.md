@@ -1,5 +1,12 @@
 # CSS Tutorials
 
+## CSS before and after centered image trick
+
+[![CSS before and after centered image trick](https://img.youtube.com/vi/NzImTBqYPpI/0.jpg)](https://youtu.be/NzImTBqYPpI)
+
+   * [Preview](https://stephino.github.io/NzImTBqYPpI/index.html)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/NzImTBqYPpI)
+
 ## CSS before and after pseudo elements
 
 [![CSS before and after pseudo elements](https://img.youtube.com/vi/_D8_WNhnz_U/0.jpg)](https://youtu.be/_D8_WNhnz_U)

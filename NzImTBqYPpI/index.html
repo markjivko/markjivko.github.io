@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CSS Image Centering Trick</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            .holder {
+                width: 30%;
+                color: #fff;
+            }
+            .left, .right {
+                float: left;
+                width: 50%;
+            }
+            .left:before, .right:before {
+                content: '';
+                width: 110px;
+                height: 200px;
+            }
+            .left:before {
+                float: right;
+            }
+            .right:before {
+                float: left;
+            }
+            .image {
+                width: 200px;
+                height: 200px;
+                background: url('./img/cat.png') no-repeat 0 0 transparent;
+                background-size: 100% auto;
+                margin: 0 auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <div class="left">With 48 recognised cat breeds and pedigrees in 
+                Australia plus an endless combination of cross breeds it's amazing 
+                just how different each cat can look and behave. But there are many 
+                amazing physical characteristics that all cats possess, read on for 
+                more fascinating facts about your feline friend.</div>
+            <div class="right">Cats have a reflective layer in their eyes, known as 
+                the tapetum lucidum, which magnifies incoming light allowing them to 
+                see up to 6 times better than humans can in low light. Cats (as well 
+                as dogs) also have a ‘third eyelid’ called the nictitating membrane 
+                which is found on the inside corner of the eye which is an extra 
+                protective function of the eye.</div>
+            <div class="image"></div>
+        </div>
+    </body>
+</html>
