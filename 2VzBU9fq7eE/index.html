@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+    <head>
+        <title>jQuery UI Slider</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                margin: 0;
+                justify-content: center;
+                align-items: center;
+                background: pink;
+            }
+            .holder {
+                z-index: 10;
+            }
+            .moon {
+                position: relative;
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                box-shadow: 0px 0px 5px 0px #fff;
+                margin: 25% auto 0;
+            }
+            .slider {
+                margin: 5% auto;
+                width: 240px;
+            }
+            .star {
+                position: absolute;
+                border-radius: 50%;
+                box-shadow: 0px 0px 5px 1px #fff;
+                background: rgba(255,255,255,0.8);
+                z-index: 1;
+            }
+        </style>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function () {
+                var $ = jQuery;
+                var body = $('body'), slider = $('.slider'), moon = $('.moon'), moonSize, shadowRadius;
+
+                // Add the stars
+                for (var i = 0; i <= 200; i++) {
+                    var dim = Math.random() * 5;
+                    var left = body.width() * Math.random() - 5;
+                    var top = body.height() * Math.random() - 5;
+
+                    // Append the star
+                    $('<div class="star"></div>').css({
+                        width: dim,
+                        height: dim,
+                        left: left + 'px',
+                        top: top + 'px',
+                    }).appendTo(body);
+                }
+
+                // Slide the moon
+                slider.slider({
+                    max: 40,
+                    min: -40
+                }).on('slide', function (e, ui) {
+                    // Shadow radius
+                    shadowRadius = (0 === ui.value ? 5 : 0);
+
+                    // Moon size
+                    moonSize = ui.value * 2;
+
+                    // Update the CSS
+                    moon.css({
+                        'box-shadow': moonSize + 'px 0px ' + shadowRadius + 'px 0px #fff',
+                        'transform': 'translateX(' + (-moonSize) + 'px'
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body> 
+        <div class="holder">
+            <div class="moon"></div>
+            <div class="slider"></div>
+        </div>
+    </body>
+</html>
