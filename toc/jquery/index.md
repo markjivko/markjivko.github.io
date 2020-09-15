@@ -1,5 +1,12 @@
 # jQuery Tutorials
 
+## jQuery Parallax Effect
+
+[![jQuery Parallax Effect](https://img.youtube.com/vi/51kG1Midf4s/0.jpg)](https://youtu.be/51kG1Midf4s)
+
+   * [Preview](https://stephino.github.io/tutorials/51kG1Midf4s)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/51kG1Midf4s)
+
 ## jQuery UI Slider Tutorial
 
 [![jQuery UI Slider Tutorial](https://img.youtube.com/vi/WalvXCctgBs/0.jpg)](https://youtu.be/WalvXCctgBs)
