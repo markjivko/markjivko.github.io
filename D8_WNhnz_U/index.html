@@ -1,0 +1,69 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CSS Pseudo Elements</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            .holder {
+                width: 30%;
+                color: #fff;
+            }
+            p {
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 20px;
+                text-align: center;
+            }
+            .cat:before,
+            .afterCat:after {
+                content: '';
+                display: inline-block;
+                width: 20px;
+                height: 20px;
+                background: url(./img/cat.png) no-repeat 0 5px transparent;
+                background-size: 100% auto;
+                margin-right: 10px;
+                -webkit-filter: contrast(0.1) brightness(2);
+                        filter: contrast(0.1) brightness(2);
+                -webkit-transform: scale(2);
+                    -ms-transform: scale(2);
+                        transform: scale(2);
+                -webkit-transform-origin: bottom center;
+                    -ms-transform-origin: bottom center;
+                        transform-origin: bottom center;
+            }
+            .afterCat:after {
+                margin-right: 0px;
+                margin-left: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="holder">
+            <p class="cat">This is paragraph one.</p>
+            <p class="afterCat">This is paragraph two.</p>
+            <p class="cat">This is paragraph three.</p>
+            <p class="afterCat">This is paragraph four.</p>
+            <p class="cat">This is paragraph five.</p>
+        </div>
+    </body>
+</html>

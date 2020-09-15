@@ -1,5 +1,12 @@
 # CSS Tutorials
 
+## CSS before and after pseudo elements
+
+[![CSS before and after pseudo elements](https://img.youtube.com/vi/_D8_WNhnz_U/0.jpg)](https://youtu.be/_D8_WNhnz_U)
+
+   * [Preview](https://stephino.github.io/D8_WNhnz_U/index.html)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/D8_WNhnz_U)
+
 ## Text selection styling and CSS rule to disable selection highlighting
 
 [![Text selection styling and CSS rule to disable selection highlighting](https://img.youtube.com/vi/fJDxrKqEaW8/0.jpg)](https://youtu.be/fJDxrKqEaW8)
