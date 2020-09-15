@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Fancy Arrow</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                margin: 0;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            .classicArrow {
+				width: 0px;
+				height: 0px;
+				border-top: 100px solid transparent;
+				border-bottom: 100px solid transparent;
+				border-right: 50px solid green;
+			}
+			.fancyArrow {
+				width: 100px;
+				height: 100px;
+				border-top: 20px solid pink;
+				border-right: 20px solid pink;
+				transform: rotate(45deg);
+				margin: 50px;
+				border-radius: 15%;
+			}
+        </style>
+    </head>
+    <body> 
+        <div class="classicArrow"></div>
+		<div class="fancyArrow"></div>
+    </body>
+</html>
