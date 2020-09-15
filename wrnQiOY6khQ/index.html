@@ -3,23 +3,61 @@
     <head>
         <title>Runner</title>
         <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                margin: 0;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            .holder {
+                width: 600px;
+                background: #fff;
+                border-radius: 10px;
+                overflow: hidden;
+            }
             .runner {
-				margin-top: 100px;
-				width: 266.666px;
-				height: 200px;
-				background: url('./img/runner.png') no-repeat 0 0 transparent;
-			}
-
-			.track {
-				margin-top: -50px;
-				width:100%; 
-				height:20px; 
-				background: orange;
-			}
-
-			.holder {
-				overflow: hidden;
-			}
+                margin-top: 100px;
+                width: 266.666px;
+                height: 200px;
+                background: url('./img/runner.png') no-repeat 0 0 transparent;
+            }
+            .track {
+                margin-top: -50px;
+                width:100%; 
+                height:20px; 
+                background: orange;
+            }
+            button {
+                width: auto;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 5px;
+                font-size: 20px;
+                color: #fff;
+                background: orange;
+                float: left;
+                margin-left: 20px;
+                display: inline-block;
+                clear: both;
+                margin-top: 10px;
+                min-width: 150px;
+            }
+            #delay {
+                color: #fff;
+                float: left;
+                margin-left: 20px;
+                min-width: 110px;
+                padding: 10px 20px;
+                text-align: center;
+                font-size: 50px;
+                border-radius: 5px;
+            }
         </style>
         <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
         <script src="https://stephino.github.io/dist/recorder.js"></script>
@@ -27,67 +65,66 @@
             jQuery(document).ready(function () {
                 var $ = jQuery;
                 var runner = $('.runner');
-				var steps = 24;
-				var currentStep = 0;
-				var delay = 35;
-				var trackLength = 600;
+                var steps = 24;
+                var currentStep = 0;
+                var delay = 35;
+                var trackLength = 600;
+                var nextStep = function () {
+                    // Move the background
+                    runner.css('backgroundPosition', '-' + (6400 / 24 * currentStep) + 'px 0px');
 
-				var nextStep = function() {
-					// Move the background
-					runner.css('backgroundPosition', '-' + (6400/24 * currentStep) + 'px 0px');
+                    runner.css('marginLeft', '' + trackLength + 'px');
 
-					runner.css('marginLeft', '' + trackLength + 'px');
-					
-					// Increment the step
-					currentStep++;
-					trackLength -= 15;
-					
-					// End reached
-					if (currentStep >= steps) {
-						currentStep = 0;
-					}
-					
-					if(trackLength < -267) {
-						trackLength = 600;
-					}
-					
-					// After one second, call self
-					window.setTimeout(nextStep, delay);
-				};
+                    // Increment the step
+                    currentStep++;
+                    trackLength -= 15;
 
-				nextStep();
+                    // End reached
+                    if (currentStep >= steps) {
+                        currentStep = 0;
+                    }
 
-				// Buttons
-				$('#faster').click(function(){
-					delay -= 1;
-					if (delay <= 0) {
-						delay = 1;
-						$(this).fadeOut();
-					}
-					$('#delay').html(delay);
-				});
-				$('#slower').click(function(){
-					delay += 1;
-					if (delay >= 2) {
-						$('#faster').fadeIn();
-					}
-					$('#delay').html(delay);
-				});
+                    if (trackLength < -267) {
+                        trackLength = 600;
+                    }
 
-				// First-time
-				$('#delay').html(delay);
+                    // After one second, call self
+                    window.setTimeout(nextStep, delay);
+                };
+
+                nextStep();
+
+                // Buttons
+                $('#faster').click(function () {
+                    delay -= 1;
+                    if (delay <= 0) {
+                        delay = 1;
+                        $(this).fadeOut();
+                    }
+                    $('#delay').html(delay);
+                });
+                $('#slower').click(function () {
+                    delay += 1;
+                    if (delay >= 2) {
+                        $('#faster').fadeIn();
+                    }
+                    $('#delay').html(delay);
+                });
+
+                // First-time
+                $('#delay').html(delay);
             });
         </script>
     </head>
     <body>
         <div class="holder">
-			<div class="runner"></div>
-			<br/>
-			<div class="track"></div>
-		</div>
-		<br/>
-		<button type="button" id="faster">Faster</button>
-		<button type="button" id="slower">Slower</button>
-		<span id="delay"></span>
+            <div class="runner"></div>
+            <div class="track"></div>
+        </div>
+        <div class="buttons">
+            <span id="delay"></span>
+            <button type="button" id="faster">Faster</button>
+            <button type="button" id="slower">Slower</button>
+        </div>
     </body>
 </html>

@@ -87,8 +87,8 @@
                     init: function () {
                         if (null === myRecorder.objects.context) {
                             myRecorder.objects.context = new (
-                                window.AudioContext || window.webkitAudioContext
-                            );
+                                    window.AudioContext || window.webkitAudioContext
+                                    );
                         }
                     },
                     start: function () {
@@ -96,8 +96,8 @@
                         navigator.mediaDevices.getUserMedia(options).then(function (stream) {
                             myRecorder.objects.stream = stream;
                             myRecorder.objects.recorder = new Recorder(
-                                myRecorder.objects.context.createMediaStreamSource(stream),
-                                {numChannels: 1}
+                                    myRecorder.objects.context.createMediaStreamSource(stream),
+                                    {numChannels: 1}
                             );
                             myRecorder.objects.recorder.record();
                         }).catch(function (err) {});
@@ -116,21 +116,21 @@
                                 // Export the WAV file
                                 myRecorder.objects.recorder.exportWAV(function (blob) {
                                     var url = (window.URL || window.webkitURL)
-                                        .createObjectURL(blob);
+                                            .createObjectURL(blob);
 
                                     // Prepare the playback
                                     var audioObject = $('<audio controls></audio>')
-                                        .attr('src', url);
+                                            .attr('src', url);
 
                                     // Prepare the download link
                                     var downloadObject = $('<a>&#9660;</a>')
-                                        .attr('href', url)
-                                        .attr('download', new Date().toUTCString() + '.wav');
+                                            .attr('href', url)
+                                            .attr('download', new Date().toUTCString() + '.wav');
 
                                     // Wrap everything in a row
                                     var holderObject = $('<div class="row"></div>')
-                                        .append(audioObject)
-                                        .append(downloadObject);
+                                            .append(audioObject)
+                                            .append(downloadObject);
 
                                     // Append to the list
                                     listObject.append(holderObject);
