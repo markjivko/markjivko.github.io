@@ -36,18 +36,26 @@
                         delay = 200;
 
                 // Navigate array
-                $.each(array, function (key, value) {
+                $.each(array, function (key, color) {
                     setTimeout(function () {
                         // Generate random number between 50 and 100
                         var dimension = parseInt(Math.random() * 50 + 50, 10);
 
-                        // Create the ball
-                        var ball = $('<div class="ball"></div>').css({
-                            'background-color': value,
+                        // Prepare the CSS properties
+                        var ballCss = {
                             'width': dimension,
                             'height': dimension
-                        });
-                        ball.appendTo(holder);
+                        };
+                        
+                        // 50% chance
+                        if (parseInt(Math.random() * 100, 10) >= 50) {
+                            ballCss['background-color'] = color;
+                        } else {
+                            ballCss['box-shadow'] = '0px 0px 0px 5px ' + color;
+                        }
+
+                        // Create the ball
+                        $('<div class="ball"></div>').css(ballCss).appendTo(holder);
                     }, delay);
 
                     // Increment delay
