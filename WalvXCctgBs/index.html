@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+    <head>
+        <title>jQuery UI Slider</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.9);
+            }
+            .holder {
+                position: relative;
+                width: 300px;
+                height: 300px;
+                border-radius: 10px;
+            }
+            .normal, .blurred {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                background: url('./img/cat.png') no-repeat 100% 100% transparent;
+                background-size: auto 100%;
+            }
+            .blurred {
+                filter: blur(4px);
+            }
+            .slider {
+                margin: 50px 0 0;
+                width: 100%;
+            }
+        </style>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function () {
+                var $ = jQuery, slider = $('.slider'), blurred = $('.blurred');
+                slider.slider().on('slide', function(e, ui){
+                    blurred.css({
+                        width: (100 - ui.value) + '%',
+                        left: ui.value + '%'
+                    });
+                });
+            });
+        </script>
+    </head>
+    <body>
+        <div class="all">
+            <div class="holder">
+                <div class="normal"></div>
+                <div class="blurred"></div>
+            </div>
+            <div class="slider"></div>
+        </div>
+    </body>
+</html>

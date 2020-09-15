@@ -1,5 +1,12 @@
 # jQuery Tutorials
 
+## jQuery UI Slider Tutorial
+
+[![jQuery UI Slider Tutorial](https://img.youtube.com/vi/WalvXCctgBs/0.jpg)](https://youtu.be/WalvXCctgBs)
+
+   * [Preview](https://stephino.github.io/WalvXCctgBs)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/WalvXCctgBs)
+
 ## jQuery Array Tutorial
 
 [![jQuery Array Tutorial](https://img.youtube.com/vi/7wpQiJGPwm4/0.jpg)](https://youtu.be/7wpQiJGPwm4)
