@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+    <head>
+        <title>jQuery Array</title>
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                margin: 0;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0,0,0,0.8);
+            }
+            .ball {
+                border-radius: 100%;
+                float: left;
+                margin: 5px;
+            }
+            .holder {
+                max-width: 30%;
+            }
+        </style>
+        <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
+        <script type="text/javascript">
+            jQuery(document).ready(function () {
+                var $ = jQuery;
+                var array = [
+                    'red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple', 'lightgreen', 'lightblue', 'black', 'white', 'teal',
+                    'red', 'green', 'blue', 'yellow', 'orange', 'pink', 'purple', 'lightgreen', 'lightblue', 'black', 'white', 'teal'
+                ],
+                        holder = $('.holder'),
+                        delay = 200;
+
+                // Navigate array
+                $.each(array, function (key, value) {
+                    setTimeout(function () {
+                        // Generate random number between 50 and 100
+                        var dimension = parseInt(Math.random() * 50 + 50, 10);
+
+                        // Create the ball
+                        var ball = $('<div class="ball"></div>').css({
+                            'background-color': value,
+                            'width': dimension,
+                            'height': dimension
+                        });
+                        ball.appendTo(holder);
+                    }, delay);
+
+                    // Increment delay
+                    delay += 200;
+                });
+            });
+        </script>
+    </head>
+    <body> 
+        <div class="holder"></div>
+    </body>
+</html>
