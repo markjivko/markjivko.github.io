@@ -2,6 +2,13 @@
 
 # jQuery Tutorials
 
+## jQuery Mouse Move Events
+
+[![jQuery Mouse Move Events](https://img.youtube.com/vi/EH0sa5CfubY/0.jpg)](https://youtu.be/EH0sa5CfubY)
+
+   * [Preview](https://stephino.github.io/tutorials/EH0sa5CfubY)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/EH0sa5CfubY)
+
 ## jQuery Parallax Effect
 
 [![jQuery Parallax Effect](https://img.youtube.com/vi/51kG1Midf4s/0.jpg)](https://youtu.be/51kG1Midf4s)
