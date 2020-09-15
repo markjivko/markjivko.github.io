@@ -3,6 +3,9 @@
     <head>
         <title>CSS3 Gradients</title>
         <style type="text/css">
+            html {
+                background: #000;
+            }
             body {
                 position: absolute;
                 top: 0;
@@ -22,14 +25,36 @@
                 -webkit-align-items: center;
                 -ms-flex-align: center;
                 align-items: center;
-                background: rgba(0, 0, 0, 0.9);
+                background: #f99d3a;
+                background: -o-linear-gradient(315deg, #f99d3a 30%, #e7515d 70%);
+                background: linear-gradient(135deg, #f99d3a 30%, #e7515d 70%);
             }
-            
+            .picture {
+                background: url('./img/hummingbird.png') no-repeat 50% 50% transparent;
+                width: 50%;
+                height: 50%;
+                position: relative;
+                background-size: auto 100%;
+                -webkit-transform: scaleX(-1);
+                    -ms-transform: scaleX(-1);
+                        transform: scaleX(-1);
+            }
+            .picture:after {
+                content: '';
+                position: absolute;
+                display: inline-block;
+                width: 80%;
+                height: 25px;
+                background: -o-radial-gradient(rgba(0,0,0,0.4) 30%, rgba(0,0,0,0) 60%);
+                background: radial-gradient(rgba(0,0,0,0.4) 30%, rgba(0,0,0,0) 60%);
+                bottom: -20%;
+                left: 10%;
+                -webkit-filter: blur(5px);
+                        filter: blur(5px);
+            }
         </style>
     </head>
     <body>
-        <div class="holder">
-            
-        </div>
+        <div class="picture"></div>
     </body>
 </html>

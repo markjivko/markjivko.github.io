@@ -21,9 +21,9 @@
    * [Preview](https://stephino.github.io/tutorials/D8_WNhnz_U)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/D8_WNhnz_U)
 
-## Text selection styling and CSS rule to disable selection highlighting
+## CSS Text selection styling
 
-[![Text selection styling and CSS rule to disable selection highlighting](https://img.youtube.com/vi/fJDxrKqEaW8/0.jpg)](https://youtu.be/fJDxrKqEaW8)
+[![CSS Text selection styling](https://img.youtube.com/vi/fJDxrKqEaW8/0.jpg)](https://youtu.be/fJDxrKqEaW8)
 
    * [Preview](https://stephino.github.io/tutorials/fJDxrKqEaW8)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/fJDxrKqEaW8)
