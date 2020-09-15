@@ -4,21 +4,213 @@
         <title>CSS Only Digit Animation</title>
         <style type="text/css">
             body {
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
                 display: flex;
                 width: 100vw;
                 height: 100vh;
                 margin: 0;
                 display: flex;
-                justify-content: center;
-                align-items: center;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                    -ms-flex-pack: center;
+                        justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                    -ms-flex-align: center;
+                        align-items: center;
             }
             [data-role="digit"] {
+                display: -ms-grid;
                 display: grid;
                 grid-template-columns: repeat(5, 1fr);
                 grid-template-rows: repeat(9, 1fr);
                 width: 100px;
                 height: 180px;
-                transform: scale(2);
+                -webkit-transform: scale(2);
+                    -ms-transform: scale(2);
+                        transform: scale(2);
+            }
+            [data-role="digit"] > *:nth-child(1) {
+                -ms-grid-row: 1;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(2) {
+                -ms-grid-row: 1;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(3) {
+                -ms-grid-row: 1;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(4) {
+                -ms-grid-row: 1;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(5) {
+                -ms-grid-row: 1;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(6) {
+                -ms-grid-row: 2;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(7) {
+                -ms-grid-row: 2;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(8) {
+                -ms-grid-row: 2;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(9) {
+                -ms-grid-row: 2;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(10) {
+                -ms-grid-row: 2;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(11) {
+                -ms-grid-row: 3;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(12) {
+                -ms-grid-row: 3;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(13) {
+                -ms-grid-row: 3;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(14) {
+                -ms-grid-row: 3;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(15) {
+                -ms-grid-row: 3;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(16) {
+                -ms-grid-row: 4;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(17) {
+                -ms-grid-row: 4;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(18) {
+                -ms-grid-row: 4;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(19) {
+                -ms-grid-row: 4;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(20) {
+                -ms-grid-row: 4;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(21) {
+                -ms-grid-row: 5;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(22) {
+                -ms-grid-row: 5;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(23) {
+                -ms-grid-row: 5;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(24) {
+                -ms-grid-row: 5;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(25) {
+                -ms-grid-row: 5;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(26) {
+                -ms-grid-row: 6;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(27) {
+                -ms-grid-row: 6;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(28) {
+                -ms-grid-row: 6;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(29) {
+                -ms-grid-row: 6;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(30) {
+                -ms-grid-row: 6;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(31) {
+                -ms-grid-row: 7;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(32) {
+                -ms-grid-row: 7;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(33) {
+                -ms-grid-row: 7;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(34) {
+                -ms-grid-row: 7;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(35) {
+                -ms-grid-row: 7;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(36) {
+                -ms-grid-row: 8;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(37) {
+                -ms-grid-row: 8;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(38) {
+                -ms-grid-row: 8;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(39) {
+                -ms-grid-row: 8;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(40) {
+                -ms-grid-row: 8;
+                -ms-grid-column: 5;
+            }
+            [data-role="digit"] > *:nth-child(41) {
+                -ms-grid-row: 9;
+                -ms-grid-column: 1;
+            }
+            [data-role="digit"] > *:nth-child(42) {
+                -ms-grid-row: 9;
+                -ms-grid-column: 2;
+            }
+            [data-role="digit"] > *:nth-child(43) {
+                -ms-grid-row: 9;
+                -ms-grid-column: 3;
+            }
+            [data-role="digit"] > *:nth-child(44) {
+                -ms-grid-row: 9;
+                -ms-grid-column: 4;
+            }
+            [data-role="digit"] > *:nth-child(45) {
+                -ms-grid-row: 9;
+                -ms-grid-column: 5;
             }
             [data-role="digit"]:before,
             [data-role="digit"]:after {
@@ -28,117 +220,315 @@
                 border-radius: 15px;
             }
             [data-role="digit"]:before {
-                grid-row-start: 0;
-                grid-column-start: 2;
+                -ms-grid-row: 0;
+                    grid-row-start: 0;
+                -ms-grid-column: 2;
+                    grid-column-start: 2;
+                -ms-grid-column-span: 3;
                 grid-column-end: 5;
-                box-shadow: 0px 80px 0px 0px #000, 
+                -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                    0px 160px 0px 0px #000;
+                        box-shadow: 0px 80px 0px 0px #000, 
                     0px 160px 0px 0px #000;
                 animation: anim-timer-h 10s steps(100) infinite reverse;
             }
             [data-role="digit"]:after {
-                grid-column-start: 0;
-                grid-row-start: 2;
+                -ms-grid-column: 0;
+                    grid-column-start: 0;
+                -ms-grid-row: 2;
+                    grid-row-start: 2;
+                -ms-grid-row-span: 3;
                 grid-row-end: 5;
-                box-shadow: 80px 0px 0px 0px #000,
+                -webkit-box-shadow: 80px 0px 0px 0px #000,
+                    0px 80px 0px 0px #000,
+                    80px 80px 0px 0px #000;
+                        box-shadow: 80px 0px 0px 0px #000,
                     0px 80px 0px 0px #000,
                     80px 80px 0px 0px #000;
                 animation: anim-timer-v 10s steps(100) infinite reverse;
             }
-            @keyframes anim-timer-h {
+            @-webkit-keyframes anim-timer-h {
                 0%, 9% {
                     background: #000;
-                    box-shadow: 0px 80px 0px 0px transparent,
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px transparent,
                         0px 160px 0px 0px #000;
                 }
                 10%, 19% {
                     background: transparent;
-                    box-shadow: 0px 80px 0px 0px transparent,
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px transparent,
                         0px 160px 0px 0px transparent;
                 }
                 20%, 39% {
                     background: #000;
-                    box-shadow: 0px 80px 0px 0px #000, 
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
                         0px 160px 0px 0px #000;
                 }
                 40%, 49% {
                     background: transparent;
-                    box-shadow: 0px 80px 0px 0px #000,
+                    -webkit-box-shadow: 0px 80px 0px 0px #000,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px #000,
                         0px 160px 0px 0px transparent;
                 }
                 50%, 69% {
                     background: #000;
-                    box-shadow: 0px 80px 0px 0px #000, 
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
                         0px 160px 0px 0px #000;
                 }
                 70%, 79% {
                     background: #000;
-                    box-shadow: 0px 80px 0px 0px transparent,
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px transparent,
                         0px 160px 0px 0px transparent;
                 }
                 80%, 99% {
                     background: #000;
-                    box-shadow: 0px 80px 0px 0px #000, 
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
                         0px 160px 0px 0px #000;
                 }
             }
-            @keyframes anim-timer-v {
+            @keyframes anim-timer-h {
                 0%, 9% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px #000;
+                }
+                10%, 19% {
+                    background: transparent;
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                }
+                20%, 39% {
+                    background: #000;
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+                40%, 49% {
+                    background: transparent;
+                    -webkit-box-shadow: 0px 80px 0px 0px #000,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px #000,
+                        0px 160px 0px 0px transparent;
+                }
+                50%, 69% {
+                    background: #000;
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+                70%, 79% {
+                    background: #000;
+                    -webkit-box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                            box-shadow: 0px 80px 0px 0px transparent,
+                        0px 160px 0px 0px transparent;
+                }
+                80%, 99% {
+                    background: #000;
+                    -webkit-box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                            box-shadow: 0px 80px 0px 0px #000, 
+                        0px 160px 0px 0px #000;
+                }
+            }
+            @-webkit-keyframes anim-timer-v {
+                0%, 9% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px #000,
                         80px 80px 0px 0px #000;
                 }
                 10%, 19% {
                     background: transparent;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }
                 20%, 29% {
                     background: transparent;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px transparent;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px #000,
                         80px 80px 0px 0px transparent;
                 }
                 30%, 39% {
                     background: transparent;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }
                 40%, 49% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }
                 50%, 59% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px transparent,
+                    -webkit-box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px transparent,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }
                 60%, 69% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px transparent,
+                    -webkit-box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px transparent,
                         0px 80px 0px 0px #000,
                         80px 80px 0px 0px #000;
                 }
                 70%, 79% {
                     background: transparent;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }
                 80%, 89% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px #000,
                         80px 80px 0px 0px #000;
                 }
                 90%, 99% {
                     background: #000;
-                    box-shadow: 80px 0px 0px 0px #000,
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+            }
+            @keyframes anim-timer-v {
+                0%, 9% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                10%, 19% {
+                    background: transparent;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                20%, 29% {
+                    background: transparent;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px transparent;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px transparent;
+                }
+                30%, 39% {
+                    background: transparent;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                40%, 49% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                50%, 59% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                60%, 69% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px transparent,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                70%, 79% {
+                    background: transparent;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                }
+                80%, 89% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px #000,
+                        80px 80px 0px 0px #000;
+                }
+                90%, 99% {
+                    background: #000;
+                    -webkit-box-shadow: 80px 0px 0px 0px #000,
+                        0px 80px 0px 0px transparent,
+                        80px 80px 0px 0px #000;
+                            box-shadow: 80px 0px 0px 0px #000,
                         0px 80px 0px 0px transparent,
                         80px 80px 0px 0px #000;
                 }

@@ -9,10 +9,19 @@
                 left: 0;
                 width: 100%;
                 height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
                 display: flex;
                 margin: 0;
-                justify-content: center;
-                align-items: center;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                    -ms-flex-pack: center;
+                        justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                    -ms-flex-align: center;
+                        align-items: center;
                 background: rgba(0, 0, 0, 0.9);
             }
             [data-role="loading-bar"] {
@@ -22,7 +31,10 @@
                 overflow: hidden;
                 position: relative;
                 padding: 2px;
-                box-shadow: 0px 5px 2px 0px rgba(255, 255, 255, 0.5) inset,
+                -webkit-box-shadow: 0px 5px 2px 0px rgba(255, 255, 255, 0.5) inset,
+                    0px -2px 2px 0px rgba(0,0,0,0.3) inset,
+                    0px 10px 10px 0px rgba(0,0,0,0.5);
+                        box-shadow: 0px 5px 2px 0px rgba(255, 255, 255, 0.5) inset,
                     0px -2px 2px 0px rgba(0,0,0,0.3) inset,
                     0px 10px 10px 0px rgba(0,0,0,0.5);
             }
@@ -34,7 +46,8 @@
                 width: 100%;
                 height: 100%;
                 z-index: -2;
-                box-shadow: 0px 10px 5px 2px rgba(0,0,0,0.8) inset;
+                -webkit-box-shadow: 0px 10px 5px 2px rgba(0,0,0,0.8) inset;
+                        box-shadow: 0px 10px 5px 2px rgba(0,0,0,0.8) inset;
             }
             [data-role="loading-bar"] > div {
                 position: relative;
@@ -44,15 +57,30 @@
                 overflow: hidden;
                 z-index: -1;
                 border-radius: 20px;
+                -webkit-transition: width 0.7s linear;
+                -o-transition: width 0.7s linear;
                 transition: width 0.7s linear;
-                animation: anim-bkg 4s linear infinite;
+                -webkit-animation: anim-bkg 4s linear infinite;
+                        animation: anim-bkg 4s linear infinite;
+            }
+            @-webkit-keyframes anim-bkg {
+                0%, 100% {
+                    -webkit-filter: hue-rotate(0deg);
+                            filter: hue-rotate(0deg);
+                }
+                50% {
+                    -webkit-filter: hue-rotate(180deg);
+                            filter: hue-rotate(180deg);
+                }
             }
             @keyframes anim-bkg {
                 0%, 100% {
-                    filter: hue-rotate(0deg);
+                    -webkit-filter: hue-rotate(0deg);
+                            filter: hue-rotate(0deg);
                 }
                 50% {
-                    filter: hue-rotate(180deg);
+                    -webkit-filter: hue-rotate(180deg);
+                            filter: hue-rotate(180deg);
                 }
             }
             [data-role="loading-bar"] > div:after {
@@ -64,8 +92,10 @@
                 height: 100%;
                 width: 500px;
                 background-color: #4158d0;
+                background-image: -o-linear-gradient(47deg, #4158d0 0%, #c850c0 45%, #ffcc70 100%);
                 background-image: linear-gradient(43deg, #4158d0 0%, #c850c0 45%, #ffcc70 100%);
-                box-shadow: 0px 15px 5px 0px rgba(255, 255, 255, 0.2) inset;
+                -webkit-box-shadow: 0px 15px 5px 0px rgba(255, 255, 255, 0.2) inset;
+                        box-shadow: 0px 15px 5px 0px rgba(255, 255, 255, 0.2) inset;
             }
         </style>
         <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
