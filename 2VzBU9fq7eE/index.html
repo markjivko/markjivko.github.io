@@ -20,14 +20,14 @@
             }
             .moon {
                 position: relative;
-                width: 80px;
-                height: 80px;
+                width: 320px;
+                height: 320px;
                 border-radius: 50%;
                 box-shadow: 0px 0px 5px 0px #fff;
                 margin: 25% auto 0;
             }
             .slider {
-                margin: 5% auto;
+                margin: 100px auto 0;
                 width: 240px;
             }
             .star {
@@ -44,7 +44,12 @@
         <script type="text/javascript">
             jQuery(document).ready(function () {
                 var $ = jQuery;
-                var body = $('body'), slider = $('.slider'), moon = $('.moon'), moonSize, shadowRadius;
+                var body = $('body'),
+                        slider = $('.slider'),
+                        moon = $('.moon'),
+                        sliderDefault = 15,
+                        moonSize,
+                        shadowRadius;
 
                 // Add the stars
                 for (var i = 0; i <= 200; i++) {
@@ -61,22 +66,30 @@
                     }).appendTo(body);
                 }
 
-                // Slide the moon
-                slider.slider({
-                    max: 40,
-                    min: -40
-                }).on('slide', function (e, ui) {
+                // Slide change function
+                var sliderChange = function (e, ui) {
+                    var value = "undefined" === typeof ui.value ? sliderDefault : ui.value;
+
                     // Shadow radius
-                    shadowRadius = (0 === ui.value ? 5 : 0);
+                    shadowRadius = (0 === value ? 5 : 0);
 
                     // Moon size
-                    moonSize = ui.value * 2;
+                    moonSize = parseInt(moon.width() * (value / 100), 10);
 
                     // Update the CSS
                     moon.css({
                         'box-shadow': moonSize + 'px 0px ' + shadowRadius + 'px 0px #fff',
                         'transform': 'translateX(' + (-moonSize) + 'px'
                     });
+                };
+
+                // Slide the moon
+                slider.slider({
+                    max: 100,
+                    min: -100,
+                    value: sliderDefault,
+                    create: sliderChange,
+                    slide: sliderChange
                 });
             });
         </script>
