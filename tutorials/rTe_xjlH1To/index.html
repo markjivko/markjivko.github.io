@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CSS Film Strip</title>
+        <link rel="icon" type="image/png" href="https://stephino.github.io/dist/favicon.png" />
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                    -ms-flex-pack: center;
+                        justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                    -ms-flex-align: center;
+                        align-items: center;
+                background: rgba(0,0,0,0.8);
+            }
+            .container {
+                width: 200px;
+                height: 200px;
+                overflow: hidden;
+                border-radius: 20px;
+                margin: 10px;
+            }
+            .filmstrip {
+                width: 10400px;
+                height: 200px;
+                background: url('./img/filmstrip.jpg') no-repeat 0 0 transparent;
+                -webkit-animation: anim-gif 4s steps(52) infinite;
+                        animation: anim-gif 4s steps(52) infinite;
+            }
+            @-webkit-keyframes anim-gif {
+                100% {
+                    background-position: -10400px;
+                }
+            }
+            @keyframes anim-gif {
+                100% {
+                    background-position: -10400px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="filmstrip"></div>
+        </div>
+        <div class="container">
+            <div class="filmstrip"></div>
+        </div>
+        <div class="container">
+            <div class="filmstrip"></div>
+        </div>
+        <div class="container">
+            <div class="filmstrip"></div>
+        </div>
+    </body>
+</html>
