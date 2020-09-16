@@ -16,6 +16,13 @@
    * [Preview](https://stephino.github.io/tutorials/1xklDcifvDg)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/1xklDcifvDg)
 
+## Create a Hexagon using CSS
+
+[![Create a Hexagon using CSS](https://img.youtube.com/vi/jPIskLkEvU4/0.jpg)](https://youtu.be/jPIskLkEvU4)
+
+   * [Preview](https://stephino.github.io/tutorials/jPIskLkEvU4)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/jPIskLkEvU4)
+
 ## CSS Yin-Yang Tutorial
 
 [![CSS Yin-Yang Tutorial](https://img.youtube.com/vi/oR7K0x_FvfY/0.jpg)](https://youtu.be/oR7K0x_FvfY)
