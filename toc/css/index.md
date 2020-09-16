@@ -2,6 +2,20 @@
 
 # CSS Tutorials
 
+## CSS Only Digit Animation
+
+[![CSS Only Digit Animation](https://img.youtube.com/vi/iJ5fzD0tZrI/0.jpg)](https://youtu.be/iJ5fzD0tZrI)
+
+   * [Preview](https://stephino.github.io/tutorials/iJ5fzD0tZrI)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/iJ5fzD0tZrI)
+
+## CSS Hexagons
+
+[![CSS Hexagons](https://img.youtube.com/vi/1xklDcifvDg/0.jpg)](https://youtu.be/1xklDcifvDg)
+
+   * [Preview](https://stephino.github.io/tutorials/1xklDcifvDg)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/1xklDcifvDg)
+
 ## CSS Loading Circle
 
 [![CSS Loading Circle](https://img.youtube.com/vi/WQwMRRGrIAo/0.jpg)](https://youtu.be/WQwMRRGrIAo)
