@@ -25,8 +25,47 @@
                         align-items: center;
                 background: rgba(0,0,0,0.8);
             }
+            .yin-yang {
+                width: 100px;
+                height: 50px;
+                background: #fff;
+                border: solid #000;
+                border-width: 0px 0px 50px 0px;
+                border-radius: 50%;
+                position: relative;
+                -webkit-transform: scale(3);
+                    -ms-transform: scale(3);
+                        transform: scale(3);
+                -webkit-animation: anim-rotate 4s linear infinite;
+                        animation: anim-rotate 4s linear infinite;
+            }
+            .yin-yang:before, .yin-yang:after {
+                content: '';
+                position: absolute;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                background: #fff;
+                border: 19px solid #000;
+                top: 50%;
+                left: 0;
+            }
+            .yin-yang:after {
+                left: 50%;
+                background: #000;
+                border: 19px solid #fff;
+            }
+            @-webkit-keyframes anim-rotate {
+                0% {-webkit-transform: scale(3) rotate(0deg);transform: scale(3) rotate(0deg);}
+                100% {-webkit-transform: scale(3) rotate(360deg);transform: scale(3) rotate(360deg);}
+            }
+            @keyframes anim-rotate {
+                0% {-webkit-transform: scale(3) rotate(0deg);transform: scale(3) rotate(0deg);}
+                100% {-webkit-transform: scale(3) rotate(360deg);transform: scale(3) rotate(360deg);}
+            }
         </style>
     </head>
     <body>
+        <div class="yin-yang"></div>
     </body>
 </html>
