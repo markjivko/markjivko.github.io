@@ -23,6 +23,20 @@
    * [Preview](https://stephino.github.io/tutorials/aM0R0Foqd1c/)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/aM0R0Foqd1c)
 
+## HTML Canvas: Circles and Ellipses
+
+[![HTML Canvas: Circles and Ellipses](https://img.youtube.com/vi/78NyTc40Xgo/0.jpg)](https://youtu.be/78NyTc40Xgo)
+
+   * [Preview](https://stephino.github.io/tutorials/78NyTc40Xgo/)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/78NyTc40Xgo)
+
+## HTML Canvas: Rectangles and Text
+
+[![HTML Canvas: Rectangles and Text](https://img.youtube.com/vi/JCrir5-I6zo/0.jpg)](https://youtu.be/JCrir5-I6zo)
+
+   * [Preview](https://stephino.github.io/tutorials/JCrir5-I6zo/)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/JCrir5-I6zo)
+
 ## Mouse Move Events
 
 [![Mouse Move Events](https://img.youtube.com/vi/EH0sa5CfubY/0.jpg)](https://youtu.be/EH0sa5CfubY)
