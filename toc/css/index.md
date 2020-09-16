@@ -2,6 +2,13 @@
 
 # CSS Tutorials
 
+## CSS Loading Circle
+
+[![CSS Loading Circle](https://img.youtube.com/vi/WQwMRRGrIAo/0.jpg)](https://youtu.be/WQwMRRGrIAo)
+
+   * [Preview](https://stephino.github.io/tutorials/WQwMRRGrIAo)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/WQwMRRGrIAo)
+
 ## CSS3 Gradients Tutorial
 
 [![CSS3 Gradients Tutorial](https://img.youtube.com/vi/Q5Gwl401aYs/0.jpg)](https://youtu.be/Q5Gwl401aYs)

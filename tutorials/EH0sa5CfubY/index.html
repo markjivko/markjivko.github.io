@@ -47,9 +47,17 @@
                 var xSpan = text.offset().left + text.outerWidth() / 2;
                 var ySpan = text.offset().top + text.outerHeight() / 2;
                 $('body').mousemove(function(e) {
+                    // Calculate distance from span center
+                    var length = Math.sqrt(
+                        Math.pow(e.pageX - xSpan, 2)
+                        + Math.pow(e.pageY - ySpan, 2)
+                    ) / 20;
+                    
                     // Horizontal position of text shadow: xSpan - e.pageX
                     // Vertical position of text shadow: ySpan - y
-                    var textShadow = (xSpan - e.pageX) + 'px ' + (ySpan - e.pageY) + 'px 2px rgba(0,0,0,0.5)';
+                    var textShadow = (xSpan - e.pageX) + 'px ' 
+                            + (ySpan - e.pageY) + 'px '
+                            + length + 'px rgba(0,0,0,0.5)';
                     text.css({'text-shadow': textShadow});
                 });
             });
