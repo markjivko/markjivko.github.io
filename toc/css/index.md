@@ -16,6 +16,13 @@
    * [Preview](https://stephino.github.io/tutorials/1xklDcifvDg)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/1xklDcifvDg)
 
+## CSS Yin-Yang Tutorial
+
+[![CSS Yin-Yang Tutorial](https://img.youtube.com/vi/oR7K0x_FvfY/0.jpg)](https://youtu.be/oR7K0x_FvfY)
+
+   * [Preview](https://stephino.github.io/tutorials/oR7K0x_FvfY)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/oR7K0x_FvfY)
+
 ## CSS Loading Circle
 
 [![CSS Loading Circle](https://img.youtube.com/vi/WQwMRRGrIAo/0.jpg)](https://youtu.be/WQwMRRGrIAo)
