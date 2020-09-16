@@ -13,7 +13,7 @@
 
 [![Film Strip Animation](https://img.youtube.com/vi/rTe_xjlH1To/0.jpg)](https://youtu.be/rTe_xjlH1To)
 
-   * [Preview](https://stephino.github.io/tutorials/rTe_xjlH1To/)
+   * [Preview](https://stephino.github.io/tutorials/rTe_xjlH1To/index.html)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/rTe_xjlH1To)
 
 ## CSS Hexagons
