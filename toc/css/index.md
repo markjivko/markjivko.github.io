@@ -30,6 +30,13 @@
    * [Preview](https://stephino.github.io/tutorials/1xklDcifvDg/)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/1xklDcifvDg)
 
+## Optimize CSS Animations
+
+[![Optimize CSS Animations](https://img.youtube.com/vi/5DHMzR_Wcsk/0.jpg)](https://youtu.be/5DHMzR_Wcsk)
+
+   * [Preview](https://stephino.github.io/tutorials/5DHMzR_Wcsk/)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/5DHMzR_Wcsk)
+
 ## Create a Hexagon using CSS
 
 [![Create a Hexagon using CSS](https://img.youtube.com/vi/jPIskLkEvU4/0.jpg)](https://youtu.be/jPIskLkEvU4)

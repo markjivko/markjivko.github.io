@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+    <head>
+        <title>CSS Sprites</title>
+        <link rel="icon" type="image/png" href="https://stephino.github.io/dist/favicon.png" />
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                    -ms-flex-pack: center;
+                        justify-content: center;
+                -webkit-box-align: center;
+                -webkit-align-items: center;
+                    -ms-flex-align: center;
+                        align-items: center;
+                background: rgba(0,0,0,0.8);
+                overflow: hidden;
+            }
+            .sprite-holder {
+                position: relative;
+                width: 600px;
+                height: 600px;
+                overflow: hidden;
+                -webkit-transform: scaleX(-1);
+                    -ms-transform: scaleX(-1);
+                        transform: scaleX(-1);
+            }
+            .sprite-holder:before {
+                content: '';
+                position: absolute;
+                width: 5400px;
+                height: 600px;
+                background: url('./img/fox.png') no-repeat 0 0 transparent;
+                -webkit-animation: anim-position 0.5s steps(8) infinite;
+                        animation: anim-position 0.5s steps(8) infinite;
+                will-change: transform;
+            }
+            /* csstriggers.com */
+            @-webkit-keyframes anim-position {
+                0% {
+                    left: 0px;
+                }
+                100% {
+                    left: -4800px;
+                }
+            }
+            @keyframes anim-position {
+                0% {
+                    left: 0px;
+                }
+                100% {
+                    left: -4800px;
+                }
+            }
+            @-webkit-keyframes anim-translate {
+                0% {
+                    -webkit-transform: translateX(0px);
+                            transform: translateX(0px);
+                }
+                100% {
+                    -webkit-transform: translateX(-4800px);
+                            transform: translateX(-4800px);
+                }
+            }
+            @keyframes anim-translate {
+                0% {
+                    -webkit-transform: translateX(0px);
+                            transform: translateX(0px);
+                }
+                100% {
+                    -webkit-transform: translateX(-4800px);
+                            transform: translateX(-4800px);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="sprite-holder"></div>
+    </body>
+</html>
