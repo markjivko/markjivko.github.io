@@ -9,6 +9,13 @@
    * [Preview](https://stephino.github.io/tutorials/iJ5fzD0tZrI/)
    * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/iJ5fzD0tZrI)
 
+## Drop-Down Navigation Menu
+
+[![Drop-Down Navigation Menu](https://img.youtube.com/vi/8VVPpuccBmE/0.jpg)](https://youtu.be/8VVPpuccBmE)
+
+   * [Preview](https://stephino.github.io/tutorials/8VVPpuccBmE/)
+   * [Source](https://github.com/Stephino/stephino.github.io/tree/master/tutorials/8VVPpuccBmE)
+
 ## Film Strip Animation
 
 [![Film Strip Animation](https://img.youtube.com/vi/rTe_xjlH1To/0.jpg)](https://youtu.be/rTe_xjlH1To)

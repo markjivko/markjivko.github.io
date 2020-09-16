@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Drop-Down Navigation Menu</title>
+        <link rel="icon" type="image/png" href="https://stephino.github.io/dist/favicon.png" />
+        <style type="text/css">
+            body {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: -webkit-box;
+                display: -webkit-flex;
+                display: -ms-flexbox;
+                display: flex;
+                margin: 0;
+                -webkit-box-pack: center;
+                -webkit-justify-content: center;
+                    -ms-flex-pack: center;
+                        justify-content: center;
+                background: rgba(0,0,0,0.8);
+                overflow: hidden;
+            }
+            body:before {
+                content: '';
+                display: block;
+                width: 300%;
+                height: 100px;
+                background: #14a3cd;
+                position: absolute;
+                z-index: 1;
+                -webkit-box-shadow: 0px -10px 20px 0px rgba(0,0,0,0.5) inset,
+                    0px 100px 0px 0px #fff, 
+                    0px 199px 0px 0px #fff, 
+                    0px 298px 0px 0px #fff, 
+                    0px 397px 0px 0px #fff, 
+                    0px 496px 0px 0px #fff, 
+                    0px 595px 0px 0px #fff,
+                    0px 694px 0px 0px #fff,
+                    0px 793px 0px 0px #fff,
+                    0px 892px 0px 0px #fff;
+                        box-shadow: 0px -10px 20px 0px rgba(0,0,0,0.5) inset,
+                    0px 100px 0px 0px #fff, 
+                    0px 199px 0px 0px #fff, 
+                    0px 298px 0px 0px #fff, 
+                    0px 397px 0px 0px #fff, 
+                    0px 496px 0px 0px #fff, 
+                    0px 595px 0px 0px #fff,
+                    0px 694px 0px 0px #fff,
+                    0px 793px 0px 0px #fff,
+                    0px 892px 0px 0px #fff;
+                -webkit-transform-origin: 0 0;
+                    -ms-transform-origin: 0 0;
+                        transform-origin: 0 0;
+                -webkit-transform: rotate(45deg);
+                    -ms-transform: rotate(45deg);
+                        transform: rotate(45deg);
+                left: -50px;
+                top: -60px;
+            }
+            .menu {
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                position: relative;
+                z-index: 2;
+            }
+            .menu > ul > li {
+                margin: 0;
+                padding: 0;
+                float: left;
+                width: 25%;
+                height: 80px;
+            }
+            .menu li {
+                text-align: center;
+                font: bold 32px 'Comic Sans MS';
+                color: #292929;
+                height: 100%;
+                width: 100%;
+                display: block;
+                background: #14a3cd;
+                line-height: 80px;
+                cursor: pointer;
+                text-shadow: 1px 1px 1px #2ab7e3;
+                -webkit-box-shadow: inset -4px 0 0 -2px #292929;
+                        box-shadow: inset -4px 0 0 -2px #292929;
+            }
+            .menu li:hover {
+                background: #fff;
+                text-shadow: none;
+            }
+            .menu > ul {
+                padding: 0;
+                margin: 0;
+            }
+            .menu ul ul {
+                visibility: hidden;
+                padding: 0;
+            }
+            .menu > ul > li:hover ul {
+                cursor: pointer;
+                visibility: visible;
+            }
+            .menu ul ul li {
+                -webkit-box-shadow: inset -4px -4px 0 -2px #292929;
+                        box-shadow: inset -4px -4px 0 -2px #292929;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="menu">
+            <ul>
+                <li>
+                    Home
+                    <ul>
+                        <li>Section 1</li>
+                        <li>Section 2</li>
+                        <li>Section 3</li>
+                        <li>Section 4</li>
+                    </ul>
+                </li>
+                <li>
+                    About Us
+                    <ul>
+                        <li>Section 1</li>
+                        <li>Section 2</li>
+                        <li>Section 3</li>
+                        <li>Section 4</li>
+                    </ul>
+                </li>
+                <li>
+                    Contact
+                    <ul>
+                        <li>Section 1</li>
+                        <li>Section 2</li>
+                        <li>Section 3</li>
+                        <li>Section 4</li>
+                    </ul>
+                </li>
+                <li>
+                    Products
+                    <ul>
+                        <li>Section 1</li>
+                        <li>Section 2</li>
+                        <li>Section 3</li>
+                        <li>Section 4</li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </body>
+</html>
