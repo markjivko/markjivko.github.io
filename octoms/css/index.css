@@ -110,7 +110,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: 4;
-    background: url(/core/wizard/views/img/bg.gif) repeat 0 0 #313233;
+    background: url(../img/bg.gif) repeat 0 0 #313233;
     font-family: 'rockwell';
     line-height: 14px; 
     font-size: 14px;
