@@ -5,7 +5,7 @@ jQuery(document).ready(function() {
     // Toggle action
     $('.footer > a').click(function(e) {
         e.preventDefault();
-		if ($(this).hasClass('visited')) {
+		if (!$(this).hasClass('visited')) {
 			$(this).addClass('visited').html('Visit repository');
 			if (!previewObject.hasClass('active')) {
 				previewObject.addClass('active');
