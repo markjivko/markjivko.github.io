@@ -5,9 +5,14 @@ jQuery(document).ready(function() {
     // Toggle action
     $('.footer > a').click(function(e) {
         e.preventDefault();
-        if (!previewObject.hasClass('active')) {
-            previewObject.addClass('active');
-        }
+		if ($(this).hasClass('visited')) {
+			$(this).addClass('visited').html('Visit repository');
+			if (!previewObject.hasClass('active')) {
+				previewObject.addClass('active');
+			}
+		} else {
+			window.location.href = "https://github.com/Stephino/octoms";
+		}
     });
     $('[data-role="preview"] a').click(function(e) {
         e.preventDefault();
