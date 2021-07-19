@@ -346,7 +346,8 @@ form.x {
     float: left;
 }
 #top-clear {
-    background: url("../img/bg2.jpg") repeat scroll 0 0 transparent;
+    background: url("../img/bg.png") repeat scroll 0 0 transparent;
+    background-size: 200px;
     font-size: 12px;
     height: 20px;
     line-height: 20px;
@@ -359,6 +360,16 @@ form.x {
     z-index: 2;
     -webkit-box-shadow: 0 2px 3px #FFFFFF;
     box-shadow: 0 2px 3px #FFFFFF;
+    position: relative;
+}
+#top-clear:before {
+    content: '';
+    width: 100%;
+    height: 40px;
+    position: absolute;
+    bottom: 0;
+    left: 230px;
+    box-shadow: -10px -4px 10px rgba(0,0,0,0.3) inset;
 }
 #ferv_addons ul li {
     cursor: pointer;
@@ -390,7 +401,8 @@ form.x {
     color: #006878;
 }
 #sidebar {
-    background: url("../img/bg.jpg") repeat scroll 100% 0 transparent;
+    background: url("../img/bg.png") repeat scroll 0 -20px transparent;
+    background-size: 200px;
     height: 100%;
     padding: 25px 0;
     position: fixed;
@@ -399,7 +411,7 @@ form.x {
     width: 230px;
     z-index: 2;
     -webkit-box-shadow: 0 2px 3px #FFFFFF;
-    box-shadow: 0 2px 3px #FFFFFF;
+    box-shadow: -20px -20px 20px -20px rgb(0 0 0 / 50%) inset
 }
 #ferv_methods ul li {
     -webkit-transition: all 0.3s ease-out 0s;
@@ -418,7 +430,7 @@ form.x {
     vertical-align: middle;
 }
 #ferv_methods ul li * {
-    color: #006878;
+    color: #555;
     display: block;
     height: 100%;
     text-decoration: none;
@@ -432,8 +444,8 @@ form.x {
     box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.1) inset, 0px 1px 0 rgba(255, 255, 255, 0.5);
 }
 #ferv_methods ul li.current * {
-    color: #FFFFFF;
-    text-shadow: 1px 1px 1px #333333;
+    color: #000;
+    text-shadow: none;
 }
 #ferv_methods ul li:hover {
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#D9E6E8');
@@ -455,7 +467,7 @@ form.x {
 }
 #sidebar #copy {
     bottom: 0;
-    color: #006878;
+    color: #333;
     font-size: 12px;
     padding: 10px 0;
     position: fixed;
@@ -463,6 +475,9 @@ form.x {
     text-shadow: 1px 1px 1px #FFFFFF;
     width: 223px;
     z-index: -1;
+}
+#sidebar #copy a {
+    color: #7FA3A9;
 }
 #content {
     height: 313px;
