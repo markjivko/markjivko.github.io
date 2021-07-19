@@ -25,12 +25,24 @@ body {
     left: 0;
     font-family: rockwell;
 }
+.header {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    justify-content: center;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    -ms-flex-align: center;
+    align-items: center;
+}
 .header > .content {
     display: inline-block;
     position: relative;
     width: 60%;
-    margin-top: 10%;
-    margin-left: 20%;
     font-size: 2em;
     text-align: center;
     color: #888;
@@ -56,10 +68,10 @@ body {
     left: -10%;
     position: absolute;
     -webkit-transform: scale(2);
-        -ms-transform: scale(2);
-            transform: scale(2);
+    -ms-transform: scale(2);
+    transform: scale(2);
     -webkit-filter: drop-shadow(20px -4px 0px #4b6cb7);
-            filter: drop-shadow(20px -4px 0px #4b6cb7);
+    filter: drop-shadow(20px -4px 0px #4b6cb7);
 }
 .footer > a {
     z-index: 3;
@@ -82,20 +94,20 @@ body {
     text-shadow: none !important;
     font-family: rockwell !important;
     -webkit-box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
-            box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
+    box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
 }
 .footer > a:hover {
     -webkit-transform: scale(1.2);
-        -ms-transform: scale(1.2);
-            transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    transform: scale(1.2);
     -webkit-box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
-            box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
+    box-shadow: 0px 2px 0px 2px rgba(0,0,0,0.1);
     outline: none;
 }
 .footer > a:focus {
     -webkit-transform: scale(1);
-        -ms-transform: scale(1);
-            transform: scale(1);
+    -ms-transform: scale(1);
+    transform: scale(1);
 }
 .footer > .copy {
     position: absolute;
@@ -108,8 +120,8 @@ body {
 }
 [data-role="preview"] {
     -webkit-transform: translateY(150%);
-        -ms-transform: translateY(150%);
-            transform: translateY(150%);
+    -ms-transform: translateY(150%);
+    transform: translateY(150%);
     position: absolute;
     width: 100%;
     height: 100%;
@@ -126,8 +138,8 @@ body {
 }
 [data-role="preview"].active {
     -webkit-transform: translateY(0%);
-        -ms-transform: translateY(0%);
-            transform: translateY(0%);
+    -ms-transform: translateY(0%);
+    transform: translateY(0%);
 }
 [data-role="preview"] .a .b {
     display: block;
