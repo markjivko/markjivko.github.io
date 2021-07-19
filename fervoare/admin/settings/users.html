@@ -46,7 +46,7 @@
                         <li title="Manage the look of your site"><a href="../design/themes.html">Design</a></li>
                         <li class="current" title="Manage the settings of your site"><a href="../settings.html">Settings</a></li>
                     </ul>
-                </div>                <div id="gear"><form action="#" method="post"><select><option value="/admin/settings/users" selected="selected">en</option><option value="/ro/admin/settings/users">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
+                </div>                <div id="gear"><form action="#" method="get"><select><option value="/admin/settings/users" selected="selected">en</option><option value="/ro/admin/settings/users">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
             </div>
             <div id="top-clear"><div id="notif"></div></div>
             <div id="sidebar">
@@ -80,7 +80,7 @@
                         <tr>
                             <td>
                                 <span class="online ">
-                                    2.Off                <form class="nouniform x" confirm="Are you sure you want to log out ?" style="display:inline-block" action="#" method="post"><input type="hidden" name="log_out" value="2"><input type="submit" value="Log Out"></form>                </span></td>
+                                    2.Off                <form class="nouniform x" confirm="Are you sure you want to log out ?" style="display:inline-block" action="#" method="get"><input type="hidden" name="log_out" value="2"><input type="submit" value="Log Out"></form>                </span></td>
                             <td><b></b></td>
                             <td>User</td>
                             <td></td>
@@ -89,7 +89,7 @@
                                 Never active
 
                             </td>
-                            <td align="center"><span class="btn"><a href="users/edit/2.html">Edit</a></span><form confirm="Are you sure you want to delete this user?" class="x" style="display:inline-block" action="#" method="post"><input type="hidden" name="delete" value="2"><input type="submit" value="Delete"></form></td>
+                            <td align="center"><span class="btn"><a href="users/edit/2.html">Edit</a></span><form confirm="Are you sure you want to delete this user?" class="x" style="display:inline-block" action="#" method="get"><input type="hidden" name="delete" value="2"><input type="submit" value="Delete"></form></td>
                         </tr>
                     </tbody>
                 </table>
