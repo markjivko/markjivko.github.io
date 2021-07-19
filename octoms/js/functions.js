@@ -1,119 +1,4 @@
 /*!
- * Tiny Scrollbar 1.43
- *
- * Copyright 2010, Maarten Baijs & Mark Jivko (bugfixes and improvements)
- * Dual licensed under the MIT or GPL Version 2 licenses.
- * http://www.opensource.org/licenses/mit-license.php
- * http://www.opensource.org/licenses/gpl-2.0.php
- *
- * Depends on library: jQuery
- */
-(function ($) {
-    $.fn.tinyscrollbar = function (options) {
-        var defaults = {axis: 'y', wheel: 40, scroll: true, size: 'auto', sizethumb: 'auto'};
-        var options = $.extend(defaults, options);
-        var oWrapper = $(this);
-        var oViewport = {obj: $('.viewport', this)};
-        var oContent = {obj: $('.overview', this)};
-        var oScrollbar = {obj: $('.scrollbar', this)};
-        var oTrack = {obj: $('.track', oScrollbar.obj)};
-        var oThumb = {obj: $('.thumb', oScrollbar.obj)};
-        var sAxis = options.axis == 'x', sDirection = sAxis ? 'left' : 'top', sSize = sAxis ? 'Width' : 'Height';
-        var iScroll, iPosition = {start: 0, now: 0}, iMouse = {};
-        if (this.length > 1) {
-            this.each(function () {
-                $(this).tinyscrollbar(options)
-            });
-            return this;
-        }
-        this.initialize = function () {
-            this.update();
-            setEvents();
-        };
-        this.update = function () {
-            oViewport[options.axis] = oViewport.obj[0]['offset' + sSize];
-            oContent[options.axis] = oContent.obj[0]['scroll' + sSize];
-            oContent.ratio = oViewport[options.axis] / oContent[options.axis];
-            oScrollbar.obj.toggleClass('disable', oContent.ratio >= 1);
-            oTrack[options.axis] = options.size == 'auto' ? oViewport[options.axis] : options.size;
-            oThumb[options.axis] = Math.min(oTrack[options.axis], Math.max(0, (options.sizethumb == 'auto' ? (oTrack[options.axis] * oContent.ratio) : options.sizethumb)));
-            oScrollbar.ratio = options.sizethumb == 'auto' ? (oContent[options.axis] / oTrack[options.axis]) : (oContent[options.axis] - oViewport[options.axis]) / (oTrack[options.axis] - oThumb[options.axis]);
-            setSize();
-        };
-        function setSize() {
-            v = oViewport.obj.outerHeight();
-            c = oContent.obj.outerHeight();
-            if (v > c) {
-                iScroll = 0;
-                iPosition.now = 0;
-                oContent.obj.css(sDirection, -iScroll);
-                oThumb.obj.css(sDirection, iPosition.now);
-            } else if (iPosition.now * oScrollbar.ratio > c - v) {
-                iScroll = c - v;
-                iPosition.now = iScroll / oScrollbar.ratio;
-                oContent.obj.css(sDirection, -iScroll);
-                oThumb.obj.css(sDirection, iPosition.now);
-            }
-            iMouse['start'] = oThumb.obj.offset()[sDirection];
-            var sCssSize = sSize.toLowerCase();
-            oScrollbar.obj.css(sCssSize, oTrack[options.axis]);
-            oTrack.obj.css(sCssSize, oTrack[options.axis]);
-            oThumb.obj.css(sCssSize, oThumb[options.axis]);
-        }
-        function setEvents() {
-            oThumb.obj.bind('mousedown', start);
-            oTrack.obj.bind('mouseup', drag);
-            if (options.scroll && this.addEventListener) {
-                oWrapper[0].addEventListener('DOMMouseScroll', wheel, false);
-                oWrapper[0].addEventListener('mousewheel', wheel, false);
-            } else if (options.scroll) {
-                oWrapper[0].onmousewheel = wheel;
-            }
-        }
-        function start(oEvent) {
-            iMouse.start = sAxis ? oEvent.pageX : oEvent.pageY;
-            var oThumbDir = parseInt(oThumb.obj.css(sDirection));
-            iPosition.start = oThumbDir == 'auto' ? 0 : oThumbDir;
-            $(document).bind('mousemove', drag);
-            $(document).bind('mouseup', end);
-            oThumb.obj.bind('mouseup', end);
-            return false;
-        }
-        function wheel(oEvent) {
-            if (!(oContent.ratio >= 1)) {
-                oEvent = $.event.fix(oEvent || window.event);
-                if (typeof oEvent.originalEvent.detail != 'undefined' || typeof oEvent.originalEvent.wheelDelta != 'undefined')
-                {
-                    var iDelta = oEvent.originalEvent.wheelDelta ? oEvent.originalEvent.wheelDelta / 120 : -oEvent.originalEvent.detail / 3;
-                    iScroll -= iDelta * options.wheel;
-                    iScroll = Math.min((oContent[options.axis] - oViewport[options.axis]), Math.max(0, iScroll));
-                    iPosition.now = iScroll / oScrollbar.ratio;
-                    oThumb.obj.css(sDirection, iPosition.now);
-                    oContent.obj.css(sDirection, -iScroll);
-                    oEvent.preventDefault();
-                }
-            }
-        }
-        function end(oEvent) {
-            $(document).unbind('mousemove', drag);
-            $(document).unbind('mouseup', end);
-            oThumb.obj.unbind('mouseup', end);
-            return false;
-        }
-        function drag(oEvent) {
-            if (!(oContent.ratio >= 1)) {
-                iPosition.now = Math.min((oTrack[options.axis] - oThumb[options.axis]), Math.max(0, (iPosition.start + ((sAxis ? oEvent.pageX : oEvent.pageY) - iMouse.start))));
-                iScroll = iPosition.now * oScrollbar.ratio;
-                oThumb.obj.css(sDirection, iPosition.now);
-                oContent.obj.css(sDirection, -iScroll);
-            }
-            return false;
-        }
-        return this.initialize();
-    };
-})(jQuery);
-
-/*!
  * Drag and scroll for OctoMS Help
  * 
  * Copyright 2011, Mark Jivko <stephino.team@gmail.com>
@@ -127,7 +12,7 @@
 jQuery.dragandscroll = {
     init: function (minWidth) {
         if (typeof minWidth == 'undefined') {
-            minWidth = 400;
+            minWidth = 200;
         }
         this.minWidth = minWidth;
         this.left = $('#left');
@@ -135,8 +20,6 @@ jQuery.dragandscroll = {
         this.box_left = $('#box-left');
         this.box_right = $('#box-right');
         this.dragBar = $('#drag-bar');
-        this.left.tinyscrollbar();
-        this.right.tinyscrollbar();
         $(window).resize(function () {
             $.dragandscroll.update();
         });
@@ -148,7 +31,6 @@ jQuery.dragandscroll = {
         }});
     },
     update: function (offsetLeft) {
-        
         if (typeof offsetLeft == 'undefined')
             offsetLeft = this.left.outerWidth();
         this.winWidth = $(window).width();
@@ -158,8 +40,8 @@ jQuery.dragandscroll = {
             offsetLeft = this.winWidth - this.minWidth;
         offset = (this.winWidth - offsetLeft) / this.winWidth * 100;
         this.dragBar.css('left', offsetLeft + 'px');
-        this.left.css('width', (100 - offset) + '%').update();
-        this.right.css('width', offset + '%').update();
+        this.left.css('width', (100 - offset) + '%');
+        this.right.css('width', offset + '%');
         this.box_left.css('width', this.left.css('width'));
         this.box_right.css('width', this.right.css('width'));
     }

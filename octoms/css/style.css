@@ -33,21 +33,21 @@ body{overflow:hidden;}
 #boxes .spacer {width: 2px; display: table-cell;}
 #box-left{float:left;}
 #box-right{float:right;}
-.viewport {height: 100%; overflow: hidden; position: relative;}
+.viewport {height: 100%;overflow: auto;position: relative;overflow-x: hidden;}
+::-webkit-scrollbar {width: 10px;height: 10px;}
+::-webkit-scrollbar-track {background: #000;}
+::-webkit-scrollbar-thumb {background: #6e7074;border-radius: 2px;}
+::-webkit-scrollbar-thumb:hover {background: #dedede;}
 .overview {list-style: none; position: absolute; left: 0; top: 0; padding-bottom: 10px; margin-left: 2px; width: 100%;}
 #right .full-content {margin:1px 8px 0 6px;}
 .full-content {margin: 1px 5px 0 4px;}
-.scrollbar { position: relative; float: right; width: 11px; }
-.track {height: 100%; width: 9px; position: relative; padding: 0 1px; }
-.thumb {cursor: pointer; height: 20px; margin:0; overflow: hidden; position: absolute; top: 0; width: 8px; }
-.thumb .end { overflow: hidden; height: 5px; width: 13px; }
 .tip1 {top:0;position:absolute;}
 .tip2 {bottom: 0;position:absolute;}
 .disable{display: none;}
 .noscript {position: absolute; top:0; left: 0; width: 100%; height: 100%; z-index: 100;text-align: center; padding: 165px 0 0 0;}
 .noscript p {margin: 0 auto; width: 450px;}
 #sortable { margin: 0 5px 5px 5px; padding: 5px; height: auto; }
-.tab {width: 100%; margin: 3px 0 4px 0;}
+.tab {width: 100%; margin: 3px 0 4px 0; overflow: auto;}
 .tab-t {width:100%;cursor:move;height: 20px;line-height: 20px;overflow: hidden;}
 .tab-close {display: block; float: left; margin: 3px 0 0 2px; width: 14px; height: 14px;cursor:pointer;}
 .tab-refresh {display:block; float: left;margin: 3px 3px 0 0; width: 14px;height: 14px; cursor:pointer;}
@@ -56,26 +56,9 @@ body{overflow:hidden;}
 .tab-c {display: inline-block; width: 100%; background: #ccc;}
 .tab-ic {margin: 4px;}
 .shadow {text-shadow: 1px 1px 0px #ccc;}
-.carved {
-    background: #DDDDDD;
-    border-bottom: 1px solid #DDDDDD;
-    border-radius: 5px 25px 25px 5px;
-    -webkit-box-shadow: 0 0 5px #000000 inset;
-            box-shadow: 0 0 5px #000000 inset;
-    padding: 10px;
-    text-shadow: 1px 1px 0 #EEEEEE;
-}
-.carved pre {
-    display: inline-block;
-    font-family: monospace;
-    white-space: pre-wrap;
-    word-wrap: break-word;
-}
-.carved:hover{
-    background:#fff;
-    text-shadow:none;
-
-}
+.carved {background: #DDDDDD;border-bottom: 1px solid #DDDDDD;border-radius: 5px 25px 25px 5px;-webkit-box-shadow: 0 0 5px #000000 inset;box-shadow: 0 0 5px #000000 inset;padding: 10px;text-shadow: 1px 1px 0 #EEEEEE;}
+.carved pre {display: inline-block;font-family: monospace;white-space: pre-wrap;word-wrap: break-word;}
+.carved:hover{background:#fff;text-shadow:none;}
 .tab-r {display: table-cell; width: 2px; background: red;}
 .tab-b {width: 100%; height: 2px; background: red;}
 .ui-state-highlight {width: 100%;height: auto; margin: 3px 0 0;}
