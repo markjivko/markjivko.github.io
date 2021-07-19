@@ -242,6 +242,16 @@ section {
     -moz-transition: all 0.5s ease-out 0s;
     padding-right: 35px;
 }
+#menu ul li.current {
+    -webkit-transition: all 0.3s ease-out 0s;
+    -o-transition: all 0.3s ease-out 0s;
+    transition: all 0.3s ease-out 0s;
+    background-color: white;
+    background: -moz-linear-gradient(center top , #D9E6E8, #FFF) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, center top, center bottom, from(#D9E6E8), to(#FFF));
+    -webkit-box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 3px 3px rgba(0, 0, 0, 0.1) inset;
+}
 #sidebar #copy {
     bottom: 0;
     color: #006878;
@@ -369,6 +379,13 @@ section {
     width: 450px;
     height: 420px;
     margin: 0 auto;
+}
+.fervoare > .copy {
+    width: 100%;
+    text-align: center;
+    left: 0;
+    font-size: 1.2em;
+    color: #80a4aa;
 }
 .fervoare > div {
     position: absolute;

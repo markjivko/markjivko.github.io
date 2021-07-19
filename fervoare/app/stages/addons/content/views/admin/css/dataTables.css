@@ -192,7 +192,7 @@ td.details {
     line-height: 22px;
 }
 .paging_full_numbers span.paginate_button,
-     .paging_full_numbers span.paginate_active {
+.paging_full_numbers span.paginate_active {
     border: 1px solid #aaa;
     -webkit-border-radius: 5px;
     -moz-border-radius: 5px;
