@@ -1,0 +1,92 @@
+.placeholder {
+    background-color: #CFCFCF;
+}
+#content .con li {
+    cursor: default !important;
+}
+#content table {
+    width: 100%;
+}
+#posts > ol, #menus > ol, #links > ol {
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#EAEBFF');
+    background: -moz-linear-gradient(center top , #FFFFFF, #EAEBFF) repeat scroll 0 0 transparent;
+    background: -webkit-gradient(linear, center top, center bottom, from(#FFFFFF), to(#EAEBFF));
+    border-radius: 6px 6px 6px 6px;
+    -webkit-box-shadow: 0 0 3px #AAAAAA;
+    box-shadow: 0 0 3px #AAAAAA;
+    display: block;
+    font-size: 19px;
+    line-height: 25px;
+    padding: 20px 0 5px;
+    text-align: center;
+    text-shadow: 1px 1px 0 #FFFFFF;
+    margin: 5px;
+    min-height: 40px;
+    border:1px solid #ddd;
+}
+#posts > ol li, #menus > ol li, #links > ol li {
+    font-size: 16px;
+    margin: 3px 5px;
+    padding: 5px 2px 5px 12px;
+    text-align: left;
+    min-height:33px;
+}
+#posts ol li p, #menus ol li p, #links ol li p{
+    margin-left:30px;
+}
+.handle{
+    background: url(../img/handle.png) no-repeat 1px 1px;
+    cursor: move;
+    display: block;
+    float: left;
+    height: 43px;
+    margin: -5px 0 0 -10px;
+    position: absolute;
+    width: 30px;
+}
+.con > span {
+    display: block;
+    margin-left: 0;
+    margin-top: -20px;
+    text-align: center;
+}
+.con .small {
+    clear: both;
+    display: list-item;
+    text-align: right;
+}
+table.menu-table {
+    width: 100%;
+}
+table.menu-table td {
+    width: 25%;
+    vertical-align: top;
+}
+table.menu-table td.first{
+    width:50%;
+}
+.delete {
+    display: block;
+    float: right;
+    background: url(../img/close.png) no-repeat 0px 0 transparent;
+    width: 19px;
+    height: 20px;
+    margin-right: 5px;
+    margin-top: -23px !important;
+}
+.delete:hover {
+    background-position: -38px 0px;
+    cursor:pointer;
+}
+.delete:active{
+    background-position: -19px 0px;
+    cursor:pointer;
+}
+form.new_menu {
+    background:none;
+    border:none;
+    padding:0;
+    -webkit-box-shadow:none;
+    box-shadow:none;
+    display:inline !important;
+}

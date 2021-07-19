@@ -1,0 +1,88 @@
+﻿<!doctype html>
+<html dir="ltr" lang="en">
+    <head>
+        <title>Edit link #1</title>
+	<link rel="stylesheet" href="../../../../app/templates/default/admin/css/style.css" type="text/css" media="all">
+	<link rel="stylesheet" href="../../../../app/stages/addons/content/views/admin/css/tooltip.css" type="text/css" media="all">
+	<link rel="stylesheet" href="../../../../app/stages/addons/content/views/admin/css/uniform.default.css" type="text/css" media="all">
+	<link rel="icon" type="image/x-icon" href="../../../../favicon.ico">
+	<link rel="search" type="application/opensearchdescription+xml" href="../../../../search/open/description.xml" title="Fervoare CMS - Search (en)">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content="en">
+	<!--[if lte IE 10 ]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><![endif]-->
+	<meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/Stephino/fervoare">
+	<meta name="Publisher" content="Fervoare CMS">
+	<meta name="Robots" content="noindex,nofollow">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="viewport" content="initial-scale=1.0, width=device-width">
+	<script type="text/javascript" src="../../../../core/wizard/views/js/common/jquery.js"></script>
+	<script type="text/javascript" src="../../../../core/wizard/views/js/common/jquery-ui.js"></script>
+	<script type="text/javascript" src="../../../../app/stages/addons/content/views/admin/js/tooltip.js"></script>
+	<script type="text/javascript" src="../../../../app/stages/addons/content/views/admin/js/uniform.js"></script>
+	<script type="text/javascript" src="../../../../app/stages/addons/content/views/admin/js/fervoare.js"></script>
+	<script type="text/javascript" src="../../../../app/stages/addons/content/views/admin/js/ckeditor.js"></script>
+	<script type="text/javascript">//<![CDATA[
+$(document).ready(function(){
+var config = {
+    toolbar:
+    [
+        [ 'Source','-','DocProps','Preview','Print','-','Maximize', 'ShowBlocks'],
+        [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ],
+        [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ],
+        [ 'Image','Flash','Table','HorizontalRule','PageBreak','-', 'TextColor','BGColor' ],
+        [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl','-','Link','Unlink','-','Styles','Format','Font','FontSize' ],
+        
+    ],
+    removePlugins : 'resize',
+    extraPlugins : 'autogrow',
+    autoGrow_maxHeight :450,
+    language:'en',
+    toolbarStartupExpanded: true
+};
+$.fn.ckeditor && $('textarea.edit').ckeditor(config);
+
+$.fn.tooltip && $('[title]').tooltip({offset:[5,0],effect:'toggle',position:'bottom right'}).dynamic({ bottom:{direction:'down',bounce: true } });$.fn.uniform && $("input, textarea, select, button, .btn, .btn > *").not("input[type=file],input[type=hidden],.nouniform").uniform();
+});
+//]]></script>
+	        <script type="text/javascript" async="" defer="">var img = "/app/stages/addons/content/views/admin/img";</script>
+    </head>
+    <body>
+        <div id="main-wrapper">
+            <div id="top">
+                <a href="../../../../index.htm" id="logo">Fervoare CMS</a>
+                <div id="ferv_addons">    <ul>
+                <li class="current" title="Manage the content"><a href="../../posts.html">Content</a></li>
+                <li title="Manage the look of your site"><a href="../../../design/themes.html">Design</a></li>
+                <li title="Manage the settings of your site"><a href="../../../settings.html">Settings</a></li>
+            </ul>
+</div>                <div id="gear"><form action="" method="post"><select onchange="window.location.href=this.value+window.location.hash;"><option value="/admin/content/links/edit/1" selected="selected">en</option><option value="/ro/admin/content/links/edit/1">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
+            </div>
+            <div id="top-clear"><div id="notif"></div></div>
+            <div id="sidebar">
+                <div id="ferv_methods">    <ul>
+                <li title="Edit articles on the site">
+            <a href="../../posts.html">Posts</a>        </li>
+                <li title="Edit the theme&#039;s regions">
+            <a href="../../regions.html">Regions</a>        </li>
+                <li class="current" title="Edit links used in your menu">
+            <a href="../../links.html">Links</a>        </li>
+                <li title="Edit the site&#039;s menus">
+            <a href="../../menus.html">Menus</a>        </li>
+            </ul>
+</div><div id="copy"><a href="../../../settings/profile.html">Mark Jivko (Admin)</a><br>Powered by <a title="Generated by the Fervoare CMS for Startups in 0.052s @0.602MiB." target="_blank" href="https://github.com/Stephino/fervoare">Fervoare CMS</a></div>
+            </div>
+            <div id="content">                <h1>Edit the Link</h1>
+<form class="x" action="" method="post"><label for="title">Title</label><input type="text" name="title" value="Admin" id="title"><label for="href">Address</label><input type="text" name="href" value="/admin.html" id="href"><input type="submit" value="Update"><input type="hidden" name="edit-submit" value="1"></form>                <div class="history">
+                    <div>
+                        <a href="javascript:history.back();" class="left-button">Back</a>
+                        <p class="center-button"></p><p class="breadcrumbs"><a href="/.html">Home</a><a href="../../posts.html">Admin</a><a href="../../posts.html">Content</a><a href="../../links.html">Links</a><a href="../../posts.html">Edit</a></p>
+                        <p class="help-button"></p>
+                        <a class="refresh-button">Refresh</a>
+                        <a href="javascript:history.forward();" class="right-button">Forward</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,368 @@
+Uri: http://localhost/
+File Name: D:\Work\stephino.github.io\fervoare\localhost\index.htm
+Content Type: text/html
+
+Uri: http://localhost/app/templates/default/open/css/style.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\css\style.css
+Content Type: text/css
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/uniform.default.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\uniform.default.css
+Content Type: text/css
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/tooltip.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\tooltip.css
+Content Type: text/css
+
+Uri: http://localhost/favicon.ico
+File Name: D:\Work\stephino.github.io\fervoare\localhost\favicon.ico
+Content Type: image/x-icon
+
+Uri: http://localhost/search/open/description.xml
+File Name: D:\Work\stephino.github.io\fervoare\localhost\search\open\description.xml
+Content Type: text/xml
+
+Uri: http://localhost/blog.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\blog.html
+Content Type: text/html
+
+Uri: http://localhost/core/wizard/views/js/common/jquery.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\core\wizard\views\js\common\jquery.js
+Content Type: application/javascript
+
+Uri: http://localhost/core/wizard/views/js/common/jquery-ui.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\core\wizard\views\js\common\jquery-ui.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/templates/default/open/js/functions.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\js\functions.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/uniform.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\uniform.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/tooltip.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\tooltip.js
+Content Type: application/javascript
+
+Uri: http://localhost/admin/content/regions.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\regions.html
+Content Type: text/html
+
+Uri: http://localhost/app/templates/default/admin/css/style.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\css\style.css
+Content Type: text/css
+
+Uri: http://localhost/admin/content/posts.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\posts.html
+Content Type: text/html
+
+Uri: http://localhost/admin/content/links.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\links.html
+Content Type: text/html
+
+Uri: http://localhost/admin/content/menus.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\menus.html
+Content Type: text/html
+
+Uri: http://localhost/admin/settings/profile.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings\profile.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/fervoare.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\fervoare.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/ckeditor.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\ckeditor.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/dataTables.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\dataTables.css
+Content Type: text/css
+
+Uri: http://localhost/admin/content/links/edit/1.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\links\edit\1.html
+Content Type: text/html
+
+Uri: http://localhost/admin/content/links/edit/2.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\links\edit\2.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/dataTables.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\dataTables.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/menu.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\menu.css
+Content Type: text/css
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/menu.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\menu.js
+Content Type: application/javascript
+
+Uri: http://localhost/admin/content/posts/edit/1.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\posts\edit\1.html
+Content Type: text/html
+
+Uri: http://localhost/admin/design/themes.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\design\themes.html
+Content Type: text/html
+
+Uri: http://localhost/app/templates/default/thumbnail.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\thumbnail.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/uploadify.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\uploadify.css
+Content Type: text/css
+
+Uri: http://localhost/admin/design/themes/default.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\design\themes\default.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/uploadify/uploadify.swfobject.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\uploadify\uploadify.swfobject.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/uploadify/uploadify.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\uploadify\uploadify.js
+Content Type: application/javascript
+
+Uri: http://localhost/admin/settings.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings.html
+Content Type: text/html
+
+Uri: http://localhost/admin/settings/index.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings\index.html
+Content Type: text/html
+
+Uri: http://localhost/admin/settings/seo.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings\seo.html
+Content Type: text/html
+
+Uri: http://localhost/admin/settings/users.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings\users.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/settings/views/admin/js/seo.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\settings\views\admin\js\seo.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/templates/default/open/img/fonts/ubuntu/font.eot
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\ubuntu\font.eot
+Content Type: application/vnd.ms-fontobject
+
+Uri: http://localhost/app/templates/default/open/img/fonts/ubuntu/font.woff
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\ubuntu\font.woff
+Content Type: font/woff
+
+Uri: http://localhost/app/templates/default/open/img/fonts/ubuntu/font.svg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\ubuntu\font.svg
+Content Type: image/svg+xml
+
+Uri: http://localhost/app/templates/default/open/img/fonts/qlassik/font.eot
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\qlassik\font.eot
+Content Type: application/vnd.ms-fontobject
+
+Uri: http://localhost/app/templates/default/open/img/fonts/qlassik/font.woff
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\qlassik\font.woff
+Content Type: font/woff
+
+Uri: http://localhost/app/templates/default/open/img/fonts/qlassik/font.svg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\fonts\qlassik\font.svg
+Content Type: image/svg+xml
+
+Uri: http://localhost/app/templates/default/open/img/bg3.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\bg3.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/logo.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\logo.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/bg2.jpg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\bg2.jpg
+Content Type: image/jpeg
+
+Uri: http://localhost/app/templates/default/open/img/bg.jpg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\bg.jpg
+Content Type: image/jpeg
+
+Uri: http://localhost/app/templates/default/open/img/harizontal-divider.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\harizontal-divider.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/bkg.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\bkg.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/pattern.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\pattern.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/large.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\large.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/dialog-shadow.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\dialog-shadow.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/dialogs.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\dialogs.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/dialogs-white.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\dialogs-white.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/feet.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\feet.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/notif.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\notif.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/open/img/loading.gif
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\open\img\loading.gif
+Content Type: image/gif
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/uniform/sprite.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\uniform\sprite.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/uniform/bg-input-focus.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\uniform\bg-input-focus.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/uniform/bg-input.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\uniform\bg-input.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/uniform/code-bkg.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\uniform\code-bkg.png
+Content Type: image/png
+
+Uri: http://localhost/blog/saas.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\blog\saas.html
+Content Type: text/html
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/ubuntu/font.eot
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\ubuntu\font.eot
+Content Type: application/vnd.ms-fontobject
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/ubuntu/font.woff
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\ubuntu\font.woff
+Content Type: font/woff
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/ubuntu/font.svg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\ubuntu\font.svg
+Content Type: image/svg+xml
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/qlassik/font.eot
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\qlassik\font.eot
+Content Type: application/vnd.ms-fontobject
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/qlassik/font.woff
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\qlassik\font.woff
+Content Type: font/woff
+
+Uri: http://localhost/app/templates/default/admin/img/fonts/qlassik/font.svg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\fonts\qlassik\font.svg
+Content Type: image/svg+xml
+
+Uri: http://localhost/app/templates/default/admin/img/pattern.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\pattern.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/admin/img/buttons.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\buttons.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/admin/img/logo.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\logo.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/admin/img/bg2.jpg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\bg2.jpg
+Content Type: image/jpeg
+
+Uri: http://localhost/app/templates/default/admin/img/bg.jpg
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\bg.jpg
+Content Type: image/jpeg
+
+Uri: http://localhost/app/templates/default/admin/img/notif.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\notif.png
+Content Type: image/png
+
+Uri: http://localhost/app/templates/default/admin/img/loading.gif
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\templates\default\admin\img\loading.gif
+Content Type: image/gif
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/dataTables/sort_asc.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\dataTables\sort_asc.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/dataTables/sort_desc.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\dataTables\sort_desc.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/dataTables/sort_both.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\dataTables\sort_both.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/dataTables/sort_asc_disabled.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\dataTables\sort_asc_disabled.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/dataTables/sort_desc_disabled.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\dataTables\sort_desc_disabled.png
+Content Type: image/png
+
+Uri: http://localhost/admin/content/links/edit/3.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\links\edit\3.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/handle.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\handle.png
+Content Type: image/png
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/close.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\close.png
+Content Type: image/png
+
+Uri: http://localhost/admin/content/posts/edit/3.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\content\posts\edit\3.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/content/views/admin/css/posts.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\css\posts.css
+Content Type: text/css
+
+Uri: http://localhost/app/stages/addons/content/views/admin/js/posts.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\js\posts.js
+Content Type: application/javascript
+
+Uri: http://localhost/admin/settings/users/edit/2.html
+File Name: D:\Work\stephino.github.io\fervoare\localhost\admin\settings\users\edit\2.html
+Content Type: text/html
+
+Uri: http://localhost/app/stages/addons/settings/views/admin/js/users.js
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\settings\views\admin\js\users.js
+Content Type: application/javascript
+
+Uri: http://localhost/app/stages/addons/content/views/admin/img/openlink.gif
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\content\views\admin\img\openlink.gif
+Content Type: image/gif
+
+Uri: http://localhost/app/stages/addons/settings/views/admin/css/users.css
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\settings\views\admin\css\users.css
+Content Type: text/css
+
+Uri: http://localhost/app/stages/addons/settings/views/admin/img/online.png
+File Name: D:\Work\stephino.github.io\fervoare\localhost\app\stages\addons\settings\views\admin\img\online.png
+Content Type: image/png
+

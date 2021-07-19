@@ -1,0 +1,20 @@
+[name="slug"] {
+    background: none repeat scroll 0 0 transparent;
+    border: medium none;
+    font-family: Qlassik;
+    font-size: 16px;
+    line-height: 16px;
+    margin: 0;
+    padding: 0;
+    vertical-align: baseline;
+    width: 40% !important;
+}
+#slug_link {
+    background: url(../img/openlink.gif) no-repeat 0 0 transparent;
+    width: 20px;
+    height: 16px;
+    display: inline-block;
+    text-decoration: none;
+    text-indent: -1000em;
+    outline:none !important;
+}
