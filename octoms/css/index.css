@@ -144,3 +144,19 @@ body {
 [data-role="preview"] .a .b {
     display: block;
 }
+@media (max-width: 767px) {
+    html {
+        position: absolute;
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+    }
+    body {
+        font-size: 0.6em;
+        overflow: hidden;
+        width: 100%;
+        height: 100% !important;
+        position: fixed;
+        -webkit-overflow-scrolling: touch;
+    }
+}
