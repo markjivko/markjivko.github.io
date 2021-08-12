@@ -135,11 +135,13 @@ body {
     -o-transition: transform 0.2s linear;
     transition: transform 0.2s linear;
     transition: transform 0.2s linear, -webkit-transform 0.2s linear;
+    opacity: 0;
 }
 [data-role="preview"].active {
     -webkit-transform: translateY(0%);
     -ms-transform: translateY(0%);
     transform: translateY(0%);
+    opacity: 1;
 }
 [data-role="preview"] .a .b {
     display: block;
