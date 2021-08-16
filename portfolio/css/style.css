@@ -1114,7 +1114,6 @@ body.ready [data-role="scroll-down"].ok {
     left: 0;
     transform: scale(0.1);
     border-radius: 50%;
-    mix-blend-mode: color-dodge;
     opacity: 0;
     animation: anim-area-circle 500ms linear infinite;
     animation-iteration-count: 1;
