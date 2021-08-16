@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Mark Jivko | Portfolio</title>
+        <link rel="stylesheet" href="./portfolio/css/style.css">
+        <link rel="icon" type="image/ico" href="https://stephino.github.io/favicon.ico">
+        <meta charset="UTF-8">
+        <meta name="Author" content="Mark Jivko">
+        <meta name="Keywords" content="mark jivko, portfolio, cv, software architect, php, java, js, front-end, back-end, android, ui">
+        <meta name="Description" content="A short visual portfolio of a Software Architect">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="initial-scale=1.0, width=device-width">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script defer src="https://stephino.github.io/dist/jquery.min.js"></script>
+        <script defer src="https://stephino.github.io/storyline/js/storyline.min.js"></script>
+        <script defer src="./portfolio/js/howler.min.js"></script>
+        <script defer src="./portfolio/js/functions.js"></script>
+    </head>
+    <body>
+        <!--Intro-->
+        <div data-frame="1">
+            <section>
+                <div data-role="side">
+                    <h1 data-effect="banner">Mark Jivko</h1>
+                </div>
+                <div data-role="main">
+                    <div data-effect="sign"></div>
+                    <h2 data-role="title">Software Architect</h2>
+                    <div data-role="subtitle">
+                        <span data-effect="years" data-start="2008"></span> years of experience
+                    </div>
+                    <div data-effect="tech-stack"></div>
+                </div>
+                <div data-effect="bkg-box"></div>
+            </section>
+            <div data-effect="ribbon"></div>
+        </div>
+        
+        <!--OctoMS-->
+        <div data-frame="2" class="project">
+            <section>                
+                <div data-role="p-main">
+                    <div data-role="project" 
+                         data-year="2011" 
+                         data-title="OctoMS" 
+                         data-url-source="https://github.com/Stephino/octoms" 
+                         data-url-demo="https://stephino.github.io/octoms/"
+                         data-label-demo="Mockup"
+                         data-man-hours="3000">
+                        <p>
+                            OctoMS is a small PHP Framework inspired by CodeIgniter
+                        </p>
+                        <ul data-role="tools">
+                            <li data-area="ui">
+                                Debugging interface:
+                                An AJAX-powered interface replaces the default controller output for uncaught exceptions and on-demand (in development mode)
+                            </li>
+                            <li data-area="php">
+                                Model-View-Controller:
+                                The framework imposes SoC (Separation of Concerns) with an MVC architecture; stateless libraries can be used alongside model instances
+                            </li>
+                            <li data-area="php">
+                                RegEx Routing:
+                                PCRE (Perl Compatible Regular Expressions) are used to map URLs to Controllers
+                            </li>
+                            <li data-area="back-end">
+                                Cookie validation:
+                                The Blowfish cipher is used to validate authentication cookies by user agent and IP, preventing most session hijacking attack vectors
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <div data-effect="ribbon"></div>
+        </div>
+        
+        <!--Fervoare CMS-->
+        <div data-frame="3" class="project">
+            <section>                
+                <div data-role="p-main">
+                    <div data-role="project" 
+                         data-year="2012" 
+                         data-title="Fervoare CMS" 
+                         data-url-source="https://github.com/Stephino/fervoare" 
+                         data-url-demo="https://stephino.github.io/fervoare/"
+                         data-label-demo="Mockup"
+                         data-man-hours="1500">
+                        <p>
+                            Fervoare is a small Content Management System designed for SaaS
+                        </p>
+                        <ul data-role="tools">
+                            <li data-area="php">
+                                An OctoMS app: 
+                                Fervoare is built on top of OctoMS. 
+                                In its prime it was used by tens of websites. It was reviewed by <a target="_blank" rel="noreferrer" href="https://webscripts.softpedia.com/script/Content-Management/Fervoare-CMS-80070.html">SoftPedia</a> in 2013.
+                            </li>
+                            <li data-area="ui">
+                                Installer:
+                                The app features a 1-click installer which creates the required database tables and populates them with demo data
+                            </li>
+                            <li data-area="back-end">
+                                User roles: 
+                                PHPDoc tags are assigned special meaning to restrict access to Controller methods; the admin menu is updated to reflect these restrictions for each user by role
+                            </li>
+                            <li data-area="ui">
+                                Themes: 
+                                Both the front-end and back-end can be customized with themes; menus and other content regions can be rendered inside theme templates
+                            </li>
+                            <li data-area="front-end">
+                                SEO:
+                                All content types (pages and posts) have editable keyword lists and descriptions; an optional page extension can be set for all URLs (for example ".html")
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <div data-effect="ribbon"></div>
+        </div>
+        
+        <!--Storyline.js-->
+        <div data-frame="4" class="project">
+            <section>                
+                <div data-role="p-main">
+                    <div data-role="project" 
+                         data-year="2013" 
+                         data-title="Storyline.js" 
+                         data-url-source="https://github.com/Stephino/storyline" 
+                         data-url-demo="https://stephino.github.io/storyline/"
+                         data-label-demo="Demo"
+                         data-man-hours="100">
+                        <p>
+                            Storyline is a small jQuery plugin that enables scroll-based effects
+                        </p>
+                        <ul data-role="tools">
+                            <li data-area="js">
+                                Tiny library:
+                                This 17KB compressed JavaScript library powers the animations you see on this page
+                            </li>
+                            <li data-area="js">
+                                Developer tools:
+                                Set <i>guide: true</i> to enable a graphic console with logs, a visual representation of the scroll progress and a preview of internal variables
+                            </li>
+                            <li data-area="front-end">
+                                Log levels:
+                                Apart from the guide console, messages are stored in the browser console; logs can be filtered or disabled in production
+                            </li>
+                            <li data-area="ui">
+                                Fast:
+                                Expensive mathematical operations are avoided, absolute coordinates being preferred to percentages without compromising flexibility
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            <div data-effect="ribbon"></div>
+        </div>
+        
+        <!--Final Frame-->
+        <div data-frame="n">
+            <section>      
+                <div data-role="main">
+                    <div data-role="ending">
+                        <p>Visual effects <b>Storyline &dot; js</b></p>
+                        <p>Sound effects <b>Howler &dot; js</b></p>
+                        <p>Song by <b>Sawtooz</b></p>
+                        <p>Created by <b>Mark Jivko</b></p>
+                        <p>Copyright &copy; <span data-role="year">2021</span> <b>Mark Jivko</b></p>
+                    </div>
+                </div>
+            </section>
+        </div>
+        
+        <!--Level-up-->
+        <div data-role="level-up"></div>
+        
+        <!--Overlays-->
+        <div data-role="scroll-down"></div>
+        <div data-role="loading"></div>
+    </body>
+</html>
