@@ -10,6 +10,8 @@
  */                
 $(document).ready(() => {
     const options = {
+        authorEmail: 'stephino.team@gmail.com',
+        authorName: 'Jivko',
         startYear: 2008,
         githubUrl: 'https://github.com/Stephino/',
         themes: ['orange', 'blue', 'red', 'green', 'black'],
@@ -52,6 +54,7 @@ $(document).ready(() => {
             frame3: $('[data-frame="3"]'),
             frame4: $('[data-frame="4"]'),
             frameN: $('[data-frame="n"]'),
+            banner: $('[data-effect="banner"]'),
             loading: $('[data-role="loading"]'),
             scrollDown: $('[data-role="scroll-down"]'),
             years: $('[data-effect="years"]'),
@@ -109,19 +112,6 @@ $(document).ready(() => {
                         + '<path d="m-10,501.5l519,-62.5l-520,-37l516,-53l-513,-43l515,-39l-514,-48l514,-45l-513,-48l514,-36l-518,-60l518,-32" fill="none"/>'
                     + '</svg>'
                 );
-        
-                // Next theme
-                $('[data-effect="banner"]').click(() => {
-                    // Get the theme ID from storage
-                    var themeId = parseInt(localStorage.themeId, 10);
-                    themeId = isNaN(themeId) ? 1 : themeId + 1;
-                    
-                    // Save the new ID
-                    localStorage.themeId = themeId >= options.themes.length ? 0 : themeId;
-                    
-                    // Update the theme
-                    $('body').attr('data-theme', options.themes[localStorage.themeId]);
-                });
                 
                 // Set the theme from storage
                 $('body').attr('data-theme', options.themes["undefined" === typeof localStorage.themeId ? 0 : localStorage.themeId]);
@@ -165,7 +155,25 @@ $(document).ready(() => {
                 );
         
                 // Banner
-                $('[data-effect="banner"]').html(`<div>${$('[data-effect="banner"]').text()}</div>`);
+                global.objects.banner.html(
+                    $(
+                        `<div>
+                            ${global.objects.banner.text()}
+                            <a class="button" href="mailto:${options.authorEmail}?subject=Hello, ${options.authorName}!">Let's talk</a>
+                        </div>`
+                    ).click(() => {
+                        // Get the theme ID from storage
+                        var themeId = parseInt(localStorage.themeId, 10);
+                        themeId = isNaN(themeId) ? 1 : themeId + 1;
+
+                        // Save the new ID
+                        localStorage.themeId = themeId >= options.themes.length ? 0 : themeId;
+
+                        // Update the theme
+                        $('body').attr('data-theme', options.themes[localStorage.themeId]);
+                    })
+                );
+                global.objects.banner.find('a').click((e) => {e.stopPropagation();});
                 
                 // Background box
                 $('[data-effect="bkg-box"]').html('<div></div>'.repeat(4));
@@ -247,6 +255,7 @@ $(document).ready(() => {
             levelUp: (area, append) => {
                 if ("undefined" !== typeof options.areas[area]) {
                     append = "undefined" === typeof append ? true : !!append;
+                    
                     // Get the x,y coordinates, clustered around the center
                     var getCoord = {
                         x: () => {
@@ -335,8 +344,10 @@ $(document).ready(() => {
                 className = "string" !== typeof className ? 'active' : className;
                 
                 if (on) {
+                    'active' === className && global.objects.banner.find('a').attr('disabled', 'disabled');
                     !global.objects.levelUp.hasClass(className) && global.objects.levelUp.addClass(className);
                 } else {
+                    'active' === className && global.objects.banner.find('a').removeAttr('disabled');
                     global.objects.levelUp.hasClass(className) && global.objects.levelUp.removeClass(className);
                 }
             },
