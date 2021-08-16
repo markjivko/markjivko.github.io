@@ -1,7 +1,5 @@
-# Stephino
-This is a collection of demos and tutorials by Mark Jivko
-
-* [OctoMS](https://stephino.github.io/octoms)
-* [Fervoare CMS](https://stephino.github.io/fervoare)
-* [Storyline](https://stephino.github.io/storyline)
-* [APK Factory](https://stephino.github.io/apk-factory)
+<p align="center">
+    <a href="https://stephino.github.io/">
+        <img src="https://repository-images.githubusercontent.com/288971211/db788a4e-a2be-4af5-9356-15c044376a87"/>
+    </a>
+</p>
