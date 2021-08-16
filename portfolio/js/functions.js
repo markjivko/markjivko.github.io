@@ -14,7 +14,7 @@ $(document).ready(() => {
         authorName: 'Jivko',
         startYear: 2008,
         githubUrl: 'https://github.com/Stephino/',
-        themes: ['orange', 'blue', 'red', 'green', 'black'],
+        themes: ['blue', 'orange', 'red', 'green', 'black'],
         areas: {
             'php': 'PHP', 
             'java': 'Java', 
