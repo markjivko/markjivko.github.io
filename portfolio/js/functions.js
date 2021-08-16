@@ -341,6 +341,10 @@ $(document).ready(() => {
             },
             levelUpReset: () => {
                 global.objects.levelUp.children('div').remove();
+                global.objects.levelUpCache = {
+                    cells: {},
+                    coords: {}
+                };
             },
             levelUpToggle: (on, className) => {
                 on = "undefined" === typeof on ? true : !!on;
