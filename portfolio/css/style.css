@@ -1003,31 +1003,36 @@ body.ready [data-role="scroll-down"].ok {
     transform: translateX(50%) scale(10%, 100%);
     opacity: 0.9;
 }
-[data-role="level-up"] span > i:nth-child(1) {
+[data-role="level-up"] span.active > i:nth-child(1) {
+    transform: translateX(50%) scale(10%, 80%);
     grid-column: 1;
     transition-delay: 50ms;
 }
-[data-role="level-up"] span > i:nth-child(2) {
+[data-role="level-up"] span.active > i:nth-child(2) {
+    transform: translateX(50%) scale(10%, 90%);
     grid-column: 2;
     transition-delay: 75ms;
 }
-[data-role="level-up"] span > i:nth-child(3) {
+[data-role="level-up"] span.active > i:nth-child(3) {
     grid-column: 3;
     transition-delay: 100ms;
 }
-[data-role="level-up"] span > i:nth-child(4) {
+[data-role="level-up"] span.active > i:nth-child(4) {
+    transform: translateX(50%) scale(10%, 70%);
     grid-column: 4;
     transition-delay: 125ms;
 }
-[data-role="level-up"] span > i:nth-child(5) {
+[data-role="level-up"] span.active > i:nth-child(5) {
     grid-column: 5;
     transition-delay: 150ms;
 }
-[data-role="level-up"] span > i:nth-child(6) {
+[data-role="level-up"] span.active > i:nth-child(6) {
+    transform: translateX(50%) scale(10%, 90%);
     grid-column: 6;
     transition-delay: 175ms;
 }
-[data-role="level-up"] span > i:nth-child(7) {
+[data-role="level-up"] span.active > i:nth-child(7) {
+    transform: translateX(50%) scale(10%, 80%);
     grid-column: 7;
     transition-delay: 200ms;
 }
