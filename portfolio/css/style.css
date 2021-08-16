@@ -546,7 +546,7 @@ body.ready [data-role="scroll-down"].ok {
     position: absolute;
     left: 0;
     width: 100%;
-    bottom: 0;
+    bottom: 1px;
     height: 30vw;
     max-height: 150px;
     transform: scaleY(0.01);
@@ -557,6 +557,9 @@ body.ready [data-role="scroll-down"].ok {
 }
 [data-frame]:nth-child(2n) [data-effect="ribbon"] {
     filter: drop-shadow(-40px 5px 0px var(--highlight-color));
+}
+[data-frame]:nth-child(2n+1) [data-effect="ribbon"] {
+    bottom: -1px;
 }
 [data-frame].active [data-effect="ribbon"] {
     transform: scaleY(1);
