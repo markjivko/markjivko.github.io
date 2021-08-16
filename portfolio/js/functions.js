@@ -294,6 +294,7 @@ $(document).ready(() => {
                     }
                     
                     if (append) {
+                        var tries = 0;
                         do {
                             var coordKey = `${getCoord.y()}/${getCoord.x()}`;
                             if ("undefined" === typeof global.objects.levelUpCache.coords[coordKey]) {
@@ -312,6 +313,11 @@ $(document).ready(() => {
                                 global.objects.levelUpCache.cells[area].push(cellObject);
                                 global.objects.levelUp.append(cellObject);
                                 global.objects.levelUpCache.coords[coordKey].count++;
+                                break;
+                            }
+                            
+                            // Prevent infinite loops
+                            if (++tries >= 128) {
                                 break;
                             }
                         } while(true);
