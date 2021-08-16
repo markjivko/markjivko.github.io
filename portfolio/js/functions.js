@@ -339,6 +339,9 @@ $(document).ready(() => {
             play: (sprite) => {
                 global.objects.howler.play(sprite);
             },
+            levelUpReset: () => {
+                global.objects.levelUp.children('div').remove();
+            },
             levelUpToggle: (on, className) => {
                 on = "undefined" === typeof on ? true : !!on;
                 className = "string" !== typeof className ? 'active' : className;
@@ -562,6 +565,7 @@ $(document).ready(() => {
                     if (global.data.ready) {
                         global.methods.setActive(global.objects.frame1);
                         global.methods.yearsStart();
+                        global.methods.levelUpReset();
                     }
                     global.methods.levelUpToggle(false);
                 },
