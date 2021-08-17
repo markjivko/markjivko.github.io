@@ -74,7 +74,7 @@ $(document).ready(() => {
             },
             techStack: $('[data-effect="tech-stack"]'),
             techStackList: null,
-            smallDevice: Math.min($(window).width(), $(window).height()) <= 480
+            smallDevice: Math.min($(window).width(), $(window).height()) <= 360
         },
         
         // Timers (integers, created with window.setTimeout)
