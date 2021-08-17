@@ -447,14 +447,6 @@ $(document).ready(() => {
                         $('<div data-role="p-desc"></div>').html(global.objects.projects[projectKey].data('desc'))
                     );
             
-                    // Man-hours
-                    var manHours = $(`<div data-role="p-man-hours"><i><b></b></i><span data-hours="${projectData.manHours}">0</span> man-hours</div>`);
-                    global.objects.projectManHours[projectKey] = {
-                        progress: manHours.find('b'),
-                        label: manHours.find('span')
-                    };
-                    global.objects.projects[projectKey].append(manHours);
-            
                     // Buttons
                     global.objects.projects[projectKey].append(
                         '<div data-role="p-action">'
@@ -484,6 +476,22 @@ $(document).ready(() => {
                             itemObject.data('desc', itemDescription).html(itemTitleMatch[1]);
                         }
                     });
+                    
+                    // Man-hours
+                    var manHours = $(
+                        `<div data-role="p-man-hours">
+                            ${'<div></div>'.repeat(global.objects.projectTools[projectKey].children().length)}
+                            <i><b></b></i>
+                            <p>
+                                <span data-hours="${projectData.manHours}">0</span> man-hours
+                            </p>
+                        </div>`
+                    );
+                    global.objects.projectManHours[projectKey] = {
+                        progress: manHours.find('b'),
+                        label: manHours.find('span')
+                    };
+                    global.objects.projects[projectKey].append(manHours);
                 }
             },
             projectShowInfo: (frame, item) => {
