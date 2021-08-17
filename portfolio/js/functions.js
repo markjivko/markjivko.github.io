@@ -25,13 +25,13 @@ $(document).ready(() => {
             'desktop': 'Desktop'
         },
         soundSprite: {
-            'php': [0, 200],
+            'php': [0, 100],
             'java': [220, 100],
             'js': [420, 200],
-            'front-end': [420, 200],
-            'back-end': [0, 200],
-            'android': [220, 100],
-            'desktop': [520, 200],
+            'front-end': [520, 200],
+            'back-end': [900, 200],
+            'android': [1400, 300],
+            'desktop': [2000, 150],
             'all': [0, 15000]
         },
         frameHeight: 450, // vh
