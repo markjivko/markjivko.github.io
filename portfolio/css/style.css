@@ -889,7 +889,7 @@ body.ready [data-role="scroll-down"].ok {
     color: #000;
 }
 [data-role="project"] [data-role="tools"] > [data-area="js"]:before {
-    content: 'JavaScript';
+    content: 'JS';
 }
 [data-role="project"] [data-role="tools"] > [data-area="front-end"]:before {
     content: 'Front-end';

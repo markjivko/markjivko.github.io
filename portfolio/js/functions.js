@@ -18,7 +18,7 @@ $(document).ready(() => {
         areas: {
             'php': 'PHP', 
             'java': 'Java', 
-            'js': 'JavaScript', 
+            'js': 'JS', 
             'front-end': 'Front-end', 
             'back-end': 'Back-end', 
             'android': 'Android', 
