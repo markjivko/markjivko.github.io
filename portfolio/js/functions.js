@@ -74,7 +74,7 @@ $(document).ready(() => {
             },
             techStack: $('[data-effect="tech-stack"]'),
             techStackList: null,
-            smallDevice: $(window).width() <= 360
+            smallDevice: Math.min($(window).width(), $(window).height()) <= 480
         },
         
         // Timers (integers, created with window.setTimeout)
@@ -422,7 +422,7 @@ $(document).ready(() => {
                     "string" !== typeof projectData.urlDemo && (projectData.urlDemo = '/');
                     "string" !== typeof projectData.labelSource && (projectData.labelSource = 'Repository');
                     "string" !== typeof projectData.labelDemo && (projectData.labelDemo = 'Demo');
-                    "string" !== typeof projectData.manHours && (projectData.manHours = '1000');
+                    "string" !== typeof projectData.manHours && (projectData.manHours = 1000);
                     
                     // Store the description
                     var projectParagraph = global.objects.projects[projectKey].find('p');
@@ -490,13 +490,14 @@ $(document).ready(() => {
                             ${'<div></div>'.repeat(global.objects.projectTools[projectKey].children().length)}
                             <i><b></b></i>
                             <p>
-                                <span data-hours="${projectData.manHours}">0</span> man-hours
+                                <span>0</span> man-hours
                             </p>
                         </div>`
                     );
                     global.objects.projectManHours[projectKey] = {
                         progress: manHours.find('b'),
-                        label: manHours.find('span')
+                        label: manHours.find('span'),
+                        value: parseInt(projectData.manHours, 10)
                     };
                     global.objects.projects[projectKey].append(manHours);
                 }
@@ -550,12 +551,7 @@ $(document).ready(() => {
                                     transform: `translateX(${manHoursProgress}%)`
                                 });
                                 global.objects.projectManHours[projectKey].label.html(
-                                    Math.round(
-                                        manHoursProgress / 100 * parseInt(
-                                            global.objects.projectManHours[projectKey].label.attr('data-hours'), 
-                                            10
-                                        )
-                                    )
+                                    Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
                                 );
                             }
                         }
