@@ -218,6 +218,16 @@ $(document).ready(() => {
                 $('[data-role="go-up"]').click(() => {
                     global.objects.frame1[0].scrollIntoView({behavior: "smooth", block: "start"});
                 });
+                
+                // Legend
+                $('[data-role="colors"]').html(
+                    `<span>Legend</span>
+                    <div>
+                        ${Object.keys(options.areas).map(
+                            skill => `<span data-skill="${skill}">${options.areas[skill]}</span> `
+                        ).join('')}
+                    </div>`
+                );
             },
             setActive: (frame, active) => {
                 if ("undefined" === typeof active) {
@@ -225,6 +235,11 @@ $(document).ready(() => {
                 }
                 
                 if (active) {
+                    if (null !== global.objects.howlerAllId) {
+                        global.objects.howler.stop(global.objects.howlerAllId);
+                        global.objects.howlerAllId = null;
+                    }
+                    
                     !$(frame).hasClass('active') && $(frame).addClass('active');
                 } else {
                     $(frame).hasClass('active') && $(frame).removeClass('active');
@@ -679,16 +694,14 @@ $(document).ready(() => {
             '[data-frame="n"]': {
                 onEnter: () => {
                     global.methods.setActive(global.objects.frameN);
-                    null !== global.objects.howlerAllId 
-                        && global.objects.howler.stop(global.objects.howlerAllId);
-                    global.objects.howlerAllId = global.methods.play('all');
-                    
                     global.methods.levelUpToggle(true, 'final');
+                    
+                    if (null === global.objects.howlerAllId) {
+                        global.objects.howlerAllId = global.methods.play('all');
+                    }
                 },
                 onLeave: () => {
                     global.methods.setActive(global.objects.frameN, false);
-                    global.objects.howler.stop(global.objects.howlerAllId);
-                    
                     global.methods.levelUpToggle(false, 'final');
                 }
             }
