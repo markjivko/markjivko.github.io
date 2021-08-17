@@ -528,7 +528,7 @@ $(document).ready(() => {
                 // Cache hit
                 if ("undefined" !== typeof global.objects.projects[projectKey]) {
                     if (coords.frameTop <= 0) {
-                        console.log(global.objects.smallDevice);
+
                         if (!global.objects.smallDevice) {
                             global.objects.projectTools[projectKey].css({
                                 transform: `translateX(${coords.frameTop}px)`
@@ -538,22 +538,19 @@ $(document).ready(() => {
                             });
                         }
                         
-                        // Every N pixels for small hand-held devices (small CPU)
-                        if (!global.objects.smallDevice || 0 === coords.frameTop % 2) {
-                            // Man-hours
-                            var manHoursProgress = Math.round(-1.5 * coords.frameTop / coords.frameHeight * 100);
-                            manHoursProgress >= 100 && (manHoursProgress = 100);
-                                
-                            // Update the man-hours in 1% steps
-                            if (manHoursProgress !== global.objects.projectProgress[projectKey].manHours) {
-                                global.objects.projectProgress[projectKey].manHours = manHoursProgress;
-                                global.objects.projectManHours[projectKey].progress.css({
-                                    transform: `translateX(${manHoursProgress}%)`
-                                });
-                                global.objects.projectManHours[projectKey].label.html(
-                                    Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
-                                );
-                            }
+                        // Man-hours
+                        var manHoursProgress = Math.round(-1.5 * coords.frameTop / coords.frameHeight * 100);
+                        manHoursProgress >= 100 && (manHoursProgress = 100);
+
+                        // Update the man-hours in 1% steps
+                        if (manHoursProgress !== global.objects.projectProgress[projectKey].manHours) {
+                            global.objects.projectProgress[projectKey].manHours = manHoursProgress;
+                            global.objects.projectManHours[projectKey].progress.css({
+                                transform: `translateX(${manHoursProgress}%)`
+                            });
+                            global.objects.projectManHours[projectKey].label.html(
+                                Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
+                            );
                         }
                         
                         // Calculate space width between items
