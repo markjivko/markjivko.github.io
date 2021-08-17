@@ -548,9 +548,9 @@ $(document).ready(() => {
                             global.objects.projectManHours[projectKey].progress.css({
                                 transform: `translateX(${manHoursProgress}%)`
                             });
-                            global.objects.projectManHours[projectKey].label.html(
-                                Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
-                            );
+//                            global.objects.projectManHours[projectKey].label.html(
+//                                Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
+//                            );
                         }
                         
                         // Calculate space width between items
