@@ -544,14 +544,11 @@ $(document).ready(() => {
                         // Update the man-hours in 1% steps
                         if (manHoursProgress !== global.objects.projectProgress[projectKey].manHours) {
                             global.objects.projectProgress[projectKey].manHours = manHoursProgress;
-                            
+                            global.objects.projectManHours[projectKey].progress.css({
+                                transform: `translateX(${manHoursProgress}%)`
+                            });
+
                             // Fewer updates for small devices
-                            if (!global.objects.smallDevice || 0 === manHoursProgress % 2) {
-                                global.objects.projectManHours[projectKey].progress.css({
-                                    transform: `translateX(${manHoursProgress}%)`
-                                });
-                            }
-                            
                             if (!global.objects.smallDevice) {
                                 global.objects.projectManHours[projectKey].label.html(
                                     Math.round(global.objects.projectManHours[projectKey].value * manHoursProgress / 100)
