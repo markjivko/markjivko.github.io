@@ -1335,12 +1335,12 @@ a.button:hover {
 }
 /*Tech stack*/
 @keyframes anim-tech-stack-item {
-    10.27% {
+    0.5% {
         filter: grayscale(0);
         opacity: 1;
         transform: scale(1);
     }
-    14.28%{
+    20%{
         filter: grayscale(1);
         opacity: 0.5;
         transform: scale(0.5);
