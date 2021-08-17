@@ -229,13 +229,16 @@ $(document).ready(() => {
                     </div>`
                 );
             },
-            setActive: (frame, active) => {
+            setActive: (frame, active, howlerStop) => {
                 if ("undefined" === typeof active) {
                     active = true;
                 }
+                if ("undefined" === typeof howlerStop) {
+                    howlerStop = true;
+                }
                 
                 if (active) {
-                    if (null !== global.objects.howlerAllId) {
+                    if (howlerStop && null !== global.objects.howlerAllId) {
                         global.objects.howler.stop(global.objects.howlerAllId);
                         global.objects.howlerAllId = null;
                     }
@@ -681,7 +684,7 @@ $(document).ready(() => {
             },
             '[data-frame="8"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame8);
+                    global.methods.setActive(global.objects.frame8, true, false);
                     global.methods.projectPrepare(global.objects.frame8);
                 },
                 onLeave: () => {
