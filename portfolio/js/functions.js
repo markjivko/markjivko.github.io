@@ -211,6 +211,11 @@ $(document).ready(() => {
                 if (new Date().getFullYear() > 2021) {
                     $('[data-role="year"]').html(`2021 - ${new Date().getFullYear()}`);
                 }
+                
+                // Up
+                $('[data-role="go-up"]').click(() => {
+                    global.objects.frame1[0].scrollIntoView({behavior: "smooth", block: "start"});
+                });
             },
             setActive: (frame, active) => {
                 if ("undefined" === typeof active) {

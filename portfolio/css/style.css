@@ -1189,6 +1189,7 @@ a.button:hover {
 }
 [data-frame].active [data-role="ending"] p {
     animation: anim-fade-in-out 3000ms linear;
+    margin: -15px 0 0;
 }
 [data-frame].active [data-role="ending"] p:nth-child(2) {
     animation-delay: 3000ms;
@@ -1210,6 +1211,24 @@ a.button:hover {
 }
 [data-total] {
     color: var(--accent-color-1);
+}
+[data-role="go-up"] {
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    border-left: 4px solid var(--accent-color-1);
+    border-top: 4px solid var(--accent-color-2);
+    transform: rotate(45deg);
+    position: absolute;
+    z-index: 10;
+    right: 50px;
+    bottom: 25px;
+    transition: transform 150ms linear;
+    cursor: pointer;
+    border-radius: 10px;
+}
+[data-role="go-up"]:hover {
+    transform: translateY(-5px) rotate(45deg) scale(1.2) ;
 }
 
 /** Frames **/
@@ -1423,6 +1442,11 @@ a.button:hover {
     }
     [data-role="level-up"] span.final {
         animation-name: anim-level-up-final-portrait;
+    }
+    [data-role="go-up"] {
+        bottom: 50px;
+        left: calc(50% - 25px);
+        right: auto;
     }
 }
 
