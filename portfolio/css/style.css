@@ -1258,7 +1258,7 @@ a.button:hover {
 
 [data-role="colors"] {
     position: absolute;
-    top: 4rem;
+    top: 8rem;
     text-align: center;
     width: 90%;
     left: 5%;
@@ -1269,6 +1269,7 @@ a.button:hover {
 }
 [data-role="colors"] > div {
     display: inline-block;
+    font-size: 0.8rem;
 }
 [data-role="colors"] > div > span {
     display: inline-block;
