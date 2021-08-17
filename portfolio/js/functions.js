@@ -527,11 +527,14 @@ $(document).ready(() => {
                 // Cache hit
                 if ("undefined" !== typeof global.objects.projects[projectKey]) {
                     if (coords.frameTop <= 0) {
-                        // Every N pixels for small hand-held devices (small CPU)
-                        if (!global.objects.smallDevice || 0 === coords.frameTop % 2) {
+                        if (!global.objects.smallDevice) {
                             global.objects.projectTools[projectKey].css({
                                 transform: `translateX(${coords.frameTop}px)`
                             });
+                        }
+                        
+                        // Every N pixels for small hand-held devices (small CPU)
+                        if (!global.objects.smallDevice || 0 === coords.frameTop % 2) {
                             global.objects.projectYears[projectKey].css({
                                 transform: `translateX(${Math.round(coords.frameTop/2)}px)`
                             });

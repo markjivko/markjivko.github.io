@@ -1622,6 +1622,9 @@ a.button:hover {
     [data-frame].active [data-effect="tech-stack"] {
         left: -80px;
     }
+    [data-role="project"] [data-role="tools"] > [data-area].active {
+        transform: none;
+    }
 }
 @media (orientation: portrait) and (max-width: 360px) {
     [data-frame].active [data-role="main"] [data-role="subtitle"] {
@@ -1633,6 +1636,9 @@ a.button:hover {
     [data-frame].active [data-role="main"] {
         width: 100%;
         left: 15px;
+    }
+    [data-role="project"] [data-role="tools"] > [data-area].active {
+        transform: none;
     }
 }
 @media (orientation: landscape) and (max-height: 320px) {
