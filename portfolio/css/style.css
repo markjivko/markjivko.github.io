@@ -1274,6 +1274,7 @@ a.button:hover {
 [data-role="colors"] > div > span {
     display: inline-block;
     position: relative;
+	margin-left: 10px;
 }
 [data-role="colors"] > div > span:before {
     vertical-align: baseline;
