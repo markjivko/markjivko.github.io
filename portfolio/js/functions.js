@@ -61,6 +61,7 @@ $(document).ready(() => {
             years: $('[data-effect="years"]'),
             projectsTotal: 0,
             projects: {},
+            projectProgress: {},
             projectTools: {},
             projectYears: {},
             projectManHours: {},
@@ -72,7 +73,8 @@ $(document).ready(() => {
                 coords: {}
             },
             techStack: $('[data-effect="tech-stack"]'),
-            techStackList: null
+            techStackList: null,
+            smallDevice: $(window).width() <= 360
         },
         
         // Timers (integers, created with window.setTimeout)
@@ -394,6 +396,11 @@ $(document).ready(() => {
                         });
                     }
                     
+                    // Prepare the update points
+                    global.objects.projectProgress[projectKey] = {
+                        manHours: 0
+                    };
+                    
                     // Store the project object
                     global.objects.projects[projectKey] = frame.find('[data-role="project"]');
                     
@@ -520,27 +527,35 @@ $(document).ready(() => {
                 // Cache hit
                 if ("undefined" !== typeof global.objects.projects[projectKey]) {
                     if (coords.frameTop <= 0) {
-                        global.objects.projectTools[projectKey].css({
-                            transform: `translateX(${coords.frameTop}px)`
-                        });
-                        global.objects.projectYears[projectKey].css({
-                            transform: `translateX(${Math.round(coords.frameTop/2)}px)`
-                        });
-                        
-                        // Man-hours
-                        var progressLeft = -1.5 * coords.frameTop / coords.frameHeight * 100;
-                        progressLeft >= 100 && (progressLeft = 100);
-                        global.objects.projectManHours[projectKey].progress.css({
-                            transform: `translateX(${Math.round(progressLeft, 2)}%)`
-                        });
-                        global.objects.projectManHours[projectKey].label.html(
-                            Math.round(
-                                progressLeft / 100 * parseInt(
-                                    global.objects.projectManHours[projectKey].label.attr('data-hours'), 
-                                    10
-                                )
-                            )
-                        );
+                        // Every N pixels for small hand-held devices (small CPU)
+                        if (!global.objects.smallDevice || 0 === coords.frameTop % 2) {
+                            global.objects.projectTools[projectKey].css({
+                                transform: `translateX(${coords.frameTop}px)`
+                            });
+                            global.objects.projectYears[projectKey].css({
+                                transform: `translateX(${Math.round(coords.frameTop/2)}px)`
+                            });
+                            
+                            // Man-hours
+                            var manHoursProgress = Math.round(-1.5 * coords.frameTop / coords.frameHeight * 100);
+                            manHoursProgress >= 100 && (manHoursProgress = 100);
+                                
+                            // Update the man-hours in 1% steps
+                            if (manHoursProgress !== global.objects.projectProgress[projectKey].manHours) {
+                                global.objects.projectProgress[projectKey].manHours = manHoursProgress;
+                                global.objects.projectManHours[projectKey].progress.css({
+                                    transform: `translateX(${manHoursProgress}%)`
+                                });
+                                global.objects.projectManHours[projectKey].label.html(
+                                    Math.round(
+                                        manHoursProgress / 100 * parseInt(
+                                            global.objects.projectManHours[projectKey].label.attr('data-hours'), 
+                                            10
+                                        )
+                                    )
+                                );
+                            }
+                        }
                         
                         // Calculate space width between items
                         var space = ((coords.frameHeight * 3 / 4) - global.objects.projectToolCount[projectKey] * options.itemWidth) / (global.objects.projectToolCount[projectKey] + 1);
