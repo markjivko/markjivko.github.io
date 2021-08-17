@@ -53,11 +53,13 @@ $(document).ready(() => {
             frame2: $('[data-frame="2"]'),
             frame3: $('[data-frame="3"]'),
             frame4: $('[data-frame="4"]'),
+            frame8: $('[data-frame="8"]'),
             frameN: $('[data-frame="n"]'),
             banner: $('[data-effect="banner"]'),
             loading: $('[data-role="loading"]'),
             scrollDown: $('[data-role="scroll-down"]'),
             years: $('[data-effect="years"]'),
+            projectsTotal: 0,
             projects: {},
             projectTools: {},
             projectYears: {},
@@ -111,6 +113,16 @@ $(document).ready(() => {
                     + '<svg preserveAspectRatio="none" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">'
                         + '<path d="m-10,501.5l519,-62.5l-520,-37l516,-53l-513,-43l515,-39l-514,-48l514,-45l-513,-48l514,-36l-518,-60l518,-32" fill="none"/>'
                     + '</svg>'
+                );
+                
+                // Totals
+                global.objects.projectsTotal = document.querySelectorAll('[data-role="project"]').length;
+                $('[data-total="projects"]').html(global.objects.projectsTotal);
+                $('[data-total="hours"]').html(
+                    Array.from(document.querySelectorAll('[data-role="project"]')).reduce(
+                        (result, item) => result + parseInt(item.getAttribute('data-man-hours'), 10), 
+                        0
+                    )
                 );
                 
                 // Set the theme from storage
@@ -418,7 +430,11 @@ $(document).ready(() => {
             
                     // Title
                     global.objects.projects[projectKey].append(
-                        `<div data-role="p-title">${projectData.title}<span>- ${projectData.year} -</span></div>`
+                        `<div data-role="p-title">
+                            <i>${Object.keys(global.objects.projects).length}/${global.objects.projectsTotal}</i>
+                            ${projectData.title}
+                            <span>- ${projectData.year} -</span>
+                        </div>`
                     );
             
                     // Description
@@ -619,6 +635,18 @@ $(document).ready(() => {
                 },
                 onActive: (coords) => {
                     global.methods.projectRun(global.objects.frame4, coords);
+                }
+            },
+            '[data-frame="8"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frame8);
+                    global.methods.projectPrepare(global.objects.frame8);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame8, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame8, coords);
                 }
             },
             '[data-frame="n"]': {
