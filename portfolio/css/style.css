@@ -37,13 +37,13 @@
     --scroll-bar-thumb: var(--accent-color-1);
     --scroll-bar-thumb-hover: var(--accent-color-2);
     
-    --skill-color-php: hsla(210, 100%, 60%, 0.7);
-    --skill-color-java: hsla(35, 100%, 50%, 0.7);
-    --skill-color-js: hsla(59, 100%, 80%, 0.7);
-    --skill-color-front-end: hsla(159, 100%, 40%, 0.7);
-    --skill-color-back-end: hsla(310, 100%, 40%, 0.7);
-    --skill-color-android: hsla(12, 100%, 50%, 0.7);
-    --skill-color-ui: hsla(209, 0%, 10%, 0.7);
+    --skill-color-php: hsla(210, 100%, 60%, 0.8);
+    --skill-color-java: hsla(135, 100%, 60%, 0.8);
+    --skill-color-js: hsla(36, 100%, 60%, 0.8);
+    --skill-color-front-end: hsla(12, 100%, 60%, 0.8);
+    --skill-color-back-end: hsla(276, 100%, 60%, 0.8);
+    --skill-color-android: hsla(180, 100%, 60%, 0.8);
+    --skill-color-desktop: hsla(0, 0%, 60%, 0.8);
     
     --project-height: 450vh;
 }
@@ -885,9 +885,6 @@ body.ready [data-role="scroll-down"].ok {
 [data-role="project"] [data-role="tools"] > [data-area="java"]:before {
     content: 'Java';
 }
-[data-role="project"] [data-role="tools"] > [data-area="js"] {
-    color: #000;
-}
 [data-role="project"] [data-role="tools"] > [data-area="js"]:before {
     content: 'JS';
 }
@@ -900,8 +897,8 @@ body.ready [data-role="scroll-down"].ok {
 [data-role="project"] [data-role="tools"] > [data-area="android"]:before {
     content: 'Android';
 }
-[data-role="project"] [data-role="tools"] > [data-area="ui"]:before {
-    content: 'UI';
+[data-role="project"] [data-role="tools"] > [data-area="desktop"]:before {
+    content: 'Desktop';
 }
 [data-role="project"] [data-role="p-title"] {
     font-size: 2em;
@@ -954,8 +951,8 @@ body.ready [data-role="scroll-down"].ok {
 [data-p-area="android"] [data-role="p-desc"] {
     filter: drop-shadow(0px 20px 10px var(--skill-color-android));
 }
-[data-p-area="ui"] [data-role="p-desc"] {
-    filter: drop-shadow(0px 20px 10px var(--skill-color-ui));
+[data-p-area="desktop"] [data-role="p-desc"] {
+    filter: drop-shadow(0px 20px 10px var(--skill-color-desktop));
 }
 [data-p-area="php"] [data-role="p-desc"],
 [data-p-area="java"] [data-role="p-desc"],
@@ -963,7 +960,7 @@ body.ready [data-role="scroll-down"].ok {
 [data-p-area="front-end"] [data-role="p-desc"],
 [data-p-area="back-end"] [data-role="p-desc"],
 [data-p-area="android"] [data-role="p-desc"],
-[data-p-area="ui"] [data-role="p-desc"] {
+[data-p-area="desktop"] [data-role="p-desc"] {
     background: rgba(0,0,0,0.8);
 }
 [data-role="project"] [data-role="p-action"] {
@@ -1084,6 +1081,8 @@ a.button:hover {
 [data-role="level-up"] [data-area] {
     position: relative;
     z-index: 2;
+    border-radius: var(--border-radius);
+    transform: scale(0.75);
 }
 [data-area="php"],
 [data-role="level-up"] [data-area="php"] > i,
@@ -1121,11 +1120,11 @@ a.button:hover {
 [data-role="level-up"] [data-area="android"]:after {
     background: var(--skill-color-android);
 }
-[data-area="ui"],
-[data-role="level-up"] [data-area="ui"] > i,
-[data-role="level-up"] [data-area="ui"]:before,
-[data-role="level-up"] [data-area="ui"]:after {
-    background: var(--skill-color-ui);
+[data-area="desktop"],
+[data-role="level-up"] [data-area="desktop"] > i,
+[data-role="level-up"] [data-area="desktop"]:before,
+[data-role="level-up"] [data-area="desktop"]:after {
+    background: var(--skill-color-desktop);
 }
 [data-role="level-up"] [data-area="php"]:before,
 [data-role="level-up"] [data-area="php"]:after {
@@ -1151,8 +1150,8 @@ a.button:hover {
 [data-role="level-up"] [data-area="android"]:after {
     animation-duration: 3500ms;
 }
-[data-role="level-up"] [data-area="ui"]:before,
-[data-role="level-up"] [data-area="ui"]:after {
+[data-role="level-up"] [data-area="desktop"]:before,
+[data-role="level-up"] [data-area="desktop"]:after {
     animation-duration: 2500ms;
 }
 [data-role="level-up"] [data-area] > i {
@@ -1180,6 +1179,7 @@ a.button:hover {
     animation: anim-area-bubble 3000ms var(--transition-easing) infinite;
     opacity: 0;
     mix-blend-mode: color-dodge;
+    border-radius: calc(var(--border-radius) / 4);
 }
 [data-role="level-up"] [data-area]:after {
     top: auto;

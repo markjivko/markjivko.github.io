@@ -22,16 +22,16 @@ $(document).ready(() => {
             'front-end': 'Front-end', 
             'back-end': 'Back-end', 
             'android': 'Android', 
-            'ui': 'UI'
+            'desktop': 'Desktop'
         },
         soundSprite: {
             'php': [0, 200],
             'java': [220, 100],
             'js': [420, 200],
             'front-end': [420, 200],
-            'back-end': [220, 100],
-            'android': [420, 200],
-            'ui': [420, 200],
+            'back-end': [0, 200],
+            'android': [220, 100],
+            'desktop': [520, 200],
             'all': [0, 15000]
         },
         frameHeight: 450, // vh
