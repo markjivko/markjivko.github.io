@@ -694,15 +694,20 @@ $(document).ready(() => {
             '[data-frame="n"]': {
                 onEnter: () => {
                     global.methods.setActive(global.objects.frameN);
-                    global.methods.levelUpToggle(true, 'final');
                     
+                    global.methods.levelUpToggle(true, 'final');
                     if (null === global.objects.howlerAllId) {
                         global.objects.howlerAllId = global.methods.play('all');
                     }
                 },
                 onLeave: () => {
                     global.methods.setActive(global.objects.frameN, false);
+                    
                     global.methods.levelUpToggle(false, 'final');
+                    if (null !== global.objects.howlerAllId) {
+                        global.objects.howler.stop(global.objects.howlerAllId);
+                        global.objects.howlerAllId = null;
+                    }
                 }
             }
         },
