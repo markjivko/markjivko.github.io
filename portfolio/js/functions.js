@@ -17,10 +17,10 @@ $(document).ready(() => {
         themes: ['blue', 'orange', 'red', 'green', 'black'],
         areas: {
             'php': 'PHP', 
-            'java': 'Java', 
+            'back-end': 'Back-end', 
             'js': 'JS', 
             'front-end': 'Front-end', 
-            'back-end': 'Back-end', 
+            'java': 'Java', 
             'android': 'Android', 
             'desktop': 'Desktop'
         },
@@ -49,12 +49,17 @@ $(document).ready(() => {
         objects : {
             howler: null,
             howlerAllId: null,
+            frameHero: $('[data-frame="hero"]'),
             frame1: $('[data-frame="1"]'),
             frame2: $('[data-frame="2"]'),
             frame3: $('[data-frame="3"]'),
             frame4: $('[data-frame="4"]'),
+            frame5: $('[data-frame="5"]'),
+            frame6: $('[data-frame="6"]'),
+            frame7: $('[data-frame="7"]'),
             frame8: $('[data-frame="8"]'),
-            frameN: $('[data-frame="n"]'),
+            frame9: $('[data-frame="9"]'),
+            frameN: $('[data-frame="final"]'),
             banner: $('[data-effect="banner"]'),
             loading: $('[data-role="loading"]'),
             scrollDown: $('[data-role="scroll-down"]'),
@@ -80,7 +85,8 @@ $(document).ready(() => {
         // Timers (integers, created with window.setTimeout)
         timers: {
             years: null,
-            techStack: null
+            techStack: null,
+            sprite: null
         },
         
         // Common methods
@@ -94,7 +100,7 @@ $(document).ready(() => {
                             $('body').addClass('ready');
 
                             // Enter the first frame
-                            global.methods.setActive(global.objects.frame1);
+                            global.methods.setActive(global.objects.frameHero);
                             window.setTimeout(() => {
                                 global.objects.loading.remove();
                             }, 800);
@@ -216,7 +222,7 @@ $(document).ready(() => {
                 
                 // Up
                 $('[data-role="go-up"]').click(() => {
-                    global.objects.frame1[0].scrollIntoView({behavior: "smooth", block: "start"});
+                    global.objects.frameHero[0].scrollIntoView({behavior: "smooth", block: "start"});
                 });
                 
                 // Legend
@@ -380,7 +386,20 @@ $(document).ready(() => {
                 }
             },
             play: (sprite) => {
-                global.objects.howler.play(sprite);
+                if ("undefined" !== typeof options.soundSprite[sprite]) {
+                    global.objects.howler.play(sprite);
+                    
+                    if ('all' !== sprite) {
+                        if (null !== global.timers.sprite) {
+                            window.clearTimeout(global.timers.sprite);
+                        }
+
+                        global.timers.sprite = window.setTimeout(() => {
+                            global.objects.howler.stop();
+                            global.timers.sprite = null;
+                        }, options.soundSprite[sprite][1]);
+                    }
+                }
             },
             levelUpReset: () => {
                 global.objects.levelUp.children('div').remove();
@@ -407,7 +426,7 @@ $(document).ready(() => {
                 // Cache miss
                 if ("undefined" === typeof global.objects.projects[projectKey]) {
                     // Initialize the sound on the first audio frame
-                    if ("2" === projectKey) {
+                    if ("1" === projectKey) {
                         global.objects.howler = new Howl({
                             src: ['./portfolio/audio/sound.webm', './portfolio/audio/sound.mp3'],
                             sprite: options.soundSprite
@@ -508,7 +527,7 @@ $(document).ready(() => {
                             ${'<div></div>'.repeat(global.objects.projectTools[projectKey].children().length)}
                             <i><b></b></i>
                             <p>
-                                <span>${projectData.manHours}</span> man-hours
+                                ~<span>${projectData.manHours}</span> man-hours
                             </p>
                         </div>`
                     );
@@ -631,10 +650,10 @@ $(document).ready(() => {
     // Initialize the StoryLine
     $.storyline({
         frames: {
-            '[data-frame="1"]': {
+            '[data-frame="hero"]': {
                 onEnter: () => {
                     if (global.data.ready) {
-                        global.methods.setActive(global.objects.frame1);
+                        global.methods.setActive(global.objects.frameHero);
                         global.methods.yearsStart();
                         global.methods.levelUpReset();
                     }
@@ -645,9 +664,21 @@ $(document).ready(() => {
                     global.methods.levelUpToggle();
                 }
             },
-            '[data-frame="2"]': {
+            '[data-frame="1"]': {
                 onEnter: () => {
                     global.methods.hideScroll();
+                    global.methods.setActive(global.objects.frame1);
+                    global.methods.projectPrepare(global.objects.frame1);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame1, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame1, coords);
+                }
+            },
+            '[data-frame="2"]': {
+                onEnter: () => {
                     global.methods.setActive(global.objects.frame2);
                     global.methods.projectPrepare(global.objects.frame2);
                 },
@@ -682,9 +713,45 @@ $(document).ready(() => {
                     global.methods.projectRun(global.objects.frame4, coords);
                 }
             },
+            '[data-frame="5"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frame5);
+                    global.methods.projectPrepare(global.objects.frame5);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame5, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame5, coords);
+                }
+            },
+            '[data-frame="6"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frame6);
+                    global.methods.projectPrepare(global.objects.frame6);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame6, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame6, coords);
+                }
+            },
+            '[data-frame="7"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frame7);
+                    global.methods.projectPrepare(global.objects.frame7);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame7, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame7, coords);
+                }
+            },
             '[data-frame="8"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame8, true, false);
+                    global.methods.setActive(global.objects.frame8);
                     global.methods.projectPrepare(global.objects.frame8);
                 },
                 onLeave: () => {
@@ -694,7 +761,19 @@ $(document).ready(() => {
                     global.methods.projectRun(global.objects.frame8, coords);
                 }
             },
-            '[data-frame="n"]': {
+            '[data-frame="9"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frame9, true, false);
+                    global.methods.projectPrepare(global.objects.frame9);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frame9, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frame9, coords);
+                }
+            },
+            '[data-frame="final"]': {
                 onEnter: () => {
                     global.methods.setActive(global.objects.frameN);
                     
