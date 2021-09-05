@@ -49,6 +49,8 @@ $(document).ready(() => {
         objects : {
             howler: null,
             howlerAllId: null,
+            howlerButton: null,
+            howlerVolume: 1,
             frameHero: $('[data-frame="hero"]'),
             frame1: $('[data-frame="1"]'),
             frame2: $('[data-frame="2"]'),
@@ -213,7 +215,18 @@ $(document).ready(() => {
                     `<div style="height:${$('[data-frame].project').length * options.frameHeight + 100}vh;"><span></span></div>`
                 );
                 global.objects.levelUp = $('[data-role="level-up"]').find('span');
-                global.objects.levelUp.append('<i></i>'.repeat(7));
+                global.objects.howlerButton = $(`<svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+                    <path d="m71.22399,76.84964l0,1.641a1.75,1.75 0 0 1 -3.5,0l0,-1.641a1.75,1.75 0 0 1 3.5,0zm0,-47.649l0,34.958a1.75,1.75 0 0 1 -3.5,0l0,-34.958a1.451,1.451 0 0 0 -2.359,-1.133c-0.027,0.021 -0.054,0.042 -0.082,0.061l-22.451,15.909l0,40.242l22.451,15.909c0.028,0.019 0.055,0.04 0.082,0.061a1.451,1.451 0 0 0 2.359,-1.133l0,-8.113a1.75,1.75 0 0 1 3.5,0l0,8.113a4.945,4.945 0 0 1 -8,3.9l-22.7,-16.083l-18.211,0a4.756,4.756 0 0 1 -4.75,-4.75l0,-36.051a4.756,4.756 0 0 1 4.75,-4.75l18.212,0l22.7,-16.083a4.952,4.952 0 0 1 8,3.9l-0.001,0.001zm-48.911,54.234l17.019,0l0,-38.552l-17.019,0a1.251,1.251 0 0 0 -1.25,1.25l0,36.052a1.251,1.251 0 0 0 1.25,1.25z"/>
+                    <path d="m73.08348,78.19048zm10.396,-35.063a1.749,1.749 0 0 0 0,2.475a25.85,25.85 0 0 1 0,36.512a1.75,1.75 0 1 0 2.474,2.475a29.351,29.351 0 0 0 0,-41.462a1.748,1.748 0 0 0 -2.474,0zm15.471,-13a1.75,1.75 0 1 0 -2.478,2.477a44.2,44.2 0 0 1 0,62.508a1.75,1.75 0 1 0 2.474,2.475a47.7,47.7 0 0 0 0,-67.458l0.004,-0.002z"/>
+                </svg>`).click(() => {
+                    var muted = global.objects.levelUp.hasClass('muted');
+                    global.objects.levelUp.toggleClass('muted')
+                    global.objects.howlerVolume = muted ? 1 : 0;
+                    null !== global.objects.howler && global.objects.howler.volume(muted ? 1 : 0);
+                    localStorage.setItem('muted', muted ? '' : '1');
+                });
+                global.objects.levelUp.append('<i></i>'.repeat(7)).append(global.objects.howlerButton);
+                '1' === localStorage.getItem('muted') && global.objects.howlerButton.click();
                 
                 // Copyright years
                 if (new Date().getFullYear() > 2021) {
@@ -429,7 +442,8 @@ $(document).ready(() => {
                     if ("1" === projectKey) {
                         global.objects.howler = new Howl({
                             src: ['./portfolio/audio/sound.webm', './portfolio/audio/sound.mp3'],
-                            sprite: options.soundSprite
+                            sprite: options.soundSprite,
+                            volume: global.objects.howlerVolume
                         });
                     }
                     

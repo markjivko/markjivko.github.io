@@ -1014,6 +1014,12 @@ a.button:hover {
     animation: anim-level-up-final 455ms linear infinite;
     animation-iteration-count: 32;
 }
+[data-role="level-up"] span.final svg {
+    display: none;
+}
+[data-role="level-up"] span.muted.final {
+    animation: none;
+}
 [data-role="level-up"] > div {
     width: 0px;
     left: 4rem;
@@ -1030,6 +1036,33 @@ a.button:hover {
     height: 400px;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(16, 1fr);
+}
+[data-role="level-up"] span svg {
+    opacity: 0;
+    width: 128px;
+    height: 128px;
+    position: absolute;
+    bottom: -128px;
+    left: 50%;
+    margin-left: -64px;
+    cursor: pointer;
+    transition: transform 500ms var(--transition-easing);
+    transform: scale(0.5);
+}
+[data-role="level-up"] span svg path {
+    fill: var(--accent-color-1);
+    transform-origin: 50% 50%;
+    transition: transform 250ms linear, opacity 250ms linear;;
+}
+[data-role="level-up"] span svg:hover path {
+    fill: var(--accent-color-2);
+}
+[data-role="level-up"] span.muted svg path:nth-child(2) {
+    opacity: 0;
+    transform: scale(0.1);
+}
+[data-role="level-up"] span.active svg {
+    opacity: 1;
 }
 [data-role="level-up"] span > i {
     display: block;
@@ -1500,6 +1533,9 @@ a.button:hover {
         bottom: 50px;
         left: calc(50% - 25px);
         right: auto;
+    }
+    [data-role="level-up"] span svg {
+        transform: scale(0.4) rotate(-90deg);
     }
 }
 
