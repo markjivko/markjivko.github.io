@@ -139,6 +139,37 @@ body.ready {
     z-index: 10;
 }
 
+/* Awwwards */
+#awwwards .js-color-bg-over {
+    fill: var(--accent-color-1);
+    transform: scaleY(0.01);
+    transform-origin: 50% 100%;
+    transition: transform 2500ms var(--transition-easing);
+    perspective: 200px;
+}
+.active #awwwards .js-color-bg-over {
+    transform: scaleY(0.722) skew(0deg, 15deg) translateY(10px);
+}
+body[data-theme="black"] #awwwards .js-color-bg-over {
+    fill: #fff;
+}
+#awwwards .grade {
+    color: #000;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: bold;
+    transform: rotate(90deg) scale(0.1);
+    transition: transform 1500ms var(--transition-easing);
+    transition-delay: 500ms;
+}
+.active #awwwards .grade {
+    transform: rotate(-90deg) scale(1);
+}
+
 /* Roles */
 [data-role="side"] {
     width: 16.18%;
