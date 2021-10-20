@@ -52,15 +52,16 @@ $(document).ready(() => {
             howlerButton: null,
             howlerVolume: 1,
             frameHero: $('[data-frame="hero"]'),
-            frame1: $('[data-frame="1"]'),
-            frame2: $('[data-frame="2"]'),
-            frame3: $('[data-frame="3"]'),
-            frame4: $('[data-frame="4"]'),
-            frame5: $('[data-frame="5"]'),
-            frame6: $('[data-frame="6"]'),
-            frame7: $('[data-frame="7"]'),
-            frame8: $('[data-frame="8"]'),
-            frame9: $('[data-frame="9"]'),
+            framePotrivit: $('[data-frame="p-potrivit"]'),
+            frameStephinoRpg: $('[data-frame="p-stephino-rpg"]'),
+            frameThemeWarlock: $('[data-frame="p-themewarlock"]'),
+            frameSmsGateway: $('[data-frame="p-sms-gateway"]'),
+            frameFairPlayer: $('[data-frame="p-fairplayer"]'),
+            frameApkFactory: $('[data-frame="p-apk-factory"]'),
+            frameFrontEnd: $('[data-frame="p-front-end"]'),
+            frameStoryline: $('[data-frame="p-storyline"]'),
+            frameFervoare: $('[data-frame="p-fervoare"]'),
+            frameOctoms: $('[data-frame="p-octoms"]'),
             frameN: $('[data-frame="final"]'),
             banner: $('[data-effect="banner"]'),
             loading: $('[data-role="loading"]'),
@@ -400,17 +401,18 @@ $(document).ready(() => {
             },
             play: (sprite) => {
                 if ("undefined" !== typeof options.soundSprite[sprite]) {
-                    global.objects.howler.play(sprite);
-                    
-                    if ('all' !== sprite) {
-                        if (null !== global.timers.sprite) {
-                            window.clearTimeout(global.timers.sprite);
-                        }
+                    if (null !== global.objects.howler) {
+                        global.objects.howler.play(sprite);
+                        if ('all' !== sprite) {
+                            if (null !== global.timers.sprite) {
+                                window.clearTimeout(global.timers.sprite);
+                            }
 
-                        global.timers.sprite = window.setTimeout(() => {
-                            global.objects.howler.stop();
-                            global.timers.sprite = null;
-                        }, options.soundSprite[sprite][1]);
+                            global.timers.sprite = window.setTimeout(() => {
+                                global.objects.howler.stop();
+                                global.timers.sprite = null;
+                            }, options.soundSprite[sprite][1]);
+                        }
                     }
                 }
             },
@@ -678,113 +680,125 @@ $(document).ready(() => {
                     global.methods.levelUpToggle();
                 }
             },
-            '[data-frame="1"]': {
+            '[data-frame="p-potrivit"]': {
                 onEnter: () => {
                     global.methods.hideScroll();
-                    global.methods.setActive(global.objects.frame1);
-                    global.methods.projectPrepare(global.objects.frame1);
+                    global.methods.setActive(global.objects.framePotrivit);
+                    global.methods.projectPrepare(global.objects.framePotrivit);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame1, false);
+                    global.methods.setActive(global.objects.framePotrivit, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame1, coords);
+                    global.methods.projectRun(global.objects.framePotrivit, coords);
                 }
             },
-            '[data-frame="2"]': {
+            '[data-frame="p-stephino-rpg"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame2);
-                    global.methods.projectPrepare(global.objects.frame2);
+                    global.methods.setActive(global.objects.frameStephinoRpg);
+                    global.methods.projectPrepare(global.objects.frameStephinoRpg);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame2, false);
+                    global.methods.setActive(global.objects.frameStephinoRpg, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame2, coords);
+                    global.methods.projectRun(global.objects.frameStephinoRpg, coords);
                 }
             },
-            '[data-frame="3"]': {
+            '[data-frame="p-themewarlock"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame3);
-                    global.methods.projectPrepare(global.objects.frame3);
+                    global.methods.setActive(global.objects.frameThemeWarlock);
+                    global.methods.projectPrepare(global.objects.frameThemeWarlock);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame3, false);
+                    global.methods.setActive(global.objects.frameThemeWarlock, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame3, coords);
+                    global.methods.projectRun(global.objects.frameThemeWarlock, coords);
                 }
             },
-            '[data-frame="4"]': {
+            '[data-frame="p-sms-gateway"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame4);
-                    global.methods.projectPrepare(global.objects.frame4);
+                    global.methods.setActive(global.objects.frameSmsGateway);
+                    global.methods.projectPrepare(global.objects.frameSmsGateway);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame4, false);
+                    global.methods.setActive(global.objects.frameSmsGateway, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame4, coords);
+                    global.methods.projectRun(global.objects.frameSmsGateway, coords);
                 }
             },
-            '[data-frame="5"]': {
+            '[data-frame="p-fairplayer"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame5);
-                    global.methods.projectPrepare(global.objects.frame5);
+                    global.methods.setActive(global.objects.frameFairPlayer);
+                    global.methods.projectPrepare(global.objects.frameFairPlayer);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame5, false);
+                    global.methods.setActive(global.objects.frameFairPlayer, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame5, coords);
+                    global.methods.projectRun(global.objects.frameFairPlayer, coords);
                 }
             },
-            '[data-frame="6"]': {
+            '[data-frame="p-apk-factory"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame6);
-                    global.methods.projectPrepare(global.objects.frame6);
+                    global.methods.setActive(global.objects.frameApkFactory);
+                    global.methods.projectPrepare(global.objects.frameApkFactory);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame6, false);
+                    global.methods.setActive(global.objects.frameApkFactory, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame6, coords);
+                    global.methods.projectRun(global.objects.frameApkFactory, coords);
                 }
             },
-            '[data-frame="7"]': {
+            '[data-frame="p-front-end"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame7);
-                    global.methods.projectPrepare(global.objects.frame7);
+                    global.methods.setActive(global.objects.frameFrontEnd);
+                    global.methods.projectPrepare(global.objects.frameFrontEnd);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame7, false);
+                    global.methods.setActive(global.objects.frameFrontEnd, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame7, coords);
+                    global.methods.projectRun(global.objects.frameFrontEnd, coords);
                 }
             },
-            '[data-frame="8"]': {
+            '[data-frame="p-storyline"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame8);
-                    global.methods.projectPrepare(global.objects.frame8);
+                    global.methods.setActive(global.objects.frameStoryline);
+                    global.methods.projectPrepare(global.objects.frameStoryline);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame8, false);
+                    global.methods.setActive(global.objects.frameStoryline, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame8, coords);
+                    global.methods.projectRun(global.objects.frameStoryline, coords);
                 }
             },
-            '[data-frame="9"]': {
+            '[data-frame="p-fervoare"]': {
                 onEnter: () => {
-                    global.methods.setActive(global.objects.frame9, true, false);
-                    global.methods.projectPrepare(global.objects.frame9);
+                    global.methods.setActive(global.objects.frameFervoare);
+                    global.methods.projectPrepare(global.objects.frameFervoare);
                 },
                 onLeave: () => {
-                    global.methods.setActive(global.objects.frame9, false);
+                    global.methods.setActive(global.objects.frameFervoare, false);
                 },
                 onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frame9, coords);
+                    global.methods.projectRun(global.objects.frameFervoare, coords);
+                }
+            },
+            '[data-frame="p-octoms"]': {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frameOctoms, true, false);
+                    global.methods.projectPrepare(global.objects.frameOctoms);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frameOctoms, false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frameOctoms, coords);
                 }
             },
             '[data-frame="final"]': {
