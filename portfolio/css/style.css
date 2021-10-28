@@ -32,7 +32,7 @@
     
     --transition-easing: cubic-bezier(0.68, -0.55, 0.265, 1.55);
     --border-radius: 5px;
-    --scroll-bar-width: 5px;
+    --scroll-bar-width: 10px;
     --scroll-bar-track: var(--frame-even-background);
     --scroll-bar-thumb: var(--accent-color-1);
     --scroll-bar-thumb-hover: var(--accent-color-2);
@@ -140,6 +140,16 @@ body.ready {
 }
 
 /* Awwwards */
+#awwwards {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    right: 0;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    overflow: hidden;
+    display: inline-block;
+    background: var(--accent-color-1);
+}
 #awwwards .js-color-bg-over {
     fill: var(--accent-color-1);
     transform: scaleY(0.01);
