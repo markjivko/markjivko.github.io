@@ -258,7 +258,7 @@ $(document).ready(() => {
                 }
                 
                 if (active) {
-                    if (howlerStop && null !== global.objects.howlerAllId) {
+                    if (howlerStop && null !== global.objects.howler && null !== global.objects.howlerAllId) {
                         global.objects.howler.stop(global.objects.howlerAllId);
                         global.objects.howlerAllId = null;
                     }
@@ -814,7 +814,7 @@ $(document).ready(() => {
                     global.methods.setActive(global.objects.frameN, false);
                     
                     global.methods.levelUpToggle(false, 'final');
-                    if (null !== global.objects.howlerAllId) {
+                    if (null !== global.objects.howler && null !== global.objects.howlerAllId) {
                         global.objects.howler.stop(global.objects.howlerAllId);
                         global.objects.howlerAllId = null;
                     }
