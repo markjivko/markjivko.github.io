@@ -441,7 +441,7 @@ $(document).ready(() => {
                 // Cache miss
                 if ("undefined" === typeof global.objects.projects[projectKey]) {
                     // Initialize the sound on the first audio frame
-                    if ("1" === projectKey) {
+                    if (null === global.objects.howler) {
                         global.objects.howler = new Howl({
                             src: ['./portfolio/audio/sound.webm', './portfolio/audio/sound.mp3'],
                             sprite: options.soundSprite,
