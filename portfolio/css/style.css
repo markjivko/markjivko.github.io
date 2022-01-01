@@ -1550,7 +1550,7 @@ a.button:hover {
 /* Menu */
 .storyline-menu {
     position: fixed;
-    bottom: 10px;
+    bottom: 5px;
     width: 100%;
     z-index: 10;
     display: flex !important;
@@ -1580,6 +1580,9 @@ a.button:hover {
 .storyline-menu > div:first-child, 
 .storyline-menu > div:last-child {
     display: none;
+}
+body.outer .storyline-menu {
+    display: none !important;
 }
 
 /** Responsiveness **/
@@ -1617,7 +1620,10 @@ a.button:hover {
         right: auto;
     }
     [data-role="level-up"] span svg {
-        transform: scale(0.4) rotate(-90deg);
+        transform: translateY(-50px) scale(0.4) rotate(-90deg);
+    }
+    #awwwards {
+        display: none;
     }
 }
 

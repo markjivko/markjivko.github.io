@@ -51,6 +51,7 @@ $(document).ready(() => {
             howlerAllId: null,
             howlerButton: null,
             howlerVolume: 1,
+            body: $('body'),
             frameHero: $('[data-frame="hero"]'),
             framePotrivit: $('[data-frame="p-potrivit"]'),
             frameStephinoRpg: $('[data-frame="p-stephino-rpg"]'),
@@ -674,10 +675,12 @@ $(document).ready(() => {
                         global.methods.levelUpReset();
                     }
                     global.methods.levelUpToggle(false);
+                    !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
                 },
                 onLeave: () => {
                     global.methods.yearsStop();
                     global.methods.levelUpToggle();
+                    global.objects.body.removeClass('outer');
                 }
             },
             '[data-frame="p-potrivit"]': {
@@ -809,6 +812,7 @@ $(document).ready(() => {
                     if (null === global.objects.howlerAllId) {
                         global.objects.howlerAllId = global.methods.play('all');
                     }
+                    !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
                 },
                 onLeave: () => {
                     global.methods.setActive(global.objects.frameN, false);
@@ -818,6 +822,7 @@ $(document).ready(() => {
                         global.objects.howler.stop(global.objects.howlerAllId);
                         global.objects.howlerAllId = null;
                     }
+                    global.objects.body.removeClass('outer');
                 }
             }
         },
