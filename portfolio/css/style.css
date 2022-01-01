@@ -149,9 +149,9 @@ body.ready {
     overflow: hidden;
     display: inline-block;
     background: var(--accent-color-1);
-	opacity: 0;
-	transition: opacity 1500ms linear;
-	transition-delay: 5500ms;
+    opacity: 0;
+    transition: opacity 1500ms linear;
+    transition-delay: 5500ms;
 }
 #awwwards .js-color-bg-over {
     fill: var(--accent-color-1);
@@ -159,10 +159,10 @@ body.ready {
     transform-origin: 50% 100%;
     transition: transform 2500ms var(--transition-easing);
     perspective: 200px;
-	transition-delay: 5500ms;
+    transition-delay: 5500ms;
 }
 .active #awwwards {
-	opacity: 1;
+    opacity: 1;
 }
 .active #awwwards .js-color-bg-over {
     transform: scaleY(0.722) skew(0deg, 15deg) translateY(10px);
@@ -372,6 +372,7 @@ body.ready [data-role="scroll-down"].ok {
     top: 100vh;
     overflow: visible;
     z-index: 1;
+    will-change: transform;
 }
 [data-role="p-year"]:before {
     position: absolute;
@@ -1353,7 +1354,7 @@ a.button:hover {
 [data-role="colors"] > div > span {
     display: inline-block;
     position: relative;
-	margin-left: 10px;
+    margin-left: 10px;
 }
 [data-role="colors"] > div > span:before {
     vertical-align: baseline;
@@ -1546,6 +1547,40 @@ a.button:hover {
     100% {
         opacity: 0;
     }
+}
+/* Menu */
+.storyline-menu {
+    position: fixed;
+    bottom: 10px;
+    width: 100%;
+    z-index: 10;
+    display: flex !important;
+    justify-content: center;
+}
+.storyline-menu > div {
+    display: inline-block;
+    position: relative;
+    width: 15px;
+    height: 15px;
+    background: var(--accent-color-1);
+    margin: 15px 7px;
+    overflow: hidden;
+    color: transparent;
+    text-align: left;
+    text-indent: -1000em;
+    user-select: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    opacity: 0.4;
+}
+.storyline-menu > div:hover,
+.storyline-menu > div.active {
+    opacity: 1;
+    transform: scale(1.5);
+}
+.storyline-menu > div:first-child, 
+.storyline-menu > div:last-child {
+    display: none;
 }
 
 /** Responsiveness **/

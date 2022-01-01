@@ -821,7 +821,8 @@ $(document).ready(() => {
                 }
             }
         },
-        logLevel: 'error'
+        logLevel: 'error',
+        buildMenu: []
     });
     
     // Initialize the HTML structure
