@@ -1522,13 +1522,12 @@ a.button:hover {
 }
 @keyframes anim-level-up-final {
     0%, 10% {
-        transform: scale(1.5) rotate(5deg);
-        filter: blur(5px);
+        transform: scale(1.1) rotate(5deg);
     }
 }
 @keyframes anim-level-up-final-portrait {
     0%, 10% {
-        transform: scale(1.5) rotate(95deg);
+        transform: scale(1.1) rotate(95deg);
     }
 }
 /*Ending*/
