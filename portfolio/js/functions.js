@@ -8,13 +8,13 @@
  * @package    markjivko.com
  * @license    GPL v3+, https://gnu.org/licenses/gpl-3.0.txt
  */                
-$(document).ready(() => {
+jQuery && jQuery(document).ready(() => {
+	var $ = jQuery, body = $('body');
     const options = {
-        authorEmail: 'stephino.team@gmail.com',
-        authorName: 'Jivko',
-        startYear: 2008,
-        githubUrl: 'https://github.com/Stephino/',
-        themes: ['blue', 'orange', 'red', 'green', 'black'],
+        authorEmail: body.attr('data-author-email') ?? 'stephino.team@gmail.com',
+        authorName: body.attr('data-author-name') ?? 'Mark',
+        githubUrl: body.attr('data-author-url') ?? 'https://github.com/Stephino/',
+        startYear: 2020,
         areas: {
             'php': 'PHP', 
             'back-end': 'Back-end', 
@@ -36,9 +36,9 @@ $(document).ready(() => {
         },
         frameHeight: 450, // vh
         itemWidth: 200, // px
-        itemsInCell: 3
+        itemsInCell: 3,
+        themes: ['blue', 'orange', 'red', 'green', 'black']
     };
-    
     var global = {
         data: {
             ready: false,
@@ -52,18 +52,10 @@ $(document).ready(() => {
             howlerButton: null,
             howlerVolume: 1,
             body: $('body'),
-            frameHero: $('[data-frame="hero"]'),
-            framePotrivit: $('[data-frame="p-potrivit"]'),
-            frameStephinoRpg: $('[data-frame="p-stephino-rpg"]'),
-            frameThemeWarlock: $('[data-frame="p-themewarlock"]'),
-            frameSmsGateway: $('[data-frame="p-sms-gateway"]'),
-            frameFairPlayer: $('[data-frame="p-fairplayer"]'),
-            frameApkFactory: $('[data-frame="p-apk-factory"]'),
-            frameFrontEnd: $('[data-frame="p-front-end"]'),
-            frameStoryline: $('[data-frame="p-storyline"]'),
-            frameFervoare: $('[data-frame="p-fervoare"]'),
-            frameOctoms: $('[data-frame="p-octoms"]'),
-            frameN: $('[data-frame="final"]'),
+            frames: {
+                hero: $('[data-frame="hero"]'),
+                final: $('[data-frame="final"]')
+            },
             banner: $('[data-effect="banner"]'),
             loading: $('[data-role="loading"]'),
             scrollDown: $('[data-role="scroll-down"]'),
@@ -104,7 +96,7 @@ $(document).ready(() => {
                             $('body').addClass('ready');
 
                             // Enter the first frame
-                            global.methods.setActive(global.objects.frameHero);
+                            global.methods.setActive(global.objects.frames.hero);
                             window.setTimeout(() => {
                                 global.objects.loading.remove();
                             }, 800);
@@ -237,7 +229,7 @@ $(document).ready(() => {
                 
                 // Up
                 $('[data-role="go-up"]').click(() => {
-                    global.objects.frameHero[0].scrollIntoView({behavior: "smooth", block: "start"});
+                    global.objects.frames.hero[0].scrollIntoView({behavior: "smooth", block: "start"});
                 });
                 
                 // Legend
@@ -460,23 +452,14 @@ $(document).ready(() => {
                     
                     // Get the project data
                     var projectData = {
-                        year: global.objects.projects[projectKey].attr('data-year'),
-                        title: global.objects.projects[projectKey].attr('data-title'),
-                        urlSource: global.objects.projects[projectKey].attr('data-url-source'),
-                        urlDemo: global.objects.projects[projectKey].attr('data-url-demo'),
-                        labelSource: global.objects.projects[projectKey].attr('data-label-source'),
-                        labelDemo: global.objects.projects[projectKey].attr('data-label-demo'),
-                        manHours: global.objects.projects[projectKey].attr('data-man-hours')
+                        year: global.objects.projects[projectKey].attr('data-year') ?? `${options.startYear}`,
+                        title: global.objects.projects[projectKey].attr('data-title') ?? 'Unknown',
+                        urlSource: global.objects.projects[projectKey].attr('data-url-source') ?? options.githubUrl,
+                        urlDemo: global.objects.projects[projectKey].attr('data-url-demo') ?? '/',
+                        labelSource: global.objects.projects[projectKey].attr('data-label-source') ?? 'Repository',
+                        labelDemo: global.objects.projects[projectKey].attr('data-label-demo') ?? 'Demo',
+                        manHours: global.objects.projects[projectKey].attr('data-man-hours') ?? 1000
                     };
-                    
-                    // Nullish coallescing operator (??) not there yet
-                    "string" !== typeof projectData.year && (projectData.year = `${options.startYear}`);
-                    "string" !== typeof projectData.title && (projectData.title = 'Unknown');
-                    "string" !== typeof projectData.urlSource && (projectData.urlSource = options.githubUrl);
-                    "string" !== typeof projectData.urlDemo && (projectData.urlDemo = '/');
-                    "string" !== typeof projectData.labelSource && (projectData.labelSource = 'Repository');
-                    "string" !== typeof projectData.labelDemo && (projectData.labelDemo = 'Demo');
-                    "string" !== typeof projectData.manHours && (projectData.manHours = 1000);
                     
                     // Store the description
                     var projectParagraph = global.objects.projects[projectKey].find('p');
@@ -664,171 +647,72 @@ $(document).ready(() => {
         }
     };
     
-    // Initialize the StoryLine
-    $.storyline({
-        frames: {
-            '[data-frame="hero"]': {
-                onEnter: () => {
-                    if (global.data.ready) {
-                        global.methods.setActive(global.objects.frameHero);
-                        global.methods.yearsStart();
-                        global.methods.levelUpReset();
-                    }
-                    global.methods.levelUpToggle(false);
-                    !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
-                },
-                onLeave: () => {
-                    global.methods.yearsStop();
-                    global.methods.levelUpToggle();
-                    global.objects.body.removeClass('outer');
+    // Prepare the her frame
+    var storylineFrames = {
+        '[data-frame="hero"]': {
+            onEnter: () => {
+                if (global.data.ready) {
+                    global.methods.setActive(global.objects.frames.hero);
+                    global.methods.yearsStart();
+                    global.methods.levelUpReset();
                 }
+                global.methods.levelUpToggle(false);
+                !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
             },
-            '[data-frame="p-potrivit"]': {
-                onEnter: () => {
-                    global.methods.hideScroll();
-                    global.methods.setActive(global.objects.framePotrivit);
-                    global.methods.projectPrepare(global.objects.framePotrivit);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.framePotrivit, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.framePotrivit, coords);
-                }
-            },
-            '[data-frame="p-stephino-rpg"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameStephinoRpg);
-                    global.methods.projectPrepare(global.objects.frameStephinoRpg);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameStephinoRpg, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameStephinoRpg, coords);
-                }
-            },
-            '[data-frame="p-themewarlock"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameThemeWarlock);
-                    global.methods.projectPrepare(global.objects.frameThemeWarlock);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameThemeWarlock, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameThemeWarlock, coords);
-                }
-            },
-            '[data-frame="p-sms-gateway"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameSmsGateway);
-                    global.methods.projectPrepare(global.objects.frameSmsGateway);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameSmsGateway, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameSmsGateway, coords);
-                }
-            },
-            '[data-frame="p-fairplayer"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameFairPlayer);
-                    global.methods.projectPrepare(global.objects.frameFairPlayer);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameFairPlayer, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameFairPlayer, coords);
-                }
-            },
-            '[data-frame="p-apk-factory"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameApkFactory);
-                    global.methods.projectPrepare(global.objects.frameApkFactory);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameApkFactory, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameApkFactory, coords);
-                }
-            },
-            '[data-frame="p-front-end"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameFrontEnd);
-                    global.methods.projectPrepare(global.objects.frameFrontEnd);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameFrontEnd, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameFrontEnd, coords);
-                }
-            },
-            '[data-frame="p-storyline"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameStoryline);
-                    global.methods.projectPrepare(global.objects.frameStoryline);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameStoryline, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameStoryline, coords);
-                }
-            },
-            '[data-frame="p-fervoare"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameFervoare);
-                    global.methods.projectPrepare(global.objects.frameFervoare);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameFervoare, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameFervoare, coords);
-                }
-            },
-            '[data-frame="p-octoms"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameOctoms, true, false);
-                    global.methods.projectPrepare(global.objects.frameOctoms);
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameOctoms, false);
-                },
-                onActive: (coords) => {
-                    global.methods.projectRun(global.objects.frameOctoms, coords);
-                }
-            },
-            '[data-frame="final"]': {
-                onEnter: () => {
-                    global.methods.setActive(global.objects.frameN);
-                    
-                    global.methods.levelUpToggle(true, 'final');
-                    if (null === global.objects.howlerAllId) {
-                        global.objects.howlerAllId = global.methods.play('all');
-                    }
-                    !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
-                },
-                onLeave: () => {
-                    global.methods.setActive(global.objects.frameN, false);
-                    
-                    global.methods.levelUpToggle(false, 'final');
-                    if (null !== global.objects.howler && null !== global.objects.howlerAllId) {
-                        global.objects.howler.stop(global.objects.howlerAllId);
-                        global.objects.howlerAllId = null;
-                    }
-                    global.objects.body.removeClass('outer');
-                }
+            onLeave: () => {
+                global.methods.hideScroll();
+                global.methods.yearsStop();
+                global.methods.levelUpToggle();
+                global.objects.body.removeClass('outer');
             }
-        },
-        logLevel: 'error',
-        buildMenu: []
+        },        
+    };
+
+    // Add project frames frames
+    $.each($('[data-frame]'), function() {
+        var frameName = $(this).attr('data-frame');
+        if (-1 === ['hero', 'final'].indexOf(frameName)) {
+            global.objects.frames[frameName] = $(this);
+            storylineFrames[`[data-frame="${frameName}"]`] = {
+                onEnter: () => {
+                    global.methods.setActive(global.objects.frames[frameName]);
+                    global.methods.projectPrepare(global.objects.frames[frameName]);
+                },
+                onLeave: () => {
+                    global.methods.setActive(global.objects.frames[frameName], false);
+                },
+                onActive: (coords) => {
+                    global.methods.projectRun(global.objects.frames[frameName], coords);
+                }
+            };
+        }
     });
+
+    // Store the final frame
+    storylineFrames['[data-frame="final"]'] = {
+        onEnter: () => {
+            global.methods.setActive(global.objects.frames.final);
+            
+            global.methods.levelUpToggle(true, 'final');
+            if (null === global.objects.howlerAllId) {
+                global.objects.howlerAllId = global.methods.play('all');
+            }
+            !global.objects.body.hasClass('outer') && global.objects.body.addClass('outer');
+        },
+        onLeave: () => {
+            global.methods.setActive(global.objects.frames.final, false);
+            
+            global.methods.levelUpToggle(false, 'final');
+            if (null !== global.objects.howler && null !== global.objects.howlerAllId) {
+                global.objects.howler.stop(global.objects.howlerAllId);
+                global.objects.howlerAllId = null;
+            }
+            global.objects.body.removeClass('outer');
+        }
+    };
+
+    // Initialize the StoryLine
+    $.storyline({frames: storylineFrames, logLevel: 'error', buildMenu: []});
     
     // Initialize the HTML structure
     global.methods.initHtml();
