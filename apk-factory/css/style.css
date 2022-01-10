@@ -4,7 +4,7 @@
  * @title      APK Factory Demo
  * @desc       The APK Factory functionality
  * @copyright  (c) 2014-2021, Mark Jivko
- * @author     Mark Jivko <stephino.team@gmail.com>
+ * @author     Mark Jivko https://markjivko.com
  * @package    apk-factory
  * @license    GPL v3+, https://gnu.org/licenses/gpl-3.0.txt
  */

@@ -11,7 +11,7 @@ jQuery(document).ready(function() {
 				previewObject.addClass('active');
 			}
 		} else {
-			window.location.href = "https://github.com/Stephino/octoms";
+			window.location.href = "https://github.com/markjivko/octoms";
 		}
     });
     $('[data-role="preview"] a').click(function(e) {

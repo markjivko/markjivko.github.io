@@ -27,7 +27,7 @@ $(document).ready(function () {
 
     // Click
     $('.fervoare').click(function () {
-        window.location.href = "https://github.com/Stephino/fervoare";
+        window.location.href = "https://github.com/markjivko/fervoare";
     });
 
     // The dyno

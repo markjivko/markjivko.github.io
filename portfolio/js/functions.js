@@ -4,7 +4,7 @@
  * @title      Portfolio
  * @desc       Portfolio functionality
  * @copyright  (c) 2021, Mark Jivko
- * @author     Mark Jivko <stephino.team@gmail.com>
+ * @author     Mark Jivko https://markjivko.com
  * @package    markjivko.com
  * @license    GPL v3+, https://gnu.org/licenses/gpl-3.0.txt
  */                
@@ -13,7 +13,7 @@ jQuery && jQuery(document).ready(() => {
     const options = {
         authorEmail: body.attr('data-author-email') ?? 'stephino.team@gmail.com',
         authorName: body.attr('data-author-name') ?? 'Mark',
-        githubUrl: body.attr('data-author-url') ?? 'https://github.com/Stephino/',
+        githubUrl: body.attr('data-author-url') ?? 'https://github.com/markjivko/',
         startYear: 2020,
         areas: {
             'php': 'PHP', 
