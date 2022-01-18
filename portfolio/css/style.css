@@ -484,6 +484,7 @@ body.ready [data-role="scroll-down"].ok {
     opacity: 1;
     transform: scale(1);
     box-shadow: 0px 20px 0px 0px var(--accent-color-1), -20px 20px 0px 0px var(--accent-color-1), -20px 0px 0px 0px var(--accent-color-1);
+    border-radius: 3px;
 }
 [data-frame].active [data-effect="banner"]:after {
     filter: drop-shadow(0px 40px 0px var(--accent-color-1));
@@ -491,6 +492,20 @@ body.ready [data-role="scroll-down"].ok {
 [data-frame].active [data-effect="banner"] {
     transition: transform 750ms var(--transition-easing);
     transform: translateY(0%);
+}
+[data-effect="banner"] > div > svg {
+    position: absolute;
+    right: 10px;
+    bottom: 10px;
+    width: 5vh;
+    height: 5vh;
+    max-width: 40px;
+    max-height: 40px;
+    transition: transform 100ms linear;
+    will-change: transform;
+}
+[data-effect="banner"] > div:hover > svg {
+    transform: scale(1.2);
 }
 [data-effect="banner"] > div {
     position: absolute;
