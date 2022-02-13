@@ -3,11 +3,10 @@
 /**
  * Please fix the items marked with "@TODO" in this class
  * 
- * Follow https://www.php-fig.org/psr/psr-2/ coding style guid with the exeption 
- * of curly braces.
+ * Follow the https://www.php-fig.org/psr/psr-2/ coding style guide.
  * 
- * Opening braces MUST always be on the same line for classes, methods, 
- * functions, and control structures
+ * One exception to PSR-2: opening braces MUST always be on the same line 
+ * for classes, methods, functions, and control structures
  */
 class Singleton {
     
