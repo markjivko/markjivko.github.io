@@ -1,29 +1,35 @@
 <?php
 
 /**
- * Singleton class
+ * Please fix the items marked with "@TODO" in this class
+ * 
+ * Follow https://www.php-fig.org/psr/psr-2/ coding style guid with the exeption 
+ * of curly braces.
+ * 
+ * Opening braces MUST always be on the same line for classes, methods, 
+ * functions, and control structures
  */
 class Singleton {
     
     // @TODO Implement Singleton functionality
     
     /**
-     * User input is displayed
+     * Display user name
      * 
      * @param string $name User-provided name
      */
     public function userEcho($name) {
-        // @TODO Fix
+        // @TODO Validate & sanitize $name
         echo "The value of 'name' is '{$name}'";
     }
     
     /**
-     * User input in queries
+     * Query by user name
      * 
      * @param string $name User-provided name
      */
     public function userQuery($name) {
-        // @TODO Fix
+        // @TODO Validate & sanitize $name
         mysql_query("SELECT * FROM `test` WHERE `name` = '{$name}' LIMIT 1");
     }
     
@@ -33,7 +39,7 @@ class Singleton {
      * @param string $path User-provided file path
      */
     public function userFile($path) {
-        // @TODO Fix
+        // @TODO Validate & sanitize $path
         readfile($path);
     }
     
@@ -41,7 +47,7 @@ class Singleton {
      * Nested conditions
      */
     public function nestedConditions() {
-        // @TODO Untangle nested IFs
+        // @TODO Untangle nested conditions
         if ($conditionA) {
             if ($conditionB) {
                 if ($conditionC) {
@@ -58,12 +64,12 @@ class Singleton {
     }
     
     /**
-     * Return values
+     * Return statements
      * 
      * @return boolean
      */
     public function returnStatements() {
-        // @Fix
+        // @TODO Fix
         if ($conditionA) {
             echo 'A';
             return true;
@@ -76,7 +82,7 @@ class Singleton {
      * Null coalescing
      */
     public function nullCoalescing() {
-        // @TODO Use null coalescing operator
+        // @TODO Simplify
         if (isset($_GET['name'])) {
             $name = $_GET['name'];
         } elseif (isset($_POST['name'])) {
@@ -100,7 +106,8 @@ class Singleton {
     public function checkValue($value) {
         $result = null;
         
-        // @TODO Make all the immutable values (int, string) in this class easily replaceable
+        // @TODO Make all the immutable values (int, string) in this class 
+        // easily replaceable
         switch ($value) {
             case 'stringA':
                 $result = 1;
@@ -121,7 +128,7 @@ class Singleton {
      * @return boolean
      */
     public function regexTest($time24Hour) {
-        // @TODO Implement RegEx and return type; sanitize input
+        // @TODO Implement RegEx and return type; validate & sanitize input
         return preg_match('%%', $time24Hour);
     }
     
