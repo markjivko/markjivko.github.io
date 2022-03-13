@@ -11,7 +11,7 @@
 jQuery && jQuery(document).ready(() => {
     var $ = jQuery, body = $('body');
     const options = {
-        authorCta: body.attr('data-author-cta') ?? 'https://calendly.com/markjivko/',
+        authorCta: body.attr('data-author-cta') ?? 'https://discord.com/invite/Q6CrN6Vk7N',
         authorName: body.attr('data-author-name') ?? 'Mark',
         githubUrl: body.attr('data-author-url') ?? 'https://github.com/markjivko/',
         startYear: 2020,
