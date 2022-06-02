@@ -308,9 +308,9 @@
                     return;
                 }
                 var myDynamicManifest = {
-                    "description": 'Macrocosm: blockchain-powered browser-based MMORPG framework for play-to-earn games',
-                    "short_name": 'Macrocosm',
-                    "name": "Macrocosm",
+                    "description": 'Stephino RPG: browser-based MMORPG framework for play-to-earn games',
+                    "short_name": 'Stephino RPG',
+                    "name": "Stephino RPG",
                     "theme_color": "#8d1dbd",
                     "background_color": "#ffffff",
                     "dir": "ltr",
