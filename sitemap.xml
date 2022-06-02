@@ -4,6 +4,10 @@
         <loc>https://markjivko.com/</loc>
         <changefreq>daily</changefreq>
     </url>
+	<url>
+        <loc>https://markjivko.com/rpg/</loc>
+        <changefreq>daily</changefreq>
+    </url>
     <url>
         <loc>https://markjivko.com/fairplayer/</loc>
         <changefreq>daily</changefreq>
