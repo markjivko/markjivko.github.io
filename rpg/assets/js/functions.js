@@ -289,7 +289,7 @@
                 if ("string" !== typeof relativePath) {
                     relativePath = '';
                 }
-                return window.location.origin + '/rpg' + (relativePath ? ('/' + relativePath) : '');
+                return window.location.origin + '/rpg/' + relativePath;
             };
             var workers = function() {
                 if ('serviceWorker' in navigator) {
