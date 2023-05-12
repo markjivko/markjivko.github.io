@@ -50,6 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       input.focus();
+      input.dispatchEvent(new KeyboardEvent("keyup", { key: " " }));
     })();
   }
 });
