@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
       relativePath = "";
     }
     return (
-      window.location.origin + "/post/" + (relativePath ? +relativePath : "")
+      window.location.origin + "/post/" + (relativePath ? relativePath : "")
     );
   };
 
