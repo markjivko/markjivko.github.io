@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 description: "Social media quote maker",
                 short_name: "Quote Maker",
                 name: "Quote Maker",
-                theme_color: "#dff308",
+                theme_color: "#000000",
                 background_color: "#222222",
                 dir: "ltr",
                 lang: "en-US",
