@@ -54,7 +54,7 @@ self.addEventListener("fetch", (event) => {
             "fonts.googleapis.com" === pathUrl.hostname ||
             ("markjivko.com" === pathUrl.hostname &&
               pathUrl.pathname.match(
-                /(?:\.(?:ico|png|gif|jpe?g|txt|json|woff2)$)/gi
+                /\.(?:ico|png|gif|jpe?g|txt|json|woff2)$/gi
               ));
 
           // Fetch the new file; hacks.mozilla.org/2016/03/referrer-and-cache-control-apis-for-fetch/
