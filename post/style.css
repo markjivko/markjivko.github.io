@@ -141,13 +141,15 @@ a {
   box-sizing: border-box;
   resize: none;
   position: absolute;
-  top: 364px;
+  top: 363px;
   left: 50px;
   font-size: 60px;
   line-height: 70px;
   font-family: "Oswald";
   color: transparent;
-  caret-color: white;
+  caret-color: #dff308;
+  overflow: hidden;
+  word-break: break-all;
 }
 .holder [data-role="input"] textarea:focus {
   outline: dashed 1px #515151;

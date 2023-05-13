@@ -15,6 +15,80 @@ document.addEventListener("DOMContentLoaded", function () {
       i.src = url;
     });
 
+  const getPath = (relativePath) => {
+    if ("string" !== typeof relativePath) {
+      relativePath = "";
+    }
+    return (
+      window.location.origin +
+      "/post" +
+      (relativePath ? "/" + relativePath : "")
+    );
+  };
+
+  (() => {
+    if ("serviceWorker" in navigator) {
+      // Register service worker
+      navigator.serviceWorker
+        .register(getPath("pwa.js"), {
+          scope: getPath(),
+          useCache: true,
+        })
+        .then(() => {})
+        .catch(() => {});
+    }
+
+    // Add the manifest
+    const linkObject = document.getElementById("pwa_manifest");
+    null !== linkObject &&
+      null === linkObject.getAttribute("href") &&
+      linkObject.setAttribute(
+        "href",
+        URL.createObjectURL(
+          new Blob(
+            [
+              JSON.stringify({
+                description: "Social media quote maker",
+                short_name: "Quote Maker",
+                name: "Quote Maker",
+                theme_color: "#dff308",
+                background_color: "#222222",
+                dir: "ltr",
+                lang: "en-US",
+                start_url: getPath(),
+                scope: getPath(),
+                icons: [
+                  {
+                    src: getPath("64.png"),
+                    sizes: "64x64",
+                    type: "image/png",
+                    purpose: "maskable any",
+                  },
+                  {
+                    src: getPath("192.png"),
+                    sizes: "192x192",
+                    type: "image/png",
+                    purpose: "maskable any",
+                  },
+                  {
+                    src: getPath("512.png"),
+                    sizes: "512x512",
+                    type: "image/png",
+                    purpose: "maskable any",
+                  },
+                ],
+                display: "fullscreen",
+                orientation: "landscape",
+              }),
+            ],
+            {
+              type: "application/json",
+            }
+          )
+        )
+      );
+  })();
+
   // Context ready
   if (canvas.getContext) {
     ctx = canvas.getContext("2d");
@@ -27,7 +101,23 @@ document.addEventListener("DOMContentLoaded", function () {
       const background = await loadImage("./background.svg");
 
       input.addEventListener("keyup", () => {
-        const lines = input.value.split("\n");
+        ctx.font = `${fontSize}px Oswald`;
+        const lines = [];
+        const paragraphs = input.value.split("\n");
+
+        paragraphs.forEach((line) => {
+          let j = 0;
+          for (let i = 0; i < line.length - 1; i++) {
+            const segmentText = line.substring(j, i + 1);
+            const segmentLength = ctx.measureText(segmentText);
+            if (segmentLength.width >= 670) {
+              lines.push(segmentText);
+              j = i + 1;
+            }
+          }
+          lines.push(line.substring(j));
+        });
+
         const newInputHeight = inputHeight + (lines.length - 1) * lineHeight;
         const newCanvasHeight = canvasHeight + newInputHeight - inputHeight;
 
@@ -42,15 +132,15 @@ document.addEventListener("DOMContentLoaded", function () {
         ctx.drawImage(background, -610, -610);
         ctx.drawImage(banner, 0, 50);
 
-        ctx.font = `${fontSize}px Oswald`;
         ctx.fillStyle = "#ffffff";
+        ctx.font = `${fontSize}px Oswald`;
         lines.map((line, index) => {
           ctx.fillText(line, 50, marginTop + index * lineHeight);
         });
       });
 
       input.focus();
-      input.dispatchEvent(new KeyboardEvent("keyup", { key: " " }));
+      input.dispatchEvent(new KeyboardEvent("keyup", { key: "" }));
     })();
   }
 });

@@ -10,6 +10,7 @@
       href="https://markjivko.com/favicon.ico"
     />
     <meta charset="UTF-8" />
+    <link rel="manifest" id="pwa_manifest" />
     <meta name="Author" content="Mark Jivko" />
     <meta name="Keywords" content="mark jivko, quote maker" />
     <meta name="Description" content="Social media quote maker" />
@@ -24,7 +25,11 @@
   <body>
     <div class="holder">
       <div data-role="input">
-        <textarea spellcheck="false" autocomplete="off"></textarea>
+        <textarea
+          aria-label="text"
+          spellcheck="false"
+          autocomplete="off"
+        ></textarea>
       </div>
       <canvas data-role="output" width="800" height="510"></canvas>
     </div>
