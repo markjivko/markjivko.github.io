@@ -17,8 +17,8 @@
 }
 :root {
   --highlight-color: rgba(51, 204, 255, 0.4);
-  --accent-color-1: rgba(51, 204, 255, 1);
-  --accent-color-2: #cc00cc;
+  --accent-color-1: #f6c028;
+  --accent-color-2: #fb8500;
   --accent-color-3: #efefef;
   --text-color-1: #333;
   --text-color-2: #666;
@@ -48,7 +48,7 @@
 body[data-theme="orange"] {
   --highlight-color: rgba(251, 133, 0, 0.4);
   --accent-color-1: #fb8500;
-  --accent-color-2: #009999;
+  --accent-color-2: #f6c028;
   --scroll-bar-thumb: var(--accent-color-1);
   --scroll-bar-thumb-hover: var(--accent-color-2);
 }
@@ -147,7 +147,7 @@ a {
   line-height: 70px;
   font-family: "Oswald";
   color: transparent;
-  caret-color: #ffc320;
+  caret-color: #f6c028;
   overflow: hidden;
   word-break: break-all;
 }
