@@ -26,18 +26,18 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   };
 
-  (() => {
-    if ("serviceWorker" in navigator) {
-      // Register service worker
-      navigator.serviceWorker
-        .register(getPath("pwa.js"), {
-          scope: getPath(),
-          useCache: true,
-        })
-        .then(() => {})
-        .catch(() => {});
-    }
+  if ("serviceWorker" in navigator) {
+    // Register service worker
+    navigator.serviceWorker
+      .register(getPath("pwa.js"), {
+        scope: getPath(),
+        useCache: true,
+      })
+      .then(() => {})
+      .catch(() => {});
+  }
 
+  (() => {
     // Add the manifest
     const linkObject = document.getElementById("pwa_manifest");
     null !== linkObject &&
