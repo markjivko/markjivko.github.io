@@ -5,7 +5,11 @@ const staticCacheName = "quote-maker-0.1";
 // Installation event
 self.addEventListener("install", (event) => {
   console &&
-    console.log("%quotemaker", "color:purple", "Installing app version 0.1...");
+    console.log(
+      "%cquote-maker",
+      "color:purple",
+      "Installing app version 0.1..."
+    );
 });
 
 // Local file server
@@ -29,7 +33,7 @@ self.addEventListener("fetch", (event) => {
           } catch (error) {
             // Network error, deliver the "offline" page
             console &&
-              console.log("%quotemaker", "color:purple", "Offline", error);
+              console.log("%cquote-maker", "color:purple", "Offline", error);
           }
         })()
       );
@@ -66,7 +70,7 @@ self.addEventListener("fetch", (event) => {
             return caches.open(staticCacheName).then((cache) => {
               console &&
                 console.log(
-                  "%quotemaker",
+                  "%cquote-maker",
                   "color:purple",
                   "DLC " + event.request.url
                 );
@@ -83,7 +87,11 @@ self.addEventListener("fetch", (event) => {
 // Activation event
 self.addEventListener("activate", (event) => {
   console &&
-    console.log("%quotemaker", "color:purple", "Activating app version 0.1...");
+    console.log(
+      "%cquote-maker",
+      "color:purple",
+      "Activating app version 0.1..."
+    );
 
   // Enable navigation preload if it's supported
   event.waitUntil(
