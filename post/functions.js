@@ -1,9 +1,38 @@
 document.addEventListener("DOMContentLoaded", function () {
-  const fontSize = 60;
-  const lineHeight = 70;
+  let fontSize = 50;
+  let lineHeight = 60;
 
   const input = document.querySelector('[data-role="input"] textarea');
   const canvas = document.querySelector('[data-role="output"]');
+  input.style.fontSize = `${fontSize}px`;
+  input.style.lineHeight = `${lineHeight}px`;
+
+  document.querySelector("body").addEventListener("keyup", (e) => {
+    console.log(e);
+    if (e.altKey) {
+      switch (e.code) {
+        case "ArrowUp":
+          fontSize += 5;
+          lineHeight += 5;
+          break;
+
+        case "ArrowDown":
+          fontSize -= 5;
+          lineHeight -= 5;
+          if (fontSize <= 10) {
+            fontSize = 10;
+          }
+          if (lineHeight <= 20) {
+            lineHeight = 20;
+          }
+          break;
+      }
+
+      input.dispatchEvent(new KeyboardEvent("keyup", { key: "" }));
+      input.style.fontSize = `${fontSize}px`;
+      input.style.lineHeight = `${lineHeight}px`;
+    }
+  });
 
   const canvasHeight = canvas.height;
   const inputHeight = input.offsetHeight;
@@ -119,7 +148,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const newInputHeight = inputHeight + (lines.length - 1) * lineHeight;
         const newCanvasHeight = canvasHeight + newInputHeight - inputHeight;
 
-        const marginTop = newCanvasHeight - newInputHeight + 55;
+        const marginTop = newCanvasHeight - newInputHeight + lineHeight - 15;
 
         canvas.style.height = `${newCanvasHeight}px`;
         input.style.height = `${newInputHeight}px`;
