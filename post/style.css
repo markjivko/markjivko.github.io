@@ -20,7 +20,7 @@
   --accent-color-1: #f6c028;
   --accent-color-2: #fb8500;
   --accent-color-3: #efefef;
-  --text-color-1: #333;
+  --text-color-1: #707070;
   --text-color-2: #666;
   --frame-color-1: #f1f1f1;
   --frame-color-2: #fff;
@@ -105,12 +105,18 @@ body {
   justify-content: center;
   align-items: center;
   background: #222;
+  flex-direction: column;
 }
 a {
   color: var(--accent-color-1);
   text-decoration: none;
 }
-
+.footer {
+  width: 800px;
+  justify-content: end;
+  text-align: right;
+  margin: -25px 0 50px;
+}
 .holder {
   background: #1a1a1a;
   border-radius: 10px;

@@ -8,7 +8,6 @@ document.addEventListener("DOMContentLoaded", function () {
   input.style.lineHeight = `${lineHeight}px`;
 
   document.querySelector("body").addEventListener("keyup", (e) => {
-    console.log(e);
     if (e.altKey) {
       switch (e.code) {
         case "ArrowUp":
