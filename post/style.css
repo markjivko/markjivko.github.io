@@ -128,17 +128,17 @@ a {
     position: relative;
 }
 .holder [data-role="output"] {
-    width: 1080px;
-    height: 1080px;
+    width: 960px;
+    height: 640px;
     background: #fff;
     border-radius: 10px;
 }
 .holder [data-role="input"] textarea {
-    width: 900px;
+    width: 700px;
     height: 140px;
-    left: 110px;
+    left: 140px;
     padding: 20px;
-    top: 400px;
+    top: 350px;
 
     background: transparent;
     border: none;

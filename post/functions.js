@@ -1,7 +1,7 @@
 const inputPadding = 20;
-const inputLeft = 110;
-const inputTop = 400;
-const startStretch = 500;
+const inputLeft = 140;
+const inputTop = 350;
+const startStretch = 180;
 
 document.addEventListener("DOMContentLoaded", function () {
     let fontSize = 60;
