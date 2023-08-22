@@ -134,9 +134,9 @@ a {
     border-radius: 10px;
 }
 .holder [data-role="input"] textarea {
-    width: 700px;
+    width: 780px;
     height: 140px;
-    left: 140px;
+    left: 110px;
     padding: 20px;
     top: 350px;
 

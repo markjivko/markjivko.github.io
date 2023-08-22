@@ -1,5 +1,5 @@
 const inputPadding = 20;
-const inputLeft = 140;
+const inputLeft = 110;
 const inputTop = 350;
 const startStretch = 180;
 
@@ -159,13 +159,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 ctx.canvas.height = newCanvasHeight;
                 ctx.fillStyle = "#fff";
                 ctx.fillRect(0, 0, canvas.width, newCanvasHeight);
-                ctx.drawImage(background, -610, -610);
+                ctx.drawImage(background, -560, -560);
                 ctx.drawImage(banner, 0, 50);
                 ctx.drawImage(footer, 0, newCanvasHeight - 200);
 
                 ctx.fillStyle = "#000";
+                ctx.strokeStyle = "#fff";
+                ctx.lineWidth = 6;
                 ctx.font = `${fontSize}px Oswald`;
                 lines.map((line, index) => {
+                    ctx.strokeText(line, inputLeft, marginTop + index * lineHeight);
                     ctx.fillText(line, inputLeft, marginTop + index * lineHeight);
                 });
             });
