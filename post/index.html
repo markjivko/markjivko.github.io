@@ -19,33 +19,40 @@
         <script defer src="./functions.js"></script>
     </head>
     <body>
-        <div class="holder">
+        <div class="holder" data-format="16-9">
             <div data-role="input">
                 <textarea autofocus aria-label="text" spellcheck="false" autocomplete="off"></textarea>
             </div>
             <canvas data-role="output"></canvas>
         </div>
         <div class="footer">
-            <div class="stretch">
-                <input type="checkbox" name="stretch" id="stretch" />
-                <label for="stretch">Stretch</label>
+            <div>
+                <div class="stretch">
+                    <input type="checkbox" name="stretch" id="stretch" />
+                    <label for="stretch">Stretch</label>
+                </div>
+                <div class="formats">
+                    <div>
+                        <input type="radio" name="format" id="16-9" value="16-9" checked="checked" />
+                        <label for="16-9">16/9 (1280x720)</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="format" id="3-2" value="3-2" />
+                        <label for="3-2">3/2 (960x640)</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="format" id="1-1" value="1-1" />
+                        <label for="1-1">1/1 (1080x1080)</label>
+                    </div>
+                </div>
+                <div class="actions">
+                    <div><button>Download</button></div>
+                </div>
             </div>
-            <div class="formats">
-                <div>
-                    <input type="radio" name="format" id="16-9" value="16-9" />
-                    <label for="16-9">16/9 (1280x720)</label>
-                </div>
-                <div>
-                    <input type="radio" name="format" id="3-2" value="3-2" checked="checked" />
-                    <label for="3-2">3/2 (960x640)</label>
-                </div>
-                <div>
-                    <input type="radio" name="format" id="1-1" value="1-1" />
-                    <label for="1-1">1/1 (1080x1080)</label>
-                </div>
+            <div>
+                <div>Font size: Alt ▲, Alt ▼ | &copy; 2023 Mark Jivko |&nbsp;</div>
+                <a target="_blank" href="https://github.com/markjivko/markjivko.github.io/tree/master/post">Source code</a>
             </div>
-            <div>Font size: Alt+▲, Alt+▼ | &copy; 2023 Mark Jivko |&nbsp;</div>
-            <a target="_blank" href="https://github.com/markjivko/markjivko.github.io/tree/master/post">Source code</a>
         </div>
     </body>
 </html>

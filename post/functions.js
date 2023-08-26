@@ -1,5 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
     const holder = document.querySelector(".holder");
+    const download = document.querySelector("button");
     const strechCheckbox = document.querySelector("input[name='stretch']");
     const canvas = document.querySelector('[data-role="output"]');
     const textarea = document.querySelector('[data-role="input"] textarea');
@@ -67,6 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     /**
      * Load image
+     *
      * @param {string} url URL
      * @return {Promise}
      */
@@ -152,6 +154,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 )
             );
     })();
+
+    // Download
+    download.addEventListener("click", e => {
+        const anchor = document.createElement("a");
+        const selectedFormat = document.querySelector(".formats [name='format']:checked");
+        anchor.href = canvas.toDataURL("image/png");
+        anchor.download = selectedFormat.getAttribute("title");
+        anchor.click();
+        anchor.remove();
+    });
 
     // Draw on keyup
     if (canvas.getContext) {
