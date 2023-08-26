@@ -111,10 +111,28 @@ a {
     text-decoration: none;
 }
 .footer {
-    width: 800px;
+    width: 900px;
     justify-content: end;
     text-align: right;
     margin: -25px 0 50px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    z-index: 10;
+}
+.footer .formats {
+    display: flex;
+    align-items: center;
+    margin-right: 20px;
+}
+.footer .formats > div {
+    margin-right: 20px;
+}
+.footer label {
+    cursor: pointer;
+}
+.stretch {
+    margin-right: 20px;
 }
 .holder {
     background: #1a1a1a;
@@ -131,26 +149,26 @@ a {
     width: 960px;
     height: 640px;
     background: #fff;
-    border-radius: 10px;
+    color: #222;
 }
 .holder [data-role="input"] textarea {
     width: 780px;
     height: 140px;
+
+    font-size: 60px;
+    line-height: 70px;
     left: 110px;
-    padding: 20px;
     top: 350px;
+    padding: 20px;
 
     background: transparent;
     border: none;
     border-radius: 10px;
     margin-bottom: 20px;
     color: transparent;
-    font-size: 1.5rem;
     box-sizing: border-box;
     resize: none;
     position: absolute;
-    font-size: 60px;
-    line-height: 70px;
     font-family: "Oswald";
     caret-color: #f6c028;
     overflow: hidden;
@@ -158,4 +176,18 @@ a {
 }
 .holder:hover [data-role="input"] textarea {
     outline: dashed 2px #515151;
+}
+.holder[data-format="16-9"] [data-role="output"] {
+    width: 1280px;
+    height: 720px;
+}
+.holder[data-format="16-9"] [data-role="input"] textarea {
+    width: 1100px;
+}
+.holder[data-format="1-1"] [data-role="output"] {
+    width: 1080px;
+    height: 1080px;
+}
+.holder[data-format="1-1"] [data-role="input"] textarea {
+    width: 900px;
 }
