@@ -158,7 +158,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Download
     download.addEventListener("click", e => {
         const anchor = document.createElement("a");
-        const selectedFormat = document.querySelector(".formats [name='format']:checked");
+        const selectedFormat = document.querySelector("[name='format']:checked");
         anchor.href = canvas.toDataURL("image/png");
         anchor.download = selectedFormat.getAttribute("title");
         anchor.click();
