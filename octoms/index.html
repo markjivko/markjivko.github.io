@@ -1,20 +1,27 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>OctoMS</title>
-        <link rel="canonical" href="https://markjivko.com/octoms/">
-        <link rel="stylesheet" type="text/css" href="./css/style.css">
-        <link rel="stylesheet" type="text/css" href="./css/index.css">
-        <link rel="icon" type="image/ico" href="./img/favicon.ico">
-        <meta name="Copyright" content="OctoMS">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="description" content="Light-weight self-documenting PHP Framework">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
+        <link rel="canonical" href="https://portfolio.markjivko.com/octoms/" />
+        <link rel="stylesheet" type="text/css" href="./css/style.css" />
+        <link rel="stylesheet" type="text/css" href="./css/index.css" />
+        <link rel="icon" type="image/ico" href="./img/favicon.ico" />
+        <meta name="Copyright" content="OctoMS" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="description" content="Light-weight self-documenting PHP Framework" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-207388760-1"></script>
-        <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-207388760-1');</script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "UA-207388760-1");
+        </script>
     </head>
     <body>
         <div class="header">
@@ -26,33 +33,56 @@
         <div class="footer">
             <a href="/?:debug" class="btn">Launch the wizard</a>
             <svg viewBox="0 0 200 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <path fill="#efefef" d="M42.1,-44.3C48.9,-44.5,44.7,-25.8,48.2,-8.2C51.7,9.4,62.8,26,59,35.6C55.3,45.2,36.8,47.8,21.9,47.7C7.1,47.7,-4.2,45,-20.5,44.3C-36.8,43.6,-58.3,44.8,-65.6,36C-72.9,27.2,-66.1,8.4,-61.2,-9.3C-56.4,-27,-53.4,-43.6,-43.6,-42.9C-33.7,-42.2,-16.8,-24.3,0.4,-24.8C17.7,-25.3,35.3,-44.2,42.1,-44.3Z" transform="translate(100 100)" />
+                <path
+                    fill="#efefef"
+                    d="M42.1,-44.3C48.9,-44.5,44.7,-25.8,48.2,-8.2C51.7,9.4,62.8,26,59,35.6C55.3,45.2,36.8,47.8,21.9,47.7C7.1,47.7,-4.2,45,-20.5,44.3C-36.8,43.6,-58.3,44.8,-65.6,36C-72.9,27.2,-66.1,8.4,-61.2,-9.3C-56.4,-27,-53.4,-43.6,-43.6,-42.9C-33.7,-42.2,-16.8,-24.3,0.4,-24.8C17.7,-25.3,35.3,-44.2,42.1,-44.3Z"
+                    transform="translate(100 100)" />
             </svg>
-            <span class="copy">Copyright &copy; 2011 <a href="https://markjivko.com" rel="noreferrer"><b>Mark Jivko</b></a></span>
+            <span class="copy"
+                >Copyright &copy; 2011 <a href="https://portfolio.markjivko.com" rel="noreferrer"><b>Mark Jivko</b></a></span
+            >
         </div>
         <div data-role="preview">
             <div id="header">
                 <div id="header-content">
                     <div id="top-strip">
                         <div id="title">
-                            <div class="logo">&nbsp;</div><span class="octoms"><a id="logo_anchor" href="https://github.com/markjivko/octoms">OctoMS</a></span>
+                            <div class="logo">&nbsp;</div>
+                            <span class="octoms"><a id="logo_anchor" href="https://github.com/markjivko/octoms">OctoMS</a></span>
                         </div>
                     </div>
                     <div id="boxes">
                         <div id="box-left">
-                            <div class="spacer"></div><div class="l"></div><input type="text" id="search" placeholder="Search..."><div class="r"></div><div id="input-search"></div>
+                            <div class="spacer"></div>
+                            <div class="l"></div>
+                            <input type="text" id="search" placeholder="Search..." />
+                            <div class="r"></div>
+                            <div id="input-search"></div>
                         </div>
                         <div id="box-right">
-                            <div class="divider"></div><div class="l"></div><input type="text" id="debug" placeholder="Debug..."><div class="r"></div><div id="input-debug"></div><div class="spacer"></div>
+                            <div class="divider"></div>
+                            <div class="l"></div>
+                            <input type="text" id="debug" placeholder="Debug..." />
+                            <div class="r"></div>
+                            <div id="input-debug"></div>
+                            <div class="spacer"></div>
                         </div>
                     </div>
                 </div>
             </div>
             <div id="wrapper">
                 <div id="left-bar"></div>
-                <div id="left" style="width: 50%;"><div class="scrollbar disable"><div class="track"><div class="thumb"><div class="end tip1"></div><div class="end tip2"></div></div></div></div>
+                <div id="left" style="width: 50%">
+                    <div class="scrollbar disable">
+                        <div class="track">
+                            <div class="thumb">
+                                <div class="end tip1"></div>
+                                <div class="end tip2"></div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="viewport">
-                        <div class="overview" style="top: 0px;">
+                        <div class="overview" style="top: 0px">
                             <div class="full-content ui-sortable">
                                 <div class="tab">
                                     <div class="tab-t">
@@ -65,19 +95,45 @@
                                             <div class="tab-ic">
                                                 <div>
                                                     <table class="search-table">
-                                                        <tbody><tr><th class="method">main model: index()</th></tr>
+                                                        <tbody>
+                                                            <tr>
+                                                                <th class="method">main model: index()</th>
+                                                            </tr>
                                                             <tr>
                                                                 <td><div class="div-h2">Description</div></td>
                                                             </tr>
                                                             <tr>
-                                                                <td> <h3>About OctoMS</h3><br>
-                                                                    This is a light-weight PHP framework inspired by <a rel="noreferrer" href="https://codeigniter.com/" target="_blank">CodeIgniter</a>.<br>
-                                                                    If the app is in <b>development mode</b> this wizard interface will be shown for <a href="/error">uncaught exceptions</a> and <a href="/?:debug">on-demand</a>.<br>
-                                                                    This interface contains a debugging window (with routing rules, arguments, source code, request headers and other information) and a search window.<br>
-                                                                    You can search through the entire application or specify a search location: <ul>
-                                                                        <li>{term} <b>-core</b> To look inside the core libraries and helpers</li>
-                                                                        <li>{term} <b>-app</b> To look inside the app libraries and helpers</li>
-                                                                        <li>{term} <b>-stage={stage}</b> To look inside a specific app stage's controllers and models</li>
+                                                                <td>
+                                                                    <h3>About OctoMS</h3>
+                                                                    <br />
+                                                                    This is a light-weight PHP framework inspired by
+                                                                    <a
+                                                                        rel="noreferrer"
+                                                                        href="https://codeigniter.com/"
+                                                                        target="_blank"
+                                                                        >CodeIgniter</a
+                                                                    >.<br />
+                                                                    If the app is in <b>development mode</b> this wizard interface
+                                                                    will be shown for <a href="/error">uncaught exceptions</a> and
+                                                                    <a href="/?:debug">on-demand</a>.<br />
+                                                                    This interface contains a debugging window (with routing
+                                                                    rules, arguments, source code, request headers and other
+                                                                    information) and a search window.<br />
+                                                                    You can search through the entire application or specify a
+                                                                    search location:
+                                                                    <ul>
+                                                                        <li>
+                                                                            {term} <b>-core</b> To look inside the core libraries
+                                                                            and helpers
+                                                                        </li>
+                                                                        <li>
+                                                                            {term} <b>-app</b> To look inside the app libraries
+                                                                            and helpers
+                                                                        </li>
+                                                                        <li>
+                                                                            {term} <b>-stage={stage}</b> To look inside a specific
+                                                                            app stage's controllers and models
+                                                                        </li>
                                                                     </ul>
                                                                 </td>
                                                             </tr>
@@ -86,12 +142,8 @@
                                                                     <table>
                                                                         <tbody>
                                                                             <tr>
-                                                                                <th style="width: 50%;">
-                                                                                    Parameters
-                                                                                </th>
-                                                                                <th style="width: 50%;">
-                                                                                    Return
-                                                                                </th>
+                                                                                <th style="width: 50%">Parameters</th>
+                                                                                <th style="width: 50%">Return</th>
                                                                             </tr>
                                                                             <tr>
                                                                                 <td class="params tip" title="Parameters">
@@ -101,7 +153,8 @@
                                                                                 </td>
                                                                                 <td class="return tip" title="Return">
                                                                                     <div>
-                                                                                        null Loads the index.tpl file and displays it                            
+                                                                                        null Loads the index.tpl file and displays
+                                                                                        it
                                                                                     </div>
                                                                                 </td>
                                                                             </tr>
@@ -114,18 +167,121 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>
-                                                                    <div class="a"><span class="symbol">⇑</span>
-                                                                        <span class="tip" title="Click to view/hide information on how to gain access to this method.">How to deploy.</span><br>
+                                                                    <div class="a">
+                                                                        <span class="symbol">⇑</span>
+                                                                        <span
+                                                                            class="tip"
+                                                                            title="Click to view/hide information on how to gain access to this method."
+                                                                            >How to deploy.</span
+                                                                        ><br />
                                                                         <div class="b">
                                                                             <table class="code">
                                                                                 <tbody>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;</span><span style="color: #FF8000">###</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;</span><span style="color: #FF8000">#&nbsp;Load&nbsp;the&nbsp;"main"&nbsp;app&nbsp;model&nbsp;if&nbsp;it&nbsp;wasn't&nbsp;already&nbsp;loaded&nbsp;-&nbsp;check&nbsp;using&nbsp;the&nbsp;debugger</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;$this</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">_</span><span style="color: #007700">(</span><span style="color: #DD0000">'main'</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">OMS_M</span><span style="color: #007700">);</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;</span><span style="color: #FF8000">#&nbsp;or&nbsp;add&nbsp;this&nbsp;line&nbsp;to&nbsp;your&nbsp;stage's&nbsp;autoload.inc</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;$objects</span><span style="color: #007700">[]&nbsp;=&nbsp;</span><span style="color: #DD0000">"main|m"</span><span style="color: #007700">;</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;</span><span style="color: #FF8000">###</span></span></code></td></tr>
-                                                                                    <tr><td><code><span style="color: #000000"><span style="color: #0000BB">&nbsp;</span></span></code></td></tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;</span
+                                                                                                    ><span style="color: #ff8000"
+                                                                                                        >###</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;</span
+                                                                                                    ><span style="color: #ff8000"
+                                                                                                        >#&nbsp;Load&nbsp;the&nbsp;"main"&nbsp;app&nbsp;model&nbsp;if&nbsp;it&nbsp;wasn't&nbsp;already&nbsp;loaded&nbsp;-&nbsp;check&nbsp;using&nbsp;the&nbsp;debugger</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;$this</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >-&gt;</span
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >_</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >(</span
+                                                                                                    ><span style="color: #dd0000"
+                                                                                                        >'main'</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >,&nbsp;</span
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >OMS_M</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >);</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;</span
+                                                                                                    ><span style="color: #ff8000"
+                                                                                                        >#&nbsp;or&nbsp;add&nbsp;this&nbsp;line&nbsp;to&nbsp;your&nbsp;stage's&nbsp;autoload.inc</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;$objects</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >[]&nbsp;=&nbsp;</span
+                                                                                                    ><span style="color: #dd0000"
+                                                                                                        >"main|m"</span
+                                                                                                    ><span style="color: #007700"
+                                                                                                        >;</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;</span
+                                                                                                    ><span style="color: #ff8000"
+                                                                                                        >###</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>
+                                                                                            <code
+                                                                                                ><span style="color: #000000"
+                                                                                                    ><span style="color: #0000bb"
+                                                                                                        >&nbsp;</span
+                                                                                                    ></span
+                                                                                                ></code
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
                                                                                 </tbody>
                                                                             </table>
                                                                         </div>
@@ -135,12 +291,13 @@
                                                             </tr>
                                                             <tr>
                                                                 <td>
-                                                                    <span style="font-size: 10px;padding: 0 5px;">
-                                                                        D:\Server\www\app\stages\main\controllers\main.inc                                
+                                                                    <span style="font-size: 10px; padding: 0 5px">
+                                                                        D:\Server\www\app\stages\main\controllers\main.inc
                                                                     </span>
                                                                 </td>
                                                             </tr>
-                                                        </tbody></table>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -152,17 +309,17 @@
                         </div>
                     </div>
                 </div>
-                <div id="right" style="width: 50%;">
-                    <div class="scrollbar disable" style="height: 904px;">
-                        <div class="track" style="height: 904px;">
-                            <div class="thumb" style="top: 0px; height: 904px;">
+                <div id="right" style="width: 50%">
+                    <div class="scrollbar disable" style="height: 904px">
+                        <div class="track" style="height: 904px">
+                            <div class="thumb" style="top: 0px; height: 904px">
                                 <div class="end tip1"></div>
                                 <div class="end tip2"></div>
                             </div>
                         </div>
                     </div>
                     <div class="viewport">
-                        <div class="overview" style="top: 0px;">
+                        <div class="overview" style="top: 0px">
                             <div class="full-content ui-sortable">
                                 <div class="tab">
                                     <div class="tab-t">
@@ -174,15 +331,15 @@
                                         <div class="tab-c">
                                             <div class="tab-ic">
                                                 <div class="slate">
-                                                    <table style="width:100%;">
+                                                    <table style="width: 100%">
                                                         <tbody>
                                                             <tr>
                                                                 <th width="50%">Routing Rule</th>
-                                                                <th>Routing Path</th>    
+                                                                <th>Routing Path</th>
                                                             </tr>
                                                         </tbody>
                                                     </table>
-                                                    <table style="width: 100%;">    
+                                                    <table style="width: 100%">
                                                         <tbody>
                                                             <tr>
                                                                 <th colspan="2">Script information</th>
@@ -207,33 +364,158 @@
                                                                 <td><i>Full path</i></td>
                                                                 <td>D:\Server\www\app\stages\main\controllers\main.inc</td>
                                                             </tr>
-                                                        </tbody></table>
+                                                        </tbody>
+                                                    </table>
                                                     <div class="a">
                                                         <span class="symbol">⇑</span>
-                                                        <span class="tip" title="Click to view/hide the method's source code."><i>Source code</i></span><br>
+                                                        <span class="tip" title="Click to view/hide the method's source code."
+                                                            ><i>Source code</i></span
+                                                        ><br />
                                                         <div class="b">
                                                             <table class="code">
                                                                 <tbody>
-                                                                    <tr><td>1</td><td><span style="color: #007700">function&nbsp;</span><span style="color: #0000BB">index</span><span style="color: #007700">(</span><span style="color: #0000BB">$arg&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">null</span><span style="color: #007700">)&nbsp;{</span></td></tr>
-                                                                    <tr><td>2</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #FF8000">/*&nbsp;@var&nbsp;$view&nbsp;view_cl*/</span></td></tr>
-                                                                    <tr><td>3</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #0000BB">$view&nbsp;</span><span style="color: #007700">=&nbsp;</span><span style="color: #0000BB">$this</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">_</span><span style="color: #007700">(</span><span style="color: #DD0000">'view'</span><span style="color: #007700">);</span></td></tr>
-                                                                    <tr><td>4</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-                                                                    <tr><td>5</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #FF8000">//&nbsp;Uncaught&nbsp;exception</span></td></tr>
-                                                                    <tr><td>6</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #007700">if&nbsp;(</span><span style="color: #DD0000">'error'&nbsp;</span><span style="color: #007700">===&nbsp;</span><span style="color: #0000BB">$arg</span><span style="color: #007700">)&nbsp;{</span></td></tr>
-                                                                    <tr><td>7</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;<span style="color: #0000BB">Exception</span><span style="color: #007700">(</span><span style="color: #DD0000">'Something&nbsp;went&nbsp;wrong'</span><span style="color: #007700">,&nbsp;</span><span style="color: #0000BB">13</span><span style="color: #007700">);</span></td></tr>
-                                                                    <tr><td>8</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</td></tr>
-                                                                    <tr><td>9</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td></tr>
-                                                                    <tr><td>10</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #FF8000">//&nbsp;Display&nbsp;the&nbsp;template</span></td></tr>
-                                                                    <tr><td>11</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #0000BB">$view</span><span style="color: #007700">-&gt;</span><span style="color: #0000BB">display</span><span style="color: #007700">(</span></td></tr>
-                                                                    <tr><td>12</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #DD0000">'index.tpl'</span><span style="color: #007700">,&nbsp;</span></td></tr>
-                                                                    <tr><td>13</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array(<span style="color: #DD0000">'args'&nbsp;</span><span style="color: #007700">=&gt;&nbsp;</span><span style="color: #0000BB">func_get_args</span><span style="color: #007700">())</span></td></tr>
-                                                                    <tr><td>14</td><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);</td></tr>
-                                                                    <tr><td>15</td><td>&nbsp;&nbsp;&nbsp;&nbsp;}<span style="color: #FF8000">//&nbsp;end&nbsp;</span></td></tr>
+                                                                    <tr>
+                                                                        <td>1</td>
+                                                                        <td>
+                                                                            <span style="color: #007700">function&nbsp;</span
+                                                                            ><span style="color: #0000bb">index</span
+                                                                            ><span style="color: #007700">(</span
+                                                                            ><span style="color: #0000bb">$arg&nbsp;</span
+                                                                            ><span style="color: #007700">=&nbsp;</span
+                                                                            ><span style="color: #0000bb">null</span
+                                                                            ><span style="color: #007700">)&nbsp;{</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>2</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #ff8000"
+                                                                                >/*&nbsp;@var&nbsp;$view&nbsp;view_cl*/</span
+                                                                            >
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>3</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #0000bb"
+                                                                                >$view&nbsp;</span
+                                                                            ><span style="color: #007700">=&nbsp;</span
+                                                                            ><span style="color: #0000bb">$this</span
+                                                                            ><span style="color: #007700">-&gt;</span
+                                                                            ><span style="color: #0000bb">_</span
+                                                                            ><span style="color: #007700">(</span
+                                                                            ><span style="color: #dd0000">'view'</span
+                                                                            ><span style="color: #007700">);</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>4</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>5</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #ff8000"
+                                                                                >//&nbsp;Uncaught&nbsp;exception</span
+                                                                            >
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>6</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #007700"
+                                                                                >if&nbsp;(</span
+                                                                            ><span style="color: #dd0000">'error'&nbsp;</span
+                                                                            ><span style="color: #007700">===&nbsp;</span
+                                                                            ><span style="color: #0000bb">$arg</span
+                                                                            ><span style="color: #007700">)&nbsp;{</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>7</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw&nbsp;new&nbsp;<span
+                                                                                style="color: #0000bb"
+                                                                                >Exception</span
+                                                                            ><span style="color: #007700">(</span
+                                                                            ><span style="color: #dd0000"
+                                                                                >'Something&nbsp;went&nbsp;wrong'</span
+                                                                            ><span style="color: #007700">,&nbsp;</span
+                                                                            ><span style="color: #0000bb">13</span
+                                                                            ><span style="color: #007700">);</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>8</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>9</td>
+                                                                        <td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>10</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #ff8000"
+                                                                                >//&nbsp;Display&nbsp;the&nbsp;template</span
+                                                                            >
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>11</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #0000bb"
+                                                                                >$view</span
+                                                                            ><span style="color: #007700">-&gt;</span
+                                                                            ><span style="color: #0000bb">display</span
+                                                                            ><span style="color: #007700">(</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>12</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span
+                                                                                style="color: #dd0000"
+                                                                                >'index.tpl'</span
+                                                                            ><span style="color: #007700">,&nbsp;</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>13</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;array(<span
+                                                                                style="color: #dd0000"
+                                                                                >'args'&nbsp;</span
+                                                                            ><span style="color: #007700">=&gt;&nbsp;</span
+                                                                            ><span style="color: #0000bb">func_get_args</span
+                                                                            ><span style="color: #007700">())</span>
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>14</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;);
+                                                                        </td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td>15</td>
+                                                                        <td>
+                                                                            &nbsp;&nbsp;&nbsp;&nbsp;}<span style="color: #ff8000"
+                                                                                >//&nbsp;end&nbsp;</span
+                                                                            >
+                                                                        </td>
+                                                                    </tr>
                                                                 </tbody>
                                                             </table>
                                                         </div>
                                                     </div>
-                                                    <table style="width: 100%;">
+                                                    <table style="width: 100%">
                                                         <tbody>
                                                             <tr>
                                                                 <th colspan="2">Available tools</th>
@@ -241,65 +523,316 @@
                                                             <tr>
                                                                 <td><i>Objects</i></td>
                                                                 <td>
-                                                                    <a href="search:view -core" title="More information on the [view] core library." class="stop tip">view</a>(core library) 
-                                                                    <a href="search:error -core" title="More information on the [error] core library." class="stop tip">error</a>(core library) 
-                                                                    <a href="search:input -core" title="More information on the [input] core library." class="stop tip">input</a>(core library) 
+                                                                    <a
+                                                                        href="search:view -core"
+                                                                        title="More information on the [view] core library."
+                                                                        class="stop tip"
+                                                                        >view</a
+                                                                    >(core library)
+                                                                    <a
+                                                                        href="search:error -core"
+                                                                        title="More information on the [error] core library."
+                                                                        class="stop tip"
+                                                                        >error</a
+                                                                    >(core library)
+                                                                    <a
+                                                                        href="search:input -core"
+                                                                        title="More information on the [input] core library."
+                                                                        class="stop tip"
+                                                                        >input</a
+                                                                    >(core library)
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td><i>Helpers</i></td>
                                                                 <td>
-                                                                    <a href="search:encrypt -core" title="More information on the [encrypt] core helper." class="stop tip">encrypt</a>(core helper) 
-                                                                    <a href="search:recursion -core" title="More information on the [recursion] core helper." class="stop tip">recursion</a>(core helper) 
-                                                                    <a href="search:html -core" title="More information on the [html] core helper." class="stop tip">html</a>(core helper) 
+                                                                    <a
+                                                                        href="search:encrypt -core"
+                                                                        title="More information on the [encrypt] core helper."
+                                                                        class="stop tip"
+                                                                        >encrypt</a
+                                                                    >(core helper)
+                                                                    <a
+                                                                        href="search:recursion -core"
+                                                                        title="More information on the [recursion] core helper."
+                                                                        class="stop tip"
+                                                                        >recursion</a
+                                                                    >(core helper)
+                                                                    <a
+                                                                        href="search:html -core"
+                                                                        title="More information on the [html] core helper."
+                                                                        class="stop tip"
+                                                                        >html</a
+                                                                    >(core helper)
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td><i>Functions</i></td>
-                                                                <td><a href="search:flag" title="More information on the flag function." class="stop tip">flag</a>, 
-                                                                    <a href="search:lang" title="More information on the lang function." class="stop tip">lang</a>, 
-                                                                    <a href="search:debugging" title="More information on the debugging function." class="stop tip">debugging</a>, 
-                                                                    <a href="search:help" title="More information on the help function." class="stop tip">help</a>, 
-                                                                    <a href="search:octoms" title="More information on the octoms function." class="stop tip">octoms</a>, 
-                                                                    <a href="search:blowfish_encrypt" title="More information on the blowfish_encrypt function." class="stop tip">blowfish_encrypt</a>, 
-                                                                    <a href="search:blowfish_decrypt" title="More information on the blowfish_decrypt function." class="stop tip">blowfish_decrypt</a>, 
-                                                                    <a href="search:tiny" title="More information on the tiny function." class="stop tip">tiny</a>, 
-                                                                    <a href="search:untiny" title="More information on the untiny function." class="stop tip">untiny</a>,
-                                                                    <a href="search:ago" title="More information on the ago function." class="stop tip">ago</a>, 
-                                                                    <a href="search:array_depth" title="More information on the array_depth function." class="stop tip">array_depth</a>, 
-                                                                    <a href="search:array_flat" title="More information on the array_flat function." class="stop tip">array_flat</a>, 
-                                                                    <a href="search:array_is_assoc" title="More information on the array_is_assoc function." class="stop tip">array_is_assoc</a>, 
-                                                                    <a href="search:array_structure" title="More information on the array_structure function." class="stop tip">array_structure</a>, 
-                                                                    <a href="search:array_to_object" title="More information on the array_to_object function." class="stop tip">array_to_object</a>, 
-                                                                    <a href="search:array_to_xml" title="More information on the array_to_xml function." class="stop tip">array_to_xml</a>, 
-                                                                    <a href="search:ini" title="More information on the ini function." class="stop tip">ini</a>, 
-                                                                    <a href="search:object_to_array" title="More information on the object_to_array function." class="stop tip">object_to_array</a>, 
-                                                                    <a href="search:remove_dir" title="More information on the remove_dir function." class="stop tip">remove_dir</a>, 
-                                                                    <a href="search:typeof" title="More information on the typeof function." class="stop tip">typeof</a>, 
-                                                                    <a href="search:a" title="More information on the a function." class="stop tip">a</a>, 
-                                                                    <a href="search:baseurl" title="More information on the baseurl function." class="stop tip">baseurl</a>, 
-                                                                    <a href="search:button" title="More information on the button function." class="stop tip">button</a>, 
-                                                                    <a href="search:cdata" title="More information on the cdata function." class="stop tip">cdata</a>, 
-                                                                    <a href="search:css" title="More information on the css function." class="stop tip">css</a>, 
-                                                                    <a href="search:form" title="More information on the form function." class="stop tip">form</a>, 
-                                                                    <a href="search:highlight" title="More information on the highlight function." class="stop tip">highlight</a>, 
-                                                                    <a href="search:highlight_line" title="More information on the highlight_line function." class="stop tip">highlight_line</a>, 
-                                                                    <a href="search:i18n_baseurl" title="More information on the i18n_baseurl function." class="stop tip">i18n_baseurl</a>, 
-                                                                    <a href="search:img" title="More information on the img function." class="stop tip">img</a>, 
-                                                                    <a href="search:input" title="More information on the input function." class="stop tip">input</a>, 
-                                                                    <a href="search:js" title="More information on the js function." class="stop tip">js</a>, 
-                                                                    <a href="search:l" title="More information on the l function." class="stop tip">l</a>, 
-                                                                    <a href="search:label" title="More information on the label function." class="stop tip">label</a>, 
-                                                                    <a href="search:lang_select" title="More information on the lang_select function." class="stop tip">lang_select</a>, 
-                                                                    <a href="search:lnk" title="More information on the lnk function." class="stop tip">lnk</a>, 
-                                                                    <a href="search:radio" title="More information on the radio function." class="stop tip">radio</a>, 
-                                                                    <a href="search:rule" title="More information on the rule function." class="stop tip">rule</a>, 
-                                                                    <a href="search:select" title="More information on the select function." class="stop tip">select</a>, 
-                                                                    <a href="search:submit" title="More information on the submit function." class="stop tip">submit</a>, 
-                                                                    <a href="search:t" title="More information on the t function." class="stop tip">t</a>, 
-                                                                    <a href="search:tag" title="More information on the tag function." class="stop tip">tag</a>, 
-                                                                    <a href="search:textarea" title="More information on the textarea function." class="stop tip">textarea</a>, 
-                                                                    <a href="search:validate" title="More information on the validate function." class="stop tip">validate</a>
+                                                                <td>
+                                                                    <a
+                                                                        href="search:flag"
+                                                                        title="More information on the flag function."
+                                                                        class="stop tip"
+                                                                        >flag</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:lang"
+                                                                        title="More information on the lang function."
+                                                                        class="stop tip"
+                                                                        >lang</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:debugging"
+                                                                        title="More information on the debugging function."
+                                                                        class="stop tip"
+                                                                        >debugging</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:help"
+                                                                        title="More information on the help function."
+                                                                        class="stop tip"
+                                                                        >help</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:octoms"
+                                                                        title="More information on the octoms function."
+                                                                        class="stop tip"
+                                                                        >octoms</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:blowfish_encrypt"
+                                                                        title="More information on the blowfish_encrypt function."
+                                                                        class="stop tip"
+                                                                        >blowfish_encrypt</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:blowfish_decrypt"
+                                                                        title="More information on the blowfish_decrypt function."
+                                                                        class="stop tip"
+                                                                        >blowfish_decrypt</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:tiny"
+                                                                        title="More information on the tiny function."
+                                                                        class="stop tip"
+                                                                        >tiny</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:untiny"
+                                                                        title="More information on the untiny function."
+                                                                        class="stop tip"
+                                                                        >untiny</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:ago"
+                                                                        title="More information on the ago function."
+                                                                        class="stop tip"
+                                                                        >ago</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_depth"
+                                                                        title="More information on the array_depth function."
+                                                                        class="stop tip"
+                                                                        >array_depth</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_flat"
+                                                                        title="More information on the array_flat function."
+                                                                        class="stop tip"
+                                                                        >array_flat</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_is_assoc"
+                                                                        title="More information on the array_is_assoc function."
+                                                                        class="stop tip"
+                                                                        >array_is_assoc</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_structure"
+                                                                        title="More information on the array_structure function."
+                                                                        class="stop tip"
+                                                                        >array_structure</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_to_object"
+                                                                        title="More information on the array_to_object function."
+                                                                        class="stop tip"
+                                                                        >array_to_object</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:array_to_xml"
+                                                                        title="More information on the array_to_xml function."
+                                                                        class="stop tip"
+                                                                        >array_to_xml</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:ini"
+                                                                        title="More information on the ini function."
+                                                                        class="stop tip"
+                                                                        >ini</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:object_to_array"
+                                                                        title="More information on the object_to_array function."
+                                                                        class="stop tip"
+                                                                        >object_to_array</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:remove_dir"
+                                                                        title="More information on the remove_dir function."
+                                                                        class="stop tip"
+                                                                        >remove_dir</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:typeof"
+                                                                        title="More information on the typeof function."
+                                                                        class="stop tip"
+                                                                        >typeof</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:a"
+                                                                        title="More information on the a function."
+                                                                        class="stop tip"
+                                                                        >a</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:baseurl"
+                                                                        title="More information on the baseurl function."
+                                                                        class="stop tip"
+                                                                        >baseurl</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:button"
+                                                                        title="More information on the button function."
+                                                                        class="stop tip"
+                                                                        >button</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:cdata"
+                                                                        title="More information on the cdata function."
+                                                                        class="stop tip"
+                                                                        >cdata</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:css"
+                                                                        title="More information on the css function."
+                                                                        class="stop tip"
+                                                                        >css</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:form"
+                                                                        title="More information on the form function."
+                                                                        class="stop tip"
+                                                                        >form</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:highlight"
+                                                                        title="More information on the highlight function."
+                                                                        class="stop tip"
+                                                                        >highlight</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:highlight_line"
+                                                                        title="More information on the highlight_line function."
+                                                                        class="stop tip"
+                                                                        >highlight_line</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:i18n_baseurl"
+                                                                        title="More information on the i18n_baseurl function."
+                                                                        class="stop tip"
+                                                                        >i18n_baseurl</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:img"
+                                                                        title="More information on the img function."
+                                                                        class="stop tip"
+                                                                        >img</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:input"
+                                                                        title="More information on the input function."
+                                                                        class="stop tip"
+                                                                        >input</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:js"
+                                                                        title="More information on the js function."
+                                                                        class="stop tip"
+                                                                        >js</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:l"
+                                                                        title="More information on the l function."
+                                                                        class="stop tip"
+                                                                        >l</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:label"
+                                                                        title="More information on the label function."
+                                                                        class="stop tip"
+                                                                        >label</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:lang_select"
+                                                                        title="More information on the lang_select function."
+                                                                        class="stop tip"
+                                                                        >lang_select</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:lnk"
+                                                                        title="More information on the lnk function."
+                                                                        class="stop tip"
+                                                                        >lnk</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:radio"
+                                                                        title="More information on the radio function."
+                                                                        class="stop tip"
+                                                                        >radio</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:rule"
+                                                                        title="More information on the rule function."
+                                                                        class="stop tip"
+                                                                        >rule</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:select"
+                                                                        title="More information on the select function."
+                                                                        class="stop tip"
+                                                                        >select</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:submit"
+                                                                        title="More information on the submit function."
+                                                                        class="stop tip"
+                                                                        >submit</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:t"
+                                                                        title="More information on the t function."
+                                                                        class="stop tip"
+                                                                        >t</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:tag"
+                                                                        title="More information on the tag function."
+                                                                        class="stop tip"
+                                                                        >tag</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:textarea"
+                                                                        title="More information on the textarea function."
+                                                                        class="stop tip"
+                                                                        >textarea</a
+                                                                    >,
+                                                                    <a
+                                                                        href="search:validate"
+                                                                        title="More information on the validate function."
+                                                                        class="stop tip"
+                                                                        >validate</a
+                                                                    >
                                                                 </td>
                                                             </tr>
                                                             <tr>
@@ -324,34 +857,83 @@
                                                                 <td colspan="2">
                                                                     <div class="a">
                                                                         <span class="symbol">⇑</span>
-                                                                        <span class="tip" title="Click to view/hide the GET data."><i>GET</i></span><br>
+                                                                        <span class="tip" title="Click to view/hide the GET data."
+                                                                            ><i>GET</i></span
+                                                                        ><br />
                                                                         <div class="b ob">
                                                                             <table class="code">
                                                                                 <tbody>
-                                                                                    <tr><td>1</td><td><span style="color: #007700">Array</span></td></tr>
-                                                                                    <tr><td>2</td><td>(</td></tr>
-                                                                                    <tr><td>3</td><td>&nbsp;&nbsp;&nbsp;&nbsp;[:<span style="color: #0000BB">debug</span><span style="color: #007700">]&nbsp;=&gt;&nbsp;</span></td></tr>
-                                                                                    <tr><td>4</td><td>)</td></tr>
-                                                                                    <tr><td>5</td><td></td></tr>
+                                                                                    <tr>
+                                                                                        <td>1</td>
+                                                                                        <td>
+                                                                                            <span style="color: #007700"
+                                                                                                >Array</span
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>2</td>
+                                                                                        <td>(</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>3</td>
+                                                                                        <td>
+                                                                                            &nbsp;&nbsp;&nbsp;&nbsp;[:<span
+                                                                                                style="color: #0000bb"
+                                                                                                >debug</span
+                                                                                            ><span style="color: #007700"
+                                                                                                >]&nbsp;=&gt;&nbsp;</span
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>4</td>
+                                                                                        <td>)</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>5</td>
+                                                                                        <td></td>
+                                                                                    </tr>
                                                                                 </tbody>
-                                                                            </table>                    
+                                                                            </table>
                                                                         </div>
                                                                     </div>
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2">
-                                                                    <div class="a"><span class="symbol">⇑</span>
-                                                                        <span class="tip" title="Click to view/hide the POST data."><i>POST</i></span><br>
+                                                                    <div class="a">
+                                                                        <span class="symbol">⇑</span>
+                                                                        <span
+                                                                            class="tip"
+                                                                            title="Click to view/hide the POST data."
+                                                                            ><i>POST</i></span
+                                                                        ><br />
                                                                         <div class="b ob">
                                                                             <table class="code">
                                                                                 <tbody>
-                                                                                    <tr><td>1</td><td><span style="color: #007700">Array</span></td></tr>
-                                                                                    <tr><td>2</td><td>(</td></tr>
-                                                                                    <tr><td>3</td><td>)</td></tr>
-                                                                                    <tr><td>4</td><td></td></tr>
+                                                                                    <tr>
+                                                                                        <td>1</td>
+                                                                                        <td>
+                                                                                            <span style="color: #007700"
+                                                                                                >Array</span
+                                                                                            >
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>2</td>
+                                                                                        <td>(</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>3</td>
+                                                                                        <td>)</td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td>4</td>
+                                                                                        <td></td>
+                                                                                    </tr>
                                                                                 </tbody>
-                                                                            </table>                    
+                                                                            </table>
                                                                         </div>
                                                                     </div>
                                                                 </td>
@@ -361,19 +943,37 @@
                                                             </tr>
                                                             <tr>
                                                                 <td colspan="2">
-                                                                    <div class="a"><span class="symbol">⇑</span>
-                                                                        <span class="tip" title="Click to view/hide the sent headers."><i>Headers</i></span><br>
-                                                                        <div class="b ob adjust" style="overflow-x:scroll;overflow-y:hidden;">
-                                                                            X-Powered-By: PHP/7.3.21<br>Host: localhost<br>Accept: */*<br>User_agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36<br>                    </div>
+                                                                    <div class="a">
+                                                                        <span class="symbol">⇑</span>
+                                                                        <span
+                                                                            class="tip"
+                                                                            title="Click to view/hide the sent headers."
+                                                                            ><i>Headers</i></span
+                                                                        ><br />
+                                                                        <div
+                                                                            class="b ob adjust"
+                                                                            style="overflow-x: scroll; overflow-y: hidden">
+                                                                            X-Powered-By: PHP/7.3.21<br />Host: localhost<br />Accept:
+                                                                            */*<br />User_agent: Mozilla/5.0 (Windows NT 10.0;
+                                                                            Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko)
+                                                                            Chrome/91.0.4472.124 Safari/537.36<br />
+                                                                        </div>
                                                                     </div>
-                                                                    <div class="a"><span class="symbol">⇑</span>
-                                                                        <span class="tip" title="Click to view/hide the output buffer."><i>Content</i></span><br>
+                                                                    <div class="a">
+                                                                        <span class="symbol">⇑</span>
+                                                                        <span
+                                                                            class="tip"
+                                                                            title="Click to view/hide the output buffer."
+                                                                            ><i>Content</i></span
+                                                                        ><br />
                                                                         <div class="b ob">
-                                                                            &lt;!DOCTYPE HTML&gt;<br>&lt;html&gt;<br>...</div>
+                                                                            &lt;!DOCTYPE HTML&gt;<br />&lt;html&gt;<br />...
+                                                                        </div>
                                                                     </div>
                                                                 </td>
                                                             </tr>
-                                                        </tbody></table>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
                                             </div>
                                         </div>
@@ -392,7 +992,7 @@
                 <div id="bottom-bar"></div>
             </div>
         </div>
-        
+
         <script type="text/javascript" src="./js/common/jquery.js"></script>
         <script type="text/javascript" src="./js/common/jquery-ui.js"></script>
         <script type="text/javascript" src="./js/functions.js"></script>

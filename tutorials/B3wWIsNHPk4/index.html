@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; Audio Recorder</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/B3wWIsNHPk4/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="js,audio recorder">
-        <meta name="Description" content="Recording audio with HTML 5 and JavaScript">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/B3wWIsNHPk4/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="js,audio recorder" />
+        <meta name="Description" content="Recording audio with HTML 5 and JavaScript" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -21,12 +21,12 @@
                 display: flex;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
                 height: 100%;
                 width: 100%;
                 margin: 0;
@@ -43,19 +43,17 @@
                 outline: none;
                 display: block;
                 border: none;
-                background-color: #D9AFD9;
-                background-image: -webkit-gradient(linear, left bottom, left top, from(#D9AFD9), to(#97D9E1));
-                background-image: -o-linear-gradient(bottom, #D9AFD9 0%, #97D9E1 100%);
-                background-image: linear-gradient(0deg, #D9AFD9 0%, #97D9E1 100%);
+                background-color: #d9afd9;
+                background-image: -webkit-gradient(linear, left bottom, left top, from(#d9afd9), to(#97d9e1));
+                background-image: -o-linear-gradient(bottom, #d9afd9 0%, #97d9e1 100%);
+                background-image: linear-gradient(0deg, #d9afd9 0%, #97d9e1 100%);
                 width: 100px;
                 height: 100px;
                 border-radius: 50%;
                 text-indent: -1000em;
                 cursor: pointer;
-                -webkit-box-shadow: 0px 5px 5px 2px rgba(0,0,0,0.3) inset, 
-                    0px 0px 0px 30px #fff, 0px 0px 0px 35px #333;
-                        box-shadow: 0px 5px 5px 2px rgba(0,0,0,0.3) inset, 
-                    0px 0px 0px 30px #fff, 0px 0px 0px 35px #333;
+                -webkit-box-shadow: 0px 5px 5px 2px rgba(0, 0, 0, 0.3) inset, 0px 0px 0px 30px #fff, 0px 0px 0px 35px #333;
+                box-shadow: 0px 5px 5px 2px rgba(0, 0, 0, 0.3) inset, 0px 0px 0px 30px #fff, 0px 0px 0px 35px #333;
             }
             [data-role="controls"] > button:hover {
                 background-color: #ee7bee;
@@ -89,10 +87,10 @@
                 color: #fff;
                 font-weight: bold;
                 text-decoration: underline;
-                background-color: #0093E9;
-                background-image: -webkit-gradient(linear, left bottom, left top, from(#0093E9), to(#80D0C7));
-                background-image: -o-linear-gradient(bottom, #0093E9 0%, #80D0C7 100%);
-                background-image: linear-gradient(0deg, #0093E9 0%, #80D0C7 100%);
+                background-color: #0093e9;
+                background-image: -webkit-gradient(linear, left bottom, left top, from(#0093e9), to(#80d0c7));
+                background-image: -o-linear-gradient(bottom, #0093e9 0%, #80d0c7 100%);
+                background-image: linear-gradient(0deg, #0093e9 0%, #80d0c7 100%);
                 float: right;
                 margin-left: 20px;
                 cursor: pointer;
@@ -101,13 +99,13 @@
                 text-decoration: none;
             }
             [data-role="recordings"] > .row > a:active {
-                background-image: -webkit-gradient(linear, left top, left bottom, from(#0093E9), to(#80D0C7));
-                background-image: -o-linear-gradient(top, #0093E9 0%, #80D0C7 100%);
-                background-image: linear-gradient(180deg, #0093E9 0%, #80D0C7 100%);
+                background-image: -webkit-gradient(linear, left top, left bottom, from(#0093e9), to(#80d0c7));
+                background-image: -o-linear-gradient(top, #0093e9 0%, #80d0c7 100%);
+                background-image: linear-gradient(180deg, #0093e9 0%, #80d0c7 100%);
             }
         </style>
         <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
-        <script src="https://markjivko.com/dist/recorder.js"></script>
+        <script src="https://portfolio.markjivko.com/dist/recorder.js"></script>
         <script>
             jQuery(document).ready(function () {
                 var $ = jQuery;
@@ -119,21 +117,22 @@
                     },
                     init: function () {
                         if (null === myRecorder.objects.context) {
-                            myRecorder.objects.context = new (
-                                    window.AudioContext || window.webkitAudioContext
-                                    );
+                            myRecorder.objects.context = new (window.AudioContext || window.webkitAudioContext)();
                         }
                     },
                     start: function () {
-                        var options = {audio: true, video: false};
-                        navigator.mediaDevices.getUserMedia(options).then(function (stream) {
-                            myRecorder.objects.stream = stream;
-                            myRecorder.objects.recorder = new Recorder(
+                        var options = { audio: true, video: false };
+                        navigator.mediaDevices
+                            .getUserMedia(options)
+                            .then(function (stream) {
+                                myRecorder.objects.stream = stream;
+                                myRecorder.objects.recorder = new Recorder(
                                     myRecorder.objects.context.createMediaStreamSource(stream),
-                                    {numChannels: 1}
-                            );
-                            myRecorder.objects.recorder.record();
-                        }).catch(function (err) {});
+                                    { numChannels: 1 }
+                                );
+                                myRecorder.objects.recorder.record();
+                            })
+                            .catch(function (err) {});
                     },
                     stop: function (listObject) {
                         if (null !== myRecorder.objects.stream) {
@@ -143,27 +142,21 @@
                             myRecorder.objects.recorder.stop();
 
                             // Validate object
-                            if (null !== listObject
-                                    && 'object' === typeof listObject
-                                    && listObject.length > 0) {
+                            if (null !== listObject && "object" === typeof listObject && listObject.length > 0) {
                                 // Export the WAV file
                                 myRecorder.objects.recorder.exportWAV(function (blob) {
-                                    var url = (window.URL || window.webkitURL)
-                                            .createObjectURL(blob);
+                                    var url = (window.URL || window.webkitURL).createObjectURL(blob);
 
                                     // Prepare the playback
-                                    var audioObject = $('<audio controls></audio>')
-                                            .attr('src', url);
+                                    var audioObject = $("<audio controls></audio>").attr("src", url);
 
                                     // Prepare the download link
-                                    var downloadObject = $('<a>&#9660;</a>')
-                                            .attr('href', url)
-                                            .attr('download', new Date().toUTCString() + '.wav');
+                                    var downloadObject = $("<a>&#9660;</a>")
+                                        .attr("href", url)
+                                        .attr("download", new Date().toUTCString() + ".wav");
 
                                     // Wrap everything in a row
-                                    var holderObject = $('<div class="row"></div>')
-                                            .append(audioObject)
-                                            .append(downloadObject);
+                                    var holderObject = $('<div class="row"></div>').append(audioObject).append(downloadObject);
 
                                     // Append to the list
                                     listObject.append(holderObject);
@@ -181,15 +174,15 @@
                     // Initialize the recorder
                     myRecorder.init();
 
-                    // Get the button state 
-                    var buttonState = !!$(this).attr('data-recording');
+                    // Get the button state
+                    var buttonState = !!$(this).attr("data-recording");
 
                     // Toggle
                     if (!buttonState) {
-                        $(this).attr('data-recording', 'true');
+                        $(this).attr("data-recording", "true");
                         myRecorder.start();
                     } else {
-                        $(this).attr('data-recording', '');
+                        $(this).attr("data-recording", "");
                         myRecorder.stop(listObject);
                     }
                 });

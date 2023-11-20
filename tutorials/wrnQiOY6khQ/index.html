@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; CSS Sprite Animation</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/wrnQiOY6khQ/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,sprite">
-        <meta name="Description" content="Animating sprites with CSS and jQuery">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/wrnQiOY6khQ/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,sprite" />
+        <meta name="Description" content="Animating sprites with CSS and jQuery" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,12 +26,12 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
                 background: rgba(0, 0, 0, 0.9);
             }
             .holder {
@@ -44,12 +44,12 @@
                 margin-top: 100px;
                 width: 266.666px;
                 height: 200px;
-                background: url('./img/runner.png') no-repeat 0 0 transparent;
+                background: url("./img/runner.png") no-repeat 0 0 transparent;
             }
             .track {
                 margin-top: -50px;
-                width:100%; 
-                height:20px; 
+                width: 100%;
+                height: 20px;
                 background: orange;
             }
             button {
@@ -82,16 +82,16 @@
         <script>
             jQuery(document).ready(function () {
                 var $ = jQuery;
-                var runner = $('.runner');
+                var runner = $(".runner");
                 var steps = 24;
                 var currentStep = 0;
                 var delay = 35;
                 var trackLength = 600;
                 var nextStep = function () {
                     // Move the background
-                    runner.css('backgroundPosition', '-' + (6400 / 24 * currentStep) + 'px 0px');
+                    runner.css("backgroundPosition", "-" + (6400 / 24) * currentStep + "px 0px");
 
-                    runner.css('marginLeft', '' + trackLength + 'px');
+                    runner.css("marginLeft", "" + trackLength + "px");
 
                     // Increment the step
                     currentStep++;
@@ -113,24 +113,24 @@
                 nextStep();
 
                 // Buttons
-                $('#faster').click(function () {
+                $("#faster").click(function () {
                     delay -= 1;
                     if (delay <= 0) {
                         delay = 1;
                         $(this).fadeOut();
                     }
-                    $('#delay').html(delay);
+                    $("#delay").html(delay);
                 });
-                $('#slower').click(function () {
+                $("#slower").click(function () {
                     delay += 1;
                     if (delay >= 2) {
-                        $('#faster').fadeIn();
+                        $("#faster").fadeIn();
                     }
-                    $('#delay').html(delay);
+                    $("#delay").html(delay);
                 });
 
                 // First-time
-                $('#delay').html(delay);
+                $("#delay").html(delay);
             });
         </script>
     </head>

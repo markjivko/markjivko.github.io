@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; jQuery Parallax</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/51kG1Midf4s/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="jquery,parallax">
-        <meta name="Description" content="Creating a fun parallax effect with jQuery and mousemove">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/51kG1Midf4s/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="jquery,parallax" />
+        <meta name="Description" content="Creating a fun parallax effect with jQuery and mousemove" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -21,12 +21,12 @@
                 display: flex;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
                 height: 100%;
                 width: 100%;
                 margin: 0;
@@ -36,17 +36,17 @@
                 width: 500px;
                 height: 300px;
                 position: relative;
-                background: url('./img/cat.png') no-repeat 50% rgba(0,0,0,0.8);
+                background: url("./img/cat.png") no-repeat 50% rgba(0, 0, 0, 0.8);
                 background-size: 500px 265px;
                 overflow: hidden;
                 border-radius: 20px;
-                -webkit-box-shadow: 0px 20px 100px 0px rgba(255,255,255,0.5);
-                        box-shadow: 0px 20px 100px 0px rgba(255,255,255,0.5);
+                -webkit-box-shadow: 0px 20px 100px 0px rgba(255, 255, 255, 0.5);
+                box-shadow: 0px 20px 100px 0px rgba(255, 255, 255, 0.5);
             }
             .stripes {
                 width: 100%;
                 height: 100%;
-                background: url('./img/stripes.png') no-repeat 50% transparent;
+                background: url("./img/stripes.png") no-repeat 50% transparent;
                 background-size: 446px 381px;
                 position: absolute;
                 transform: translateX(100%);
@@ -55,15 +55,17 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
         <script>
             jQuery(document).ready(function () {
-                var $ = jQuery, stripes = $('.stripes'), body = $('body');
-                body.mousemove(function(e) {
+                var $ = jQuery,
+                    stripes = $(".stripes"),
+                    body = $("body");
+                body.mousemove(function (e) {
                     var windowWidth = body.width();
                     var itemWidth = stripes.outerWidth();
-                    var newPosition = e.pageX * (itemWidth - windowWidth) / windowWidth + windowWidth - 2 * itemWidth;
-                    
+                    var newPosition = (e.pageX * (itemWidth - windowWidth)) / windowWidth + windowWidth - 2 * itemWidth;
+
                     // Move the item
                     stripes.css({
-                        transform: 'translate(' + newPosition + 'px, 0px)'
+                        transform: "translate(" + newPosition + "px, 0px)"
                     });
                 });
             });

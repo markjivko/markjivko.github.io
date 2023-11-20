@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; CSS Sprites</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/5DHMzR_Wcsk/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,sprites">
-        <meta name="Description" content="Sprite animation using only CSS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/5DHMzR_Wcsk/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,sprites" />
+        <meta name="Description" content="Sprite animation using only CSS" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,13 +26,13 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
-                background: rgba(0,0,0,0.8);
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.8);
                 overflow: hidden;
             }
             .sprite-holder {
@@ -41,17 +41,17 @@
                 height: 600px;
                 overflow: hidden;
                 -webkit-transform: scaleX(-1);
-                    -ms-transform: scaleX(-1);
-                        transform: scaleX(-1);
+                -ms-transform: scaleX(-1);
+                transform: scaleX(-1);
             }
             .sprite-holder:before {
-                content: '';
+                content: "";
                 position: absolute;
                 width: 5400px;
                 height: 600px;
-                background: url('./img/fox.png') no-repeat 0 0 transparent;
+                background: url("./img/fox.png") no-repeat 0 0 transparent;
                 -webkit-animation: anim-position 0.5s steps(8) infinite;
-                        animation: anim-position 0.5s steps(8) infinite;
+                animation: anim-position 0.5s steps(8) infinite;
                 will-change: transform;
             }
             /* csstriggers.com */
@@ -74,21 +74,21 @@
             @-webkit-keyframes anim-translate {
                 0% {
                     -webkit-transform: translateX(0px);
-                            transform: translateX(0px);
+                    transform: translateX(0px);
                 }
                 100% {
                     -webkit-transform: translateX(-4800px);
-                            transform: translateX(-4800px);
+                    transform: translateX(-4800px);
                 }
             }
             @keyframes anim-translate {
                 0% {
                     -webkit-transform: translateX(0px);
-                            transform: translateX(0px);
+                    transform: translateX(0px);
                 }
                 100% {
                     -webkit-transform: translateX(-4800px);
-                            transform: translateX(-4800px);
+                    transform: translateX(-4800px);
                 }
             }
         </style>

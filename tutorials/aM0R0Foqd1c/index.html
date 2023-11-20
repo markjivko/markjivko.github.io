@@ -1,26 +1,27 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; Digital Clock</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/aM0R0Foqd1c/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="js,digital clock">
-        <meta name="Description" content="Creating a digital clock with CSS and jQuery">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/aM0R0Foqd1c/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="js,digital clock" />
+        <meta name="Description" content="Creating a digital clock with CSS and jQuery" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             /*Clock*/
             [data-role="clock"] {
                 display: block;
                 background: red;
                 width: 1020px;
-                margin: 300px auto 0;	
+                margin: 300px auto 0;
             }
-            [data-role="digit"], [data-role="separator"] {
+            [data-role="digit"],
+            [data-role="separator"] {
                 float: left;
                 margin-left: 40px;
             }
@@ -30,7 +31,8 @@
             [data-role="clock"] > [data-role="digit"]:last-child {
                 margin-right: 10px;
             }
-            [data-role="separator"], [data-role="separator"]:after {
+            [data-role="separator"],
+            [data-role="separator"]:after {
                 width: 20px;
                 height: 20px;
                 border-radius: 5px;
@@ -38,11 +40,11 @@
                 background-image: -o-linear-gradient(135deg, #0cbaba 0%, #380036 74%);
                 background-image: linear-gradient(315deg, #0cbaba 0%, #380036 74%);
                 -webkit-transform: translate(0, 80px);
-                    -ms-transform: translate(0, 80px);
-                        transform: translate(0, 80px);
+                -ms-transform: translate(0, 80px);
+                transform: translate(0, 80px);
             }
             [data-role="separator"]:after {
-                content: '';
+                content: "";
                 display: block;
             }
 
@@ -68,17 +70,17 @@
             [data-role="digit"]:after,
             [data-role="digit"] > i:before,
             [data-role="digit"] > i:after {
-                content: '';
+                content: "";
                 display: block;
                 position: absolute;
                 -webkit-transform: translate(0, 120px);
-                    -ms-transform: translate(0, 120px);
-                        transform: translate(0, 120px);
+                -ms-transform: translate(0, 120px);
+                transform: translate(0, 120px);
             }
             [data-role="digit"]:after {
                 -webkit-transform: translate(0, 200px);
-                    -ms-transform: translate(0, 200px);
-                        transform: translate(0, 200px);
+                -ms-transform: translate(0, 200px);
+                transform: translate(0, 200px);
             }
             [data-role="digit"] > i {
                 display: block;
@@ -87,23 +89,23 @@
                 width: 100px;
                 height: 20px;
                 -webkit-transform: translate(0, 60px) rotate(90deg);
-                    -ms-transform: translate(0, 60px) rotate(90deg);
-                        transform: translate(0, 60px) rotate(90deg);
+                -ms-transform: translate(0, 60px) rotate(90deg);
+                transform: translate(0, 60px) rotate(90deg);
             }
             [data-role="digit"] > i:nth-child(2) {
                 -webkit-transform: translate(0, 160px) rotate(90deg);
-                    -ms-transform: translate(0, 160px) rotate(90deg);
-                        transform: translate(0, 160px) rotate(90deg);
+                -ms-transform: translate(0, 160px) rotate(90deg);
+                transform: translate(0, 160px) rotate(90deg);
             }
             [data-role="digit"] > i:before {
                 -webkit-transform: translate(0px, 50px);
-                    -ms-transform: translate(0px, 50px);
-                        transform: translate(0px, 50px);
+                -ms-transform: translate(0px, 50px);
+                transform: translate(0px, 50px);
             }
             [data-role="digit"] > i:after {
                 -webkit-transform: translate(0px, -50px);
-                    -ms-transform: translate(0px, -50px);
-                        transform: translate(0px, -50px);
+                -ms-transform: translate(0px, -50px);
+                transform: translate(0px, -50px);
             }
 
             /* Digits: 1 */
@@ -148,9 +150,7 @@
                 var $ = jQuery;
 
                 // Prepare the templates
-                var digitTemplate = '<div data-role="digit" data-digit="x">'
-                        + '<i></i><i></i>'
-                        + '</div>';
+                var digitTemplate = '<div data-role="digit" data-digit="x">' + "<i></i><i></i>" + "</div>";
                 var separatorTemplate = '<div data-role="separator"></div>';
 
                 // Prepare the objects
@@ -168,21 +168,28 @@
                 ];
 
                 // Create the clock
-                clockObject.append(digitObjects[0]).append(digitObjects[1])
-                        .append($(separatorTemplate))
-                        .append(digitObjects[2]).append(digitObjects[3])
-                        .append($(separatorTemplate))
-                        .append(digitObjects[4]).append(digitObjects[5]);
+                clockObject
+                    .append(digitObjects[0])
+                    .append(digitObjects[1])
+                    .append($(separatorTemplate))
+                    .append(digitObjects[2])
+                    .append(digitObjects[3])
+                    .append($(separatorTemplate))
+                    .append(digitObjects[4])
+                    .append(digitObjects[5]);
 
                 // Animate the time
                 window.setInterval(function () {
-                    moment().format('hhmmss').split('').forEach(function (digit, key) {
-                        if ("undefined" !== typeof digitObjects[key]) {
-                            if (digitObjects[key].attr('data-digit') !== digit) {
-                                digitObjects[key].attr('data-digit', digit);
+                    moment()
+                        .format("hhmmss")
+                        .split("")
+                        .forEach(function (digit, key) {
+                            if ("undefined" !== typeof digitObjects[key]) {
+                                if (digitObjects[key].attr("data-digit") !== digit) {
+                                    digitObjects[key].attr("data-digit", digit);
+                                }
                             }
-                        }
-                    });
+                        });
                 }, 1000);
             });
         </script>

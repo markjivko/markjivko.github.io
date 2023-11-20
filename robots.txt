@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://markjivko.com/sitemap.xml
+Sitemap: https://portfolio.markjivko.com/sitemap.xml

@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; HTML Canvas: Circles and Ellipses</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/78NyTc40Xgo/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="html,canvas">
-        <meta name="Description" content="Exploring circles and ellipses in html Canvas elements">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/78NyTc40Xgo/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="html,canvas" />
+        <meta name="Description" content="Exploring circles and ellipses in html Canvas elements" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,13 +26,13 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
-                background: rgba(0,0,0,0.8);
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.8);
                 overflow: hidden;
             }
             #myCanvas {
@@ -43,14 +43,15 @@
         <script type="text/javascript" src="https://code.jquery.com/jquery.min.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function () {
-                var $ = jQuery, canvas = $('#myCanvas')[0];
-                
-                var c = canvas.getContext('2d');
-                
+                var $ = jQuery,
+                    canvas = $("#myCanvas")[0];
+
+                var c = canvas.getContext("2d");
+
                 // Prepare the color
-                c.strokeStyle = 'rgba(238, 238, 0, 1)';
+                c.strokeStyle = "rgba(238, 238, 0, 1)";
                 c.lineWidth = 5;
-                
+
                 // Draw the smiley
                 c.beginPath();
                 c.arc(110, 110, 100, 0, Math.PI * 2);

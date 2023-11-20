@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; jQuery UI Slider</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/2VzBU9fq7eE/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="jquery,slider">
-        <meta name="Description" content="Exploring the jQuery UI slider">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/2VzBU9fq7eE/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="jquery,slider" />
+        <meta name="Description" content="Exploring the jQuery UI slider" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,12 +26,12 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
                 background: pink;
             }
             .holder {
@@ -43,7 +43,7 @@
                 height: 320px;
                 border-radius: 50%;
                 -webkit-box-shadow: 0px 0px 5px 0px #fff;
-                        box-shadow: 0px 0px 5px 0px #fff;
+                box-shadow: 0px 0px 5px 0px #fff;
                 margin: 25% auto 0;
             }
             .slider {
@@ -54,23 +54,23 @@
                 position: absolute;
                 border-radius: 50%;
                 -webkit-box-shadow: 0px 0px 5px 1px #fff;
-                        box-shadow: 0px 0px 5px 1px #fff;
-                background: rgba(255,255,255,0.8);
+                box-shadow: 0px 0px 5px 1px #fff;
+                background: rgba(255, 255, 255, 0.8);
                 z-index: 1;
             }
         </style>
-        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css" />
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function () {
                 var $ = jQuery;
-                var body = $('body'),
-                        slider = $('.slider'),
-                        moon = $('.moon'),
-                        sliderDefault = 15,
-                        moonSize,
-                        shadowRadius;
+                var body = $("body"),
+                    slider = $(".slider"),
+                    moon = $(".moon"),
+                    sliderDefault = 15,
+                    moonSize,
+                    shadowRadius;
 
                 // Add the stars
                 for (var i = 0; i <= 200; i++) {
@@ -79,12 +79,14 @@
                     var top = body.height() * Math.random() - 5;
 
                     // Append the star
-                    $('<div class="star"></div>').css({
-                        width: dim,
-                        height: dim,
-                        left: left + 'px',
-                        top: top + 'px',
-                    }).appendTo(body);
+                    $('<div class="star"></div>')
+                        .css({
+                            width: dim,
+                            height: dim,
+                            left: left + "px",
+                            top: top + "px"
+                        })
+                        .appendTo(body);
                 }
 
                 // Slide change function
@@ -92,15 +94,15 @@
                     var value = "undefined" === typeof ui.value ? sliderDefault : ui.value;
 
                     // Shadow radius
-                    shadowRadius = (0 === value ? 5 : 0);
+                    shadowRadius = 0 === value ? 5 : 0;
 
                     // Moon size
                     moonSize = parseInt(moon.width() * (value / 100), 10);
 
                     // Update the CSS
                     moon.css({
-                        'box-shadow': moonSize + 'px 0px ' + shadowRadius + 'px 0px #fff',
-                        'transform': 'translateX(' + (-moonSize) + 'px'
+                        "box-shadow": moonSize + "px 0px " + shadowRadius + "px 0px #fff",
+                        "transform": "translateX(" + -moonSize + "px"
                     });
                 };
 
@@ -115,7 +117,7 @@
             });
         </script>
     </head>
-    <body> 
+    <body>
         <div class="holder">
             <div class="moon"></div>
             <div class="slider"></div>

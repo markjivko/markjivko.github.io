@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; Drop-Down Navigation Menu</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/8VVPpuccBmE/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,menu">
-        <meta name="Description" content="Creating a very simple drop-down navigation using only CSS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/8VVPpuccBmE/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,menu" />
+        <meta name="Description" content="Creating a very simple drop-down navigation using only CSS" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,45 +26,31 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
-                background: rgba(0,0,0,0.8);
+                -ms-flex-pack: center;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.8);
                 overflow: hidden;
             }
             body:before {
-                content: '';
+                content: "";
                 display: block;
                 width: 300%;
                 height: 100px;
                 background: #14a3cd;
                 position: absolute;
                 z-index: 1;
-                -webkit-box-shadow: 0px -10px 20px 0px rgba(0,0,0,0.5) inset,
-                    0px 100px 0px 0px #fff, 
-                    0px 199px 0px 0px #fff, 
-                    0px 298px 0px 0px #fff, 
-                    0px 397px 0px 0px #fff, 
-                    0px 496px 0px 0px #fff, 
-                    0px 595px 0px 0px #fff,
-                    0px 694px 0px 0px #fff,
-                    0px 793px 0px 0px #fff,
-                    0px 892px 0px 0px #fff;
-                        box-shadow: 0px -10px 20px 0px rgba(0,0,0,0.5) inset,
-                    0px 100px 0px 0px #fff, 
-                    0px 199px 0px 0px #fff, 
-                    0px 298px 0px 0px #fff, 
-                    0px 397px 0px 0px #fff, 
-                    0px 496px 0px 0px #fff, 
-                    0px 595px 0px 0px #fff,
-                    0px 694px 0px 0px #fff,
-                    0px 793px 0px 0px #fff,
-                    0px 892px 0px 0px #fff;
+                -webkit-box-shadow: 0px -10px 20px 0px rgba(0, 0, 0, 0.5) inset, 0px 100px 0px 0px #fff, 0px 199px 0px 0px #fff,
+                    0px 298px 0px 0px #fff, 0px 397px 0px 0px #fff, 0px 496px 0px 0px #fff, 0px 595px 0px 0px #fff,
+                    0px 694px 0px 0px #fff, 0px 793px 0px 0px #fff, 0px 892px 0px 0px #fff;
+                box-shadow: 0px -10px 20px 0px rgba(0, 0, 0, 0.5) inset, 0px 100px 0px 0px #fff, 0px 199px 0px 0px #fff,
+                    0px 298px 0px 0px #fff, 0px 397px 0px 0px #fff, 0px 496px 0px 0px #fff, 0px 595px 0px 0px #fff,
+                    0px 694px 0px 0px #fff, 0px 793px 0px 0px #fff, 0px 892px 0px 0px #fff;
                 -webkit-transform-origin: 0 0;
-                    -ms-transform-origin: 0 0;
-                        transform-origin: 0 0;
+                -ms-transform-origin: 0 0;
+                transform-origin: 0 0;
                 -webkit-transform: rotate(45deg);
-                    -ms-transform: rotate(45deg);
-                        transform: rotate(45deg);
+                -ms-transform: rotate(45deg);
+                transform: rotate(45deg);
                 left: -50px;
                 top: -60px;
             }
@@ -84,7 +70,7 @@
             }
             .menu li {
                 text-align: center;
-                font: bold 32px 'Comic Sans MS';
+                font: bold 32px "Comic Sans MS";
                 color: #292929;
                 height: 100%;
                 width: 100%;
@@ -94,7 +80,7 @@
                 cursor: pointer;
                 text-shadow: 1px 1px 1px #2ab7e3;
                 -webkit-box-shadow: inset -4px 0 0 -2px #292929;
-                        box-shadow: inset -4px 0 0 -2px #292929;
+                box-shadow: inset -4px 0 0 -2px #292929;
             }
             .menu li:hover {
                 background: #fff;
@@ -114,7 +100,7 @@
             }
             .menu ul ul li {
                 -webkit-box-shadow: inset -4px -4px 0 -2px #292929;
-                        box-shadow: inset -4px -4px 0 -2px #292929;
+                box-shadow: inset -4px -4px 0 -2px #292929;
             }
         </style>
     </head>

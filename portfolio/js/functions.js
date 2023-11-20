@@ -4,7 +4,7 @@
  * @title      Portfolio
  * @desc       Portfolio functionality
  * @copyright  (c) 2021, Mark Jivko
- * @author     Mark Jivko https://markjivko.com
+ * @author     Mark Jivko https://portfolio.markjivko.com
  * @package    markjivko.com
  * @license    GPL v3+, https://gnu.org/licenses/gpl-3.0.txt
  */
@@ -18,33 +18,33 @@ jQuery &&
             githubUrl: body.attr("data-author-url") ?? "https://github.com/markjivko/",
             startYear: 2020,
             areas: {
-                php: "PHP",
+                "php": "PHP",
                 "back-end": "Back-end",
-                js: "JS",
+                "js": "JS",
                 "front-end": "Front-end",
-                java: "Java",
-                android: "Android",
-                desktop: "Desktop",
+                "java": "Java",
+                "android": "Android",
+                "desktop": "Desktop"
             },
             soundSprite: {
-                php: [0, 100],
-                java: [220, 100],
-                js: [420, 200],
+                "php": [0, 100],
+                "java": [220, 100],
+                "js": [420, 200],
                 "front-end": [520, 200],
                 "back-end": [900, 200],
-                android: [1400, 300],
-                desktop: [2000, 150],
-                all: [0, 15000],
+                "android": [1400, 300],
+                "desktop": [2000, 150],
+                "all": [0, 15000]
             },
             frameHeight: 450, // vh
             itemWidth: 200, // px
             itemsInCell: 3,
-            themes: ["blue", "orange", "red", "green", "black"],
+            themes: ["blue", "orange", "red", "green", "black"]
         };
         var global = {
             data: {
                 ready: false,
-                scrollOk: false,
+                scrollOk: false
             },
 
             // jQuery objects
@@ -56,7 +56,7 @@ jQuery &&
                 body: $("body"),
                 frames: {
                     hero: $('[data-frame="hero"]'),
-                    final: $('[data-frame="final"]'),
+                    final: $('[data-frame="final"]')
                 },
                 banner: $('[data-effect="banner"]'),
                 loading: $('[data-role="loading"]'),
@@ -73,18 +73,18 @@ jQuery &&
                 levelUp: null,
                 levelUpCache: {
                     cells: {},
-                    coords: {},
+                    coords: {}
                 },
                 techStack: $('[data-effect="tech-stack"]'),
                 techStackList: null,
-                smallDevice: Math.min($(window).width(), $(window).height()) <= 360,
+                smallDevice: Math.min($(window).width(), $(window).height()) <= 360
             },
 
             // Timers (integers, created with window.setTimeout)
             timers: {
                 years: null,
                 techStack: null,
-                sprite: null,
+                sprite: null
             },
 
             // Common methods
@@ -154,9 +154,9 @@ jQuery &&
                             "119.91519,29.15251c0,0 -2.74227,6.39864 -2.6661,12.26406c0.07617,5.86542 10.6644,-11.42614 9.67414,-12.26406c-0.99027,-0.83792 -0.76174,0.76174 -2.14973,-0.1301",
                             "134.00743,26.18171c-2.43758,2.28523 -5.56072,6.32247 -6.32247,13.6352c-0.76174,7.31273 -0.86377,-7.38891 8.45535,-9.36944c9.31912,-1.98053 -0.83792,6.77951 -1.75201,6.85569c-0.91409,0.07617 -0.76174,6.93186 1.44731,4.26576",
                             "145.86684,29.92399c-1.10503,-0.0325 -5.13212,2.90884 -5.51299,7.86017c-0.38087,4.95133 3.57588,3.94573 5.56072,2.3614c1.98484,-1.58432 5.3322,-8.15065 3.42784,-9.59796c-1.90436,-1.44731 0.68557,3.58019 -2.43758,4.34193c-3.12315,0.76174 2.1735,2.05772 4.63648,1.20254",
-                            "157.18906,35.121c3.72843,-1.28951 14.37571,0.98044 22.76353,-0.1276",
+                            "157.18906,35.121c3.72843,-1.28951 14.37571,0.98044 22.76353,-0.1276"
                         ]
-                            .map((path) => `<path stroke-linecap="round" stroke="#000" fill="none" d="m${path}"/>`)
+                            .map(path => `<path stroke-linecap="round" stroke="#000" fill="none" d="m${path}"/>`)
                             .join("")}
                     </svg>`
                     );
@@ -201,7 +201,7 @@ jQuery &&
                             $("body").attr("data-theme", options.themes[localStorage.themeId]);
                         })
                     );
-                    global.objects.banner.find("a").click((e) => {
+                    global.objects.banner.find("a").click(e => {
                         e.stopPropagation();
                     });
 
@@ -212,7 +212,7 @@ jQuery &&
                     global.objects.techStackList = $(
                         `<div>
                         ${Object.keys(options.areas)
-                            .map((skill) => `<span data-skill="${skill}">${options.areas[skill]}</span> `)
+                            .map(skill => `<span data-skill="${skill}">${options.areas[skill]}</span> `)
                             .join("")
                             .repeat(3)}
                     </div>`
@@ -248,7 +248,7 @@ jQuery &&
                     $('[data-role="go-up"]').click(() => {
                         global.objects.frames.hero[0].scrollIntoView({
                             behavior: "smooth",
-                            block: "start",
+                            block: "start"
                         });
                     });
 
@@ -257,7 +257,7 @@ jQuery &&
                         `<span>Legend</span>
                     <div>
                         ${Object.keys(options.areas)
-                            .map((skill) => `<span data-skill="${skill}">${options.areas[skill]}</span> `)
+                            .map(skill => `<span data-skill="${skill}">${options.areas[skill]}</span> `)
                             .join("")}
                     </div>`
                     );
@@ -306,7 +306,7 @@ jQuery &&
                                     global.methods.yearsStop();
                                 }
                             }, 50);
-                        },
+                        }
                     };
 
                     global.objects.years.addClass("active");
@@ -361,7 +361,7 @@ jQuery &&
                                 }
 
                                 return Math.round((seed - n) / m);
-                            },
+                            }
                         };
 
                         // Intialize the cells cache
@@ -376,7 +376,7 @@ jQuery &&
                                 if ("undefined" === typeof global.objects.levelUpCache.coords[coordKey]) {
                                     global.objects.levelUpCache.coords[coordKey] = {
                                         area: area,
-                                        count: 0,
+                                        count: 0
                                     };
                                 }
 
@@ -386,7 +386,7 @@ jQuery &&
                                     global.objects.levelUpCache.coords[coordKey].count < options.itemsInCell
                                 ) {
                                     var cellObject = $(`<div data-area="${area}" data-coord="${coordKey}"><i></i></div>`).css({
-                                        "grid-area": `${coordKey}/auto/auto`,
+                                        "grid-area": `${coordKey}/auto/auto`
                                     });
                                     global.objects.levelUpCache.cells[area].push(cellObject);
                                     global.objects.levelUp.append(cellObject);
@@ -419,7 +419,7 @@ jQuery &&
                         }
                     }
                 },
-                play: (sprite) => {
+                play: sprite => {
                     if ("undefined" !== typeof options.soundSprite[sprite]) {
                         if (null !== global.objects.howler) {
                             global.objects.howler.play(sprite);
@@ -440,7 +440,7 @@ jQuery &&
                     global.objects.levelUp.children("div").remove();
                     global.objects.levelUpCache = {
                         cells: {},
-                        coords: {},
+                        coords: {}
                     };
                 },
                 levelUpToggle: (on, className) => {
@@ -455,7 +455,7 @@ jQuery &&
                         global.objects.levelUp.hasClass(className) && global.objects.levelUp.removeClass(className);
                     }
                 },
-                projectPrepare: (frame) => {
+                projectPrepare: frame => {
                     var projectKey = frame.attr("data-frame");
 
                     // Cache miss
@@ -465,13 +465,13 @@ jQuery &&
                             global.objects.howler = new Howl({
                                 src: ["./portfolio/audio/sound.webm", "./portfolio/audio/sound.mp3"],
                                 sprite: options.soundSprite,
-                                volume: global.objects.howlerVolume,
+                                volume: global.objects.howlerVolume
                             });
                         }
 
                         // Prepare the update points
                         global.objects.projectProgress[projectKey] = {
-                            manHours: 0,
+                            manHours: 0
                         };
 
                         // Store the project object
@@ -485,7 +485,7 @@ jQuery &&
                             urlDemo: global.objects.projects[projectKey].attr("data-url-demo") ?? "/",
                             labelSource: global.objects.projects[projectKey].attr("data-label-source") ?? "Repository",
                             labelDemo: global.objects.projects[projectKey].attr("data-label-demo") ?? "Demo",
-                            manHours: global.objects.projects[projectKey].attr("data-man-hours") ?? 1000,
+                            manHours: global.objects.projects[projectKey].attr("data-man-hours") ?? 1000
                         };
 
                         // Store the description
@@ -555,7 +555,7 @@ jQuery &&
                         global.objects.projectManHours[projectKey] = {
                             progress: manHours.find("b"),
                             label: manHours.find("span"),
-                            value: parseInt(projectData.manHours, 10),
+                            value: parseInt(projectData.manHours, 10)
                         };
                         global.objects.projects[projectKey].append(manHours);
                     }
@@ -588,10 +588,10 @@ jQuery &&
                         if (coords.frameTop <= 0) {
                             if (!global.objects.smallDevice) {
                                 global.objects.projectTools[projectKey].css({
-                                    transform: `translateX(${coords.frameTop}px)`,
+                                    transform: `translateX(${coords.frameTop}px)`
                                 });
                                 global.objects.projectYears[projectKey].css({
-                                    transform: `translateX(${Math.round(coords.frameTop / 2)}px)`,
+                                    transform: `translateX(${Math.round(coords.frameTop / 2)}px)`
                                 });
                             }
 
@@ -603,7 +603,7 @@ jQuery &&
                             if (manHoursProgress !== global.objects.projectProgress[projectKey].manHours) {
                                 global.objects.projectProgress[projectKey].manHours = manHoursProgress;
                                 global.objects.projectManHours[projectKey].progress.css({
-                                    transform: `translateX(${manHoursProgress}%)`,
+                                    transform: `translateX(${manHoursProgress}%)`
                                 });
 
                                 // Fewer updates for small devices
@@ -668,8 +668,8 @@ jQuery &&
                             }
                         }
                     }
-                },
-            },
+                }
+            }
         };
 
         // Prepare the her frame
@@ -689,8 +689,8 @@ jQuery &&
                     global.methods.yearsStop();
                     global.methods.levelUpToggle();
                     global.objects.body.removeClass("outer");
-                },
-            },
+                }
+            }
         };
 
         // Add project frames frames
@@ -706,9 +706,9 @@ jQuery &&
                     onLeave: () => {
                         global.methods.setActive(global.objects.frames[frameName], false);
                     },
-                    onActive: (coords) => {
+                    onActive: coords => {
                         global.methods.projectRun(global.objects.frames[frameName], coords);
-                    },
+                    }
                 };
             }
         });
@@ -733,7 +733,7 @@ jQuery &&
                     global.objects.howlerAllId = null;
                 }
                 global.objects.body.removeClass("outer");
-            },
+            }
         };
 
         // Initialize the StoryLine

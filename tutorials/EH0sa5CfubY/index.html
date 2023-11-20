@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; jQuery Mouse Move Events</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/EH0sa5CfubY/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="jquery,mouse">
-        <meta name="Description" content="Exploring mouse movement effects with jQuery">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/EH0sa5CfubY/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="jquery,mouse" />
+        <meta name="Description" content="Exploring mouse movement effects with jQuery" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,12 +26,12 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
+                -ms-flex-align: center;
+                align-items: center;
             }
             .holder {
                 width: 35%;
@@ -43,36 +43,32 @@
                 border-radius: 10px;
                 padding: 20px 60px;
                 font-size: 20px;
-                text-shadow: 0px 15px 2px rgba(0,0,0,0.5);
+                text-shadow: 0px 15px 2px rgba(0, 0, 0, 0.5);
                 display: inline-block;
             }
         </style>
         <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
         <script type="text/javascript">
             jQuery(document).ready(function () {
-                var $ = jQuery, text = $('.shadowText');
-                
+                var $ = jQuery,
+                    text = $(".shadowText");
+
                 // Calculate center of span
                 var xSpan = text.offset().left + text.outerWidth() / 2;
                 var ySpan = text.offset().top + text.outerHeight() / 2;
-                $('body').mousemove(function(e) {
+                $("body").mousemove(function (e) {
                     // Calculate distance from span center
-                    var length = Math.sqrt(
-                        Math.pow(e.pageX - xSpan, 2)
-                        + Math.pow(e.pageY - ySpan, 2)
-                    ) / 20;
-                    
+                    var length = Math.sqrt(Math.pow(e.pageX - xSpan, 2) + Math.pow(e.pageY - ySpan, 2)) / 20;
+
                     // Horizontal position of text shadow: xSpan - e.pageX
                     // Vertical position of text shadow: ySpan - y
-                    var textShadow = (xSpan - e.pageX) + 'px ' 
-                            + (ySpan - e.pageY) + 'px '
-                            + length + 'px rgba(0,0,0,0.5)';
-                    text.css({'text-shadow': textShadow});
+                    var textShadow = xSpan - e.pageX + "px " + (ySpan - e.pageY) + "px " + length + "px rgba(0,0,0,0.5)";
+                    text.css({ "text-shadow": textShadow });
                 });
             });
         </script>
     </head>
-    <body> 
+    <body>
         <div class="holder">
             <span class="shadowText">I have such a pretty shadow</span>
         </div>

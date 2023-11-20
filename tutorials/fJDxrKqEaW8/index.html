@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; CSS Text Selection</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/fJDxrKqEaW8/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,text selection">
-        <meta name="Description" content="Exploring different text selection options in CSS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/fJDxrKqEaW8/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,text selection" />
+        <meta name="Description" content="Exploring different text selection options in CSS" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,22 +26,21 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
-                background: rgba(0,0,0,0.8);
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.8);
                 color: #fff;
             }
             .holder {
                 width: 30%;
             }
             p {
-                font-family: 'Georgia', Arial, sans-serif;
+                font-family: "Georgia", Arial, sans-serif;
                 font-size: 23px;
-                
             }
             .bgColor::-moz-selection {
                 background: #f3657e;
@@ -64,20 +63,20 @@
                 background: #26bb3f;
             }
             .textShadow::-moz-selection {
-                text-shadow: 2px 2px 1px rgba(243,101,125,0.8);
+                text-shadow: 2px 2px 1px rgba(243, 101, 125, 0.8);
             }
             .textShadow::selection {
-                text-shadow: 2px 2px 1px rgba(243,101,125,0.8);
+                text-shadow: 2px 2px 1px rgba(243, 101, 125, 0.8);
             }
             .noSelect {
                 -webkit-user-select: none;
-                   -moz-user-select: none;
-                    -ms-user-select: none;
-                        user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
             }
         </style>
     </head>
-    <body> 
+    <body>
         <div class="holder">
             <p>This is the normal behavior of a selected text.</p>
             <p class="bgColor">This text has a specified background color when selected.</p>

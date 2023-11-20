@@ -1,19 +1,21 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; Hexagon</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/1xklDcifvDg/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,hexagon">
-        <meta name="Description" content="A simple method of creating a hexagon using only CSS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/1xklDcifvDg/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,hexagon" />
+        <meta name="Description" content="A simple method of creating a hexagon using only CSS" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
-            .hexagon-css, .hexagon-css-inner, .hexagon-css-inner:before {
+            .hexagon-css,
+            .hexagon-css-inner,
+            .hexagon-css-inner:before {
                 height: 525px;
                 width: 1050px;
                 overflow: hidden;
@@ -21,33 +23,33 @@
             .hexagon-css {
                 margin: 150px auto 0;
                 -webkit-transform: rotate(120deg);
-                    -ms-transform: rotate(120deg);
-                        transform: rotate(120deg);
+                -ms-transform: rotate(120deg);
+                transform: rotate(120deg);
                 overflow: hidden;
             }
             .hexagon-css-inner {
                 -webkit-transform: rotate(-60deg);
-                    -ms-transform: rotate(-60deg);
-                        transform: rotate(-60deg);
+                -ms-transform: rotate(-60deg);
+                transform: rotate(-60deg);
             }
             .hexagon-css-inner:before {
-                content: '';
+                content: "";
                 display: block;
-                background: url('./img/pancakes.jpg') no-repeat 50% 0 transparent;
+                background: url("./img/pancakes.jpg") no-repeat 50% 0 transparent;
                 background-size: cover;
                 -webkit-transform: rotate(-60deg);
-                    -ms-transform: rotate(-60deg);
-                        transform: rotate(-60deg);
+                -ms-transform: rotate(-60deg);
+                transform: rotate(-60deg);
             }
 
             .hexagon-svg {
                 margin: 150px auto;
                 width: 525px;
                 height: 600px;
-                background: url('./img/pancakes.jpg') no-repeat 50% 0 transparent;
+                background: url("./img/pancakes.jpg") no-repeat 50% 0 transparent;
                 background-size: cover;
-                -webkit-clip-path: url('#hexagon-path');
-                        clip-path: url('#hexagon-path');
+                -webkit-clip-path: url("#hexagon-path");
+                clip-path: url("#hexagon-path");
             }
             .svg-defs {
                 width: 0;
@@ -55,8 +57,8 @@
             }
             #hexagon-path {
                 -webkit-transform: scale(3);
-                    -ms-transform: scale(3);
-                        transform: scale(3);
+                -ms-transform: scale(3);
+                transform: scale(3);
             }
         </style>
     </head>
@@ -66,11 +68,11 @@
         </div>
         <div class="hexagon-svg"></div>
         <svg class="svg-defs" width="175" height="200">
-			<defs>
-				<clipPath id="hexagon-path">
-					<polyline points="87,0 174,50 174,150 87,200 0,150 0,50 87,0" />
-				</clipPath>
-			</defs>
-		</svg>
-	</body>
+            <defs>
+                <clipPath id="hexagon-path">
+                    <polyline points="87,0 174,50 174,150 87,200 0,150 0,50 87,0" />
+                </clipPath>
+            </defs>
+        </svg>
+    </body>
 </html>

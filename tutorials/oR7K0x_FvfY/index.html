@@ -1,17 +1,17 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
     <head>
         <title>Tutorial &gt; CSS Yin-Yang</title>
-        <link rel="canonical" href="https://markjivko.com/tutorials/oR7K0x_FvfY/">
-        <meta charset="UTF-8">
-        <meta name="Author" content="Mark Jivko">
-        <meta name="Keywords" content="css,yin-yang">
-        <meta name="Description" content="Creating the Yin-Yang symbol with CSS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <link rel="icon" type="image/ico" href="https://markjivko.com/favicon.ico">
+        <link rel="canonical" href="https://portfolio.markjivko.com/tutorials/oR7K0x_FvfY/" />
+        <meta charset="UTF-8" />
+        <meta name="Author" content="Mark Jivko" />
+        <meta name="Keywords" content="css,yin-yang" />
+        <meta name="Description" content="Creating the Yin-Yang symbol with CSS" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link rel="icon" type="image/ico" href="https://portfolio.markjivko.com/favicon.ico" />
         <style type="text/css">
             body {
                 position: absolute;
@@ -26,13 +26,13 @@
                 margin: 0;
                 -webkit-box-pack: center;
                 -webkit-justify-content: center;
-                    -ms-flex-pack: center;
-                        justify-content: center;
+                -ms-flex-pack: center;
+                justify-content: center;
                 -webkit-box-align: center;
                 -webkit-align-items: center;
-                    -ms-flex-align: center;
-                        align-items: center;
-                background: rgba(0,0,0,0.8);
+                -ms-flex-align: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.8);
             }
             .yin-yang {
                 width: 100px;
@@ -43,13 +43,14 @@
                 border-radius: 50%;
                 position: relative;
                 -webkit-transform: scale(3);
-                    -ms-transform: scale(3);
-                        transform: scale(3);
+                -ms-transform: scale(3);
+                transform: scale(3);
                 -webkit-animation: anim-rotate 4s linear infinite;
-                        animation: anim-rotate 4s linear infinite;
+                animation: anim-rotate 4s linear infinite;
             }
-            .yin-yang:before, .yin-yang:after {
-                content: '';
+            .yin-yang:before,
+            .yin-yang:after {
+                content: "";
                 position: absolute;
                 width: 12px;
                 height: 12px;
@@ -65,12 +66,24 @@
                 border: 19px solid #fff;
             }
             @-webkit-keyframes anim-rotate {
-                0% {-webkit-transform: scale(3) rotate(0deg);transform: scale(3) rotate(0deg);}
-                100% {-webkit-transform: scale(3) rotate(360deg);transform: scale(3) rotate(360deg);}
+                0% {
+                    -webkit-transform: scale(3) rotate(0deg);
+                    transform: scale(3) rotate(0deg);
+                }
+                100% {
+                    -webkit-transform: scale(3) rotate(360deg);
+                    transform: scale(3) rotate(360deg);
+                }
             }
             @keyframes anim-rotate {
-                0% {-webkit-transform: scale(3) rotate(0deg);transform: scale(3) rotate(0deg);}
-                100% {-webkit-transform: scale(3) rotate(360deg);transform: scale(3) rotate(360deg);}
+                0% {
+                    -webkit-transform: scale(3) rotate(0deg);
+                    transform: scale(3) rotate(0deg);
+                }
+                100% {
+                    -webkit-transform: scale(3) rotate(360deg);
+                    transform: scale(3) rotate(360deg);
+                }
             }
         </style>
     </head>
