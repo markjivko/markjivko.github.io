@@ -1,7 +1,7 @@
 /*!
  * Drag and scroll for OctoMS Help
  *
- * Copyright 2011, Mark Jivko https://portfolio.markjivko.com
+ * Copyright 2011, Mark Jivko https://markjivko.com
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.opensource.org/licenses/gpl-2.0.php
@@ -54,7 +54,7 @@ jQuery.dragandscroll = {
 /*!
  * FlyingTabs for OctoMS Help
  *
- * Copyright 2011, Mark Jivko https://portfolio.markjivko.com
+ * Copyright 2011, Mark Jivko https://markjivko.com
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.opensource.org/licenses/gpl-2.0.php
@@ -123,7 +123,7 @@ jQuery.flyingtabs = {
 /*!
  * Toolbox for OctoMS Help
  *
- * Copyright 2011, Mark Jivko https://portfolio.markjivko.com
+ * Copyright 2011, Mark Jivko https://markjivko.com
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.opensource.org/licenses/gpl-2.0.php
@@ -401,7 +401,7 @@ jQuery.toolbox = {
 /*!
  * Dispatcher for OctoMS Help
  *
- * Copyright 2011, Mark Jivko https://portfolio.markjivko.com
+ * Copyright 2011, Mark Jivko https://markjivko.com
  * Dual licensed under the MIT or GPL Version 2 licenses.
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.opensource.org/licenses/gpl-2.0.php
