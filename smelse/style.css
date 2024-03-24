@@ -221,6 +221,6 @@ button {
     height: 1080px;
 }
 .holder[data-format="1-1"] [data-role="input"] textarea {
-    top: 650px;
+    top: 550px;
     width: 900px;
 }
