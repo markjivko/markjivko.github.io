@@ -13,7 +13,7 @@ jQuery &&
         var $ = jQuery,
             body = $("body");
         const options = {
-            authorCta: body.attr("data-author-cta") ?? "mailto:markjivko@gmail.com",
+            authorCta: body.attr("data-author-cta") ?? "https://linkedin.com/in/markjivko/",
             authorName: body.attr("data-author-name") ?? "Mark",
             githubUrl: body.attr("data-author-url") ?? "https://github.com/markjivko/",
             startYear: 2020,
@@ -478,15 +478,29 @@ jQuery &&
                         global.objects.projects[projectKey] = frame.find('[data-role="project"]');
 
                         // Get the project data
-                        var projectData = {
+                        const projectData = {
                             year: global.objects.projects[projectKey].attr("data-year") ?? `${options.startYear}`,
                             title: global.objects.projects[projectKey].attr("data-title") ?? "Unknown",
-                            urlSource: global.objects.projects[projectKey].attr("data-url-source") ?? options.githubUrl,
-                            urlDemo: global.objects.projects[projectKey].attr("data-url-demo") ?? "/",
-                            labelSource: global.objects.projects[projectKey].attr("data-label-source") ?? "Repository",
-                            labelDemo: global.objects.projects[projectKey].attr("data-label-demo") ?? "Demo",
+                            labelSource: "Repository",
+                            urlSource: "",
+                            labelDemo: "Demo",
+                            urlDemo: "",
                             manHours: global.objects.projects[projectKey].attr("data-man-hours") ?? 1000
                         };
+
+                        const projSource = global.objects.projects[projectKey].find("a.source");
+                        if (projSource.length) {
+                            projectData.labelSource = projSource.text();
+                            projectData.urlSource = projSource.attr("href");
+                            projSource.remove();
+                        }
+
+                        const projDemo = global.objects.projects[projectKey].find("a.demo");
+                        if (projDemo.length) {
+                            projectData.labelDemo = projDemo.text();
+                            projectData.urlDemo = projDemo.attr("href");
+                            projDemo.remove();
+                        }
 
                         // Store the description
                         var projectParagraph = global.objects.projects[projectKey].find("p");

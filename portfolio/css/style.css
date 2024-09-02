@@ -402,6 +402,7 @@ body.ready [data-role="scroll-down"].ok {
     animation: anim-opacity 5000ms linear infinite;
 }
 [data-role="p-year"] > div {
+    overflow: hidden;
     display: inline-block;
     position: absolute;
     width: auto;
@@ -411,7 +412,6 @@ body.ready [data-role="scroll-down"].ok {
     color: var(--frame-even-background);
     filter: drop-shadow(-2px -2px 0px var(--accent-color-3)) drop-shadow(2px 2px 0px var(--accent-color-3))
         drop-shadow(-2px 2px 0px var(--accent-color-3)) drop-shadow(2px -2px 0px var(--accent-color-3));
-    transform: scale(1.2);
     opacity: 0.5;
 }
 
