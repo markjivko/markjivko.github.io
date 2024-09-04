@@ -1,0 +1,112 @@
+﻿<!doctype html>
+<html dir="ltr" lang="en">
+    <head>
+        <title>Manage users of this site</title>
+        <link rel="stylesheet" href="../../app/templates/default/admin/css/style.css" type="text/css" media="all">
+        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/tooltip.css" type="text/css" media="all">
+        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/uniform.default.css" type="text/css" media="all">
+        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/dataTables.css" type="text/css" media="all">
+        <link rel="stylesheet" href="../../app/stages/addons/settings/views/admin/css/users.css" type="text/css" media="all">
+        <link rel="icon" type="image/ico" href="../../favicon.ico">
+        <link rel="search" type="application/opensearchdescription+xml" href="../../search/open/description.xml" title="Fervoare CMS - Search (en)">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="Content-Language" content="en">
+        <!--[if lte IE 10 ]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><![endif]-->
+        <meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/markjivko/fervoare">
+        <meta name="Publisher" content="Fervoare CMS">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="initial-scale=1.0, width=device-width">
+        <script type="text/javascript" src="../../core/wizard/views/js/common/jquery.js"></script>
+        <script type="text/javascript" src="../../core/wizard/views/js/common/jquery-ui.js"></script>
+        <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/tooltip.js"></script>
+        <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/uniform.js"></script>
+        <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/fervoare.js"></script>
+        <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/dataTables.js"></script>
+        <script type="text/javascript" src="../../app/stages/addons/settings/views/admin/js/users.js"></script>
+        <script type="text/javascript">//<![CDATA[
+            $(document).ready(function () {
+                $.fn.dataTable && $.each($('table.data'), function () {
+                    $(this).dataTable()
+                });
+
+                $.fn.tooltip && $('[title]').tooltip({offset: [5, 0], effect: 'toggle', position: 'bottom right'}).dynamic({bottom: {direction: 'down', bounce: true}});
+                $.fn.uniform && $("input, textarea, select, button, .btn, .btn > *").not("input[type=file],input[type=hidden],.nouniform").uniform();
+            });
+//]]></script>
+        <script type="text/javascript" async="" defer="">var img = "/app/stages/addons/settings/views/admin/img";</script>
+        
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-207388760-1"></script>
+        <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-207388760-1');</script>
+    </head>
+    <body>
+        <div id="main-wrapper">
+            <div id="top">
+                <a href="../../" id="logo">Fervoare CMS</a>
+                <div id="ferv_addons">    <ul>
+                        <li title="Manage the content"><a href="../content/posts.html">Content</a></li>
+                        <li title="Manage the look of your site"><a href="../design/themes.html">Design</a></li>
+                        <li class="current" title="Manage the settings of your site"><a href="../settings.html">Settings</a></li>
+                    </ul>
+                </div>                <div id="gear"><form action="#" method="get"><select><option value="/admin/settings/users" selected="selected">en</option><option value="/ro/admin/settings/users">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
+            </div>
+            <div id="top-clear"><div id="notif"></div></div>
+            <div id="sidebar">
+                <div id="ferv_methods">    <ul>
+                        <li title="General site settings">
+                            <a href="index.html">General</a>        </li>
+                        <li title="Search Engine Optimization settings">
+                            <a href="seo.html">SEO</a>        </li>
+                        <li title="Manage your profile">
+                            <a href="profile.html">Profile</a>        </li>
+                        <li class="current" title="Manage users of this site">
+                            <a href="users.html">Users</a>        </li>
+                    </ul>
+                </div><div id="copy"><a href="profile.html">Mark Jivko (Admin)</a><br>Powered by <a title="Generated by the Fervoare CMS for Startups in 0.058s @0.594MiB." href="https://github.com/markjivko/fervoare">Fervoare CMS</a></div>
+            </div>
+            <div id="content">                <h2>Edit site accounts</h2>
+                <span class="btn"><a href="users/edit/2.html">Add a new user</a></span><br>
+                <table class="data">
+                    <thead>
+                        <tr>
+                            <th>*</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Page</th>
+                            <th>I.P.</th>
+                            <th>Last Active</th>
+                            <th width="200">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="online ">
+                                    2.Off                <form class="nouniform x" confirm="Are you sure you want to log out ?" style="display:inline-block" action="#" method="get"><input type="hidden" name="log_out" value="2"><input type="submit" value="Log Out"></form>                </span></td>
+                            <td><b></b></td>
+                            <td>User</td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                Never active
+
+                            </td>
+                            <td align="center"><span class="btn"><a href="users/edit/2.html">Edit</a></span><form confirm="Are you sure you want to delete this user?" class="x" style="display:inline-block" action="#" method="get"><input type="hidden" name="delete" value="2"><input type="submit" value="Delete"></form></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="clear"></div>
+                <div class="history">
+                    <div>
+                        <a href="javascript:history.back();" class="left-button">Back</a>
+                        <p class="center-button"></p><p class="breadcrumbs"><a href="/.html">Home</a><a href="../content/posts.html">Admin</a><a href="../settings.html">Settings</a><a href="users.html">Users</a></p>
+                        <p class="help-button"></p>
+                        <a class="refresh-button">Refresh</a>
+                        <a href="javascript:history.forward();" class="right-button">Forward</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
