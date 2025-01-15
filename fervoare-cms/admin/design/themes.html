@@ -1,132 +1,257 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html dir="ltr" lang="en">
     <head>
         <title>Site theme</title>
-        <link rel="stylesheet" href="../../app/templates/default/admin/css/style.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/tooltip.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/uniform.default.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/uploadify.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/dataTables.css" type="text/css" media="all">
-        <link rel="icon" type="image/ico" href="../../favicon.ico">
-        <link rel="search" type="application/opensearchdescription+xml" href="../../search/open/description.xml" title="Fervoare CMS - Search (en)">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="Content-Language" content="en">
-        <!--[if lte IE 10 ]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><![endif]-->
-        <meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/markjivko/fervoare">
-        <meta name="Publisher" content="Fervoare CMS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
+        <link rel="stylesheet" href="../../app/templates/default/admin/css/style.css" type="text/css" media="all" />
+        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/tooltip.css" type="text/css" media="all" />
+        <link
+            rel="stylesheet"
+            href="../../app/stages/addons/content/views/admin/css/uniform.default.css"
+            type="text/css"
+            media="all" />
+        <link rel="stylesheet" href="../../app/stages/addons/content/views/admin/css/uploadify.css" type="text/css" media="all" />
+        <link
+            rel="stylesheet"
+            href="../../app/stages/addons/content/views/admin/css/dataTables.css"
+            type="text/css"
+            media="all" />
+        <link rel="icon" type="image/ico" href="../../favicon.ico" />
+        <link
+            rel="search"
+            type="application/opensearchdescription+xml"
+            href="../../search/open/description.xml"
+            title="Fervoare CMS - Search (en)" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="en" />
+        <!--[if lte IE 10]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+        <meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/markjivko/fervoare" />
+        <meta name="Publisher" content="Fervoare CMS" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <script type="text/javascript" src="../../core/wizard/views/js/common/jquery.js"></script>
         <script type="text/javascript" src="../../core/wizard/views/js/common/jquery-ui.js"></script>
         <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/tooltip.js"></script>
         <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/uniform.js"></script>
         <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/fervoare.js"></script>
-        <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/uploadify/uploadify.swfobject.js"></script>
+        <script
+            type="text/javascript"
+            src="../../app/stages/addons/content/views/admin/js/uploadify/uploadify.swfobject.js"></script>
         <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/uploadify/uploadify.js"></script>
         <script type="text/javascript" src="../../app/stages/addons/content/views/admin/js/dataTables.js"></script>
-        <script type="text/javascript">//<![CDATA[
+        <script type="text/javascript">
+            //<![CDATA[
             $(document).ready(function () {
-                $.fn.dataTable && $.each($('table.data'), function () {
-                    $(this).dataTable()
-                });
-                $('input[type=file]').uploadify({
-                    'uploader': '/app/stages/addons/content/views/admin/js/uploadify/uploadify.swf',
-                    'script': '/admin/design/themes',
-                    'scriptData': {COOKIE: "wCc/RqNO/w4w7EZOMIPHv4rfBIvZty/JSlCzzmS09CM1t3bdEvOAekxlY41kG0PyJxwEYVv3OXNnf2Rdb98dYaLfZmh7ZZkEJNw4YsgxCdjMFB1vo9qR0SuF1BEPn6GJd5ZD8HObuKdpmN1gSIaxMBvHzuHDlI1VDrk6/8vjtpAlKkqJp6qkpa5t2WXxz30H", HTTP_USER_AGENT: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36", '#*#': true},
-                    'scriptAccess': 'always',
-                    'queueID': 'uploadifyQueue',
-                    'cancelImg': '/app/stages/addons/content/views/admin/js/uploadify/cancel.png',
-                    'buttonImg': '/app/stages/addons/content/views/admin/js/uploadify/button.png',
-                    'width': 124,
-                    'height': 30,
-                    'rollover': true,
-                    'buttonText': 'Browse Files',
-                    'checkScript': '?uploadify_check=true',
-                    'folder': '',
-                    'wmode': 'transparent',
-                    'displayData': 'speed',
-                    'removeCompleted': false,
-                    'auto': true,
-                    'multi': true,
-                    'fileExt': '*.zip',
-                    'sizeLimit': 2000000,
-                    'onComplete': function (event, ID, fileObj, response, data) {
+                $.fn.dataTable &&
+                    $.each($("table.data"), function () {
+                        $(this).dataTable();
+                    });
+                $("input[type=file]").uploadify({
+                    uploader: "/app/stages/addons/content/views/admin/js/uploadify/uploadify.swf",
+                    script: "/admin/design/themes",
+                    scriptData: {
+                        "COOKIE":
+                            "wCc/RqNO/w4w7EZOMIPHv4rfBIvZty/JSlCzzmS09CM1t3bdEvOAekxlY41kG0PyJxwEYVv3OXNnf2Rdb98dYaLfZmh7ZZkEJNw4YsgxCdjMFB1vo9qR0SuF1BEPn6GJd5ZD8HObuKdpmN1gSIaxMBvHzuHDlI1VDrk6/8vjtpAlKkqJp6qkpa5t2WXxz30H",
+                        "HTTP_USER_AGENT":
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
+                        "#*#": true
+                    },
+                    scriptAccess: "always",
+                    queueID: "uploadifyQueue",
+                    cancelImg: "/app/stages/addons/content/views/admin/js/uploadify/cancel.png",
+                    buttonImg: "/app/stages/addons/content/views/admin/js/uploadify/button.png",
+                    width: 124,
+                    height: 30,
+                    rollover: true,
+                    buttonText: "Browse Files",
+                    checkScript: "?uploadify_check=true",
+                    folder: "",
+                    wmode: "transparent",
+                    displayData: "speed",
+                    removeCompleted: false,
+                    auto: true,
+                    multi: true,
+                    fileExt: "*.zip",
+                    sizeLimit: 2000000,
+                    onComplete: function (event, ID, fileObj, response, data) {
                         var r = $.parseJSON(response);
-                        var f = $('#' + $(event.currentTarget).attr('id') + ID);
-                        if (typeof r._status_[1] != 'undefined')
-                        {
-                            if (r._status_[1] == true)
-                            {
-                                f.attr('class', 'uploadifyQueueItem completed');
-                                if (typeof $.fn.dataTable != 'undefined' && typeof r._content_ != 'undefined' && $('#' + $(event.currentTarget).attr('id') + 'table').length > 0)
-                                {
-                                    var dt = $('#' + $(event.currentTarget).attr('id') + 'table').dataTable();
+                        var f = $("#" + $(event.currentTarget).attr("id") + ID);
+                        if (typeof r._status_[1] != "undefined") {
+                            if (r._status_[1] == true) {
+                                f.attr("class", "uploadifyQueueItem completed");
+                                if (
+                                    typeof $.fn.dataTable != "undefined" &&
+                                    typeof r._content_ != "undefined" &&
+                                    $("#" + $(event.currentTarget).attr("id") + "table").length > 0
+                                ) {
+                                    var dt = $("#" + $(event.currentTarget).attr("id") + "table").dataTable();
                                     var set = false;
                                     $.each(dt.fnGetData(), function (k, v) {
-                                        if ($.inArray(r._content_[0], v) != -1)
-                                        {
+                                        if ($.inArray(r._content_[0], v) != -1) {
                                             dt.fnUpdate(r._content_, k, 0);
                                             set = true;
                                             return false;
                                         }
                                     });
-                                    if (!set)
-                                    {
+                                    if (!set) {
                                         dt.fnAddData(r._content_);
                                     }
                                     fervoare & fervoare.xform();
-                                    $('#' + $(event.currentTarget).attr('id')).uploadifyCancel(ID);
-                                } else
-                                {
-                                    $('#' + $(event.currentTarget).attr('id') + ID + ' .fileName').html(r._status_[0]);
+                                    $("#" + $(event.currentTarget).attr("id")).uploadifyCancel(ID);
+                                } else {
+                                    $("#" + $(event.currentTarget).attr("id") + ID + " .fileName").html(r._status_[0]);
                                 }
-                            } else
-                            {
-                                f.attr('class', 'uploadifyQueueItem uploadifyError');
+                            } else {
+                                f.attr("class", "uploadifyQueueItem uploadifyError");
                             }
-                            f.children('.fileName').html(r._status_[0]);
+                            f.children(".fileName").html(r._status_[0]);
                         }
                     },
-                    'onAllComplete': function (event, data) {
-                        fervoare.alert & fervoare.alert('Uploaded ' + data.filesUploaded + ' file' + (data.filesUploaded != 1 ? 's' : '') + ' with ' + data.errors + ' error' + (data.errors != 1 ? 's' : '') + ' at ' + Math.round(data.speed * 100) / 100 + 'KB/s.');
+                    onAllComplete: function (event, data) {
+                        fervoare.alert &
+                            fervoare.alert(
+                                "Uploaded " +
+                                    data.filesUploaded +
+                                    " file" +
+                                    (data.filesUploaded != 1 ? "s" : "") +
+                                    " with " +
+                                    data.errors +
+                                    " error" +
+                                    (data.errors != 1 ? "s" : "") +
+                                    " at " +
+                                    Math.round(data.speed * 100) / 100 +
+                                    "KB/s."
+                            );
                     }
                 });
 
-                $.fn.tooltip && $('[title]').tooltip({offset: [5, 0], effect: 'toggle', position: 'bottom right'}).dynamic({bottom: {direction: 'down', bounce: true}});
-                $.fn.uniform && $("input, textarea, select, button, .btn, .btn > *").not("input[type=file],input[type=hidden],.nouniform").uniform();
+                $.fn.tooltip &&
+                    $("[title]")
+                        .tooltip({ offset: [5, 0], effect: "toggle", position: "bottom right" })
+                        .dynamic({ bottom: { direction: "down", bounce: true } });
+                $.fn.uniform &&
+                    $("input, textarea, select, button, .btn, .btn > *")
+                        .not("input[type=file],input[type=hidden],.nouniform")
+                        .uniform();
             });
-//]]></script>
-        <script type="text/javascript" async="" defer="">var img = "/app/stages/addons/design/views/admin/img";</script>
-        
+            //]]>
+        </script>
+        <script type="text/javascript" async="" defer="">
+            var img = "/app/stages/addons/design/views/admin/img";
+        </script>
+
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-207388760-1"></script>
-        <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-207388760-1');</script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "UA-207388760-1");
+        </script>
     </head>
     <body>
         <div id="main-wrapper">
             <div id="top">
                 <a href="../../" id="logo">Fervoare CMS</a>
-                <div id="ferv_addons">    <ul>
+                <div id="ferv_addons">
+                    <ul>
                         <li title="Manage the content"><a href="../content/posts.html">Content</a></li>
                         <li class="current" title="Manage the look of your site"><a href="themes.html">Design</a></li>
                         <li title="Manage the settings of your site"><a href="../settings.html">Settings</a></li>
                     </ul>
-                </div>                <div id="gear"><form action="#" method="get"><select><option value="/admin/design/themes" selected="selected">en</option><option value="/ro/admin/design/themes">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
+                </div>
+                <div id="gear">
+                    <form action="#" method="get">
+                        <select>
+                            <option value="/admin/design/themes" selected="selected">en</option>
+                            <option value="/ro/admin/design/themes">ro</option></select
+                        ><input type="hidden" name="logout" value="1" /><input type="submit" value="Log Out" />
+                    </form>
+                </div>
             </div>
             <div id="top-clear"><div id="notif"></div></div>
             <div id="sidebar">
-                <div id="ferv_methods">    <ul>
+                <div id="ferv_methods">
+                    <ul>
                         <li class="current" title="Select a theme for your website">
-                            <a href="themes.html">Themes</a>        </li>
+                            <a href="themes.html">Themes</a>
+                        </li>
                     </ul>
-                </div><div id="copy"><a href="../settings/profile.html">Mark Jivko (Admin)</a><br>Powered by <a title="Generated by the Fervoare CMS for Startups in 0.068s @0.611MiB." href="https://github.com/markjivko/fervoare">Fervoare CMS</a></div>
+                </div>
+                <div id="copy">
+                    <a href="../settings/profile.html">Mark Jivko (Admin)</a><br />Powered by
+                    <a
+                        title="Generated by the Fervoare CMS for Startups in 0.068s @0.611MiB."
+                        href="https://github.com/markjivko/fervoare"
+                        >Fervoare CMS</a
+                    >
+                </div>
             </div>
-            <div id="content">                <h1>Manage your site's themes</h1>
-                <table class="data" id="themestable"><thead><tr><th>Theme</th><th>Information</th><th>Actions</th></tr></thead><tbody><tr><td><form class="x" style="display:inline-block;" action="#" method="get"><input confirm="Are you sure you want to activate theme &quot;Fervoare Default Theme&quot;?" onclick="$(this.form).submit();" checked="checked" title="Activate theme &quot;Fervoare Default Theme&quot;" style="cursor:pointer" type="radio" name="activate" value="default" id="activate"></form>Fervoare Default Theme<div class="theme_img" style="background-image:url(../../app/templates/default/thumbnail.png)"></div></td><td>This is the default theme used by the Fervoare CMS. Please do not manually remove the folder in which this theme is stored since it interferes with the theme management system.<br>by <a href="https://github.com/markjivko/fervoare">Mark Jivko</a></td><td><span class="btn"><a href="themes/default.html">Settings</a></span><form confirm="Are you sure you want to reset theme &quot;Fervoare Default Theme&quot; to its default state? Data from the theme&#039;s info.ini file will be re-read." class="x" style="display:inline-block" action="#" method="get"><input type="hidden" name="reset" value="default"><input type="submit" value="Reset"></form></td></tr></tbody></table><div class="clear"></div><div id="uploadifyQueue"></div><div class="clear"></div><form enctype="multipart/form-data" action="#" method="get"><input type="file" name="themes" value="" id="themes"></form>                <div class="history">
+            <div id="content">
+                <h1>Manage your site's themes</h1>
+                <table class="data" id="themestable">
+                    <thead>
+                        <tr>
+                            <th>Theme</th>
+                            <th>Information</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <form class="x" style="display: inline-block" action="#" method="get">
+                                    <input
+                                        confirm='Are you sure you want to activate theme "Fervoare Default Theme"?'
+                                        onclick="$(this.form).submit();"
+                                        checked="checked"
+                                        title='Activate theme "Fervoare Default Theme"'
+                                        style="cursor: pointer"
+                                        type="radio"
+                                        name="activate"
+                                        value="default"
+                                        id="activate" />
+                                </form>
+                                Fervoare Default Theme
+                                <div
+                                    class="theme_img"
+                                    style="background-image: url(../../app/templates/default/thumbnail.png)"></div>
+                            </td>
+                            <td>
+                                This is the default theme used by the Fervoare CMS. Please do not manually remove the folder in
+                                which this theme is stored since it interferes with the theme management system.<br />by
+                                <a href="https://github.com/markjivko/fervoare">Mark Jivko</a>
+                            </td>
+                            <td>
+                                <span class="btn"><a href="themes/default.html">Settings</a></span>
+                                <form
+                                    confirm='Are you sure you want to reset theme "Fervoare Default Theme" to its default state? Data from the theme&#039;s info.ini file will be re-read.'
+                                    class="x"
+                                    style="display: inline-block"
+                                    action="#"
+                                    method="get">
+                                    <input type="hidden" name="reset" value="default" /><input type="submit" value="Reset" />
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="clear"></div>
+                <div id="uploadifyQueue"></div>
+                <div class="clear"></div>
+                <form enctype="multipart/form-data" action="#" method="get">
+                    <input type="file" name="themes" value="" id="themes" />
+                </form>
+                <div class="history">
                     <div>
                         <a href="javascript:history.back();" class="left-button">Back</a>
-                        <p class="center-button"></p><p class="breadcrumbs"><a href="/.html">Home</a><a href="../content/posts.html">Admin</a><a href="themes.html">Design</a><a href="themes.html">Themes</a></p>
+                        <p class="center-button"></p>
+                        <p class="breadcrumbs">
+                            <a href="/.html">Home</a><a href="../content/posts.html">Admin</a><a href="themes.html">Design</a
+                            ><a href="themes.html">Themes</a>
+                        </p>
                         <p class="help-button"></p>
                         <a class="refresh-button">Refresh</a>
                         <a href="javascript:history.forward();" class="right-button">Forward</a>

@@ -40,9 +40,9 @@
                 start_url: getPath(),
                 scope: getPath(),
                 icons: [
-                    { src: getPath("main/img/64.png"), sizes: "64x64", type: "image/png", purpose: "maskable any" },
-                    { src: getPath("main/img/192.png"), sizes: "192x192", type: "image/png", purpose: "maskable any" },
-                    { src: getPath("main/img/512.png"), sizes: "512x512", type: "image/png", purpose: "maskable any" }
+                    { src: getPath("potrivit/main/img/64.png"), sizes: "64x64", type: "image/png", purpose: "maskable any" },
+                    { src: getPath("potrivit/main/img/192.png"), sizes: "192x192", type: "image/png", purpose: "maskable any" },
+                    { src: getPath("potrivit/main/img/512.png"), sizes: "512x512", type: "image/png", purpose: "maskable any" }
                 ],
                 display: "fullscreen",
                 orientation: "landscape"

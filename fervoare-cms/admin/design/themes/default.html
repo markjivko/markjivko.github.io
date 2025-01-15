@@ -1,68 +1,128 @@
-﻿<!doctype html>
+﻿<!DOCTYPE html>
 <html dir="ltr" lang="en">
     <head>
         <title>Default theme settings</title>
-        <link rel="stylesheet" href="../../../app/templates/default/admin/css/style.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../../app/stages/addons/content/views/admin/css/tooltip.css" type="text/css" media="all">
-        <link rel="stylesheet" href="../../../app/stages/addons/content/views/admin/css/uniform.default.css" type="text/css" media="all">
-        <link rel="icon" type="image/ico" href="../../../favicon.ico">
-        <link rel="search" type="application/opensearchdescription+xml" href="../../../search/open/description.xml" title="Fervoare CMS - Search (en)">
-        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-        <meta http-equiv="Content-Language" content="en">
-        <!--[if lte IE 10 ]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/><![endif]-->
-        <meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/markjivko/fervoare">
-        <meta name="Publisher" content="Fervoare CMS">
-        <meta name="apple-mobile-web-app-capable" content="yes">
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-        <meta name="viewport" content="initial-scale=1.0, width=device-width">
+        <link rel="stylesheet" href="../../../app/templates/default/admin/css/style.css" type="text/css" media="all" />
+        <link
+            rel="stylesheet"
+            href="../../../app/stages/addons/content/views/admin/css/tooltip.css"
+            type="text/css"
+            media="all" />
+        <link
+            rel="stylesheet"
+            href="../../../app/stages/addons/content/views/admin/css/uniform.default.css"
+            type="text/css"
+            media="all" />
+        <link rel="icon" type="image/ico" href="../../../favicon.ico" />
+        <link
+            rel="search"
+            type="application/opensearchdescription+xml"
+            href="../../../search/open/description.xml"
+            title="Fervoare CMS - Search (en)" />
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Content-Language" content="en" />
+        <!--[if lte IE 10]><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" /><![endif]-->
+        <meta name="Generator" content="Fervoare CMS v.1.0.0 https://github.com/markjivko/fervoare" />
+        <meta name="Publisher" content="Fervoare CMS" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
         <script type="text/javascript" src="../../../core/wizard/views/js/common/jquery.js"></script>
         <script type="text/javascript" src="../../../core/wizard/views/js/common/jquery-ui.js"></script>
         <script type="text/javascript" src="../../../app/stages/addons/content/views/admin/js/tooltip.js"></script>
         <script type="text/javascript" src="../../../app/stages/addons/content/views/admin/js/uniform.js"></script>
         <script type="text/javascript" src="../../../app/stages/addons/content/views/admin/js/fervoare.js"></script>
-        <script type="text/javascript">//<![CDATA[
+        <script type="text/javascript">
+            //<![CDATA[
             $(document).ready(function () {
-
-                $.fn.tooltip && $('[title]').tooltip({offset: [5, 0], effect: 'toggle', position: 'bottom right'}).dynamic({bottom: {direction: 'down', bounce: true}});
-                $.fn.uniform && $("input, textarea, select, button, .btn, .btn > *").not("input[type=file],input[type=hidden],.nouniform").uniform();
+                $.fn.tooltip &&
+                    $("[title]")
+                        .tooltip({ offset: [5, 0], effect: "toggle", position: "bottom right" })
+                        .dynamic({ bottom: { direction: "down", bounce: true } });
+                $.fn.uniform &&
+                    $("input, textarea, select, button, .btn, .btn > *")
+                        .not("input[type=file],input[type=hidden],.nouniform")
+                        .uniform();
             });
-//]]></script>
-        <script type="text/javascript" async="" defer="">var img = "/app/stages/addons/design/views/admin/img";</script>
-        
+            //]]>
+        </script>
+        <script type="text/javascript" async="" defer="">
+            var img = "/app/stages/addons/design/views/admin/img";
+        </script>
+
         <!-- Global site tag (gtag.js) - Google Analytics -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=UA-207388760-1"></script>
-        <script>window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}gtag('js', new Date());gtag('config', 'UA-207388760-1');</script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag() {
+                dataLayer.push(arguments);
+            }
+            gtag("js", new Date());
+            gtag("config", "UA-207388760-1");
+        </script>
     </head>
     <body>
         <div id="main-wrapper">
             <div id="top">
                 <a href="../../../" id="logo">Fervoare CMS</a>
-                <div id="ferv_addons">    <ul>
+                <div id="ferv_addons">
+                    <ul>
                         <li title="Manage the content"><a href="../../content/posts.html">Content</a></li>
                         <li class="current" title="Manage the look of your site"><a href="../themes.html">Design</a></li>
                         <li title="Manage the settings of your site"><a href="../../settings.html">Settings</a></li>
                     </ul>
-                </div>                <div id="gear"><form action="#" method="get"><select><option value="/admin/design/themes/default" selected="selected">en</option><option value="/ro/admin/design/themes/default">ro</option></select><input type="hidden" name="logout" value="1"><input type="submit" value="Log Out"></form></div>
+                </div>
+                <div id="gear">
+                    <form action="#" method="get">
+                        <select>
+                            <option value="/admin/design/themes/default" selected="selected">en</option>
+                            <option value="/ro/admin/design/themes/default">ro</option></select
+                        ><input type="hidden" name="logout" value="1" /><input type="submit" value="Log Out" />
+                    </form>
+                </div>
             </div>
             <div id="top-clear"><div id="notif"></div></div>
             <div id="sidebar">
-                <div id="ferv_methods">    <ul>
+                <div id="ferv_methods">
+                    <ul>
                         <li class="current" title="Select a theme for your website">
-                            <a href="../themes.html">Themes</a>        </li>
+                            <a href="../themes.html">Themes</a>
+                        </li>
                     </ul>
-                </div><div id="copy"><a href="../../settings/profile.html">Mark Jivko (Admin)</a><br>Powered by <a title="Generated by the Fervoare CMS for Startups in 0.06s @0.591MiB." href="https://github.com/markjivko/fervoare">Fervoare CMS</a></div>
+                </div>
+                <div id="copy">
+                    <a href="../../settings/profile.html">Mark Jivko (Admin)</a><br />Powered by
+                    <a
+                        title="Generated by the Fervoare CMS for Startups in 0.06s @0.591MiB."
+                        href="https://github.com/markjivko/fervoare"
+                        >Fervoare CMS</a
+                    >
+                </div>
             </div>
-            <div id="content">                <h1>Theme "default" settings</h1>
-                <form class="x" action="#" method="get"><h2>Open index js (comma-separated values)</h2><textarea name="open_index_js" value="functions.js">functions.js</textarea><input type="submit" value="Update"><form action="true" method="get">                <div class="history">
+            <div id="content">
+                <h1>Theme "default" settings</h1>
+                <form class="x" action="#" method="get">
+                    <h2>Open index js (comma-separated values)</h2>
+                    <textarea name="open_index_js" value="functions.js">functions.js</textarea
+                    ><input type="submit" value="Update" />
+                    <form action="true" method="get">
+                        <div class="history">
                             <div>
                                 <a href="javascript:history.back();" class="left-button">Back</a>
-                                <p class="center-button"></p><p class="breadcrumbs"><a href="/.html">Home</a><a href="../../content/posts.html">Admin</a><a href="../themes.html">Design</a><a href="../themes.html">Themes</a><a href="default.html">Default</a></p>
+                                <p class="center-button"></p>
+                                <p class="breadcrumbs">
+                                    <a href="/.html">Home</a><a href="../../content/posts.html">Admin</a
+                                    ><a href="../themes.html">Design</a><a href="../themes.html">Themes</a
+                                    ><a href="default.html">Default</a>
+                                </p>
                                 <p class="help-button"></p>
                                 <a class="refresh-button">Refresh</a>
                                 <a href="javascript:history.forward();" class="right-button">Forward</a>
                             </div>
                         </div>
-                    </form></form></div>
+                    </form>
+                </form>
+            </div>
         </div>
     </body>
 </html>
