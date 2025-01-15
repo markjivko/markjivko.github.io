@@ -11,7 +11,7 @@
             if ("string" !== typeof relativePath) {
                 relativePath = "";
             }
-            return window.location.origin + "/potrivit" + (relativePath ? "/" + relativePath : "");
+            return window.location.origin + "/potrivit" + (relativePath ? "/" + relativePath : "/");
         };
         var workers = () => {
             if ("serviceWorker" in navigator) {
