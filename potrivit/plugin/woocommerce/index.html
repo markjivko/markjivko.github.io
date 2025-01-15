@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+<html data-page="plugin" lang="en" dir="ltr">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <title>WooCommerce | Code Review | Potrivit</title>
+
+        <script type="application/ld+json">
+            {
+                "@context": "https:\/\/schema.org\/",
+                "@type": ["SoftwareApplication"],
+                "sku": "wp.org\/plugin\/woocommerce",
+                "brand": { "@type": "Brand", "name": "Automattic" },
+                "review": {
+                    "@type": "Review",
+                    "url": "https:\/\/markjivko.com\/potrivit\/plugin\/woocommerce\/",
+                    "reviewRating": {
+                        "@type": "Rating",
+                        "reviewAspect": "Code Review",
+                        "ratingValue": 10,
+                        "worstRating": 1,
+                        "bestRating": 100,
+                        "ratingExplanation": "54 tests performed"
+                    },
+                    "reviewBody": "A terrible score of 10% from 54 tests? Find out how to improve WooCommerce",
+                    "author": { "@type": "Person", "name": "Mark Jivko" },
+                    "publisher": { "@type": "Organization", "name": "Potrivit", "url": "https:\/\/markjivko.com\/potrivit\/" }
+                },
+                "applicationCategory": "Plugin",
+                "operatingSystem": "WordPress",
+                "name": "Code Review: WooCommerce",
+                "description": "A terrible score of 10% from 54 tests? Find out how to improve WooCommerce",
+                "softwareVersion": "0.1.6 (8.3.1)",
+                "url": "https:\/\/markjivko.com\/potrivit\/plugin\/woocommerce\/",
+                "image": "https:\/\/ps.w.org\/woocommerce\/assets\/icon-256x256.gif",
+                "offers": {
+                    "@type": "Offer",
+                    "url": "https:\/\/wordpress.org\/plugins\/woocommerce\/",
+                    "price": "0.00",
+                    "priceCurrency": "USD",
+                    "priceValidUntil": "2121-01-01",
+                    "availability": "https:\/\/schema.org\/InStock",
+                    "seller": { "@type": "Organization", "name": "WordPress.org", "url": "https:\/\/wordpress.org" }
+                },
+                "aggregateRating": {
+                    "@type": "AggregateRating",
+                    "ratingValue": 4.5,
+                    "bestRating": 5,
+                    "worstRating": 1,
+                    "ratingCount": 4168
+                }
+            }
+        </script>
+        <script defer src="../../main/js/main.js"></script>
+
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link rel="stylesheet" href="../../main/css/main.css" />
+        <link rel="dns-prefetch" href="//ps.w.org" />
+        <link rel="manifest" id="pwa_manifest" />
+        <link rel="canonical" href="/potrivit/plugin/woocommerce/" />
+        <link rel="shortcut icon" type="image/ico" href="../../favicon.ico" />
+        <link rel="apple-touch-icon" href="../../main/img/512.png" />
+        <link rel="license" href="//creativecommons.org/licenses/by-nc-sa/4.0/" />
+
+        <meta name="generator" content="Potrivit SSG v.0.1.6 | markjivko.com" />
+        <meta name="author" content="markjivko.com" />
+        <meta name="referrer" content="origin" />
+        <meta name="referrer" content="origin-when-crossorigin" />
+        <meta name="referrer" content="origin-when-cross-origin" />
+        <meta name="description" content="A terrible score of 10% from 54 tests? Find out how to improve WooCommerce" />
+        <meta name="theme-color" content="#13d213" />
+        <meta name="msapplication-TileColor" content="#13d213" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+        <meta property="og:title" content="WooCommerce | Code Review | Potrivit" />
+        <meta property="og:url" content="/potrivit/plugin/woocommerce/" />
+        <meta property="og:site_name" content="Potrivit" />
+        <meta property="og:description" content="A terrible score of 10% from 54 tests? Find out how to improve WooCommerce" />
+        <meta property="og:type" content="website" />
+        <meta property="og:image" content="https://ps.w.org/woocommerce/assets/icon-256x256.gif" />
+    </head>
+
+    <body>
+        <header>
+            <div class="container">
+                <div class="col part-top">
+                    <a class="icon" rel="nofollow" href="/potrivit/" style="filter: hue-rotate(-144.44deg)"
+                        >10% <span>woocommerce</span></a
+                    >
+                    <h1>Code Review | WooCommerce</h1>
+                    <div data-role="search"></div>
+                </div>
+            </div>
+        </header>
+        <div class="info">
+            <div class="container">
+                <div data-role="score">
+                    <span
+                        >WordPress plugin WooCommerce scored<b style="width: 90%"><i>10%</i></b
+                        >from 54 tests.</span
+                    >
+                </div>
+                <div class="col col-sm-6">
+                    <h2>About plugin</h2>
+                    <ul class="about">
+                        <li>
+                            Plugin page:
+                            <b
+                                ><a href="https://wordpress.org/plugins/woocommerce" rel="noreferrer nofollow" target="_blank"
+                                    >woocommerce</a
+                                ></b
+                            >
+                        </li>
+                        <li>Plugin version: <b>8.3.1</b></li>
+                        <li>PHP compatiblity: <b>7.4+</b></li>
+                        <li>PHP version: <b>7.4.16</b></li>
+                        <li>WordPress compatibility: <b>6.3-6.4</b></li>
+                        <li>WordPress version: <b>6.3.1</b></li>
+                        <li>First release: <b>Sep 27, 2011</b></li>
+                        <li>Latest release: <b>Nov 23, 2023</b></li>
+                        <li>Number of updates: <b>748</b></li>
+                        <li>Update frequency: <b>every 6.0 days</b></li>
+                        <li>
+                            Top authors:
+                            <b class="authors"
+                                ><span
+                                    ><a
+                                        target="_blank"
+                                        rel="noreferrer nofollow"
+                                        href="https://profiles.wordpress.org/claudiosanches/"
+                                        >claudiosanches</a
+                                    >
+                                    (23.4%)</span
+                                ><span
+                                    ><a target="_blank" rel="noreferrer nofollow" href="https://profiles.wordpress.org/woothemes/"
+                                        >woothemes</a
+                                    >
+                                    (22.33%)</span
+                                ><span
+                                    ><a
+                                        target="_blank"
+                                        rel="noreferrer nofollow"
+                                        href="https://profiles.wordpress.org/mikejolley/"
+                                        >mikejolley</a
+                                    >
+                                    (11.1%)</span
+                                ><span
+                                    ><a target="_blank" rel="noreferrer nofollow" href="https://profiles.wordpress.org/sadowski/"
+                                        >sadowski</a
+                                    >
+                                    (11.1%)</span
+                                ><span
+                                    ><a target="_blank" rel="noreferrer nofollow" href="https://profiles.wordpress.org/royho/"
+                                        >royho</a
+                                    >
+                                    (4.41%)</span
+                                ></b
+                            >
+                        </li>
+                    </ul>
+                </div>
+                <div class="col col-sm-6">
+                    <div class="col col-sm-4">
+                        <h2>Code review</h2>
+                        <span
+                            data-role="radial"
+                            data-radial-hue="-144.44"
+                            data-radial-value="10"
+                            data-radial-max="100"
+                            data-radial-text="10%"
+                            ><b>54</b> tests</span
+                        >
+                    </div>
+                    <div class="col col-sm-4">
+                        <h2>User reviews</h2>
+                        <span
+                            data-role="radial"
+                            data-radial-hue="0"
+                            data-radial-value="4.5"
+                            data-radial-max="5"
+                            data-radial-text="4.5&#x2b50;"
+                            ><b>4168</b> reviews
+                        </span>
+                    </div>
+                    <div class="col col-sm-4">
+                        <h2>Install metrics</h2>
+                        <span data-role="radial" data-radial-value="5000000" data-radial-max="282316497" data-radial-text="1.77%"
+                            ><b>5,000,000+</b> active /<b>282,316,497</b> total downloads</span
+                        >
+                    </div>
+                    <div class="col">
+                        <a
+                            class="btn"
+                            href="https://downloads.wordpress.org/plugin/woocommerce.8.3.1.zip"
+                            rel="noreferrer nofollow"
+                            >Download (19.44 MB)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <main>
+            <div class="container">
+                <div class="col">
+                    <div
+                        data-role="commits"
+                        data-commits="[20221129,{0:1,7:1,8:1,11:1,15:1,21:3,22:3,23:1,28:1,35:1,42:1,43:1,45:1,57:1,58:1,62:1,70:1,72:1,77:1,80:1,85:2,91:2,98:1,105:1,112:2,120:1,126:1,129:1,133:1,135:1,141:1,148:2,155:5,162:1,176:1,182:2,184:1,189:1,191:1,196:1,203:1,210:2,216:1,218:1,220:1,231:2,238:1,245:1,249:1,252:2,253:1,259:2,273:1,274:2,281:1,283:1,287:2,291:1,301:2,309:1,311:1,315:1,316:1,321:2,337:1,343:1,344:3,345:1,352:2,357:2,359:1}]"></div>
+                </div>
+            </div>
+            <div class="container article">
+                <div class="col">
+                    <div class="category">
+                        <h2>Benchmarks</h2>
+                        <h3>Plugin footprint <mark>38% from 16 tests</mark></h3>
+                        <div class="score">
+                            <div data-grade="fail">
+                                <h4>Installer <mark>0% from 1 test</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f53a; Critical test (weight: 50)</b> | Checking the installer triggered no
+                                        errors</q
+                                    >
+                                    <div class="info action">
+                                        It is recommended to fix the following installer errors
+                                        <ul>
+                                            <li>
+                                                Install procedure validation failed for this plugin
+                                                <ul>
+                                                    <li>
+                                                        &gt; <strong>User notice</strong> in
+                                                        <em>wp-includes/functions.php+5905</em>
+                                                    </li>
+                                                </ul>
+                                                <blockquote class="error">
+                                                    Function FeaturesController::get_compatible_plugins_for_feature was called
+                                                    incorrectly. FeaturesController::get_compatible_plugins_for_feature should not
+                                                    be called before the woocommerce_init action. Backtrace:
+                                                    Potrivit_Wp_Api-&gt;run, Potrivit_Wp_Api-&gt;_executeMethod,
+                                                    Potrivit_Wp_Api-&gt;pluginActivate, activate_plugin,
+                                                    do_action('activate_woocommerce/woocommerce.php'), WP_Hook-&gt;do_action,
+                                                    WP_Hook-&gt;apply_filters, WC_Install::install, WC_Install::create_options,
+                                                    WC_Settings_Page-&gt;get_settings,
+                                                    WC_Settings_Page-&gt;get_settings_for_section,
+                                                    apply_filters('woocommerce_get_settings_advanced'), WP_Hook-&gt;apply_filters,
+                                                    Automattic\WooCommerce\Internal\Features\FeaturesController-&gt;__call,
+                                                    call_user_func_array,
+                                                    Automattic\WooCommerce\Internal\Features\FeaturesController-&gt;add_feature_settings,
+                                                    array_map,
+                                                    Automattic\WooCommerce\Internal\Features\FeaturesController-&gt;Automattic\WooCommerce\Internal\Features\{closure},
+                                                    call_user_func,
+                                                    Automattic\WooCommerce\Internal\DataStores\Orders\CustomOrdersTableController-&gt;Automattic\WooCommerce\Internal\DataStores\Orders\{closure},
+                                                    Automattic\WooCommerce\Internal\Features\FeaturesController-&gt;get_compatible_plugins_for_feature,
+                                                    Automattic\WooCommerce\Internal\Features\FeaturesController-&gt;verify_did_woocommerce_init,
+                                                    Automattic\WooCommerce\Proxies\LegacyProxy-&gt;call_function,
+                                                    call_user_func_array, wc_doing_it_wrong Please see Debugging in WordPress for
+                                                    more information. (This message was added in version 7.0.)
+                                                </blockquote>
+                                            </li>
+                                        </ul>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="fail">
+                                <h4>
+                                    Server metrics <span>[RAM: &#x25B2;27.89MB]</span> <span>[CPU: &#x25B2;350.68ms]</span>
+                                    <mark>0% from 4 tests</mark>
+                                </h4>
+                                <span
+                                    ><q>A check of server-side resources used by WooCommerce</q>
+                                    <div class="info action">
+                                        Please take the time to fix the following items
+                                        <ul>
+                                            <li>
+                                                <b>RAM</b>: Try to keep total memory usage under 10MB (currently 48.18MB on
+                                                /wp-admin/admin.php?page=wc-addons)
+                                            </li>
+                                            <li>
+                                                <b>CPU</b>: Total CPU usage should be kept under 500.00ms (currently 605.08ms on
+                                                /wp-admin/admin.php?page=wc-addons)
+                                            </li>
+                                            <li>
+                                                <b>Extra RAM</b>: Extra memory usage should kept under 5MB (currently 27.89MB on
+                                                /wp-admin/admin.php?page=wc-addons)
+                                            </li>
+                                            <li>
+                                                <b>Extra CPU</b>: Extra CPU usage must be kept under 200.00ms (currently 350.68ms
+                                                on /wp-admin/admin.php?page=wc-addons)
+                                            </li>
+                                        </ul>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>Page</th>
+                                                    <th>Memory (MB)</th>
+                                                    <th>CPU Time (ms)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td title="/"><b>Home</b> /</td>
+                                                    <td>30.23 <span class="nok">&#x25B2;26.77</span></td>
+                                                    <td>264.05 <span class="nok">&#x25B2;222.53</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin"><b>Dashboard</b> /wp-admin</td>
+                                                    <td>31.67 <span class="nok">&#x25B2;28.37</span></td>
+                                                    <td>526.64 <span class="nok">&#x25B2;480.14</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php"><b>Posts</b> /wp-admin/edit.php</td>
+                                                    <td>31.61 <span class="nok">&#x25B2;28.25</span></td>
+                                                    <td>313.65 <span class="nok">&#x25B2;268.45</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/post-new.php">
+                                                        <b>Add New Post</b> /wp-admin/post-new.php
+                                                    </td>
+                                                    <td>50.63 <span class="nok">&#x25B2;44.75</span></td>
+                                                    <td>780.03 <span class="nok">&#x25B2;688.80</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/upload.php">
+                                                        <b>Media Library</b> /wp-admin/upload.php
+                                                    </td>
+                                                    <td>31.40 <span class="nok">&#x25B2;28.17</span></td>
+                                                    <td>465.80 <span class="nok">&#x25B2;431.60</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        title="/wp-admin/edit-tags.php?taxonomy=product_tag&amp;amp;post_type=product">
+                                                        <b>Tags</b>
+                                                        /wp-admin/edit-tags.php?taxonomy=product_tag&amp;post_type=product
+                                                    </td>
+                                                    <td class="nok">48.30</td>
+                                                    <td class="nok">707.14</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/revenue">
+                                                        <b>Revenue</b> /wp-admin/admin.php?page=wc-admin&path=/analytics/revenue
+                                                    </td>
+                                                    <td class="nok">51.30</td>
+                                                    <td class="nok">644.08</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin">
+                                                        <b>Home 6</b> /wp-admin/admin.php?page=wc-admin
+                                                    </td>
+                                                    <td class="nok">30.44</td>
+                                                    <td>242.49</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/extensions">
+                                                        <b>Extensions</b> /wp-admin/admin.php?page=wc-admin&path=/extensions
+                                                    </td>
+                                                    <td class="nok">51.17</td>
+                                                    <td>469.01</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php?post_type=shop_coupon">
+                                                        <b>Coupons</b> /wp-admin/edit.php?post_type=shop_coupon
+                                                    </td>
+                                                    <td class="nok">48.28</td>
+                                                    <td>406.72</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php?post_type=product&amp;page=product_exporter">
+                                                        <b>Product Export</b>
+                                                        /wp-admin/edit.php?post_type=product&page=product_exporter
+                                                    </td>
+                                                    <td class="nok">48.19</td>
+                                                    <td>430.40</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/settings">
+                                                        <b>Settings</b> /wp-admin/admin.php?page=wc-admin&path=/analytics/settings
+                                                    </td>
+                                                    <td class="nok">51.17</td>
+                                                    <td>430.42</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/customers">
+                                                        <b>Customers</b> /wp-admin/admin.php?page=wc-admin&path=/customers
+                                                    </td>
+                                                    <td class="nok">51.17</td>
+                                                    <td>453.46</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/variations">
+                                                        <b>Variations</b>
+                                                        /wp-admin/admin.php?page=wc-admin&path=/analytics/variations
+                                                    </td>
+                                                    <td class="nok">51.17</td>
+                                                    <td>469.50</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-addons">
+                                                        <b></b> /wp-admin/admin.php?page=wc-addons
+                                                    </td>
+                                                    <td class="nok">48.18</td>
+                                                    <td class="nok">605.08</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="warn">
+                                <h4>Server storage [IO: &#x25B2;45.82MB] [DB: &#x25B2;0.79MB] <mark>67% from 3 tests</mark></h4>
+                                <span
+                                    ><q>Analyzing filesystem and database footprints of this plugin</q>
+                                    <div class="info action">
+                                        Just a few items left to fix
+                                        <ul>
+                                            <li>Try to limit filesystem usage to 25MB (currently using 45.82MB)</li>
+                                        </ul>
+                                        <div class="col">
+                                            <div class="col col-sm-6">
+                                                <span
+                                                    data-role="radial"
+                                                    data-radial-hue="0"
+                                                    data-radial-value="100"
+                                                    data-radial-max="100"
+                                                    data-radial-text="45.82MB">
+                                                    Filesystem: <b>5,730</b> new files</span
+                                                >
+                                            </div>
+                                            <div class="col col-sm-6">
+                                                <span
+                                                    data-role="radial"
+                                                    data-radial-hue="0"
+                                                    data-radial-value="3.17"
+                                                    data-radial-max="100"
+                                                    data-radial-text="0.79MB">
+                                                    Database: <b>38</b> new tables, <b>113</b> new options</span
+                                                >
+                                            </div>
+                                        </div>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>New tables</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>wp_woocommerce_payment_tokenmeta</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_wc_admin_note_actions</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_woocommerce_shipping_zone_methods</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_wc_product_meta_lookup</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_wc_order_addresses</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_woocommerce_attribute_taxonomies</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_woocommerce_sessions</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_wc_order_coupon_lookup</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_wc_product_attributes_lookup</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>wp_woocommerce_log</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>New WordPress options</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>woocommerce_db_version</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_myaccount_view_order_endpoint</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_thumbnail_image_width</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_placeholder_image</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_myaccount_orders_endpoint</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_myaccount_add_payment_method_endpoint</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_specific_allowed_countries</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_cart_redirect_after_add</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_unforce_ssl_checkout</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>woocommerce_price_display_suffix</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>...</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="ok">
+                                <h4>Browser metrics <mark>Passed 4 tests</mark></h4>
+                                <span
+                                    ><q>This is an overview of browser requirements for WooCommerce</q>
+                                    <div class="info">
+                                        This plugin has a minimal impact on browser resources
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>Page</th>
+                                                    <th>Nodes</th>
+                                                    <th>Memory (MB)</th>
+                                                    <th>Script (ms)</th>
+                                                    <th>Layout (ms)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td title="/"><b>Home</b> /</td>
+                                                    <td>3,251 <span class="nok">&#x25B2;489</span></td>
+                                                    <td>13.70 <span class="ok">&#x25BC;0.87</span></td>
+                                                    <td>12.67 <span class="nok">&#x25B2;10.96</span></td>
+                                                    <td>37.64 <span class="ok">&#x25BC;5.02</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin"><b>Dashboard</b> /wp-admin</td>
+                                                    <td>2,534 <span class="nok">&#x25B2;356</span></td>
+                                                    <td>4.87 <span class="ok">&#x25BC;0.82</span></td>
+                                                    <td>102.09 <span class="ok">&#x25BC;14.74</span></td>
+                                                    <td>78.20 <span class="nok">&#x25B2;30.71</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php"><b>Posts</b> /wp-admin/edit.php</td>
+                                                    <td>2,346 <span class="nok">&#x25B2;246</span></td>
+                                                    <td>2.10 <span class="nok">&#x25B2;0.12</span></td>
+                                                    <td>50.84 <span class="nok">&#x25B2;8.25</span></td>
+                                                    <td>37.22 <span class="nok">&#x25B2;1.88</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/post-new.php">
+                                                        <b>Add New Post</b> /wp-admin/post-new.php
+                                                    </td>
+                                                    <td>2,038 <span class="nok">&#x25B2;512</span></td>
+                                                    <td>30.58 <span class="nok">&#x25B2;7.22</span></td>
+                                                    <td>1,086.62 <span class="nok">&#x25B2;433.97</span></td>
+                                                    <td>37.59 <span class="ok">&#x25BC;10.68</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/upload.php">
+                                                        <b>Media Library</b> /wp-admin/upload.php
+                                                    </td>
+                                                    <td>1,680 <span class="nok">&#x25B2;280</span></td>
+                                                    <td>4.29 <span class="nok">&#x25B2;0.12</span></td>
+                                                    <td>140.56 <span class="nok">&#x25B2;43.86</span></td>
+                                                    <td>51.22 <span class="nok">&#x25B2;9.32</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td
+                                                        title="/wp-admin/edit-tags.php?taxonomy=product_tag&amp;amp;post_type=product">
+                                                        <b>Tags</b>
+                                                        /wp-admin/edit-tags.php?taxonomy=product_tag&amp;post_type=product
+                                                    </td>
+                                                    <td>1,980</td>
+                                                    <td>18.73</td>
+                                                    <td>481.54</td>
+                                                    <td>28.27</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/revenue">
+                                                        <b>Revenue</b> /wp-admin/admin.php?page=wc-admin&path=/analytics/revenue
+                                                    </td>
+                                                    <td>3,749</td>
+                                                    <td>22.57</td>
+                                                    <td>546.75</td>
+                                                    <td>140.12</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin">
+                                                        <b>Home 6</b> /wp-admin/admin.php?page=wc-admin
+                                                    </td>
+                                                    <td>1,173</td>
+                                                    <td>19.32</td>
+                                                    <td>332.78</td>
+                                                    <td>37.52</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/extensions">
+                                                        <b>Extensions</b> /wp-admin/admin.php?page=wc-admin&path=/extensions
+                                                    </td>
+                                                    <td>2,488</td>
+                                                    <td>22.03</td>
+                                                    <td>310.36</td>
+                                                    <td>95.06</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php?post_type=shop_coupon">
+                                                        <b>Coupons</b> /wp-admin/edit.php?post_type=shop_coupon
+                                                    </td>
+                                                    <td>2,069</td>
+                                                    <td>22.91</td>
+                                                    <td>364.86</td>
+                                                    <td>49.80</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/edit.php?post_type=product&amp;page=product_exporter">
+                                                        <b>Product Export</b>
+                                                        /wp-admin/edit.php?post_type=product&page=product_exporter
+                                                    </td>
+                                                    <td>1,585</td>
+                                                    <td>14.90</td>
+                                                    <td>265.31</td>
+                                                    <td>35.63</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/settings">
+                                                        <b>Settings</b> /wp-admin/admin.php?page=wc-admin&path=/analytics/settings
+                                                    </td>
+                                                    <td>1,294</td>
+                                                    <td>16.11</td>
+                                                    <td>363.90</td>
+                                                    <td>179.77</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/customers">
+                                                        <b>Customers</b> /wp-admin/admin.php?page=wc-admin&path=/customers
+                                                    </td>
+                                                    <td>2,225</td>
+                                                    <td>20.73</td>
+                                                    <td>360.44</td>
+                                                    <td>59.76</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-admin&amp;path=/analytics/variations">
+                                                        <b>Variations</b>
+                                                        /wp-admin/admin.php?page=wc-admin&path=/analytics/variations
+                                                    </td>
+                                                    <td>1,448</td>
+                                                    <td>16.93</td>
+                                                    <td>421.62</td>
+                                                    <td>93.61</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="/wp-admin/admin.php?page=wc-addons">
+                                                        <b></b> /wp-admin/admin.php?page=wc-addons
+                                                    </td>
+                                                    <td>3,985</td>
+                                                    <td>21.03</td>
+                                                    <td>279.67</td>
+                                                    <td>78.64</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="warn">
+                                <h4>Uninstaller [IO: &#x25B2;0.32MB] [DB: &#x25B2;0.79MB] <mark>50% from 4 tests</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f538; Tests weight: 35</b> | The uninstall procedure must remove all plugin files
+                                        and extra database tables</q
+                                    >
+                                    <div class="info action">
+                                        These items require your attention
+                                        <ul>
+                                            <li>
+                                                The plugin did not uninstall successfully, leaving <b>38 tables</b> in the
+                                                database
+                                                <ul>
+                                                    <li>wp_actionscheduler_groups</li>
+                                                    <li>wp_woocommerce_downloadable_product_permissions</li>
+                                                    <li>wp_wc_product_attributes_lookup</li>
+                                                    <li>wp_woocommerce_order_itemmeta</li>
+                                                    <li>wp_wc_product_download_directories</li>
+                                                    <li>wp_woocommerce_payment_tokens</li>
+                                                    <li>wp_wc_order_product_lookup</li>
+                                                    <li>wp_wc_category_lookup</li>
+                                                    <li>wp_wc_orders_meta</li>
+                                                    <li>wp_woocommerce_shipping_zone_locations</li>
+                                                    <li>...</li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                The uninstall procedure has failed, leaving <b>114 options</b> in the database
+                                                <ul>
+                                                    <li>wc_blocks_version</li>
+                                                    <li>woocommerce_permalinks</li>
+                                                    <li>woocommerce_tax_display_shop</li>
+                                                    <li>widget_recent-comments</li>
+                                                    <li>widget_woocommerce_widget_cart</li>
+                                                    <li>woocommerce_default_country</li>
+                                                    <li>woocommerce_enable_review_rating</li>
+                                                    <li>woocommerce_default_customer_address</li>
+                                                    <li>woocommerce_db_version</li>
+                                                    <li>woocommerce_maxmind_geolocation_settings</li>
+                                                    <li>...</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div></span
+                                >
+                            </div>
+                        </div>
+                        <h3>Smoke tests <mark>25% from 4 tests</mark></h3>
+                        <div class="score">
+                            <div data-grade="ok">
+                                <h4>Server-side errors <mark>Passed 1 test</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f539; Test weight: 20</b> | Just a short smoke test targeting errors on the server
+                                        (in the Apache logs)</q
+                                    >
+                                    <div class="info">
+                                        The smoke test was a success, however most plugin functionality was not tested
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="fail">
+                                <h4>SRP <mark>0% from 2 tests</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f539; Tests weight: 20</b> | A shallow check of the single-responsibility
+                                        principle; PHP files should perform no action - including output of placeholder text - and
+                                        trigger no errors when accessed directly</q
+                                    >
+                                    <div class="info action">
+                                        The following issues need your attention
+                                        <ul>
+                                            <li>
+                                                <b>14</b>&times; GET requests to PHP files return non-empty strings (only 10 are
+                                                shown):
+                                                <ul>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-hero.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-collection-full-grid.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-query-minimal-product-list.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-collection-grid.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-collection-rows.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-query-product-list-with-1-1-images.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-details-listing.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/header-minimal.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/product-collection-simple-grid.php</b
+                                                        >
+                                                    </li>
+                                                    <li>
+                                                        &gt;
+                                                        <b
+                                                            >/wp-content/plugins/woocommerce/packages/woocommerce-blocks/patterns/header-centered-search-pattern.php</b
+                                                        >
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                            <li>
+                                                <b>776</b>&times; PHP files trigger server-side errors or warnings when accessed
+                                                directly (only 10 are shown):
+                                                <ul>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Symfony\\Component\\CssSelector\ode\\AbstractNode' not found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/vendor/symfony/css-selector/Node/ClassNode.php:24</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Automattic\\WooCommerce\\Blocks\\BlockTypes\\AbstractBlock' not found
+                                                            in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/packages/woocommerce-blocks/src/BlockTypes/MiniCartContents.php:11</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Symfony\\Component\\CssSelector\\XPath\\Extension\\AbstractExtension'
+                                                            not found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/vendor/symfony/css-selector/XPath/Extension/NodeExtension.php:28</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Automattic\\WooCommerce\\StoreApi\\Schemas\\V1\\AbstractAddressSchema'
+                                                            not found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/packages/woocommerce-blocks/src/StoreApi/Schemas/V1/BillingAddressSchema.php:12</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class 'Composer\\Installers\\BaseInstaller' not found
+                                                            in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/packages/woocommerce-blocks/vendor/composer/installers/src/Composer/Installers/KodiCMSInstaller.php:4</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class 'Composer\\Installers\\BaseInstaller' not found
+                                                            in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/vendor/composer/installers/src/Composer/Installers/ExpressionEngineInstaller.php:6</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Automattic\\WooCommerce\\Admin\\Features\\OnboardingTasks\\Task' not
+                                                            found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/src/Admin/Features/OnboardingTasks/Tasks/Payments.php:11</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Class
+                                                            'Automattic\\WooCommerce\\Blocks\\BlockTypes\\AbstractInnerBlock' not
+                                                            found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/packages/woocommerce-blocks/src/BlockTypes/CartOrderSummaryHeadingBlock.php:7</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Interface
+                                                            'Automattic\\WooCommerce\\Vendor\\League\\Container\\Definition\\DefinitionAggregateInterface'
+                                                            not found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/lib/packages/League/Container/Definition/DefinitionAggregate.php:9</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <b>PHP Fatal error</b>
+                                                        <blockquote class="error">
+                                                            Uncaught Error: Interface
+                                                            'Automattic\\WooCommerce\\Caching\\CacheEngine' not found in
+                                                            <em
+                                                                >wp-content/plugins/woocommerce/src/Caching/WPCacheEngine.php:8</em
+                                                            >
+                                                        </blockquote>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="fail">
+                                <h4>User-side errors <mark>0% from 1 test</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f539; Test weight: 20</b> | This is a smoke test targeting browser
+                                        errors/issues</q
+                                    >
+                                    <div class="info action">
+                                        Please take a look at the following user-side issues
+                                        <ul>
+                                            <li>
+                                                <b>4</b> occurences, only the last one shown
+                                                <ul>
+                                                    <li>
+                                                        &gt; GET request to
+                                                        <b>/wp-admin/admin.php?page=wc-admin&path=/analytics/variations</b>
+                                                    </li>
+                                                    <li>
+                                                        &gt; <strong>Console-api (warning)</strong> in
+                                                        <em
+                                                            >wp-includes/js/dist/deprecated.min.js?ver=73ad3591e7bc95f4777a+1:627</em
+                                                        >
+                                                    </li>
+                                                </ul>
+                                                <blockquote class="error">
+                                                    `position` prop in wp.components.Dropdown is deprecated since version 6.2.
+                                                    Please use `popoverProps.placement` prop instead. Note: Note that the
+                                                    `position` prop will override any values passed through the
+                                                    `popoverProps.placement` prop.
+                                                </blockquote>
+                                            </li>
+                                        </ul>
+                                    </div></span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                    <div class="category">
+                        <h2>Optimizations</h2>
+                        <h3>Plugin configuration <mark>93% from 29 tests</mark></h3>
+                        <div class="score">
+                            <div data-grade="good">
+                                <h4>readme.txt <mark>88% from 16 tests</mark></h4>
+                                <span
+                                    ><q
+                                        >The <b>readme.txt</b> file is an important file in your plugin as it is parsed by
+                                        WordPress.org to prepare the public listing of your plugin</q
+                                    >
+                                    <div class="info action">
+                                        Please fix the following attributes:
+                                        <ul>
+                                            <li>
+                                                <b>Screenshots</b>: These screenshots need descriptions #1, #2, #3, #4, #5, #6 in
+                                                <a
+                                                    href="https://ps.w.org/woocommerce/assets/"
+                                                    target="_blank"
+                                                    rel="noreferrer nofollow"
+                                                    >woocommerce/assets</a
+                                                >
+                                                to your readme.txt
+                                            </li>
+                                            <li>
+                                                <b>Tags</b>: Too many tags (12 tag instead of maximum 10); only the first 5 tags
+                                                are used in your directory listing
+                                            </li>
+                                        </ul>
+                                        You can look at the official
+                                        <a
+                                            rel="noreferrer nofollow"
+                                            target="_blank"
+                                            href="https://wordpress.org/plugins/readme.txt"
+                                            >readme.txt</a
+                                        >
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="ok">
+                                <h4>woocommerce/woocommerce.php <mark>Passed 13 tests</mark></h4>
+                                <span
+                                    ><q>Analyzing the main PHP file in "WooCommerce" version <b>8.3.1</b></q>
+                                    <div class="info">
+                                        63 characters long description:
+                                        <blockquote cite="https://wordpress.org/plugins/woocommerce">
+                                            An eCommerce toolkit that helps you sell anything. Beautifully.
+                                        </blockquote>
+                                    </div></span
+                                >
+                            </div>
+                        </div>
+                        <h3>Code Analysis <mark>3% from 3 tests</mark></h3>
+                        <div class="score">
+                            <div data-grade="fail">
+                                <h4>File types <mark>0% from 1 test</mark></h4>
+                                <span
+                                    ><q
+                                        ><b>&#x1f538; Test weight: 35</b> | This is an overview of programming languages used in
+                                        this plugin; dangerous file extensions are not allowed</q
+                                    >
+                                    <div class="info action">
+                                        Please make sure to remedy the following
+                                        <ul>
+                                            <li>
+                                                Even if your plugin relies on executable files (for example a companion app),
+                                                never distribute executable files with your plugin
+                                                <ul>
+                                                    <li>
+                                                        <b>.bat</b> - Batch File in Windows
+                                                        <ul>
+                                                            <li>
+                                                                &#9763; <em>wp-content/plugins/woocommerce/vendor/bin/wp.bat</em>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <b>460,219</b> lines of code in <b>5,041</b> files:
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th>Language</th>
+                                                    <th>Files</th>
+                                                    <th>Blank lines</th>
+                                                    <th>Comment lines</th>
+                                                    <th>Lines of code</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>PHP</td>
+                                                    <td>2,293</td>
+                                                    <td>52,973</td>
+                                                    <td>134,668</td>
+                                                    <td>268,434</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>TypeScript</td>
+                                                    <td>1,177</td>
+                                                    <td>6,878</td>
+                                                    <td>10,941</td>
+                                                    <td>69,343</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>JavaScript</td>
+                                                    <td>746</td>
+                                                    <td>10,835</td>
+                                                    <td>7,697</td>
+                                                    <td>54,145</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Sass</td>
+                                                    <td>236</td>
+                                                    <td>6,321</td>
+                                                    <td>324</td>
+                                                    <td>32,119</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>CSS</td>
+                                                    <td>273</td>
+                                                    <td>785</td>
+                                                    <td>3,987</td>
+                                                    <td>13,791</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>XML</td>
+                                                    <td>3</td>
+                                                    <td>5</td>
+                                                    <td>18</td>
+                                                    <td>9,061</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>JSON</td>
+                                                    <td>178</td>
+                                                    <td>0</td>
+                                                    <td>0</td>
+                                                    <td>8,801</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>SVG</td>
+                                                    <td>99</td>
+                                                    <td>2</td>
+                                                    <td>2</td>
+                                                    <td>2,110</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>JSX</td>
+                                                    <td>12</td>
+                                                    <td>191</td>
+                                                    <td>187</td>
+                                                    <td>1,534</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>C</td>
+                                                    <td>1</td>
+                                                    <td>118</td>
+                                                    <td>25</td>
+                                                    <td>668</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>HTML</td>
+                                                    <td>17</td>
+                                                    <td>84</td>
+                                                    <td>250</td>
+                                                    <td>98</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>m4</td>
+                                                    <td>1</td>
+                                                    <td>8</td>
+                                                    <td>0</td>
+                                                    <td>32</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>DOS Batch</td>
+                                                    <td>1</td>
+                                                    <td>7</td>
+                                                    <td>0</td>
+                                                    <td>30</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Bourne Shell</td>
+                                                    <td>1</td>
+                                                    <td>7</td>
+                                                    <td>4</td>
+                                                    <td>26</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>diff</td>
+                                                    <td>1</td>
+                                                    <td>2</td>
+                                                    <td>25</td>
+                                                    <td>17</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>C/C++ Header</td>
+                                                    <td>1</td>
+                                                    <td>4</td>
+                                                    <td>12</td>
+                                                    <td>8</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>YAML</td>
+                                                    <td>1</td>
+                                                    <td>0</td>
+                                                    <td>0</td>
+                                                    <td>2</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                            <div data-grade="warn">
+                                <h4>PHP code <mark>50% from 2 tests</mark></h4>
+                                <span
+                                    ><q
+                                        >An short overview of logical lines of code, cyclomatic complexity, and other code
+                                        metrics</q
+                                    >
+                                    <div class="info action">
+                                        Please tend to the following items
+                                        <ul>
+                                            <li>
+                                                Cyclomatic complexity of methods should be reduced to less than 100 (currently
+                                                <b>106</b>)
+                                            </li>
+                                        </ul>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2">Cyclomatic complexity</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Average complexity per logical line of code</td>
+                                                    <td>0.41</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Average class complexity</td>
+                                                    <td>16.60</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Minimum class complexity</td>
+                                                    <td>1.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Maximum class complexity</td>
+                                                    <td>469.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Average method complexity</td>
+                                                    <td>3.23</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Minimum method complexity</td>
+                                                    <td>1.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Maximum method complexity</td>
+                                                    <td>106.00</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3">Code structure</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Namespaces</td>
+                                                    <td>158</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Interfaces</td>
+                                                    <td>75</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Traits</td>
+                                                    <td>20</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Classes</td>
+                                                    <td>1,787</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Abstract classes</td>
+                                                    <td>96</td>
+                                                    <td>5.37%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Concrete classes</td>
+                                                    <td>1,691</td>
+                                                    <td>94.63%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Final classes</td>
+                                                    <td>30</td>
+                                                    <td>1.77%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Methods</td>
+                                                    <td>13,298</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Static methods</td>
+                                                    <td>2,317</td>
+                                                    <td>17.42%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Public methods</td>
+                                                    <td>9,674</td>
+                                                    <td>72.75%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Protected methods</td>
+                                                    <td>2,302</td>
+                                                    <td>17.31%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Private methods</td>
+                                                    <td>1,322</td>
+                                                    <td>9.94%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Functions</td>
+                                                    <td>1,336</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Named functions</td>
+                                                    <td>935</td>
+                                                    <td>69.99%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Anonymous functions</td>
+                                                    <td>401</td>
+                                                    <td>30.01%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Constants</td>
+                                                    <td>743</td>
+                                                    <td></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Global constants</td>
+                                                    <td>40</td>
+                                                    <td>5.38%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Class constants</td>
+                                                    <td>703</td>
+                                                    <td>94.62%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>&#9655; Public constants</td>
+                                                    <td>664</td>
+                                                    <td>94.45%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                        </div>
+                        <h3>Plugin size <mark>50% from 2 tests</mark></h3>
+                        <div class="score">
+                            <div data-grade="warn">
+                                <h4>Image compression <mark>50% from 2 tests</mark></h4>
+                                <span
+                                    ><q>It is recommended to compress PNG files in your plugin to minimize bandwidth usage</q>
+                                    <div class="info action">
+                                        <b>139</b> PNG files occupy <b>7.43</b>MB with <b>1.65</b>MB in potential savings
+                                        <div data-role="comp" data-comp="22.28">Potential savings</div>
+                                        <table class="stats">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="4">Compression of 5 random PNG files using pngquant</th>
+                                                </tr>
+                                                <tr>
+                                                    <th>File</th>
+                                                    <th>Size - original</th>
+                                                    <th>Size - compressed</th>
+                                                    <th>Savings</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td title="assets/images/marketing/vimeo.png">
+                                                        assets/images/marketing/vimeo.png
+                                                    </td>
+                                                    <td>2.48KB</td>
+                                                    <td>1.21KB</td>
+                                                    <td><span class="ok">&#x25BC; 51.40%</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="assets/css/jquery-ui/images/ui-icons_2e83ff_256x240.png">
+                                                        assets/css/jquery-ui/images/ui-icons_2e83ff_256x240.png
+                                                    </td>
+                                                    <td>3.69KB</td>
+                                                    <td>4.18KB</td>
+                                                    <td>0.00%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="assets/images/admin_notes/marketing-jetpack-2x.png">
+                                                        assets/images/admin_notes/marketing-jetpack-2x.png
+                                                    </td>
+                                                    <td>18.90KB</td>
+                                                    <td>7.56KB</td>
+                                                    <td><span class="ok">&#x25BC; 60.01%</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="assets/images/task_list/tax-illustration.png">
+                                                        assets/images/task_list/tax-illustration.png
+                                                    </td>
+                                                    <td>11.08KB</td>
+                                                    <td>11.65KB</td>
+                                                    <td>0.00%</td>
+                                                </tr>
+                                                <tr>
+                                                    <td title="assets/images/icons/credit-cards/amex.png">
+                                                        assets/images/icons/credit-cards/amex.png
+                                                    </td>
+                                                    <td>1.69KB</td>
+                                                    <td>1.71KB</td>
+                                                    <td>0.00%</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div></span
+                                >
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col col-side">
+                    <aside></aside>
+                </div>
+            </div>
+            <div class="container"></div>
+            <div data-role="delim">
+                <svg
+                    fill="#ffffff"
+                    xmlns="http://www.w3.org/2000/svg"
+                    version="1.1"
+                    width="100%"
+                    height="0"
+                    viewBox="0 0 100 100"
+                    preserveAspectRatio="none">
+                    <path d="M0 100 C40 0 60 0 100 100 Z"></path>
+                </svg>
+            </div>
+        </main>
+        <footer>
+            <div class="container">
+                <div>&copy; 2013-2023 Potrivit</div>
+            </div>
+        </footer>
+    </body>
+</html>
