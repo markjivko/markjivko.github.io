@@ -1,0 +1,269 @@
+/**
+ * Storyline
+ * 
+ * @title      Storyline Demo
+ * @desc       A short storyline demo page
+ * @copyright  (c) 2013, Mark Jivko
+ * @author     Mark Jivko https://markjivko.com
+ * @package    storyline
+ * @license    GPL v3+, https://gnu.org/licenses/gpl-3.0.txt
+ */
+@font-face {
+    font-family: 'Oswald';
+    font-style: normal;
+    font-weight: 400;
+    src: url('../fonts/oswald.woff2') format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    font-display: swap;
+}
+::-webkit-scrollbar {width: 5px;height: 5px;}
+::-webkit-scrollbar-track {background: #fff;}
+::-webkit-scrollbar-thumb {background: rgb(253, 219, 39);}
+::-webkit-scrollbar-thumb:hover {background: #333;}
+html, body {
+    margin: 0;
+    font-family: Oswald,Arial,sans-serif;
+}
+html {
+    overflow: hidden;
+}
+body {
+    padding-top: 50px;
+    overflow: hidden;
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    -webkit-overflow-scrolling: touch;
+}
+a {
+    color: #000;
+    text-decoration: none;
+}
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    color: #000;
+    padding: 8px;
+    z-index: 100;
+}
+.skip-link:focus {
+    top: 0;
+}
+.storyline-menu {
+    position: fixed;
+    z-index: 11;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    min-height: 52px;
+    text-align: center;
+    box-shadow: rgb(253 219 39 / 50%) 0px 4px 0px;
+    background: rgb(253, 219, 39);
+    display: block;
+}
+.storyline-menu > .logo {
+    display: block;
+    position: absolute;
+    left: 40px;
+    top: 0px;
+    width: 46px;
+    height: 46px;
+    background: url(../img/favicon.png) 50% no-repeat transparent;
+    background-size: auto 100%;
+    cursor: pointer;
+    transform-origin: 0 0;
+    filter: drop-shadow(0px 5px 0px rgba(253,219,39,0.5));
+    transition: transform 0.1s linear;
+}
+.storyline-menu > .logo:hover {
+    transform: scale(1.5) translateY(10px);
+}
+.storyline-menu > .logo:active {
+    transform: scale(0.8);
+}
+.storyline-menu > div {
+    display: inline-block;
+    height: 52px;
+    line-height: 52px;
+    font-size: 18px;
+    font-family: Oswald,Arial,sans-serif;
+    color: #333;
+    cursor: pointer;
+    font-weight: normal;
+    min-width: 25px;
+    padding: 0 10px;
+    margin: 0;
+    text-transform: capitalize;
+    background: transparent;
+}
+.storyline-menu > div.active {
+    color: #000;
+    box-shadow: 0px 4px 0px 0px rgb(0,177,210);
+}
+.storyline-menu-item.active, .storyline-menu-item:active, .storyline-menu-item:hover {
+    color:#000 !important;
+    box-shadow:0px 4px 0px #00B1D2;
+}
+.header, .footer {
+    width: 100%;
+    text-align: center;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+    -ms-flex-pack: center;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+.footer button {
+    margin-bottom: 50px;
+}
+.deco {
+    position: absolute;
+    width: 140px;
+    height: 140px;
+    z-index: 20;
+    transform: scale(0.8);
+    z-index: 1;
+}
+body.view-code .deco {
+    top: 120px;
+}
+.deco:before, .deco:after {
+    content: '';
+    display: block;
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #ccc;
+    box-shadow: 40px 0px 0px #ccc, 0px 40px 0px #ccc, 0px 80px 0px #ccc, 0px 120px 0px #ccc, 40px 40px 0px #ccc, 40px 80px 0px #ccc, 40px 120px 0px #ccc;
+    border-radius: 50%;
+    opacity: 0.4;
+}
+.deco:after {
+    left: 80px;
+}
+.deco.active {
+    transition: transform 2s linear;
+    transform: scale(3) rotate(45deg);
+}
+.deco.pulse {
+    animation: deco-pulse 5s linear infinite;
+}
+@keyframes deco-pulse {
+    0% {
+        transform: rotate(0deg) scale(0.8);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.6);
+    }
+    100% {
+        transform: rotate(360deg) scale(0.8);
+    }
+}
+[class^=frame] {
+    width: 100%;
+    background: #fff;
+    color: #333333;
+    height: 600px;
+    margin-bottom: 0px;
+    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    align-items: center;
+    font-size: 2em;
+    position: relative;
+}
+[class^=frame] > span {
+    display: inline-block;
+    width: 100%;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 2;
+}
+[class^=frame]:nth-child(2n) {
+    background: #333;
+    color: #ffffff;
+}
+.code {
+    margin-top: 40px;
+    background: #333;
+    color: #fff;
+    text-align: left;
+    padding: 21px;
+    white-space: pre;
+    position: relative;
+    min-height: 100px;
+    overflow: hidden;
+    width: calc(100% - 80px);
+    max-width: 400px;
+    font-size: 0.5em;
+    box-shadow:0px 10px 10px rgba(0,0,0,0.2);
+    z-index: 11;
+    display: none;
+}
+body.view-code .code {
+    display: inline-block;
+}
+.code .func {
+    color: yellow;
+}
+.code .prop {
+    color: lightblue;
+}
+.code .val {
+    color: orange;
+}
+.code .var {
+    color: lightgreen;
+}
+.code .comment {
+    color: #ccc;
+}
+[class^=frame]:nth-child(2n) .code {
+    background: #111;
+}
+button {
+    margin-top: 50px;
+    min-width: 200px;
+    height: 50px;
+    background: rgb(253, 219, 39);
+    box-shadow: 0px 4px 0px rgba(253, 219, 39, 0.5);
+    color: #000;
+    border: none;
+    cursor: pointer;
+    clear: both;
+    float: left;
+    display: inline-block;
+    font-size: 1.1em;
+    padding: 0 20px;
+    transition: transform 0.1s linear;
+}
+button:hover {
+    transform: scale(1.1);
+}
+button:active {
+    transform: scale(0.8);
+}
+@media (max-width: 767px) {
+    [rel="console"] {
+        display: none !important;
+    }
+    [rel="frameguide"] {
+        position: relative;
+        transform-origin: 0 0;
+        transform: scale(0.8);
+        z-index: 1 !important;
+    }
+    .storyline-menu > .logo {
+        display: none;
+    }
+}
+
+/*EOF*/

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <title>Storyline jQuery plugin</title>
+        <link rel="canonical" href="https://markjivko.com/storyline/">
+        <link rel="stylesheet" type="text/css" href="./css/style.css">
+        <link rel="icon" type="image/png" href="./img/favicon.png">
+        <meta charset="UTF-8">
+        <meta name="Author" content="Mark Jivko">
+        <meta name="Keywords" content="storyline, parallax">
+        <meta name="Description" content="Storlyline is a small jQuery plugin for rendering scroll-based HTML animations">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="viewport" content="initial-scale=1.0, width=device-width">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <script defer src="https://markjivko.com/dist/jquery.min.js"></script>
+        <script defer src="https://markjivko.com/storyline/js/storyline.min.js"></script>
+        <script defer src="./js/functions.js"></script>
+    </head>
+    <body id="main">
+        <a class="skip-link" href="#main">Skip to main</a>
+        <div class="header">
+            <span><b>Storyline</b> is a small jQuery plugin that enables cross-browser scroll-based effects.</span>
+            <button>Enable console</button>
+        </div>
+        
+        <div class="frame1">
+            <span>Frame number 1</span>
+            <div class="code">
+                // (onActive) Scale by frame visiblity
+                objectsCache.frame2.css({
+                    transform: `scale(${coords.percent.screenPlayed / 10 + 0.8})`
+                });
+            </div>
+            <div class="deco"></div>
+        </div>
+        <div class="frame2">
+            <span>Frame number 2</span>
+            <div class="code">
+                // (onActive) Rotate by uncentered percent
+                objectsCache.frame1.css({
+                    transform: `rotate(${coords.percent.frameUnCentered}deg) 
+                        scale(0.8)`
+                });
+            </div>
+            <div class="deco"></div>
+        </div>
+        <div class="frame3">
+            <span>Frame number 3</span>
+            <div class="code">
+                // (onActive) Translate by uncentered percent
+                $(this).css({
+                    transform: `translate(${coords.percent.frameUnCentered / 2}%, 0)`
+                });
+            </div>
+            <div class="deco"></div>
+        </div>
+        <div class="frame4">
+            <span>Frame number 4</span>
+            <div class="code">
+                onEnter: function() {
+                    objectsCache.frame3.addClass('active');
+                },
+                onLeave: function() {
+                    objectsCache.frame3.removeClass('active');
+                }
+            </div>
+            <div class="deco"></div>
+        </div>
+        <div class="frame5">
+            <span>Frame number 5</span>
+            <div class="code">
+                // (onActive) Invert by uncentered percent
+                $(this).css({
+                    filter: `invert(${(1 - coords.percent.frameUnCentered / 50) / 2} 
+                        sepia(${(1 - coords.percent.frameUnCentered / 50) / 2}`
+                });
+            </div>
+            <div class="deco"></div>
+        </div>
+        <div class="frame6">
+            <span>Frame number 6</span>
+            <div class="deco pulse"></div>
+        </div>
+        
+        <div class="footer">
+            <button>Enable console</button>
+            Copyright &copy; 2013 &dot; <a href="https://markjivko.com" rel="noreferrer"><b>Mark Jivko</b></a>
+        </div>
+    </body>
+</html>
