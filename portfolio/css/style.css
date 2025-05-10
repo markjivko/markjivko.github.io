@@ -736,10 +736,10 @@ body.ready [data-role="scroll-down"].ok {
     transition: transform 1800ms linear, opacity 1800ms linear;
 }
 [data-effect="years"]:after {
-    top: -4em;
-    left: -4.5em;
-    width: 10em;
-    height: 10em;
+    top: -4rem;
+    left: -4.5rem;
+    width: 10rem;
+    height: 10rem;
     box-shadow: 0px 0px 0px 10px var(--accent-color-3);
 }
 [data-frame].active [data-effect="years"].active:before {
@@ -1715,9 +1715,6 @@ body.outer .storyline-menu {
     [data-role="scroll-down"] {
         bottom: -40px;
     }
-    [data-role="total"] {
-        display: none;
-    }
 }
 @media (orientation: portrait) and (max-width: 768px) {
     [data-frame].active [data-effect="bkg-box"] {
@@ -1816,9 +1813,6 @@ body.outer .storyline-menu {
     [data-role="project"] [data-role="p-action"] a,
     a.button {
         font-size: 0.8em;
-    }
-    [data-role="total"] {
-        display: none;
     }
     [data-role="colors"] > div {
         font-size: 0.6em;
