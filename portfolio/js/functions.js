@@ -110,7 +110,7 @@ jQuery &&
                                         global.methods.hideScroll();
                                     }, 7500);
                                 })
-                                .attr("src", "./portfolio/img/profile.png");
+                                .attr("src", "https://markjivko.com/portfolio/img/profile.png");
                         }, 500);
                     }
                 },
@@ -463,7 +463,10 @@ jQuery &&
                         // Initialize the sound on the first audio frame
                         if (null === global.objects.howler) {
                             global.objects.howler = new Howl({
-                                src: ["./portfolio/audio/sound.webm", "./portfolio/audio/sound.mp3"],
+                                src: [
+                                    "https://markjivko.com/portfolio/audio/sound.webm",
+                                    "https://markjivko.com/portfolio/audio/sound.mp3"
+                                ],
                                 sprite: options.soundSprite,
                                 volume: global.objects.howlerVolume
                             });
