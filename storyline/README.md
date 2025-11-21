@@ -4,25 +4,26 @@
     </a>
 </p>
 
-Storyline
-=========
+# Storyline
 
-Build *beautiful* landing pages that change as the user scrolls up or down.
+Build _beautiful_ landing pages that change as the user scrolls up or down.
 
 Project created in 2013 and ported to GitHub in 2021.
 
-Demo
-----
-Just [visit this page](https://markjivko.com/storyline) for a short demo of the plugin and included console/debugger.
+## Demo
 
-Getting started
----------------
+Just [visit this page](https://markjivko.com/storyline/) for a short demo of the plugin and included console/debugger.
+
+## Getting started
+
 Include the Storyline library
+
 ```HTML
 <script defer src="https://markjivko.com/storyline/js/storyline.min.js"></script>
 ```
 
 Define your frames
+
 ```JavaScript
 $(document).ready(function(){
     $.storyline({
@@ -39,22 +40,22 @@ $(document).ready(function(){
 })
 ```
 
-*  *'frameSelector'* - String; a selector for the target storyline frame.
-*  *onEnter* - Function; called when the frame becomes visible.
-*  *onActive* - Function; called while the frame is visible, on each scroll event.
-*  *onLeave* - Function; called when the frame becomes invisible to the user.
-*  *scrollIntoView* - Boolean; overrides the option with the same name; triggered 250ms after *onEnter* to perform a scrollIntoView action
+-   _'frameSelector'_ - String; a selector for the target storyline frame.
+-   _onEnter_ - Function; called when the frame becomes visible.
+-   _onActive_ - Function; called while the frame is visible, on each scroll event.
+-   _onLeave_ - Function; called when the frame becomes invisible to the user.
+-   _scrollIntoView_ - Boolean; overrides the option with the same name; triggered 250ms after _onEnter_ to perform a scrollIntoView action
 
-You can add as many frame selectors as you wish. Each selector can point to 
-either 1 HTML element (for instance, an *#id* selector) or to many HTML elements
-(a *.class* selector etc.).
+You can add as many frame selectors as you wish. Each selector can point to
+either 1 HTML element (for instance, an _#id_ selector) or to many HTML elements
+(a _.class_ selector etc.).
 
-Action parameters
------------------
-Each action defined for the frame selectors (onEnter, onActive, onLeave) gets 
+## Action parameters
+
+Each action defined for the frame selectors (onEnter, onActive, onLeave) gets
 2 extra parameters on each call.
 
-*  __c__ - Object; frame coordinates:
+-   **c** - Object; frame coordinates:
 
 ```JavaScript
 {
@@ -75,15 +76,17 @@ Each action defined for the frame selectors (onEnter, onActive, onLeave) gets
     }
 }
 ```
-* __e__ - Object; scroll event.
 
-You can use both of these objects to fully control the behavior of frame elements such as positions, 
+-   **e** - Object; scroll event.
+
+You can use both of these objects to fully control the behavior of frame elements such as positions,
 colors, backgrounds etc. in a predictible, linear fashion.
 
-Frame reference
----------------
-Each action also gets a reference of the selector via the ```$(this)``` operator.
+## Frame reference
+
+Each action also gets a reference of the selector via the `$(this)` operator.
 Furthermore, the frame itself has an object atached:
+
 ```JavaScript
 $(this).data("frameInfo")
 // Returns
@@ -94,14 +97,15 @@ $(this).data("frameInfo")
 }
 ```
 
-Options
--------
+## Options
+
 You can further customize your storyline with the following options:
+
 ```JavaScript
 // Available options and their defaults
 {
     frameTop: 0, // Distance from the focused frame to the window top
-    guide: false, // Boolean - Show the storyline guide 
+    guide: false, // Boolean - Show the storyline guide
     buildMenu: false, // Boolean|Array - List of names for each frame
     menuSpeed: 1500, // Integer - Scroll duration for menu clicks
     tolerance: 20, // Integer - frame tolerance
@@ -112,37 +116,45 @@ You can further customize your storyline with the following options:
 ```
 
 ### Options - frameTop
-This is used to set the distance from the *focused* frame to the top of the screen; useful for when a floating 
+
+This is used to set the distance from the _focused_ frame to the top of the screen; useful for when a floating
 menu bar is fixed at the top of the screen.
 
 ### Options - guide
+
 Wether to show or hide the Storyline guide.
-If set to *true*, you will get a visual representation of each frame, its parameters, position, state etc.
-You will also get the __Storyline Log__ showing you information such as debugging data, script information, errors etc.
+If set to _true_, you will get a visual representation of each frame, its parameters, position, state etc.
+You will also get the **Storyline Log** showing you information such as debugging data, script information, errors etc.
 
 ### Options - buildMenu
-If you set this option to a valid array of strings, each one will be interpreted as the name of a frame, in the order 
-passed to the __frames__ key above. Plus, a menu will be constructed with the provided list of frame names; each time a 
+
+If you set this option to a valid array of strings, each one will be interpreted as the name of a frame, in the order
+passed to the **frames** key above. Plus, a menu will be constructed with the provided list of frame names; each time a
 user clicks on a menu item, the page will scroll to the correspondent frame.
 
 ### Options - menuSpeed
-If a menu was constructed an an user clicks on a menu item, this option sets the interval (in milliseconds) in which the 
+
+If a menu was constructed an an user clicks on a menu item, this option sets the interval (in milliseconds) in which the
 page will scroll to the correspondent frame.
 
 ### Options - tolerance
-This is used to trigger the *onEnter* and *onLeave* actions more loosely. Test using the *guide* option set to *true*.
+
+This is used to trigger the _onEnter_ and _onLeave_ actions more loosely. Test using the _guide_ option set to _true_.
 
 ### Options - scrollIntoView
-This is triggered 250ms after *onEnter* and performs a scrollIntoView action. The homonymous parameter in frames overrides this global option.
+
+This is triggered 250ms after _onEnter_ and performs a scrollIntoView action. The homonymous parameter in frames overrides this global option.
 
 ### Options - ignoreWarnings
-If another option is set incorrectly and ignoreWarnings is set to True, the script will halt at the first encountered 
+
+If another option is set incorrectly and ignoreWarnings is set to True, the script will halt at the first encountered
 error.
 
-Architecture
-------------
+## Architecture
+
 The plugin is very well commented.
-All strings are stored in a *message* variable.
+All strings are stored in a _message_ variable.
+
 ```JavaScript
 {
     error:{}, // Error messages
@@ -152,6 +164,7 @@ All strings are stored in a *message* variable.
 ```
 
 The plugin also uses an error logging mechanism with log level filtering.
+
 ```JavaScript
 // Available log levels
 logLevel = {
@@ -164,12 +177,13 @@ log(message.status.x, logLevel.debug); // Log a debugging message at index "x"
 log(message.status.y, logLevel.info); // Log an information message at index "y"
 log(message.error.z, logLevel.error); // Log an error message at index "z"
 ```
-You can also set the log level by changing the *logLevel* option.
 
-You can view the log either in the *browser console* or in the *Storyline Log* when the *guide* option 
-is set to *true*.
+You can also set the log level by changing the _logLevel_ option.
 
-Examples of sites using the Storyline plugin
---------------------------------------------
-* [Mark Jivko | Portfolio](https://markjivko.com)
-* [APK Factory](https://stephino.eu/)
+You can view the log either in the _browser console_ or in the _Storyline Log_ when the _guide_ option
+is set to _true_.
+
+## Examples of sites using the Storyline plugin
+
+-   [Mark Jivko | Portfolio](https://markjivko.com/)
+-   [APK Factory](https://markjivko.com/apk-factory/)
