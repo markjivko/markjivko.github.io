@@ -131,7 +131,7 @@ body.panel-min .keys{display:none}
 <aside id="panel" aria-label="Editor">
   <header>
     <div class="title"><span>Paper B-Roll</span></div>
-    <button class="primary" id="btnRestart" title="Reload and play the sequence from the start (R)">Restart</button>
+    <button class="primary" id="btnRestart" title="Play the sequence from the start (R)">Restart</button>
     <button id="btnHide" title="Hide the editor so only the paper is visible (S)">Hide</button>
     <button class="icon" id="btnSide" title="Move panel to the other side">⇄</button>
     <button class="icon" id="btnMin" title="Collapse panel">–</button>
@@ -2268,7 +2268,17 @@ function syncScrub(t) {
   const el = $('#scrub');
   if (Math.abs(parseFloat(el.value) - raw) > 0.002) el.value = raw;
 }
-function restartPage() { saveNow(); saveUI(); location.reload(); }
+// Restart in place instead of reloading: a reload always drops the browser out of fullscreen.
+// Playback is computed purely from the time since the start, so restarting the clock replays
+// exactly what a fresh page load would show (key color only, then the entrance).
+function restartPage() {
+  saveNow(); saveUI();
+  if (!S.image) return;
+  if (S.drag) { S.drag = null; S.drawing = null; }
+  $('#toast').classList.remove('show');
+  S.clock0 = performance.now();
+  play(0);
+}
 function previewEntrance() {
   if (!prepPlayback()) return;
   play(Math.max(0, S.sched.T0 - 0.15));
