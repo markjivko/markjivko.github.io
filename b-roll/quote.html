@@ -1,0 +1,2841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quote Card · B-roll Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Special+Elite&family=Work+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
+<style>
+/* ============================================================
+   QUOTE CARD — B-ROLL GENERATOR
+   Stage styles (what gets recorded) + Inspector styles (the tool)
+   ============================================================ */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body {
+  margin: 0; padding: 0; height: 100%; width: 100%;
+  overflow: hidden;
+  background: #000;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body.hide-cursor, body.hide-cursor * { cursor: none !important; }
+
+/* ---------- STAGE ---------- */
+
+#stage {
+  position: fixed; inset: 0;
+  background: var(--bg, #000);
+  display: block;
+  overflow: hidden;
+  transition: background-color .25s ease;
+}
+
+#vignette {
+  position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse 85% 75% at 42% 50%, transparent 35%, rgba(0,0,0,.55) 100%);
+  opacity: 0; transition: opacity .3s ease;
+}
+#stage.vignette #vignette { opacity: 1; }
+
+/* 16:9 title/action safe guides */
+#guides { position: absolute; inset: 0; pointer-events: none; display: none; }
+#stage.guides #guides { display: block; }
+#guides i {
+  position: absolute; border: 1px dashed rgba(255,255,255,.28);
+  display: block;
+}
+#guides i.action { inset: 5% 5%; }
+#guides i.title  { inset: 10% 10%; border-color: rgba(255,120,120,.35); }
+#guides i.center-v { left: 50%; top: 0; bottom: 0; width: 0; border-width: 0 0 0 1px; border-color: rgba(255,255,255,.14); inset: auto; }
+
+/* ---------- PAPER ---------- */
+
+#paperWrap {
+  position: absolute;
+  top: 50%;
+  left: var(--paper-offset, 4%);
+  width: var(--paper-width, 65%);
+  transform: translateY(-50%);
+  filter:
+    drop-shadow(0 calc(28px * var(--shadow, .6)) calc(54px * var(--shadow, .6)) rgba(0,0,0,calc(.60 * var(--shadow, .6))))
+    drop-shadow(0 calc(3px * var(--shadow, .6)) calc(10px * var(--shadow, .6)) rgba(0,0,0,calc(.45 * var(--shadow, .6))));
+  will-change: transform, opacity, filter;
+}
+
+/* ambient loop — its own layer so the entrance, the static tilt and the
+   marker geometry all stay independent of it */
+#paperIdle {
+  animation-name: none;
+  animation-duration: var(--idle-dur, 9s);
+  animation-iteration-count: infinite;
+  animation-timing-function: ease-in-out;
+  transform-origin: 50% 50%;
+}
+#paperIdle:not([data-idle="none"]) { will-change: transform; }
+#paperIdle[data-idle="sway"]     { animation-name: idleSway; }
+#paperIdle[data-idle="pendulum"] { animation-name: idlePendulum; transform-origin: 50% 0%; }
+#paperIdle[data-idle="breathe"]  { animation-name: idleBreathe; }
+#paperIdle[data-idle="float"]    { animation-name: idleFloat; }
+#paperIdle[data-idle="drift"]    { animation-name: idleDrift; }
+#paperIdle[data-idle="flutter"]  { animation-name: idleFlutter; }
+
+@keyframes idleSway {
+  0%, 50%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(calc(var(--idle-amt, 1) *  0.85deg)); }
+  75% { transform: rotate(calc(var(--idle-amt, 1) * -0.85deg)); }
+}
+@keyframes idlePendulum {
+  0%, 50%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(calc(var(--idle-amt, 1) *  0.7deg)); }
+  75% { transform: rotate(calc(var(--idle-amt, 1) * -0.7deg)); }
+}
+@keyframes idleBreathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(calc(1 + var(--idle-amt, 1) * 0.011)); }
+}
+@keyframes idleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(calc(var(--idle-amt, 1) * -11px)); }
+}
+@keyframes idleDrift {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(calc(var(--idle-amt, 1) *  7px), calc(var(--idle-amt, 1) * -6px))  rotate(calc(var(--idle-amt, 1) *  0.35deg)); }
+  50% { transform: translate(0, calc(var(--idle-amt, 1) * -11px))                                rotate(calc(var(--idle-amt, 1) * -0.3deg)); }
+  75% { transform: translate(calc(var(--idle-amt, 1) * -7px), calc(var(--idle-amt, 1) * -4px))   rotate(calc(var(--idle-amt, 1) *  0.22deg)); }
+}
+@keyframes idleFlutter {
+  0%, 100% { transform: perspective(1600px) rotateY(0deg) rotateX(0deg); }
+  33% { transform: perspective(1600px) rotateY(calc(var(--idle-amt, 1) *  2.4deg)) rotateX(calc(var(--idle-amt, 1) * -0.9deg)); }
+  66% { transform: perspective(1600px) rotateY(calc(var(--idle-amt, 1) * -2deg))   rotateX(calc(var(--idle-amt, 1) *  0.7deg)); }
+}
+
+#paperTilt {
+  transform: rotate(var(--paper-tilt, -0.6deg));
+  transform-origin: 50% 50%;
+}
+
+#paper {
+  position: relative;
+  isolation: isolate;
+  background-color: var(--paper, #faf8f3);
+  background-image:
+    linear-gradient(103deg, rgba(255,255,255,.42) 0%, rgba(255,255,255,0) 40%),
+    linear-gradient(180deg, rgba(0,0,0,.028) 0%, rgba(0,0,0,0) 22%, rgba(0,0,0,0) 78%, rgba(0,0,0,.035) 100%);
+  min-height: var(--paper-min-h, 35vh);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: calc(var(--pad-y, 5.2%) * var(--pad-scale, 1)) calc(var(--pad-x, 6.4%) * var(--pad-scale, 1));
+  color: var(--ink, #1b1813);
+  overflow: hidden;
+}
+
+/* paper texture — five stocks, all multiplying into the sheet colour.
+   Periods are kept coarse on the ruled patterns so they do not moire against
+   a 1080p sensor or shimmer while the card is moving. */
+#grain {
+  position: absolute; inset: -2px; pointer-events: none; z-index: 1;
+  opacity: var(--grain, .5);
+  mix-blend-mode: multiply;
+}
+#grain[data-grain="fibre"] {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  background-size: 220px 220px;
+}
+#grain[data-grain="rough"] {
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='s'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.5' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 0 0 0 0 0 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23s)' opacity='0.8'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.022' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='420' height='420' filter='url(%23c)' opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 300px 300px, 420px 420px;
+}
+#grain[data-grain="laid"] {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(64,48,22,.09) 0 1px, rgba(0,0,0,0) 1px 4px),
+    repeating-linear-gradient(90deg, rgba(64,48,22,.11) 0 1px, rgba(0,0,0,0) 1px 46px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.26'/%3E%3C/svg%3E");
+  background-size: auto, auto, 200px 200px;
+}
+#grain[data-grain="linen"] {
+  background-image:
+    repeating-linear-gradient(0deg, rgba(64,48,22,.085) 0 2px, rgba(0,0,0,0) 2px 7px),
+    repeating-linear-gradient(90deg, rgba(64,48,22,.085) 0 2px, rgba(0,0,0,0) 2px 7px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+  background-size: auto, auto, 200px 200px;
+}
+#grain[data-grain="newsprint"] {
+  background-image:
+    radial-gradient(circle, rgba(40,30,14,.20) .9px, rgba(0,0,0,0) 1.25px),
+    radial-gradient(circle, rgba(40,30,14,.13) .9px, rgba(0,0,0,0) 1.25px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.22'/%3E%3C/svg%3E");
+  background-size: 5px 5px, 5px 5px, 180px 180px;
+  background-position: 0 0, 2.5px 2.5px, 0 0;
+}
+
+/* subtle shading along the torn edges so the tear reads as depth */
+.tear-shade { position: absolute; left: 0; right: 0; height: 26px; pointer-events: none; z-index: 2; }
+.tear-shade.top { top: 0; background: linear-gradient(180deg, rgba(90,75,50,.16), rgba(90,75,50,0)); }
+.tear-shade.bot { bottom: 0; background: linear-gradient(0deg, rgba(90,75,50,.16), rgba(90,75,50,0)); }
+
+/* highlighter layer sits under the type and multiplies into the paper */
+#hlLayer {
+  position: absolute; inset: 0; z-index: 3;
+  pointer-events: none;
+  mix-blend-mode: multiply;
+  opacity: var(--hl-intensity, 1);
+}
+#hlLayer.rough { filter: url(#roughEdge); }
+
+.hl-rect {
+  position: absolute;
+  background-color: var(--hlc, #ffe14d);
+  background-image: linear-gradient(180deg, rgba(0,0,0,.055) 0%, rgba(255,255,255,.15) 16%, rgba(255,255,255,.04) 60%, rgba(0,0,0,.085) 100%);
+  border-radius: 3px 8px 4px 7px / 7px 3px 8px 4px;
+  transform-origin: 0% 50%;
+  transform: scaleX(0);
+  will-change: transform, opacity;
+}
+.hl-rect.underline { border-radius: 2px; }
+
+/* the type */
+#content { position: relative; z-index: 4; }
+
+#quoteMark {
+  font-family: var(--quote-font, 'Playfair Display', Georgia, serif);
+  font-size: calc(var(--fs, 34px) * 2.6);
+  line-height: .72;
+  color: var(--ink, #1b1813);
+  opacity: .16;
+  margin: 0 0 calc(var(--fs, 34px) * -0.34) calc(var(--fs, 34px) * -0.06);
+  display: none;
+  user-select: none;
+}
+#stage.qmarks #quoteMark { display: block; }
+
+#quote {
+  font-family: var(--quote-font, 'Playfair Display', Georgia, serif);
+  font-size: var(--fs, 34px);
+  line-height: var(--lh, 1.5);
+  letter-spacing: var(--tracking, 0em);
+  font-weight: var(--quote-weight, 400);
+  text-align: var(--align, left);
+  text-wrap: pretty;
+  margin: 0;
+}
+#quote .line { display: block; min-height: 0.4em; }
+#quote .line.blank { min-height: .55em; }
+#quote .w { display: inline-block; transition: color .35s ease; }
+#quote .w.ink-dark { color: var(--ink-dark, #000); }
+#quote .w.ink-bold { -webkit-text-stroke: .022em currentColor; }
+#quote strong { font-weight: 700; }
+#quote em { font-style: italic; }
+
+/* text reveal */
+#content { opacity: 0; }
+#content.shown { opacity: 1; }
+#content.fade-in { animation: contentFade var(--reveal-dur, 700ms) cubic-bezier(.22,.7,.3,1) forwards; }
+@keyframes contentFade {
+  from { opacity: 0; transform: translateY(10px); filter: blur(3px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+#quote.words .w, #quote.words .punc { opacity: 0; }
+#quote.words.go .w, #quote.words.go .punc { animation: wordIn 460ms cubic-bezier(.22,.7,.3,1) forwards; }
+@keyframes wordIn {
+  from { opacity: 0; transform: translateY(.36em); filter: blur(2px); }
+  to   { opacity: 1; transform: none; filter: blur(0); }
+}
+
+/* author block */
+#authorRow {
+  position: relative; z-index: 4;
+  display: flex; align-items: center; gap: calc(var(--fs, 34px) * .42);
+  margin-top: calc(var(--fs, 34px) * 1.15);
+  opacity: 0;
+}
+#authorRow.shown { animation: contentFade 600ms cubic-bezier(.22,.7,.3,1) forwards; }
+#stage.author-right #authorRow { justify-content: flex-end; }
+
+#authorRow.stacked { flex-direction: column; align-items: flex-start; gap: calc(var(--fs,34px) * .3); }
+
+#logoBox {
+  width: var(--logo-size, 52px); height: var(--logo-size, 52px);
+  flex: 0 0 auto;
+  display: none;
+  opacity: var(--logo-opacity, 1);
+  overflow: hidden;
+}
+#logoBox.on { display: block; }
+#logoBox img { width: 100%; height: 100%; object-fit: contain; display: block; }
+#logoGlyph { display: none; width: 100%; height: 100%; color: var(--logo-ink, var(--ink)); }
+#logoGlyph svg { width: 100%; height: 100%; display: block; }
+#logoBox.rounded { border-radius: 22%; }
+#logoBox.circle  { border-radius: 50%; }
+#logoBox.framed  { border-radius: 14%; padding: calc(var(--logo-size, 52px) * .13); border: 1px solid color-mix(in srgb, var(--ink) 22%, transparent); }
+#logoBox.mono img { filter: grayscale(1) contrast(1.05); }
+
+#authorText { display: flex; flex-direction: column; gap: .18em; min-width: 0; }
+#authorRule {
+  display: none;
+  width: calc(var(--fs,34px) * 1.1); height: 1px; flex: 0 0 auto;
+  background: color-mix(in srgb, var(--ink) 38%, transparent);
+}
+#authorRow.rule #authorRule { display: block; }
+
+#authorName {
+  font-family: var(--author-font, 'Inter', sans-serif);
+  font-size: calc(var(--fs, 34px) * var(--author-scale, .46));
+  font-weight: 600;
+  letter-spacing: .01em;
+  line-height: 1.2;
+  color: var(--ink);
+}
+#authorSub {
+  font-family: var(--author-font, 'Inter', sans-serif);
+  font-size: calc(var(--fs, 34px) * var(--author-scale, .46) * .82);
+  font-weight: 400;
+  line-height: 1.25;
+  color: color-mix(in srgb, var(--ink) 58%, transparent);
+}
+#authorSub:empty, #authorName:empty { display: none; }
+
+/* measuring clone (off-screen, never visible) */
+#measure {
+  position: absolute; visibility: hidden; pointer-events: none;
+  left: -99999px; top: 0;
+}
+
+/* ==========================================================================
+   Printed stocks.
+   Every ruling is anchored to the type rather than to absolute millimetres:
+   --rs is the line height, --ro the first baseline, --rm the text's left
+   edge.  So the words sit on the rules whatever size the quote ends up.
+   ========================================================================== */
+
+/* College ruled — 7.1 mm ruling with a red margin 32 mm in. Here: one blue
+   rule per baseline, red margin just left of the text block. */
+#grain[data-grain="college"] {
+  background-image:
+    linear-gradient(to right, rgba(201,72,66,.85) 0 100%),
+    linear-gradient(to bottom, rgba(58,96,168,.78) 0 1.3px, rgba(0,0,0,0) 1.3px);
+  background-size: 1.7px 100%, 100% var(--rs, 44px);
+  background-position: calc(var(--rm, 40px) - var(--fs, 34px) * .45) 0, 0 var(--ro, 40px);
+  background-repeat: no-repeat, repeat;
+}
+
+/* Maths / quad graph — fine squares with a heavier rule every fifth */
+#grain[data-grain="graph"] {
+  --gq: calc(var(--rs, 44px) / 4);
+  background-image:
+    linear-gradient(to bottom, rgba(70,110,190,.66) 0 1.4px, rgba(0,0,0,0) 1.4px),
+    linear-gradient(to right,  rgba(70,110,190,.66) 0 1.4px, rgba(0,0,0,0) 1.4px),
+    linear-gradient(to bottom, rgba(70,110,190,.36) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to right,  rgba(70,110,190,.36) 0 1px, rgba(0,0,0,0) 1px);
+  background-size:
+    100% calc(var(--gq) * 5), calc(var(--gq) * 5) 100%,
+    100% var(--gq), var(--gq) 100%;
+  background-position: 0 var(--ro, 40px), var(--rm, 40px) 0, 0 var(--ro, 40px), var(--rm, 40px) 0;
+}
+
+/* Engineering computation pad — 5x5 per inch in faint green, printed on the
+   reverse so it shows through, with margin lines and a heading bar in front */
+#grain[data-grain="engineering"] {
+  --ge: calc(var(--rs, 44px) / 5);
+  background-image:
+    linear-gradient(to bottom, rgba(40,115,82,.5) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to right,  rgba(40,115,82,.5) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to bottom, rgba(40,115,82,.26) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to right,  rgba(40,115,82,.26) 0 1px, rgba(0,0,0,0) 1px);
+  background-size:
+    100% calc(var(--ge) * 5), calc(var(--ge) * 5) 100%,
+    100% var(--ge), var(--ge) 100%;
+  background-position: 0 var(--ro, 40px), var(--rm, 40px) 0, 0 var(--ro, 40px), var(--rm, 40px) 0;
+}
+#grain[data-grain="engineering"]::before {
+  content: ''; position: absolute; left: 4.5%; right: 4.5%; top: 3.5%; bottom: 3%;
+  border: 1.6px solid rgba(34,104,74,.75); border-bottom: 0;
+}
+#grain[data-grain="engineering"]::after {
+  content: ''; position: absolute; left: 4.5%; right: 4.5%; top: calc(3.5% + 30px);
+  height: 1.6px; background: rgba(34,104,74,.75);
+}
+
+/* Dot grid */
+#grain[data-grain="dots"] {
+  --gd: calc(var(--rs, 44px) / 3);
+  background-image: radial-gradient(circle, rgba(72,72,78,.66) 1.5px, rgba(0,0,0,0) 1.7px);
+  background-size: var(--gd) var(--gd);
+  background-position: calc(var(--rm, 40px) - var(--gd) / 2) calc(var(--ro, 40px) - var(--gd) / 2);
+}
+
+/* Sudoku — light cell rules, heavy rules every third to box the 3x3 blocks */
+#grain[data-grain="sudoku"] {
+  --sc: calc(var(--rs, 44px) / 2);
+  background-image:
+    linear-gradient(to bottom, rgba(44,44,50,.85) 0 2.4px, rgba(0,0,0,0) 2.4px),
+    linear-gradient(to right,  rgba(44,44,50,.85) 0 2.4px, rgba(0,0,0,0) 2.4px),
+    linear-gradient(to bottom, rgba(44,44,50,.4) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to right,  rgba(44,44,50,.4) 0 1px, rgba(0,0,0,0) 1px);
+  background-size:
+    100% calc(var(--sc) * 3), calc(var(--sc) * 3) 100%,
+    100% var(--sc), var(--sc) 100%;
+  background-position: 0 var(--ro, 40px), var(--rm, 40px) 0, 0 var(--ro, 40px), var(--rm, 40px) 0;
+}
+
+/* Manuscript paper — five lines to a staff, the classic 1:4 gap-to-height
+   ratio, one staff per line of type */
+#grain[data-grain="music"] {
+  --mg: calc(var(--rs, 44px) * .105);
+  --mc: calc(var(--ro, 40px) - var(--fs, 34px) * .3);
+  background-image:
+    linear-gradient(to bottom, rgba(30,30,36,.85) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to bottom, rgba(30,30,36,.85) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to bottom, rgba(30,30,36,.85) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to bottom, rgba(30,30,36,.85) 0 1.2px, rgba(0,0,0,0) 1.2px),
+    linear-gradient(to bottom, rgba(30,30,36,.85) 0 1.2px, rgba(0,0,0,0) 1.2px);
+  background-size: 100% var(--rs, 44px);
+  background-position:
+    0 calc(var(--mc) - var(--mg) * 2),
+    0 calc(var(--mc) - var(--mg)),
+    0 var(--mc),
+    0 calc(var(--mc) + var(--mg)),
+    0 calc(var(--mc) + var(--mg) * 2);
+}
+
+/* Calligraphy guides — ascender, waist, base and descender lines with
+   Copperplate slant bars at 55 degrees */
+#grain[data-grain="calligraphy"] {
+  background-image:
+    repeating-linear-gradient(-55deg, rgba(74,84,134,.3) 0 1px, rgba(0,0,0,0) 1px calc(var(--rs, 44px) * .46)),
+    linear-gradient(to bottom, rgba(74,84,134,.8) 0 1.4px, rgba(0,0,0,0) 1.4px),
+    linear-gradient(to bottom, rgba(74,84,134,.45) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to bottom, rgba(74,84,134,.26) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to bottom, rgba(74,84,134,.26) 0 1px, rgba(0,0,0,0) 1px);
+  background-size: auto, 100% var(--rs, 44px), 100% var(--rs, 44px), 100% var(--rs, 44px), 100% var(--rs, 44px);
+  background-position:
+    0 0,
+    0 var(--ro, 40px),
+    0 calc(var(--ro, 40px) - var(--fs, 34px) * .52),
+    0 calc(var(--ro, 40px) - var(--fs, 34px) * .96),
+    0 calc(var(--ro, 40px) + var(--fs, 34px) * .32);
+}
+
+/* Drafting sheet — non-photo blue grid, double border, title block */
+#grain[data-grain="drafting"] {
+  --gd2: calc(var(--rs, 44px) / 3);
+  background-image:
+    linear-gradient(to bottom, rgba(62,102,162,.3) 0 1px, rgba(0,0,0,0) 1px),
+    linear-gradient(to right,  rgba(62,102,162,.3) 0 1px, rgba(0,0,0,0) 1px);
+  background-size: 100% var(--gd2), var(--gd2) 100%;
+  background-position: 0 var(--ro, 40px), var(--rm, 40px) 0;
+}
+#grain[data-grain="drafting"]::before {
+  content: ''; position: absolute; inset: 3.4%;
+  border: 1.7px solid rgba(38,58,90,.8);
+  outline: 1px solid rgba(38,58,90,.45); outline-offset: 5px;
+}
+#grain[data-grain="drafting"]::after {
+  content: ''; position: absolute; right: 3.4%; bottom: 3.4%; width: 27%; height: 11%;
+  border: 1.7px solid rgba(38,58,90,.8);
+  background-image: linear-gradient(to bottom, rgba(38,58,90,.6) 0 1px, rgba(0,0,0,0) 1px);
+  background-size: 100% 33.4%;
+}
+
+/* Guilloche — the engine-turned lacework of security printing.  An abstract
+   rosette built from interfering ring families; no note, denomination, seal
+   or portrait is reproduced. */
+#grain[data-grain="guilloche"] {
+  background-image:
+    repeating-radial-gradient(circle at 21% 44%, rgba(26,84,60,.3) 0 1px, rgba(0,0,0,0) 1px 10px),
+    repeating-radial-gradient(circle at 77% 61%, rgba(26,84,60,.26) 0 1px, rgba(0,0,0,0) 1px 13px),
+    repeating-radial-gradient(circle at 49% 8%,  rgba(30,30,34,.14) 0 1px, rgba(0,0,0,0) 1px 17px),
+    repeating-linear-gradient(-38deg, rgba(26,84,60,.1) 0 .9px, rgba(0,0,0,0) .9px 10px),
+    repeating-linear-gradient(41deg,  rgba(30,30,34,.08) 0 .9px, rgba(0,0,0,0) .9px 13px);
+}
+#grain[data-grain="guilloche"]::before {
+  content: ''; position: absolute; inset: 3%;
+  border: 2px solid rgba(26,84,60,.5);
+  outline: 1px solid rgba(26,84,60,.35); outline-offset: 4px;
+}
+#grain[data-grain="guilloche"]::after {
+  content: ''; position: absolute; inset: 5.4%;
+  border: 1px solid rgba(26,84,60,.28);
+}
+
+/* ============================================================
+   INSPECTOR — the tool chrome. Warm graphite so it never spills
+   cool light onto a screen recording; amber picked up from the
+   highlighter itself.
+   ============================================================ */
+
+:root {
+  --ui-bg:      #17141199;
+  --ui-solid:   #191612;
+  --ui-raise:   #221d18;
+  --ui-line:    #3a322a;
+  --ui-line-hi: #4d4236;
+  --ui-text:    #eee7db;
+  --ui-dim:     #a2968542;
+  --ui-mute:    #9d9284;
+  --ui-accent:  #ffd84a;
+  --ui-danger:  #ff7a6b;
+  --ui-ok:      #8fd98a;
+}
+
+#inspector {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 436px; max-width: 94vw;
+  background: rgba(23,20,17,.93);
+  backdrop-filter: blur(24px) saturate(1.2);
+  -webkit-backdrop-filter: blur(24px) saturate(1.2);
+  border-left: 1px solid var(--ui-line);
+  color: var(--ui-text);
+  font-size: 13px;
+  display: flex; flex-direction: column;
+  transform: translateX(102%);
+  transition: transform .34s cubic-bezier(.4,.9,.25,1), box-shadow .22s ease;
+  z-index: 100;
+  box-shadow: none;
+}
+/* the shadow only exists while the panel is out, so nothing bleeds onto the
+   right-hand side of the frame once it is closed */
+#inspector.open { transform: none; box-shadow: -30px 0 70px rgba(0,0,0,.45); }
+#inspector.dragover { outline: 2px dashed var(--ui-accent); outline-offset: -10px; }
+
+.ins-head {
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 18px 20px 12px;
+  border-bottom: 1px solid var(--ui-line);
+}
+.ins-head h1 {
+  font-size: 14px; font-weight: 600; margin: 0; letter-spacing: -.01em;
+}
+.ins-head .sub { font-size: 11.5px; color: var(--ui-mute); margin-left: auto; }
+.ins-head .sub b { color: var(--ui-text); font-weight: 500; }
+
+.tabs { display: flex; gap: 2px; padding: 10px 14px 0; border-bottom: 1px solid var(--ui-line); }
+.tab {
+  appearance: none; border: 0; background: transparent; cursor: pointer;
+  color: var(--ui-mute); font: inherit; font-size: 12.5px; font-weight: 500;
+  padding: 7px 10px 10px; border-bottom: 2px solid transparent; margin-bottom: -1px;
+  border-radius: 4px 4px 0 0; transition: color .15s;
+}
+.tab:hover { color: var(--ui-text); }
+.tab.on { color: var(--ui-accent); border-bottom-color: var(--ui-accent); }
+.tab:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+
+.panes { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 16px 20px 28px; }
+.panes::-webkit-scrollbar { width: 10px; }
+.panes::-webkit-scrollbar-thumb { background: #3a322a; border-radius: 10px; border: 3px solid transparent; background-clip: content-box; }
+.panes::-webkit-scrollbar-thumb:hover { background: #55493c; background-clip: content-box; }
+.pane { display: none; }
+.pane.on { display: block; animation: paneIn .2s ease; }
+@keyframes paneIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+
+.group { margin-bottom: 22px; }
+.group > h2 {
+  font-size: 12px; font-weight: 600; margin: 0 0 10px; color: var(--ui-text);
+  display: flex; align-items: center; gap: 8px;
+}
+.group > h2::after { content: ''; flex: 1; height: 1px; background: var(--ui-line); }
+.group > p.note { font-size: 11.5px; color: var(--ui-mute); margin: -4px 0 10px; line-height: 1.5; }
+
+.field { margin-bottom: 12px; }
+.field > label, .lbl {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  font-size: 11.5px; color: var(--ui-mute); margin-bottom: 5px; font-weight: 500;
+}
+.lbl .val { color: var(--ui-text); font-variant-numeric: tabular-nums; font-size: 11px; }
+.row { display: flex; gap: 8px; }
+.row > * { flex: 1; min-width: 0; }
+.row.tight { gap: 6px; }
+
+input[type=text], input[type=number], textarea, select {
+  width: 100%; font: inherit; font-size: 13px;
+  color: var(--ui-text);
+  background: #12100d;
+  border: 1px solid var(--ui-line);
+  border-radius: 7px; padding: 8px 10px;
+  transition: border-color .15s, box-shadow .15s;
+}
+textarea { resize: vertical; line-height: 1.55; font-size: 13.5px; }
+input:focus, textarea:focus, select:focus {
+  outline: none; border-color: var(--ui-accent);
+  box-shadow: 0 0 0 3px rgba(255,216,74,.14);
+}
+select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ui-mute) 50%), linear-gradient(135deg, var(--ui-mute) 50%, transparent 50%); background-position: right 14px center, right 9px center; background-size: 5px 5px, 5px 5px; background-repeat: no-repeat; padding-right: 28px; cursor: pointer; }
+::placeholder { color: #6b6156; }
+
+input[type=range] {
+  -webkit-appearance: none; appearance: none; width: 100%; height: 20px; background: transparent; cursor: pointer;
+}
+input[type=range]::-webkit-slider-runnable-track { height: 3px; background: var(--ui-line-hi); border-radius: 3px; }
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%;
+  background: var(--ui-text); margin-top: -5.5px; border: 0;
+  transition: transform .12s, background .12s;
+}
+input[type=range]:hover::-webkit-slider-thumb { background: var(--ui-accent); transform: scale(1.12); }
+input[type=range]:focus-visible::-webkit-slider-thumb { background: var(--ui-accent); box-shadow: 0 0 0 4px rgba(255,216,74,.2); }
+input[type=range]::-moz-range-track { height: 3px; background: var(--ui-line-hi); border-radius: 3px; }
+input[type=range]::-moz-range-thumb { width: 14px; height: 14px; border: 0; border-radius: 50%; background: var(--ui-text); }
+
+.seg { display: flex; background: #12100d; border: 1px solid var(--ui-line); border-radius: 7px; padding: 2px; gap: 2px; }
+.seg button {
+  flex: 1; appearance: none; border: 0; background: transparent; cursor: pointer;
+  color: var(--ui-mute); font: inherit; font-size: 12px; padding: 6px 4px; border-radius: 5px;
+  transition: background .15s, color .15s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.seg button:hover { color: var(--ui-text); }
+.seg button.on { background: var(--ui-raise); color: var(--ui-accent); box-shadow: inset 0 0 0 1px var(--ui-line-hi); }
+.seg button:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: -2px; }
+
+.check { display: flex; align-items: center; gap: 9px; cursor: pointer; font-size: 12.5px; color: var(--ui-text); padding: 4px 0; user-select: none; }
+.check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.check .box {
+  width: 30px; height: 17px; border-radius: 9px; background: #12100d; border: 1px solid var(--ui-line);
+  position: relative; flex: 0 0 auto; transition: background .18s, border-color .18s;
+}
+.check .box::after {
+  content: ''; position: absolute; left: 2px; top: 2px; width: 11px; height: 11px; border-radius: 50%;
+  background: var(--ui-mute); transition: transform .18s cubic-bezier(.4,1.4,.5,1), background .18s;
+}
+.check input:checked + .box { background: rgba(255,216,74,.2); border-color: var(--ui-accent); }
+.check input:checked + .box::after { transform: translateX(13px); background: var(--ui-accent); }
+.check input:focus-visible + .box { box-shadow: 0 0 0 3px rgba(255,216,74,.2); }
+
+.btn {
+  appearance: none; cursor: pointer; font: inherit; font-size: 12.5px; font-weight: 500;
+  color: var(--ui-text); background: var(--ui-raise); border: 1px solid var(--ui-line-hi);
+  padding: 8px 12px; border-radius: 7px; transition: background .15s, border-color .15s, color .15s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+}
+.btn:hover { background: #2b241d; border-color: #60523f; }
+.btn:active { transform: translateY(1px); }
+.btn:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+.btn.primary { background: var(--ui-accent); color: #241d06; border-color: var(--ui-accent); font-weight: 600; }
+.btn.primary:hover { background: #ffe173; border-color: #ffe173; }
+.btn.ghost { background: transparent; }
+.btn.danger:hover { color: var(--ui-danger); border-color: #6b3a33; }
+.btn.sm { padding: 5px 9px; font-size: 11.5px; border-radius: 6px; }
+.btn[disabled] { opacity: .4; pointer-events: none; }
+
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-top: 7px; }
+.swatches button {
+  width: 22px; height: 22px; border-radius: 6px; cursor: pointer; padding: 0;
+  background: var(--c); border: 1px solid rgba(255,255,255,.18);
+  transition: transform .12s, box-shadow .12s;
+}
+.swatches button:hover { transform: scale(1.12); }
+.swatches button.on { box-shadow: 0 0 0 2px var(--ui-solid), 0 0 0 3.5px var(--ui-accent); }
+input[type=color] {
+  -webkit-appearance: none; appearance: none; width: 30px; height: 22px; padding: 0; cursor: pointer;
+  background: transparent; border: 1px solid var(--ui-line-hi); border-radius: 6px; overflow: hidden;
+}
+input[type=color]::-webkit-color-swatch-wrapper { padding: 0; }
+input[type=color]::-webkit-color-swatch { border: 0; border-radius: 4px; }
+input[type=color]::-moz-color-swatch { border: 0; }
+
+/* ---- quote editor ---- */
+.editor-bar { display: flex; gap: 6px; align-items: center; margin-bottom: 6px; }
+.editor-bar .spacer { flex: 1; }
+#quoteInput { min-height: 132px; font-family: 'Inter', sans-serif; }
+#quoteInput::selection { background: var(--ui-accent); color: #241d06; }
+
+.addsel { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+.addsel .btn { flex: 1; }
+.selinfo { font-size: 11px; color: var(--ui-mute); margin-top: 6px; line-height: 1.45; min-height: 1.4em; }
+.selinfo b { color: var(--ui-accent); font-weight: 500; }
+
+/* ---- selection list ---- */
+#selList { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+.sel-item {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--ui-raise); border: 1px solid var(--ui-line);
+  border-radius: 8px; padding: 7px 8px 7px 9px;
+  transition: border-color .15s, background .15s;
+}
+.sel-item:hover { border-color: var(--ui-line-hi); }
+.sel-item.bad { border-color: #6b3a33; background: #241713; }
+.sel-item .idx {
+  width: 18px; height: 18px; flex: 0 0 auto; border-radius: 5px;
+  background: #12100d; color: var(--ui-mute);
+  font-size: 10.5px; font-variant-numeric: tabular-nums;
+  display: grid; place-items: center;
+}
+.sel-item .txt {
+  flex: 1; min-width: 0; font-size: 12px; line-height: 1.35;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: default;
+}
+.sel-item.bad .txt { color: var(--ui-danger); }
+.sel-item .dot {
+  width: 15px; height: 15px; border-radius: 4px; border: 1px solid rgba(255,255,255,.2);
+  background: var(--c); cursor: pointer; padding: 0; flex: 0 0 auto; position: relative; overflow: hidden;
+}
+.sel-item .dot input { position: absolute; inset: -6px; opacity: 0; cursor: pointer; }
+.sel-item .mini {
+  appearance: none; background: transparent; border: 0; cursor: pointer; color: var(--ui-mute);
+  padding: 2px 3px; border-radius: 4px; font-size: 13px; line-height: 1; flex: 0 0 auto;
+}
+.sel-item .mini:hover { color: var(--ui-text); background: #12100d; }
+.sel-item .mini.del:hover { color: var(--ui-danger); }
+.empty { font-size: 11.5px; color: var(--ui-mute); padding: 12px; text-align: center; border: 1px dashed var(--ui-line); border-radius: 8px; line-height: 1.5; }
+
+/* ---- logo dropzone ---- */
+#logoZone {
+  display: flex; align-items: center; gap: 12px;
+  border: 1px dashed var(--ui-line-hi); border-radius: 9px; padding: 12px;
+  cursor: pointer; transition: border-color .15s, background .15s;
+  background: #12100d;
+}
+#logoZone:hover, #logoZone.over { border-color: var(--ui-accent); background: rgba(255,216,74,.06); }
+#logoZone .prev {
+  width: 46px; height: 46px; flex: 0 0 auto; border-radius: 7px;
+  background-image: linear-gradient(45deg,#2a241d 25%,transparent 25%),linear-gradient(-45deg,#2a241d 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#2a241d 75%),linear-gradient(-45deg,transparent 75%,#2a241d 75%);
+  background-size: 12px 12px; background-position: 0 0,0 6px,6px -6px,-6px 0;
+  display: grid; place-items: center; overflow: hidden;
+}
+#logoZone .prev img { width: 100%; height: 100%; object-fit: contain; }
+#logoZone .zt { font-size: 12px; line-height: 1.5; }
+#logoZone .zt small { display: block; color: var(--ui-mute); font-size: 11px; }
+
+/* ---- built-in mark picker ---- */
+.mark-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-bottom: 10px; }
+.mark-grid button {
+  aspect-ratio: 1; display: grid; place-items: center; padding: 6px;
+  background: #12100d; border: 1px solid var(--ui-line); border-radius: 7px;
+  color: var(--ui-mute); cursor: pointer;
+  transition: color .14s, border-color .14s, background .14s, transform .14s;
+}
+.mark-grid button:hover { color: var(--ui-text); border-color: var(--ui-line-hi); transform: translateY(-1px); }
+.mark-grid button.on { color: #241d06; background: var(--ui-accent); border-color: var(--ui-accent); }
+.mark-grid button:focus-visible { outline: 2px solid var(--ui-accent); outline-offset: 1px; }
+.mark-grid svg { width: 100%; height: 100%; display: block; }
+
+/* ---- presets ---- */
+.preset-item { display: flex; align-items: center; gap: 8px; background: var(--ui-raise); border: 1px solid var(--ui-line); border-radius: 8px; padding: 8px 9px; margin-bottom: 6px; }
+.preset-item .nm { flex: 1; min-width: 0; font-size: 12.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.preset-item .meta { font-size: 10.5px; color: var(--ui-mute); }
+
+/* ---- footer ---- */
+.ins-foot {
+  border-top: 1px solid var(--ui-line); padding: 12px 20px;
+  display: flex; gap: 8px; align-items: center;
+  background: rgba(18,16,13,.6);
+}
+.ins-foot .btn { flex: 1; }
+
+/* ---- keyboard hints ---- */
+#hints {
+  position: fixed; right: 22px; bottom: 20px; z-index: 60;
+  display: flex; gap: 14px; align-items: center;
+  padding: 9px 14px; border-radius: 10px;
+  background: rgba(20,17,14,.55); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.07);
+  transition: opacity .3s ease, transform .3s ease;
+  font-size: 11.5px; color: rgba(255,255,255,.55);
+  user-select: none;
+}
+#hints.hidden { opacity: 0; transform: translateY(8px); pointer-events: none; }
+#hints.shifted { right: 458px; }
+#hints span { display: flex; align-items: center; gap: 5px; white-space: nowrap; }
+kbd {
+  font-family: 'Inter', sans-serif; font-size: 10.5px; font-weight: 600;
+  min-width: 17px; height: 17px; padding: 0 4px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 4px; color: rgba(255,255,255,.82);
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.14);
+  border-bottom-width: 2px;
+}
+
+#toast {
+  position: fixed; left: 50%; bottom: 34px; transform: translate(-50%, 14px);
+  background: #24201a; color: var(--ui-text); border: 1px solid var(--ui-line-hi);
+  padding: 9px 15px; border-radius: 9px; font-size: 12.5px; z-index: 200;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+  box-shadow: 0 12px 30px rgba(0,0,0,.4); max-width: 60vw; text-align: center;
+}
+#toast.show { opacity: 1; transform: translate(-50%, 0); }
+#toast.warn { border-color: #6b5a33; color: #ffd84a; }
+
+#manualCue {
+  position: fixed; left: 50%; bottom: 34px; transform: translateX(-50%);
+  font-size: 12px; color: rgba(255,255,255,.5); z-index: 60;
+  display: none; align-items: center; gap: 7px;
+}
+#manualCue.on { display: flex; }
+#manualCue.on.quiet { opacity: .25; }
+
+@media (prefers-reduced-motion: reduce) {
+  #inspector, .pane { transition: none; animation: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ======================= STAGE (this is what you record) ======================= -->
+<div id="stage">
+  <div id="guides"><i class="action"></i><i class="title"></i></div>
+
+  <div id="paperWrap">
+   <div id="paperIdle" data-idle="sway">
+    <div id="paperTilt">
+      <div id="paper">
+        <div id="grain"></div>
+        <div class="tear-shade top"></div>
+        <div class="tear-shade bot"></div>
+        <div id="hlLayer"></div>
+
+        <div id="content">
+          <div id="quoteMark">&ldquo;</div>
+          <div id="quote"></div>
+          <div id="authorRow">
+            <div id="logoBox"><img id="logoImg" alt=""><span id="logoGlyph"></span></div>
+            <div id="authorRule"></div>
+            <div id="authorText">
+              <div id="authorName"></div>
+              <div id="authorSub"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+   </div>
+  </div>
+
+  <div id="vignette"></div>
+</div>
+
+<div id="manualCue"><kbd>Space</kbd> next highlight <span id="manualCount"></span></div>
+
+<div id="hints">
+  <span><kbd>S</kbd> Settings</span>
+  <span><kbd>R</kbd> Replay</span>
+  <span><kbd>H</kbd> Hide this</span>
+  <span><kbd>F</kbd> Full screen</span>
+  <span><kbd>G</kbd> Green</span>
+</div>
+
+<div id="toast"></div>
+
+<!-- ======================= INSPECTOR ======================= -->
+<aside id="inspector" aria-label="Settings">
+  <div class="ins-head">
+    <h1>Quote card</h1>
+    <div class="sub"><b id="charCount">0</b> characters, <b id="hlCount">0</b> highlighted</div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab on" data-tab="content">Content</button>
+    <button class="tab" data-tab="marker">Marker</button>
+    <button class="tab" data-tab="design">Design</button>
+    <button class="tab" data-tab="timing">Timing</button>
+    <button class="tab" data-tab="presets">Presets</button>
+  </nav>
+
+  <div class="panes">
+
+    <!-- ---------------- CONTENT ---------------- -->
+    <section class="pane on" data-pane="content">
+
+      <div class="group">
+        <h2>Quote</h2>
+        <div class="editor-bar">
+          <button class="btn sm" id="btnBold" title="Wrap selection in **bold** (⌘B)"><b>B</b></button>
+          <button class="btn sm" id="btnItalic" title="Wrap selection in _italic_ (⌘I)"><i>I</i></button>
+          <div class="spacer"></div>
+          <button class="btn sm ghost" id="btnSmartQuotes" title="Convert straight quotes and dashes to typographic ones">Smarten</button>
+        </div>
+        <textarea id="quoteInput" spellcheck="true" placeholder="Paste your quote. Wrap words in **asterisks** for bold."></textarea>
+
+        <div class="addsel">
+          <button class="btn primary" id="btnAddSel">Add selection as highlight</button>
+          <button class="btn sm" id="btnAddAll" title="Add every bold run as a highlight">From bold</button>
+        </div>
+        <div class="selinfo" id="selInfo">Select text above, then add it. Exact character positions are stored.</div>
+      </div>
+
+      <div class="group">
+        <h2>Highlights in order</h2>
+        <div id="selList"></div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn sm ghost" id="btnSortSel">Sort by position</button>
+          <button class="btn sm ghost danger" id="btnClearSel">Remove all</button>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Attribution</h2>
+        <div class="field">
+          <label for="authorInput">Name</label>
+          <input type="text" id="authorInput" data-bind="author" placeholder="Marcus Aurelius">
+        </div>
+        <div class="field">
+          <label for="authorSubInput">Second line <span class="val">optional</span></label>
+          <input type="text" id="authorSubInput" data-bind="authorSub" placeholder="Meditations, Book VIII">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Size relative to quote</span><span class="val" data-val-for="authorScale"></span></div>
+          <input type="range" data-bind="authorScale" min="0.28" max="0.8" step="0.01" data-unit="×">
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-bind="authorRule"><span class="box"></span> Rule before name</label>
+          <label class="check"><input type="checkbox" data-bind="authorStack"><span class="box"></span> Stack under logo</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Logo</h2>
+        <p class="note">Simple marks drawn to ink like the type. They are stand-ins rather than official brand files, so upload the real asset when a piece has to be brand-exact.</p>
+        <div class="mark-grid" id="markGrid"></div>
+        <div id="logoZone" tabindex="0" role="button" aria-label="Choose logo image">
+          <div class="prev" id="logoPrev"></div>
+          <div class="zt" id="logoText">Click, drop or paste an image<small>PNG, SVG or GIF — animated GIFs keep playing</small></div>
+        </div>
+        <input type="file" id="logoFile" accept="image/*" hidden>
+        <div class="field" style="margin-top:10px">
+          <div class="lbl"><span>Mark colour</span><input type="color" data-bind="logoTintColor"></div>
+          <div class="seg" data-bind="logoTint">
+            <button data-val="ink">Match the ink</button>
+            <button data-val="custom">Use this colour</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <div class="field" style="margin:0">
+            <div class="lbl"><span>Size</span><span class="val" data-val-for="logoSize"></span></div>
+            <input type="range" data-bind="logoSize" min="20" max="140" step="1" data-unit="px">
+          </div>
+          <div class="field" style="margin:0">
+            <div class="lbl"><span>Opacity</span><span class="val" data-val-for="logoOpacity"></span></div>
+            <input type="range" data-bind="logoOpacity" min="0.1" max="1" step="0.01" data-unit="%" data-mul="100">
+          </div>
+        </div>
+        <div class="field" style="margin-top:10px">
+          <label>Shape</label>
+          <div class="seg" data-bind="logoShape">
+            <button data-val="plain">Plain</button>
+            <button data-val="rounded">Rounded</button>
+            <button data-val="circle">Circle</button>
+            <button data-val="framed">Framed</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <label class="check"><input type="checkbox" data-bind="logoMono"><span class="box"></span> Ink it (greyscale)</label>
+          <button class="btn sm ghost danger" id="btnLogoClear">Remove logo</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ---------------- MARKER ---------------- -->
+    <section class="pane" data-pane="marker">
+
+      <div class="group">
+        <h2>Highlighter</h2>
+        <div class="field">
+          <div class="lbl"><span>Colour</span><input type="color" data-bind="hlColor"></div>
+          <div class="swatches" data-target="hlColor">
+            <button data-c="#ffe14d" style="--c:#ffe14d"></button>
+            <button data-c="#fff07a" style="--c:#fff07a"></button>
+            <button data-c="#ffc93c" style="--c:#ffc93c"></button>
+            <button data-c="#a8f08a" style="--c:#a8f08a"></button>
+            <button data-c="#8fe3ff" style="--c:#8fe3ff"></button>
+            <button data-c="#ffa8d2" style="--c:#ffa8d2"></button>
+            <button data-c="#d3b9ff" style="--c:#d3b9ff"></button>
+            <button data-c="#ff8f6b" style="--c:#ff8f6b"></button>
+          </div>
+        </div>
+        <div class="field">
+          <label>Stroke</label>
+          <div class="seg" data-bind="hlStyle">
+            <button data-val="marker">Swipe</button>
+            <button data-val="fade">Fade</button>
+            <button data-val="pop">Pop</button>
+            <button data-val="underline">Underline</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Strength</span><span class="val" data-val-for="hlIntensity"></span></div>
+          <input type="range" data-bind="hlIntensity" min="0.2" max="1" step="0.01" data-unit="%" data-mul="100">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Height around the text</span><span class="val" data-val-for="hlPadY"></span></div>
+          <input type="range" data-bind="hlPadY" min="0" max="0.45" step="0.01" data-unit="em">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Bleed past the words</span><span class="val" data-val-for="hlPadX"></span></div>
+          <input type="range" data-bind="hlPadX" min="0" max="0.5" step="0.01" data-unit="em">
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-bind="hlRough"><span class="box"></span> Ragged edges</label>
+          <label class="check"><input type="checkbox" data-bind="hlTilt"><span class="box"></span> Hand tilt</label>
+        </div>
+        <p class="note" style="margin-top:8px">Ragged edges use a live filter. If your capture drops frames on a slower machine, turn it off.</p>
+      </div>
+
+      <div class="group">
+        <h2>Ink response</h2>
+        <p class="note">What the words themselves do as the marker passes over them.</p>
+        <div class="field">
+          <div class="seg" data-bind="hlInk">
+            <button data-val="none">Nothing</button>
+            <button data-val="darken">Darken</button>
+            <button data-val="bold">Embolden</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Preview</h2>
+        <div class="row">
+          <button class="btn" id="btnPreviewHl">Run highlights only</button>
+          <button class="btn" id="btnShowAll">Show final state</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ---------------- DESIGN ---------------- -->
+    <section class="pane" data-pane="design">
+
+      <div class="group">
+        <h2>Background</h2>
+        <div class="field">
+          <div class="seg" data-bind="bg">
+            <button data-val="black">Black</button>
+            <button data-val="green">Chroma green</button>
+            <button data-val="blue">Chroma blue</button>
+            <button data-val="custom">Custom</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Custom colour</span><input type="color" data-bind="bgCustom"></div>
+        </div>
+        <p class="note" id="keyNote"></p>
+      </div>
+
+      <div class="group">
+        <h2>Paper</h2>
+        <div class="field">
+          <div class="lbl"><span>Stock</span><input type="color" data-bind="paperColor"></div>
+          <div class="swatches" data-target="paperColor">
+            <button data-c="#ffffff" style="--c:#ffffff"></button>
+            <button data-c="#faf8f3" style="--c:#faf8f3"></button>
+            <button data-c="#f4efe4" style="--c:#f4efe4"></button>
+            <button data-c="#efe7d6" style="--c:#efe7d6"></button>
+            <button data-c="#e8e2d4" style="--c:#e8e2d4"></button>
+            <button data-c="#1d1b18" style="--c:#1d1b18"></button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Ink</span><input type="color" data-bind="inkColor"></div>
+          <div class="swatches" data-target="inkColor">
+            <button data-c="#1b1813" style="--c:#1b1813"></button>
+            <button data-c="#2f2a22" style="--c:#2f2a22"></button>
+            <button data-c="#3b3730" style="--c:#3b3730"></button>
+            <button data-c="#123044" style="--c:#123044"></button>
+            <button data-c="#f7f3ea" style="--c:#f7f3ea"></button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Width</span><span class="val" data-val-for="paperWidth"></span></div>
+            <input type="range" data-bind="paperWidth" min="30" max="88" step="0.5" data-unit="%">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Left margin</span><span class="val" data-val-for="paperOffset"></span></div>
+            <input type="range" data-bind="paperOffset" min="0" max="25" step="0.5" data-unit="%">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Tilt</span><span class="val" data-val-for="paperTilt"></span></div>
+            <input type="range" data-bind="paperTilt" min="-5" max="5" step="0.1" data-unit="°">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Inner margin</span><span class="val" data-val-for="padScale"></span></div>
+            <input type="range" data-bind="padScale" min="0.5" max="2" step="0.05" data-unit="×">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Min height</span><span class="val" data-val-for="minH"></span></div>
+            <input type="range" data-bind="minH" min="15" max="70" step="1" data-unit="%">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Max height</span><span class="val" data-val-for="maxH"></span></div>
+            <input type="range" data-bind="maxH" min="40" max="96" step="1" data-unit="%">
+          </div>
+        </div>
+        <div class="field">
+          <label for="grainSel">Texture</label>
+          <select id="grainSel" data-bind="grainType">
+            <optgroup label="Plain stock">
+              <option value="fibre">Fibre</option>
+              <option value="rough">Rough, recycled</option>
+              <option value="laid">Laid</option>
+              <option value="linen">Linen</option>
+              <option value="newsprint">Newsprint</option>
+            </optgroup>
+            <optgroup label="Ruled">
+              <option value="college">College ruled</option>
+              <option value="music">Manuscript staves</option>
+              <option value="calligraphy">Calligraphy guides</option>
+            </optgroup>
+            <optgroup label="Gridded">
+              <option value="graph">Maths, quad graph</option>
+              <option value="engineering">Engineering pad</option>
+              <option value="dots">Dot grid</option>
+              <option value="sudoku">Sudoku grid</option>
+              <option value="drafting">Drafting sheet</option>
+            </optgroup>
+            <optgroup label="Engraved">
+              <option value="guilloche">Guilloche, banknote</option>
+            </optgroup>
+          </select>
+        </div>
+        <p class="note">Rulings and grids lock to the baseline of your quote, so the words sit on the lines at any size. Push Grain up towards full for the printed stocks.</p>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Grain</span><span class="val" data-val-for="grain"></span></div>
+            <input type="range" data-bind="grain" min="0" max="1.4" step="0.01" data-unit="%" data-mul="71.4">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Shadow</span><span class="val" data-val-for="shadow"></span></div>
+            <input type="range" data-bind="shadow" min="0" max="1.6" step="0.01" data-unit="%" data-mul="62.5">
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Torn edges</h2>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Depth</span><span class="val" data-val-for="tearDepth"></span></div>
+            <input type="range" data-bind="tearDepth" min="0" max="3" step="0.05" data-unit="×">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Teeth</span><span class="val" data-val-for="tearDensity"></span></div>
+            <input type="range" data-bind="tearDensity" min="0.3" max="3" step="0.05" data-unit="×">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Irregularity</span><span class="val" data-val-for="tearJitter"></span></div>
+            <input type="range" data-bind="tearJitter" min="0" max="1" step="0.01" data-unit="%" data-mul="100">
+          </div>
+          <div class="field" style="display:flex;align-items:flex-end">
+            <button class="btn sm" id="btnReTear" style="width:100%">New tear pattern</button>
+          </div>
+        </div>
+        <div class="row" style="margin-top:4px">
+          <label class="check"><input type="checkbox" data-bind="tearTop"><span class="box"></span> Tear top</label>
+          <label class="check"><input type="checkbox" data-bind="tearBottom"><span class="box"></span> Tear bottom</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Type</h2>
+        <div class="field">
+          <label for="fontSel">Quote face</label>
+          <select id="fontSel" data-bind="font">
+            <option value="'Playfair Display', Georgia, serif">Playfair Display</option>
+            <option value="'EB Garamond', Garamond, serif">EB Garamond</option>
+            <option value="'Libre Baskerville', Georgia, serif">Libre Baskerville</option>
+            <option value="'Lora', Georgia, serif">Lora</option>
+            <option value="'Special Elite', 'Courier New', monospace">Special Elite (typewriter)</option>
+            <option value="'Caveat', cursive">Caveat (handwritten)</option>
+            <option value="'Work Sans', sans-serif">Work Sans</option>
+            <option value="'Inter', sans-serif">Inter</option>
+            <option value="Georgia, serif">Georgia (local)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="authorFontSel">Attribution face</label>
+          <select id="authorFontSel" data-bind="authorFont">
+            <option value="inherit">Match the quote</option>
+            <option value="'Inter', sans-serif">Inter</option>
+            <option value="'Work Sans', sans-serif">Work Sans</option>
+            <option value="'EB Garamond', serif">EB Garamond</option>
+            <option value="'Special Elite', monospace">Special Elite</option>
+            <option value="'Caveat', cursive">Caveat</option>
+          </select>
+        </div>
+        <div class="field">
+          <label class="check"><input type="checkbox" data-bind="autoFit"><span class="box"></span> Fit type to the paper automatically</label>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span id="fsLabel">Size</span><span class="val" data-val-for="fontScale"></span></div>
+            <input type="range" data-bind="fontScale" min="0.4" max="1.6" step="0.01" data-unit="×">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Line height</span><span class="val" data-val-for="lineHeight"></span></div>
+            <input type="range" data-bind="lineHeight" min="1.05" max="2.2" step="0.01">
+          </div>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Tracking</span><span class="val" data-val-for="tracking"></span></div>
+            <input type="range" data-bind="tracking" min="-0.03" max="0.12" step="0.002" data-unit="em">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Weight</span><span class="val" data-val-for="quoteWeight"></span></div>
+            <input type="range" data-bind="quoteWeight" min="300" max="700" step="100">
+          </div>
+        </div>
+        <div class="field">
+          <label>Alignment</label>
+          <div class="seg" data-bind="align">
+            <button data-val="left">Left</button>
+            <button data-val="center">Centre</button>
+            <button data-val="right">Right</button>
+          </div>
+        </div>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-bind="quoteMarks"><span class="box"></span> Opening quote mark</label>
+          <label class="check"><input type="checkbox" data-bind="authorRight"><span class="box"></span> Attribution right</label>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Ambient motion</h2>
+        <p class="note">A slow loop that keeps the card alive on screen. It sits on its own layer, so the entrance and the marker are untouched by it.</p>
+        <div class="field">
+          <label for="idleSel">Movement</label>
+          <select id="idleSel" data-bind="idleMotion">
+            <option value="none">Still</option>
+            <option value="sway">Sway — turns right, then left</option>
+            <option value="pendulum">Pendulum — rocks from a point at the top</option>
+            <option value="breathe">Breathe — swells and settles</option>
+            <option value="float">Float — rises and sinks</option>
+            <option value="drift">Drift — wanders in a slow figure of eight</option>
+            <option value="flutter">Flutter — catches the air and turns in 3D</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Amount</span><span class="val" data-val-for="idleAmount"></span></div>
+            <input type="range" data-bind="idleAmount" min="0.1" max="4" step="0.05" data-unit="×">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Cycle</span><span class="val" data-val-for="idleDur"></span></div>
+            <input type="range" data-bind="idleDur" min="2" max="24" step="0.5" data-unit="s">
+          </div>
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Frame</h2>
+        <div class="row">
+          <label class="check"><input type="checkbox" data-bind="vignette"><span class="box"></span> Vignette</label>
+          <label class="check"><input type="checkbox" data-bind="guides"><span class="box"></span> Safe-area guides</label>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ---------------- TIMING ---------------- -->
+    <section class="pane" data-pane="timing">
+
+      <div class="group">
+        <h2>Speed</h2>
+        <div class="field">
+          <div class="lbl"><span>Overall speed</span><span class="val" data-val-for="speed"></span></div>
+          <input type="range" data-bind="speed" min="0.25" max="3" step="0.05" data-unit="×">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Reading pace</span><span class="val" data-val-for="wpm"></span></div>
+          <input type="range" data-bind="wpm" min="90" max="600" step="5" data-unit=" wpm">
+        </div>
+        <p class="note">Pauses between highlights are worked out from how much text sits between them, so the marker keeps pace with a voice reading the quote aloud.</p>
+        <div class="field">
+          <div class="lbl"><span>Marker dwell</span><span class="val" data-val-for="sweepScale"></span></div>
+          <input type="range" data-bind="sweepScale" min="0.3" max="2.5" step="0.05" data-unit="×">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Minimum gap</span><span class="val" data-val-for="minGap"></span></div>
+          <input type="range" data-bind="minGap" min="0" max="2000" step="20" data-unit="ms">
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Entrance</h2>
+        <div class="field">
+          <div class="seg" data-bind="entrance">
+            <button data-val="swoop">Swoop</button>
+            <button data-val="rise">Rise</button>
+            <button data-val="drop">Drop in</button>
+            <button data-val="none">None</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Delay before it enters</span><span class="val" data-val-for="preRoll"></span></div>
+          <input type="range" data-bind="preRoll" min="0" max="2500" step="50" data-unit="s" data-mul="0.001" data-dec="2">
+        </div>
+        <p class="note">Empty background is held for this long after you press R, so you have clean frames to cut on. Around 0.5s to 2.5s suits most edits; drag it to nothing for instant replays while you are still setting the card up.</p>
+        <div class="row">
+          <div class="field">
+            <div class="lbl"><span>Duration</span><span class="val" data-val-for="entranceDur"></span></div>
+            <input type="range" data-bind="entranceDur" min="200" max="2600" step="20" data-unit="ms">
+          </div>
+          <div class="field">
+            <div class="lbl"><span>Overshoot</span><span class="val" data-val-for="overshoot"></span></div>
+            <input type="range" data-bind="overshoot" min="0" max="1" step="0.01" data-unit="%" data-mul="100">
+          </div>
+        </div>
+        <div class="field">
+          <label>Text appears</label>
+          <div class="seg" data-bind="reveal">
+            <button data-val="fade">Fade up</button>
+            <button data-val="words">Word by word</button>
+            <button data-val="none">Instantly</button>
+          </div>
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Hold before the marker starts</span><span class="val" data-val-for="startDelay"></span></div>
+          <input type="range" data-bind="startDelay" min="0" max="4000" step="50" data-unit="ms">
+        </div>
+      </div>
+
+      <div class="group">
+        <h2>Playback</h2>
+        <label class="check"><input type="checkbox" data-bind="manual"><span class="box"></span> Advance each highlight with Space</label>
+        <label class="check"><input type="checkbox" data-bind="clickAdvance"><span class="box"></span> Clicking the stage also advances</label>
+        <label class="check"><input type="checkbox" data-bind="autoplay"><span class="box"></span> Play as soon as the page loads</label>
+        <label class="check"><input type="checkbox" data-bind="loop"><span class="box"></span> Loop forever</label>
+        <div class="field" style="margin-top:8px">
+          <div class="lbl"><span>Hold at the end</span><span class="val" data-val-for="loopDelay"></span></div>
+          <input type="range" data-bind="loopDelay" min="500" max="12000" step="100" data-unit="ms">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Exit when finished</span></div>
+          <div class="seg" data-bind="exitStyle">
+            <button data-val="hold">Hold</button>
+            <button data-val="fade">Fade out</button>
+            <button data-val="swoop">Swoop away</button>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ---------------- PRESETS ---------------- -->
+    <section class="pane" data-pane="presets">
+
+      <div class="group">
+        <h2>Saved cards</h2>
+        <p class="note">A card stores the quote, its highlights, the logo and every style and timing value. Everything lives in this browser.</p>
+        <div class="row tight">
+          <input type="text" id="presetName" placeholder="Name this card">
+          <button class="btn primary" id="btnSavePreset" style="flex:0 0 auto">Save</button>
+        </div>
+        <div id="presetList" style="margin-top:12px"></div>
+      </div>
+
+      <div class="group">
+        <h2>Move cards between machines</h2>
+        <div class="row tight">
+          <button class="btn" id="btnExport">Export this card</button>
+          <button class="btn" id="btnExportAll">Export all</button>
+        </div>
+        <div class="row tight" style="margin-top:6px">
+          <button class="btn" id="btnImport">Import a file</button>
+          <button class="btn" id="btnCopyJson">Copy as JSON</button>
+        </div>
+        <input type="file" id="importFile" accept="application/json,.json" hidden>
+        <p class="note" style="margin-top:8px">You can also drop a .json file anywhere on this panel.</p>
+      </div>
+
+      <div class="group">
+        <h2>Start over</h2>
+        <div class="row tight">
+          <button class="btn ghost" id="btnSample">Load the sample quote</button>
+          <button class="btn ghost danger" id="btnReset">Reset everything</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="ins-foot">
+    <button class="btn primary" id="btnReplay">Replay</button>
+    <button class="btn" id="btnCloseIns">Close</button>
+  </div>
+</aside>
+
+<!-- ragged marker edge -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="roughEdge" x="-6%" y="-40%" width="112%" height="180%" color-interpolation-filters="sRGB">
+      <feTurbulence type="fractalNoise" baseFrequency="0.015 0.42" numOctaves="3" seed="9" result="n"/>
+      <feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+    </filter>
+  </defs>
+</svg>
+
+<script>
+(function () {
+'use strict';
+
+/* ==========================================================================
+   Helpers
+   ========================================================================== */
+const $  = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const uid = () => Math.random().toString(36).slice(2, 9);
+const root = document.documentElement;
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+/* ==========================================================================
+   Elements
+   ========================================================================== */
+const stage     = $('#stage');
+const paperWrap = $('#paperWrap');
+const paperEl   = $('#paper');
+const idleEl    = $('#paperIdle');
+const grainEl   = $('#grain');
+const hlLayer   = $('#hlLayer');
+const contentEl = $('#content');
+const quoteEl   = $('#quote');
+const authorRow = $('#authorRow');
+const authorNameEl = $('#authorName');
+const authorSubEl  = $('#authorSub');
+const logoBox   = $('#logoBox');
+const logoImg   = $('#logoImg');
+const ins       = $('#inspector');
+const hints     = $('#hints');
+const toastEl   = $('#toast');
+const qi        = $('#quoteInput');
+const selList   = $('#selList');
+const manualCue = $('#manualCue');
+
+/* ==========================================================================
+   State
+   ========================================================================== */
+const SAMPLE_TEXT = 'You have power over your mind \u2014 **not outside events**.\nRealise this, and you will find strength.';
+const SAMPLE_HL   = ['power over your mind', 'you will find strength'];
+
+const DEFAULTS = {
+  text: SAMPLE_TEXT,
+  highlights: [],
+
+  author: 'Marcus Aurelius',
+  authorSub: 'Meditations',
+  authorScale: 0.46,
+  authorRule: false,
+  authorStack: false,
+  authorRight: false,
+  authorFont: "'Inter', sans-serif",
+
+  logo: null,
+  logoPreset: null,
+  logoTint: 'ink',
+  logoTintColor: '#1d9bf0',
+  logoSize: 52,
+  logoOpacity: 1,
+  logoShape: 'plain',
+  logoMono: false,
+
+  hlColor: '#ffe14d',
+  hlStyle: 'marker',
+  hlIntensity: 1,
+  hlPadY: 0.16,
+  hlPadX: 0.12,
+  hlRough: true,
+  hlTilt: true,
+  hlInk: 'none',
+
+  bg: 'black',
+  bgCustom: '#101010',
+
+  paperColor: '#faf8f3',
+  inkColor: '#1b1813',
+  paperWidth: 65,
+  paperOffset: 4,
+  paperTilt: -0.6,
+  padScale: 1,
+  minH: 35,
+  maxH: 90,
+  grain: 0.5,
+  grainType: 'fibre',
+  shadow: 0.7,
+
+  tearDepth: 1.3,
+  tearDensity: 0.7,
+  tearJitter: 0.8,
+  tearTop: true,
+  tearBottom: true,
+  tearSeed: 20260916,
+
+  font: "'Playfair Display', Georgia, serif",
+  autoFit: true,
+  fontScale: 1,
+  lineHeight: 1.5,
+  tracking: 0,
+  quoteWeight: 400,
+  align: 'left',
+  quoteMarks: false,
+
+  idleMotion: 'sway',
+  idleAmount: 1,
+  idleDur: 9,
+
+  vignette: false,
+  guides: false,
+
+  speed: 1,
+  wpm: 260,
+  sweepScale: 0.8,
+  minGap: 220,
+
+  entrance: 'swoop',
+  entranceDur: 1000,
+  overshoot: 0.35,
+  reveal: 'fade',
+  startDelay: 700,
+  preRoll: 800,
+
+  manual: false,
+  clickAdvance: true,
+  autoplay: true,
+  loop: false,
+  loopDelay: 3000,
+  exitStyle: 'hold',
+
+  hintsHidden: false
+};
+
+const STORE_KEY = 'quotecard.v1';
+let st = Object.assign({}, DEFAULTS);
+let presets = [];
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    if (data && data.state) st = Object.assign({}, DEFAULTS, data.state);
+    if (data && Array.isArray(data.presets)) presets = data.presets;
+    return true;
+  } catch (e) { return false; }
+}
+
+let saveTimer = null;
+function save() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify({ state: st, presets }));
+    } catch (e) {
+      toast('Could not save — browser storage is full. Try a smaller logo.', 'warn');
+    }
+  }, 220);
+}
+
+/* ==========================================================================
+   Markdown-ish parsing.  **bold**  _italic_
+   Produces the plain string the highlights index into, plus a raw→plain map.
+   ========================================================================== */
+let parsed = { plain: '', marks: [], map: [0] };
+
+function parseText(raw) {
+  const out = [];
+  const marks = [];
+  const map = new Array(raw.length + 1);
+  let b = false, i = false, p = 0;
+
+  for (let k = 0; k < raw.length; k++) {
+    map[k] = p;
+    const c = raw[k];
+
+    if (c === '*' && raw[k + 1] === '*') {
+      map[k + 1] = p; b = !b; k++; continue;
+    }
+    if (c === '_') {
+      const prev = raw[k - 1] || ' ';
+      const next = raw[k + 1] || ' ';
+      const canOpen  = !i && !/\s/.test(next) && !/[A-Za-z0-9]/.test(prev);
+      const canClose = i && !/\s/.test(prev);
+      if (canOpen || canClose) { i = !i; continue; }
+    }
+    out.push(c);
+    marks.push({ b, i });
+    p++;
+  }
+  map[raw.length] = p;
+  return { plain: out.join(''), marks, map };
+}
+
+const sameStyle = (a, b) => a && b && a.b === b.b && a.i === b.i;
+
+/* ==========================================================================
+   Rendering the quote.  Every text node is registered so a plain-text index
+   range can be turned back into a DOM Range later.
+   ========================================================================== */
+let nodeMap = [];      // [{node, start, end}] in document order
+let wordEntries = [];  // subset whose parent is a .w span
+
+function appendRun(holder, text, startIdx) {
+  const parts = text.split(/(\s+)/);
+  let off = 0;
+  parts.forEach(part => {
+    if (part === '') return;
+    let tn = document.createTextNode(part);
+    if (/^\s+$/.test(part)) {
+      holder.appendChild(tn);
+    } else {
+      const sp = document.createElement('span');
+      sp.className = 'w';
+      sp.appendChild(tn);
+      holder.appendChild(sp);
+    }
+    nodeMap.push({ node: tn, start: startIdx + off, end: startIdx + off + part.length });
+    off += part.length;
+  });
+}
+
+function renderQuote() {
+  parsed = parseText(st.text);
+  quoteEl.innerHTML = '';
+  nodeMap = [];
+
+  const lines = parsed.plain.split('\n');
+  let idx = 0;
+
+  lines.forEach(ls => {
+    const lineEl = document.createElement('div');
+    lineEl.className = 'line' + (ls.trim() === '' ? ' blank' : '');
+    let k = 0;
+    while (k < ls.length) {
+      const style = parsed.marks[idx + k];
+      let j = k;
+      while (j < ls.length && sameStyle(parsed.marks[idx + j], style)) j++;
+      let holder = lineEl;
+      if (style.b) { const el = document.createElement('strong'); lineEl.appendChild(el); holder = el; }
+      if (style.i) { const el = document.createElement('em'); holder.appendChild(el); holder = el; }
+      appendRun(holder, ls.slice(k, j), idx + k);
+      k = j;
+    }
+    quoteEl.appendChild(lineEl);
+    idx += ls.length + 1;
+  });
+
+  wordEntries = nodeMap.filter(e => e.node.parentElement && e.node.parentElement.classList.contains('w'));
+
+  // stagger for the word-by-word reveal
+  if (st.reveal === 'words') {
+    const step = clamp(60 / st.speed, 18, 140);
+    wordEntries.forEach((e, n) => { e.node.parentElement.style.animationDelay = (n * step) + 'ms'; });
+  }
+
+  authorNameEl.textContent = st.author || '';
+  authorSubEl.textContent = st.authorSub || '';
+  $('#charCount').textContent = parsed.plain.length;
+}
+
+function locStart(idx) {
+  for (let i = 0; i < nodeMap.length; i++) {
+    const e = nodeMap[i];
+    if (idx < e.end) return { node: e.node, offset: clamp(idx - e.start, 0, e.node.length) };
+  }
+  const e = nodeMap[nodeMap.length - 1];
+  return { node: e.node, offset: e.node.length };
+}
+function locEnd(idx) {
+  for (let i = nodeMap.length - 1; i >= 0; i--) {
+    const e = nodeMap[i];
+    if (idx > e.start) return { node: e.node, offset: clamp(idx - e.start, 0, e.node.length) };
+  }
+  return { node: nodeMap[0].node, offset: 0 };
+}
+
+/* ==========================================================================
+   Fitting the type so the paper lands inside the height range
+   ========================================================================== */
+function setFs(px) { root.style.setProperty('--fs', px.toFixed(2) + 'px'); }
+
+function fitType() {
+  const vh = window.innerHeight;
+  const minPx = vh * st.minH / 100;
+  const maxPx = vh * Math.max(st.maxH, st.minH + 3) / 100;
+  root.style.setProperty('--paper-min-h', minPx + 'px');
+
+  if (!st.autoFit) { setFs(36 * st.fontScale); return; }
+
+  let lo = 8, hi = 92, best = 8;
+  for (let i = 0; i < 15; i++) {
+    const mid = (lo + hi) / 2;
+    setFs(mid * st.fontScale);
+    if (paperEl.offsetHeight <= maxPx + 0.5) { best = mid; lo = mid; } else { hi = mid; }
+  }
+  setFs(best * st.fontScale);
+}
+
+/* ==========================================================================
+   Torn edges — flat sides, criss-cross triangles top and bottom
+   ========================================================================== */
+function applyTear() {
+  const w = paperEl.offsetWidth, h = paperEl.offsetHeight;
+  if (!w || !h) return;
+
+  const rnd = mulberry32(st.tearSeed);
+  const tooth = clamp(26 / st.tearDensity, 7, 140);
+  const N = Math.max(4, Math.round(w / tooth));
+  const depth = clamp(w / 120, 5, 22) * st.tearDepth;
+
+  function edge(base, dir, flat) {
+    const pts = [];
+    for (let i = 0; i <= N; i++) {
+      let x = (i / N) * w;
+      if (i > 0 && i < N) x += (rnd() - 0.5) * tooth * 0.55 * st.tearJitter;
+      let y = base;
+      if (!flat) {
+        const peak = (i % 2 === 0) ? 0 : depth;
+        const j = (rnd() - 0.5) * depth * 0.9 * st.tearJitter;
+        y = base + dir * clamp(peak + j, 0, depth * 1.5);
+      }
+      pts.push([clamp(x, 0, w), y]);
+    }
+    return pts;
+  }
+
+  const top = edge(0, 1, !st.tearTop);
+  const bot = edge(h, -1, !st.tearBottom).reverse();
+  const all = top.concat(bot);
+  paperEl.style.clipPath = 'polygon(' + all.map(p => p[0].toFixed(1) + 'px ' + p[1].toFixed(1) + 'px').join(',') + ')';
+
+  const shadeH = Math.max(10, depth * 2.4);
+  $('.tear-shade.top').style.height = (st.tearTop ? shadeH : 0) + 'px';
+  $('.tear-shade.bot').style.height = (st.tearBottom ? shadeH : 0) + 'px';
+}
+
+/* ==========================================================================
+   Highlight geometry — a DOM Range per selection, one rect per visual line
+   ========================================================================== */
+let hlGroups = [];
+
+function currentFs() {
+  return parseFloat(getComputedStyle(root).getPropertyValue('--fs')) || 34;
+}
+
+function measureHighlights() {
+  hlLayer.innerHTML = '';
+  hlGroups = [];
+  hlLayer.classList.toggle('rough', !!st.hlRough && st.hlStyle !== 'underline');
+  if (!nodeMap.length) return;
+
+  const pr = paperEl.getBoundingClientRect();
+  const fs = currentFs();
+  const padY = fs * st.hlPadY;
+  const padX = fs * st.hlPadX;
+
+  st.highlights.forEach((h, gi) => {
+    if (h.bad) return;
+    let range;
+    try {
+      range = document.createRange();
+      const a = locStart(h.start), b = locEnd(h.end);
+      range.setStart(a.node, a.offset);
+      range.setEnd(b.node, b.offset);
+    } catch (e) { return; }
+
+    const rects = Array.from(range.getClientRects()).filter(r => r.width > 0.5 && r.height > 0.5);
+    const lines = [];
+    rects.forEach(rc => {
+      const row = lines.find(L => Math.abs(L.mid - (rc.top + rc.bottom) / 2) < Math.max(4, rc.height * 0.5));
+      if (row) {
+        row.left = Math.min(row.left, rc.left); row.right = Math.max(row.right, rc.right);
+        row.top = Math.min(row.top, rc.top);   row.bottom = Math.max(row.bottom, rc.bottom);
+        row.mid = (row.top + row.bottom) / 2;
+      } else {
+        lines.push({ left: rc.left, right: rc.right, top: rc.top, bottom: rc.bottom, mid: (rc.top + rc.bottom) / 2 });
+      }
+    });
+    lines.sort((a, b) => a.top - b.top);
+
+    const els = [];
+    lines.forEach((L, li) => {
+      const el = document.createElement('div');
+      el.className = 'hl-rect' + (st.hlStyle === 'underline' ? ' underline' : '');
+      let top = L.top - pr.top - padY;
+      let height = (L.bottom - L.top) + padY * 2;
+      if (st.hlStyle === 'underline') {
+        height = Math.max(3, fs * 0.15);
+        top = L.bottom - pr.top - height * 0.75;
+      }
+      el.style.left   = (L.left - pr.left - padX).toFixed(1) + 'px';
+      el.style.top    = top.toFixed(1) + 'px';
+      el.style.width  = ((L.right - L.left) + padX * 2).toFixed(1) + 'px';
+      el.style.height = height.toFixed(1) + 'px';
+      el.style.setProperty('--hlc', h.color || st.hlColor);
+      el.style.transformOrigin = (st.hlStyle === 'pop' || st.hlStyle === 'fade') ? '50% 50%' : '0% 50%';
+      if (st.hlTilt && st.hlStyle !== 'underline') {
+        const t = ((gi * 37 + li * 53) % 100 / 100 - 0.5) * 1.1;
+        el.style.rotate = t.toFixed(2) + 'deg';
+      }
+      hlLayer.appendChild(el);
+      els.push(el);
+    });
+
+    const words = wordEntries
+      .filter(e => e.start < h.end && h.start < e.end)
+      .map(e => e.node.parentElement);
+
+    hlGroups.push({ els, words, h });
+  });
+}
+
+/* The ambient loop rotates, scales and tilts the whole card, which would skew
+   every measurement taken from getClientRects().  An !important inline rule
+   outranks an animation in the cascade, so the transform is neutralised for the
+   length of the measurement and released again inside the same frame: the loop
+   never pauses, never loses its phase, and nothing is painted in between. */
+/* Feeds the printed stocks: line height, first baseline and the left edge of
+   the text, so a ruling lands exactly where the words do. */
+function alignRules() {
+  const fs = currentFs();
+  const lh = parseFloat(getComputedStyle(quoteEl).lineHeight) || fs * 1.5;
+  const padL = parseFloat(getComputedStyle(paperEl).paddingLeft) || 0;
+  const first = quoteEl.querySelector('.line');
+  let baseline = padL;
+  if (first) {
+    const pr = paperEl.getBoundingClientRect();
+    const fr = first.getBoundingClientRect();
+    baseline = (fr.top - pr.top) + (lh - fs) / 2 + fs * 0.78;
+  }
+  const s = root.style;
+  s.setProperty('--rs', lh.toFixed(2) + 'px');
+  s.setProperty('--ro', (baseline + 2).toFixed(2) + 'px');
+  s.setProperty('--rm', padL.toFixed(2) + 'px');
+}
+
+function layoutHighlights() {
+  idleEl.style.setProperty('transform', 'none', 'important');
+  try {
+    alignRules();
+    measureHighlights();
+  } finally {
+    idleEl.style.removeProperty('transform');
+  }
+}
+
+/* ---- rect visibility helpers ---- */
+function rectHide(el) {
+  el.getAnimations().forEach(a => a.cancel());
+  if (st.hlStyle === 'marker' || st.hlStyle === 'underline') {
+    el.style.transform = 'scaleX(0)'; el.style.opacity = '1';
+  } else {
+    el.style.transform = st.hlStyle === 'pop' ? 'scale(.88)' : 'none';
+    el.style.opacity = '0';
+  }
+}
+function rectShow(el) {
+  el.getAnimations().forEach(a => a.cancel());
+  el.style.transform = 'none'; el.style.opacity = '1';
+}
+function hideAllRects() { hlGroups.forEach(g => g.els.forEach(rectHide)); clearInk(); }
+function showAllRects() { hlGroups.forEach(g => { g.els.forEach(rectShow); inkOn(g, true); }); }
+
+function inkOn(g, on) {
+  g.words.forEach(w => {
+    w.classList.toggle('ink-dark', on && st.hlInk === 'darken');
+    w.classList.toggle('ink-bold', on && st.hlInk === 'bold');
+  });
+}
+function clearInk() {
+  $$('#quote .w').forEach(w => w.classList.remove('ink-dark', 'ink-bold'));
+}
+
+/* ==========================================================================
+   Applying style state
+   ========================================================================== */
+function bgColor() {
+  if (st.bg === 'green') return '#00b140';
+  if (st.bg === 'blue')  return '#0047bb';
+  if (st.bg === 'custom') return st.bgCustom;
+  return '#000000';
+}
+
+function applyStyle() {
+  const s = root.style;
+  s.setProperty('--bg', bgColor());
+  s.setProperty('--paper', st.paperColor);
+  s.setProperty('--ink', st.inkColor);
+  s.setProperty('--ink-dark', 'color-mix(in srgb, ' + st.inkColor + ' 62%, #000)');
+  s.setProperty('--paper-width', st.paperWidth + '%');
+  s.setProperty('--paper-offset', st.paperOffset + '%');
+  s.setProperty('--paper-tilt', st.paperTilt + 'deg');
+  s.setProperty('--pad-scale', st.padScale);
+  s.setProperty('--grain', st.grain);
+  grainEl.dataset.grain = st.grainType;
+  s.setProperty('--shadow', st.shadow);
+  s.setProperty('--quote-font', st.font);
+  s.setProperty('--author-font', st.authorFont === 'inherit' ? st.font : st.authorFont);
+  s.setProperty('--lh', st.lineHeight);
+  s.setProperty('--tracking', st.tracking + 'em');
+  s.setProperty('--quote-weight', st.quoteWeight);
+  s.setProperty('--align', st.align);
+  s.setProperty('--hl-intensity', st.hlIntensity);
+  s.setProperty('--logo-size', st.logoSize + 'px');
+  s.setProperty('--logo-opacity', st.logoOpacity);
+  s.setProperty('--author-scale', st.authorScale);
+  s.setProperty('--reveal-dur', clamp(760 / st.speed, 200, 2400) + 'ms');
+  s.setProperty('--idle-amt', st.idleAmount);
+  s.setProperty('--idle-dur', st.idleDur + 's');
+  idleEl.dataset.idle = st.idleMotion;
+
+  stage.classList.toggle('qmarks', st.quoteMarks);
+  stage.classList.toggle('vignette', st.vignette);
+  stage.classList.toggle('guides', st.guides);
+  stage.classList.toggle('author-right', st.authorRight);
+
+  authorRow.classList.toggle('stacked', st.authorStack);
+  authorRow.classList.toggle('rule', st.authorRule);
+
+  const usingMark = !!(st.logoPreset && MARKS[st.logoPreset]);
+  const usingFile = !usingMark && !!st.logo;
+  logoBox.className = ((usingMark || usingFile) ? 'on ' : '') + st.logoShape + (st.logoMono ? ' mono' : '');
+  logoImg.style.display = usingFile ? 'block' : 'none';
+  logoGlyph.style.display = usingMark ? 'block' : 'none';
+  if (usingFile && logoImg.getAttribute('src') !== st.logo) logoImg.src = st.logo;
+  if (usingMark && logoGlyph.dataset.mark !== st.logoPreset) {
+    logoGlyph.innerHTML = markSvg(st.logoPreset);
+    logoGlyph.dataset.mark = st.logoPreset;
+  }
+  s.setProperty('--logo-ink', st.logoTint === 'custom' ? st.logoTintColor : 'var(--ink)');
+
+  $('#keyNote').textContent = (st.bg === 'green' || st.bg === 'blue')
+    ? 'For the cleanest key, pull the shadow down and keep the vignette off — soft shadows fringe when you pull a matte.'
+    : '';
+}
+
+/* ==========================================================================
+   Full layout pass
+   ========================================================================== */
+let applyQueued = false, applyRender = false;
+function scheduleApply(full) {
+  applyRender = applyRender || !!full;
+  if (applyQueued) return;
+  applyQueued = true;
+  requestAnimationFrame(() => {
+    applyQueued = false;
+    const r = applyRender;
+    applyRender = false;
+    if (playing) stop();          // editing always drops you back to the finished frame
+    applyAll(r);
+  });
+}
+
+function applyAll(rerender) {
+  applyStyle();
+  if (rerender !== false) renderQuote();
+  fitType();
+  applyTear();
+  layoutHighlights();
+  if (!playing) showFinal();
+  updateCounts();
+}
+
+function updateCounts() {
+  $('#hlCount').textContent = st.highlights.filter(h => !h.bad).length;
+}
+
+function showFinal() {
+  contentEl.className = 'shown';
+  quoteEl.classList.remove('words', 'go');
+  authorRow.classList.add('shown');
+  authorRow.style.opacity = '1';
+  paperWrap.getAnimations().forEach(a => a.cancel());
+  paperWrap.style.opacity = '';
+  showAllRects();
+  manualCue.classList.remove('on');
+}
+
+/* ==========================================================================
+   Built-in marks
+   Simple single-colour glyphs drawn on a 24-unit grid, so they ink into the
+   paper the way the type does.  They are simplified stand-ins, not official
+   brand assets — upload the real file when a piece has to be brand-exact.
+   ========================================================================== */
+const logoGlyph = $('#logoGlyph');
+
+const MARKS = {
+  x: { name: 'X', svg: '<path d="M1.6 2.4h5.7L22.4 21.6h-5.7z"/><path d="M16.7 2.4h5.7L7.3 21.6H1.6z"/>' },
+  bird: { name: 'Bird', svg: '<path d="M21.6 5.7c-.72.32-1.5.54-2.31.64a4.03 4.03 0 0 0 1.77-2.23c-.78.46-1.64.8-2.56.98a4.03 4.03 0 0 0-6.87 3.67A11.44 11.44 0 0 1 3.3 4.56a4.03 4.03 0 0 0 1.25 5.38 4 4 0 0 1-1.83-.5v.05a4.03 4.03 0 0 0 3.23 3.95 4.05 4.05 0 0 1-1.82.07 4.03 4.03 0 0 0 3.77 2.8A8.09 8.09 0 0 1 2.1 17.98a11.41 11.41 0 0 0 6.18 1.81c7.42 0 11.47-6.14 11.47-11.47l-.01-.52a8.2 8.2 0 0 0 1.86-2.1z"/>' },
+  linkedin: { name: 'LinkedIn', svg: '<path d="M19.8 2H4.2A2.2 2.2 0 0 0 2 4.2v15.6C2 21 3 22 4.2 22h15.6c1.2 0 2.2-1 2.2-2.2V4.2C22 3 21 2 19.8 2zM8.3 18.6H5.5V9.7h2.8v8.9zM6.9 8.5a1.63 1.63 0 1 1 0-3.26 1.63 1.63 0 0 1 0 3.26zm11.7 10.1h-2.8v-4.33c0-1.03-.02-2.36-1.44-2.36-1.44 0-1.66 1.13-1.66 2.29v4.4H9.9V9.7h2.68v1.22h.04c.37-.71 1.28-1.45 2.64-1.45 2.82 0 3.34 1.86 3.34 4.28v4.85z"/>' },
+  youtube: { name: 'YouTube', svg: '<path d="M22.5 7.2a2.76 2.76 0 0 0-1.94-1.96C18.84 4.77 12 4.77 12 4.77s-6.84 0-8.56.47A2.76 2.76 0 0 0 1.5 7.2C1.04 8.93 1.04 12 1.04 12s0 3.07.46 4.8a2.76 2.76 0 0 0 1.94 1.93c1.72.47 8.56.47 8.56.47s6.84 0 8.56-.47a2.76 2.76 0 0 0 1.94-1.93c.46-1.73.46-4.8.46-4.8s0-3.07-.46-4.8zM9.77 15.3V8.7L15.5 12z"/>' },
+  instagram: { name: 'Instagram', svg: '<rect x="2.9" y="2.9" width="18.2" height="18.2" rx="5.2" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="12" cy="12" r="4.1" fill="none" stroke="currentColor" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.35"/>' },
+  facebook: { name: 'Facebook', svg: '<path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12z"/>' },
+  tiktok: { name: 'TikTok', svg: '<path d="M16.5 2h-3.1v13.3a2.42 2.42 0 1 1-1.93-2.37V9.68a5.55 5.55 0 1 0 5.03 5.52V8.92a6.63 6.63 0 0 0 3.9 1.26V7.06a3.82 3.82 0 0 1-3.9-3.74z"/>' },
+  threads: { name: 'Threads', svg: '<path d="M16.9 11.35a6.3 6.3 0 0 0-.7-.32c-.13-2.4-1.44-3.77-3.63-3.79-1.47-.01-2.7.62-3.45 1.79l1.35.93c.56-.85 1.44-1.03 2.09-1.03 1.24.01 1.95.66 2.1 1.9-.5-.09-1.03-.13-1.6-.12-2.3.05-3.77 1.37-3.67 3.16.05.9.5 1.68 1.27 2.19.65.43 1.48.64 2.35.6 1.14-.06 2.04-.5 2.67-1.3.47-.6.77-1.38.9-2.36.55.33.95.77 1.17 1.3.38.9.4 2.39-.8 3.59-1.06 1.05-2.33 1.5-4.25 1.52-2.13-.02-3.74-.7-4.79-2.03C5.94 16.8 5.44 15 5.42 12s.5-4.8 1.49-6.06C7.96 4.6 9.57 3.92 11.7 3.9c2.15.02 3.79.71 4.87 2.05.53.66.93 1.49 1.2 2.46l1.62-.43c-.32-1.2-.83-2.24-1.52-3.1C16.5 3.15 14.4 2.26 11.71 2.24h-.01c-2.69.02-4.76.91-6.15 2.66C4.32 6.45 3.68 8.6 3.66 12v.01c.02 3.39.66 5.54 1.89 7.09 1.39 1.75 3.46 2.65 6.15 2.66h.01c2.39-.02 4.08-.65 5.47-2.04 1.82-1.82 1.77-4.1 1.17-5.5-.43-1-1.25-1.82-2.37-2.37zm-4.25 4.66c-.96.05-1.96-.38-2.01-1.27-.04-.66.47-1.4 2.07-1.49.18-.01.36-.02.54-.02.58 0 1.13.06 1.62.17-.18 2.28-1.25 2.56-2.22 2.61z"/>' },
+  reddit: { name: 'Reddit', svg: '<path d="M22 11.05a2.2 2.2 0 0 0-3.73-1.58 10.8 10.8 0 0 0-5.7-1.8l.97-4.57 3.18.67a1.57 1.57 0 1 0 .18-1.03l-3.55-.75a.52.52 0 0 0-.62.4l-1.09 5.28a10.8 10.8 0 0 0-5.79 1.8A2.2 2.2 0 1 0 3.4 12.9c-.04.24-.06.5-.06.75 0 3.83 4.46 6.93 9.96 6.93s9.96-3.1 9.96-6.93c0-.25-.02-.5-.06-.74a2.2 2.2 0 0 0 .8-1.86zM7.1 12.62a1.57 1.57 0 1 1 3.14 0 1.57 1.57 0 0 1-3.14 0zm8.87 4.2c-1.08 1.08-3.15 1.16-3.76 1.16s-2.68-.08-3.76-1.17a.41.41 0 0 1 .58-.58c.68.69 2.14.93 3.18.93s2.5-.24 3.18-.93a.41.41 0 1 1 .58.58zm-.29-2.63a1.57 1.57 0 1 1 0-3.14 1.57 1.57 0 0 1 0 3.14z"/>' },
+  twitch: { name: 'Twitch', svg: '<path d="M4.4 2.5 2.6 7v12.6h4.4V22h2.4l2.4-2.4h3.6l4.9-4.9V2.5zm13.7 11.3-2.8 2.8h-4.4l-2.4 2.4v-2.4H4.9V4.3h13.2z"/><path d="M14.9 7.6h1.9v5.2h-1.9zM10.1 7.6H12v5.2h-1.9z"/>' },
+  telegram: { name: 'Telegram', svg: '<path d="M21.6 3.2 2.9 10.4c-1.1.43-1.1 1.05-.2 1.32l4.8 1.5 1.85 5.66c.22.62.11.86.76.86.5 0 .72-.23 1-.5l2.4-2.33 4.98 3.68c.92.5 1.58.25 1.8-.85l3.3-15.5c.34-1.35-.51-1.96-1.4-1.56zM8.6 13.9l10.8-6.8c.53-.32 1.02-.15.62.2l-9.25 8.35-.36 3.85z"/>' },
+  github: { name: 'GitHub', svg: '<path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48l-.01-1.7c-2.78.6-3.37-1.34-3.37-1.34-.45-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.61.07-.61 1 .07 1.53 1.03 1.53 1.03.89 1.53 2.34 1.09 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.98 1.03-2.68-.1-.25-.45-1.27.1-2.64 0 0 .84-.27 2.75 1.02a9.5 9.5 0 0 1 5 0c1.91-1.29 2.75-1.02 2.75-1.02.55 1.37.2 2.39.1 2.64.64.7 1.03 1.59 1.03 2.68 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.85l-.01 2.75c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>' },
+  substack: { name: 'Substack', svg: '<path d="M4 3h16v2.6H4zm0 4.9h16v2.6H4zm0 4.9h16V21l-8-4.4L4 21z"/>' },
+  medium: { name: 'Medium', svg: '<circle cx="6.7" cy="12" r="5.7"/><ellipse cx="16.2" cy="12" rx="2.35" ry="5.4"/><ellipse cx="21.4" cy="12" rx=".85" ry="4.75"/>' },
+  quote: { name: 'Quote mark', svg: '<path d="M10.2 5.1C6.6 6.5 4.1 9.7 4.1 13.4c0 3.3 2 5.5 4.7 5.5 2.3 0 4-1.8 4-4s-1.6-3.8-3.5-3.8c-.4 0-.8.05-1.1.14.6-1.8 2.2-3.4 4.2-4.3zm9.6 0c-3.6 1.4-6.1 4.6-6.1 8.3 0 3.3 2 5.5 4.7 5.5 2.3 0 4-1.8 4-4s-1.6-3.8-3.5-3.8c-.4 0-.8.05-1.1.14.6-1.8 2.2-3.4 4.2-4.3z"/>' },
+  book: { name: 'Book', svg: '<path d="M12 6.4C10.3 5 8 4.3 5.4 4.3c-.9 0-1.8.1-2.6.3v13.6c.8-.2 1.7-.3 2.6-.3 2.6 0 4.9.7 6.6 2 1.7-1.3 4-2 6.6-2 .9 0 1.8.1 2.6.3V4.6c-.8-.2-1.7-.3-2.6-.3-2.6 0-4.9.7-6.6 2.1zm0 0v13.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>' },
+  news: { name: 'Newspaper', svg: '<path d="M3.2 5.2h13.2v13.2a2.2 2.2 0 0 0 2.2 2.2H5.4a2.2 2.2 0 0 1-2.2-2.2z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M16.4 8.6h2.4a2 2 0 0 1 2 2v7.8a2.2 2.2 0 0 1-2.2 2.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 8.5h7.6M6 11.8h7.6M6 15.1h4.6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>' },
+  mic: { name: 'Podcast', svg: '<rect x="9" y="2.6" width="6" height="11.2" rx="3" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M5.4 11.5a6.6 6.6 0 0 0 13.2 0M12 18.2v3.2M8.5 21.4h7" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>' },
+  feather: { name: 'Quill', svg: '<path d="M20.6 3.4c-8 .5-12.5 4.5-14 8.5-.9 2.4-.6 4.6-.2 5.9L4 20.2l1.4 1.4 2.4-2.4c1.3.4 3.5.7 5.9-.2 4-1.5 8-6 8.9-15.6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M17 7 7.6 16.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>' },
+  globe: { name: 'Web', svg: '<circle cx="12" cy="12" r="9.2" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M2.8 12h18.4M12 2.8c2.6 2.6 3.9 6 3.9 9.2s-1.3 6.6-3.9 9.2c-2.6-2.6-3.9-6-3.9-9.2s1.3-6.6 3.9-9.2z" fill="none" stroke="currentColor" stroke-width="1.9"/>' },
+  star: { name: 'Star', svg: '<path d="m12 2.6 2.9 6.2 6.8.85-5 4.65 1.3 6.7L12 17.6l-6 3.4 1.3-6.7-5-4.65 6.8-.85z"/>' }
+};
+
+function markSvg(id) {
+  const m = MARKS[id];
+  if (!m) return '';
+  return '<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">' + m.svg + '</svg>';
+}
+
+function renderMarkGrid() {
+  const grid = $('#markGrid');
+  if (!grid) return;
+  if (!grid.childElementCount) {
+    Object.keys(MARKS).forEach(id => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.dataset.mark = id;
+      btn.title = MARKS[id].name;
+      btn.setAttribute('aria-label', MARKS[id].name);
+      btn.innerHTML = markSvg(id);
+      btn.addEventListener('click', () => pickMark(id));
+      grid.appendChild(btn);
+    });
+  }
+  $$('#markGrid button').forEach(b => b.classList.toggle('on', b.dataset.mark === st.logoPreset));
+}
+
+function pickMark(id) {
+  st.logoPreset = (st.logoPreset === id) ? null : id;
+  save();
+  renderMarkGrid();
+  updateLogoPreview();
+  scheduleApply(false);
+  toast(st.logoPreset ? MARKS[id].name + ' mark' : 'Mark cleared');
+}
+
+/* ==========================================================================
+   Timeline
+   ========================================================================== */
+let playing = false, runId = 0, pendingAdvance = null;
+const timers = new Set();
+
+function wait(ms) {
+  return new Promise(res => {
+    const t = setTimeout(() => { timers.delete(t); res(); }, Math.max(0, ms));
+    timers.add(t);
+  });
+}
+function killTimers() {
+  timers.forEach(clearTimeout); timers.clear();
+  if (pendingAdvance) { const p = pendingAdvance; pendingAdvance = null; p(); }
+}
+function waitAdvance() { return new Promise(res => { pendingAdvance = res; }); }
+function advance() { if (pendingAdvance) { const p = pendingAdvance; pendingAdvance = null; p(); } }
+
+const msPerChar = () => 60000 / (st.wpm * 5.2);
+
+function revealText() {
+  if (st.reveal === 'none') {
+    contentEl.classList.add('shown');
+  } else if (st.reveal === 'words') {
+    contentEl.classList.add('shown');
+    quoteEl.classList.add('words');
+    void quoteEl.offsetWidth;
+    quoteEl.classList.add('go');
+  } else {
+    contentEl.classList.add('fade-in');
+  }
+}
+
+function drawRect(el, dur) {
+  el.getAnimations().forEach(a => a.cancel());
+  if (st.hlStyle === 'marker' || st.hlStyle === 'underline') {
+    el.style.opacity = '1';
+    el.animate([{ transform: 'scaleX(0)' }, { transform: 'scaleX(1)' }],
+      { duration: dur, easing: 'cubic-bezier(.45,.05,.3,1)', fill: 'forwards' });
+  } else if (st.hlStyle === 'fade') {
+    el.style.transform = 'none';
+    el.animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur, easing: 'ease-out', fill: 'forwards' });
+  } else {
+    el.animate([{ opacity: 0, transform: 'scale(.88)' }, { opacity: 1, transform: 'scale(1)' }],
+      { duration: clamp(dur * 0.55, 150, 900), easing: 'cubic-bezier(.2,1.4,.35,1)', fill: 'forwards' });
+  }
+}
+
+async function sweep(g, id) {
+  inkOn(g, true);
+  const fs = currentFs();
+  for (let li = 0; li < g.els.length; li++) {
+    const el = g.els[li];
+    const w = parseFloat(el.style.width) || 40;
+    const chars = w / (fs * 0.5);
+    const dur = clamp(chars * msPerChar() * st.sweepScale, 110, 5000) / st.speed;
+    drawRect(el, dur);
+    await wait(li < g.els.length - 1 ? dur * 0.86 : dur * 0.5);
+    if (id !== runId) return;
+  }
+}
+
+async function runHighlights(id) {
+  const total = hlGroups.length;
+  let prevEnd = 0;
+  for (let i = 0; i < total; i++) {
+    const g = hlGroups[i];
+    if (st.manual) {
+      manualCue.classList.add('on');
+      $('#manualCount').textContent = (i + 1) + ' of ' + total;
+      await waitAdvance();
+      if (id !== runId) return;
+    } else {
+      const gapChars = Math.max(0, g.h.start - prevEnd);
+      let gap = clamp(gapChars * msPerChar() * 0.8, st.minGap, 7000) / st.speed;
+      if (i === 0) gap *= 0.55;
+      await wait(gap);
+      if (id !== runId) return;
+    }
+    await sweep(g, id);
+    if (id !== runId) return;
+    prevEnd = g.h.end;
+  }
+  manualCue.classList.remove('on');
+}
+
+function exitAnim() {
+  const d = clamp(st.entranceDur * 0.85, 250, 2200);
+  const to = st.exitStyle === 'swoop'
+    ? { transform: 'translateY(calc(-50% - 118vh)) rotate(-6deg) scale(.95)', opacity: 0 }
+    : { transform: 'translateY(-50%) scale(.99)', opacity: 0 };
+  const a = paperWrap.animate(
+    [{ transform: 'translateY(-50%) rotate(0deg) scale(1)', opacity: 1 }, to],
+    { duration: d, easing: 'cubic-bezier(.55,0,.75,.2)', fill: 'forwards' });
+  return a.finished.catch(() => {});
+}
+
+async function play(opts) {
+  opts = opts || {};
+  const id = ++runId;
+  killTimers();
+  playing = true;
+
+  paperWrap.getAnimations().forEach(a => a.cancel());
+  paperWrap.style.opacity = '';
+  quoteEl.classList.remove('words', 'go');
+  manualCue.classList.remove('on');
+
+  fitType(); applyTear(); layoutHighlights();
+  hideAllRects();
+
+  if (opts.skipEntrance) {
+    contentEl.className = 'shown';
+    authorRow.style.opacity = '1';
+    authorRow.classList.add('shown');
+  } else {
+    contentEl.className = '';
+    authorRow.classList.remove('shown');
+    authorRow.style.opacity = '0';
+
+    if (st.preRoll > 0) {
+      paperWrap.style.opacity = '0';
+      await wait(st.preRoll);
+      if (id !== runId) return;
+      paperWrap.style.opacity = '';
+    }
+
+    const dur = st.entrance === 'none' ? 0 : st.entranceDur;
+    if (dur > 0) {
+      const y1 = (0.85 + st.overshoot * 0.9).toFixed(3);
+      const from = {
+        swoop: { transform: 'translateY(calc(-50% + 115vh)) rotate(7deg) scale(.94)', opacity: 0 },
+        rise:  { transform: 'translateY(calc(-50% + 70px)) scale(.985)', opacity: 0 },
+        drop:  { transform: 'translateY(calc(-50% - 110px)) scale(1.04)', opacity: 0 }
+      }[st.entrance];
+      const a = paperWrap.animate(
+        [from, { transform: 'translateY(-50%) rotate(0deg) scale(1)', opacity: 1 }],
+        { duration: dur, easing: 'cubic-bezier(.18,' + y1 + ',.3,1)', fill: 'both' });
+      a.finished.then(() => { try { a.cancel(); } catch (e) {} }).catch(() => {});
+    }
+
+    await wait(dur * 0.52);
+    if (id !== runId) return;
+
+    revealText();
+
+    const revealMs = parseFloat(getComputedStyle(root).getPropertyValue('--reveal-dur')) || 700;
+    const step = clamp(60 / st.speed, 18, 140);
+    const authorAt = st.reveal === 'words'
+      ? wordEntries.length * step * 0.8 + 260
+      : (st.reveal === 'none' ? 80 : revealMs * 0.5);
+    wait(authorAt).then(() => {
+      if (id !== runId) return;
+      authorRow.style.opacity = '';
+      authorRow.classList.add('shown');
+    });
+
+    await wait(clamp(st.startDelay / st.speed, 0, 12000) + (st.reveal === 'none' ? 0 : revealMs * 0.4));
+    if (id !== runId) return;
+  }
+
+  await runHighlights(id);
+  if (id !== runId) return;
+  playing = false;
+
+  if (st.loop || st.exitStyle !== 'hold') {
+    await wait(st.loopDelay);
+    if (id !== runId) return;
+    if (st.exitStyle !== 'hold') { await exitAnim(); if (id !== runId) return; }
+    if (st.loop) { play(); }
+  }
+}
+
+function stop() { runId++; killTimers(); playing = false; }
+
+/* ==========================================================================
+   Toast
+   ========================================================================== */
+let toastTimer;
+function toast(msg, kind) {
+  toastEl.textContent = msg;
+  toastEl.className = 'show' + (kind ? ' ' + kind : '');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { toastEl.className = ''; }, 2400);
+}
+
+/* ==========================================================================
+   Control binding
+   ========================================================================== */
+const RENDER_KEYS = new Set(['reveal', 'speed', 'author', 'authorSub']);
+
+function fmtRange(el) {
+  const key = el.dataset.bind, v = st[key];
+  const mul = parseFloat(el.dataset.mul || '1');
+  const unit = el.dataset.unit || '';
+  const step = parseFloat(el.step || '1');
+  const n = v * mul;
+  let txt;
+  if (el.dataset.dec !== undefined) txt = n.toFixed(+el.dataset.dec).replace(/\.?0+$/, '');
+  else if (mul !== 1 || step >= 1) txt = String(Math.round(n));
+  else if (step >= 0.05) txt = n.toFixed(2).replace(/\.?0+$/, '');
+  else txt = n.toFixed(3).replace(/\.?0+$/, '');
+  if (txt === '' || txt === '-') txt = '0';
+  const t = document.querySelector('[data-val-for="' + key + '"]');
+  if (t) t.textContent = txt + unit;
+}
+
+function setVal(key, val) {
+  st[key] = val;
+  save();
+  syncControl(key);
+  scheduleApply(RENDER_KEYS.has(key));
+}
+
+function syncControl(key) {
+  $$('[data-bind="' + key + '"]').forEach(el => {
+    const v = st[key];
+    if (el.classList.contains('seg')) $$('button', el).forEach(b => b.classList.toggle('on', b.dataset.val === String(v)));
+    else if (el.type === 'checkbox') el.checked = !!v;
+    else if (el.type === 'range') { el.value = v; fmtRange(el); }
+    else if (el.value !== String(v)) el.value = v;
+  });
+  $$('.swatches[data-target="' + key + '"] button').forEach(b =>
+    b.classList.toggle('on', (b.dataset.c || '').toLowerCase() === String(st[key]).toLowerCase()));
+}
+
+function syncAll() {
+  $$('[data-bind]').forEach(el => syncControl(el.dataset.bind));
+  qi.value = st.text;
+  renderMarkGrid();
+  updateLogoPreview();
+  hints.classList.toggle('hidden', !!st.hintsHidden);
+}
+
+function bindAll() {
+  $$('[data-bind]').forEach(el => {
+    const key = el.dataset.bind;
+    if (el.classList.contains('seg')) {
+      $$('button', el).forEach(b => b.addEventListener('click', () => setVal(key, b.dataset.val)));
+    } else if (el.type === 'checkbox') {
+      el.addEventListener('change', () => setVal(key, el.checked));
+    } else if (el.type === 'range') {
+      el.addEventListener('input', () => setVal(key, parseFloat(el.value)));
+    } else if (el.tagName === 'SELECT') {
+      el.addEventListener('change', () => setVal(key, el.value));
+    } else {
+      el.addEventListener('input', () => setVal(key, el.value));
+    }
+  });
+  $$('.swatches').forEach(sw => {
+    const key = sw.dataset.target;
+    $$('button', sw).forEach(b => b.addEventListener('click', () => setVal(key, b.dataset.c)));
+  });
+}
+
+/* ==========================================================================
+   The quote editor and its selections
+   ========================================================================== */
+let lastSel = { start: 0, end: 0 };
+
+function captureSel() {
+  if (document.activeElement !== qi) return;
+  lastSel = { start: qi.selectionStart, end: qi.selectionEnd };
+  updateSelInfo();
+}
+
+function updateSelInfo() {
+  const info = $('#selInfo');
+  const { start, end } = lastSel;
+  if (end > start) {
+    const t = st.text.slice(start, end).replace(/\s+/g, ' ').trim();
+    info.innerHTML = 'Ready to add: <b>' + escapeHtml(t.length > 60 ? t.slice(0, 60) + '…' : t) + '</b>';
+  } else {
+    info.textContent = 'Select text above, then add it. Exact character positions are stored.';
+  }
+}
+
+function onTextInput() {
+  st.text = qi.value;
+  parsed = parseText(st.text);
+  reconcile();
+  save();
+  renderSelList();
+  scheduleApply(true);
+}
+
+function reconcile() {
+  st.highlights.forEach(h => {
+    const cur = parsed.plain.slice(h.start, h.end);
+    if (cur === h.text) { h.bad = false; return; }
+    let from = 0, i, best = -1, bd = Infinity;
+    while ((i = parsed.plain.indexOf(h.text, from)) >= 0) {
+      const d = Math.abs(i - h.start);
+      if (d < bd) { bd = d; best = i; }
+      from = i + 1;
+    }
+    if (best >= 0 && h.text) { h.start = best; h.end = best + h.text.length; h.bad = false; }
+    else h.bad = true;
+  });
+}
+
+function addSelection() {
+  const raw = st.text;
+  let { start, end } = lastSel;
+  if (end <= start) { toast('Select some words in the quote box first', 'warn'); return; }
+  while (start < end && /\s/.test(raw[start])) start++;
+  while (end > start && /\s/.test(raw[end - 1])) end--;
+
+  const p0 = parsed.map[start], p1 = parsed.map[end];
+  if (p1 <= p0) { toast('That selection only covers formatting marks', 'warn'); return; }
+
+  const text = parsed.plain.slice(p0, p1);
+  const overlaps = st.highlights.some(h => !h.bad && h.start < p1 && p0 < h.end);
+  st.highlights.push({ id: uid(), start: p0, end: p1, text, color: null });
+  save();
+  renderSelList();
+  scheduleApply(false);
+  toast(overlaps ? 'Added — note it overlaps an earlier highlight' : 'Highlight added', overlaps ? 'warn' : '');
+}
+
+function addFromBold() {
+  const { plain, marks } = parsed;
+  let added = 0, i = 0;
+  while (i < plain.length) {
+    if (marks[i] && marks[i].b) {
+      let j = i;
+      while (j < plain.length && marks[j].b) j++;
+      let s = i, e = j;
+      while (s < e && /\s/.test(plain[s])) s++;
+      while (e > s && /\s/.test(plain[e - 1])) e--;
+      if (e > s && !st.highlights.some(h => h.start === s && h.end === e)) {
+        st.highlights.push({ id: uid(), start: s, end: e, text: plain.slice(s, e), color: null });
+        added++;
+      }
+      i = j;
+    } else i++;
+  }
+  if (!added) { toast('No new bold runs found', 'warn'); return; }
+  save(); renderSelList(); scheduleApply(false);
+  toast(added + (added === 1 ? ' highlight added' : ' highlights added'));
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+function renderSelList() {
+  selList.innerHTML = '';
+  if (!st.highlights.length) {
+    selList.innerHTML = '<div class="empty">Nothing highlighted yet.<br>Select words in the quote box and add them — they play back in this order.</div>';
+    updateCounts();
+    return;
+  }
+  st.highlights.forEach((h, i) => {
+    const row = document.createElement('div');
+    row.className = 'sel-item' + (h.bad ? ' bad' : '');
+    const label = h.bad ? 'Not found: ' + h.text : h.text;
+    row.innerHTML =
+      '<div class="idx">' + (i + 1) + '</div>' +
+      '<div class="txt" title="' + escapeHtml(h.bad ? 'This text is no longer in the quote' : h.text) + '">' + escapeHtml(label) + '</div>' +
+      '<button class="dot" style="--c:' + (h.color || st.hlColor) + '" title="Colour for this one. Right-click to go back to the marker colour."><input type="color" value="' + (h.color || st.hlColor) + '"></button>' +
+      '<button class="mini up" title="Move earlier">&#8593;</button>' +
+      '<button class="mini dn" title="Move later">&#8595;</button>' +
+      '<button class="mini del" title="Remove">&times;</button>';
+
+    $('.txt', row).addEventListener('click', () => flashHighlight(h.id));
+    const dot = $('.dot', row);
+    $('input', dot).addEventListener('input', e => {
+      h.color = e.target.value;
+      dot.style.setProperty('--c', h.color);
+      save(); scheduleApply(false);
+    });
+    dot.addEventListener('contextmenu', e => {
+      e.preventDefault(); h.color = null; save(); renderSelList(); scheduleApply(false);
+    });
+    $('.up', row).addEventListener('click', () => moveSel(i, -1));
+    $('.dn', row).addEventListener('click', () => moveSel(i, 1));
+    $('.del', row).addEventListener('click', () => {
+      st.highlights.splice(i, 1); save(); renderSelList(); scheduleApply(false);
+    });
+    selList.appendChild(row);
+  });
+  updateCounts();
+}
+
+function moveSel(i, dir) {
+  const j = i + dir;
+  if (j < 0 || j >= st.highlights.length) return;
+  const a = st.highlights;
+  [a[i], a[j]] = [a[j], a[i]];
+  save(); renderSelList(); scheduleApply(false);
+}
+
+function flashHighlight(id) {
+  const g = hlGroups.find(x => x.h.id === id);
+  if (!g) return;
+  g.els.forEach(el => {
+    rectShow(el);
+    el.animate([{ filter: 'brightness(1)' }, { filter: 'brightness(.5)' }, { filter: 'brightness(1)' }],
+      { duration: 480, iterations: 2 });
+  });
+}
+
+/* ==========================================================================
+   Logo
+   ========================================================================== */
+function updateLogoPreview() {
+  const prev = $('#logoPrev'), txt = $('#logoText');
+  prev.innerHTML = '';
+  if (st.logo) {
+    const im = new Image(); im.src = st.logo; prev.appendChild(im);
+    txt.innerHTML = st.logoPreset
+      ? 'Your image is loaded but a mark is selected<small>Deselect the mark above to use it</small>'
+      : 'Your image is in use<small>Click to swap it for another</small>';
+  } else {
+    txt.innerHTML = 'Click, drop or paste an image<small>PNG, SVG or GIF — animated GIFs keep playing</small>';
+  }
+}
+
+/* GIF, SVG and WebP are stored byte for byte — running them through a canvas
+   would flatten an animation to its first frame.  Still rasters get scaled
+   down so a card stays small enough to keep in browser storage. */
+const KEEP_WHOLE = /^image\/(gif|svg\+xml|webp|apng)$/i;
+
+function applyLogo(dataUrl, note) {
+  st.logo = dataUrl;
+  st.logoPreset = null;
+  save();
+  renderMarkGrid();
+  updateLogoPreview();
+  scheduleApply(false);
+  toast(note || 'Logo added');
+}
+
+function setLogo(file) {
+  if (!file || !/^image\//.test(file.type)) { toast('That is not an image file', 'warn'); return; }
+  if (file.size > 4e6) { toast('That image is over 4 MB — shrink it first', 'warn'); return; }
+
+  const fr = new FileReader();
+  fr.onerror = () => toast('Could not read that file', 'warn');
+
+  if (KEEP_WHOLE.test(file.type)) {
+    fr.onload = () => applyLogo(fr.result, file.size > 9e5
+      ? 'Logo added — it is large, so it may not survive a reload'
+      : (/gif/i.test(file.type) ? 'Animated logo added' : 'Logo added'));
+    fr.readAsDataURL(file);
+    return;
+  }
+
+  fr.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 320;
+      let w = img.naturalWidth || max, h = img.naturalHeight || max;
+      const sc = Math.min(1, max / Math.max(w, h));
+      w = Math.max(1, Math.round(w * sc)); h = Math.max(1, Math.round(h * sc));
+      const c = document.createElement('canvas');
+      c.width = w; c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      let out;
+      try { out = c.toDataURL('image/png'); } catch (e) { out = fr.result; }
+      applyLogo(out);
+    };
+    img.onerror = () => toast('Could not read that image', 'warn');
+    img.src = fr.result;
+  };
+  fr.readAsDataURL(file);
+}
+
+/* ==========================================================================
+   Presets
+   ========================================================================== */
+function renderPresets() {
+  const list = $('#presetList');
+  list.innerHTML = '';
+  if (!presets.length) {
+    list.innerHTML = '<div class="empty">No saved cards yet. Save one and it comes back with every setting intact.</div>';
+    return;
+  }
+  presets.forEach((p, i) => {
+    const row = document.createElement('div');
+    row.className = 'preset-item';
+    const when = new Date(p.ts).toLocaleDateString();
+    row.innerHTML =
+      '<div class="idx" style="width:18px;height:18px;border-radius:5px;background:#12100d;color:#9d9284;font-size:10.5px;display:grid;place-items:center">' + (i < 9 ? i + 1 : '·') + '</div>' +
+      '<div class="nm">' + escapeHtml(p.name) + '<div class="meta">' + when + '</div></div>' +
+      '<button class="btn sm load">Load</button>' +
+      '<button class="mini del" title="Delete">&times;</button>';
+    $('.load', row).addEventListener('click', () => loadPreset(p.id));
+    $('.del', row).addEventListener('click', () => {
+      presets = presets.filter(x => x.id !== p.id); save(); renderPresets();
+    });
+    list.appendChild(row);
+  });
+}
+
+function savePreset() {
+  const inp = $('#presetName');
+  const name = (inp.value || '').trim() || (st.author ? st.author : 'Card') + ' ' + (presets.length + 1);
+  presets.unshift({ id: uid(), name, ts: Date.now(), state: JSON.parse(JSON.stringify(st)) });
+  inp.value = '';
+  save(); renderPresets();
+  toast('Saved as ' + name);
+}
+
+function loadState(next, label) {
+  st = Object.assign({}, DEFAULTS, next);
+  if (!Array.isArray(st.highlights)) st.highlights = [];
+  parsed = parseText(st.text);
+  reconcile();
+  syncAll(); renderSelList(); applyAll(true); save();
+  if (label) toast(label);
+  play();
+}
+
+function loadPreset(id) {
+  const p = presets.find(x => x.id === id);
+  if (p) loadState(p.state, 'Loaded ' + p.name);
+}
+
+function download(name, obj) {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 3000);
+}
+
+function slug(s) { return (s || 'quote-card').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 40) || 'quote-card'; }
+
+function importPayload(data) {
+  try {
+    if (data.cards && Array.isArray(data.cards)) {
+      const incoming = data.cards.map(c => ({ id: uid(), name: c.name || 'Imported', ts: c.ts || Date.now(), state: c.state }));
+      presets = incoming.concat(presets);
+      save(); renderPresets();
+      toast(incoming.length + ' cards imported');
+    } else if (data.card && data.card.state) {
+      loadState(data.card.state, 'Imported ' + (data.card.name || 'card'));
+    } else if (data.state) {
+      loadState(data.state, 'Imported card');
+    } else {
+      toast('That file is not a quote card export', 'warn');
+    }
+  } catch (e) { toast('Could not read that file', 'warn'); }
+}
+
+function readJsonFile(file) {
+  const fr = new FileReader();
+  fr.onload = () => {
+    try { importPayload(JSON.parse(fr.result)); }
+    catch (e) { toast('That file is not valid JSON', 'warn'); }
+  };
+  fr.readAsText(file);
+}
+
+/* ==========================================================================
+   Inspector chrome
+   ========================================================================== */
+function insOpen() { return ins.classList.contains('open'); }
+function setIns(open) {
+  ins.classList.toggle('open', open);
+  hints.classList.toggle('shifted', open);
+  if (open) document.body.classList.remove('hide-cursor');
+  else if (document.activeElement && ins.contains(document.activeElement)) document.activeElement.blur();
+}
+function toggleIns() { setIns(!insOpen()); }
+
+function toggleHints() {
+  st.hintsHidden = !st.hintsHidden;
+  hints.classList.toggle('hidden', st.hintsHidden);
+  save();
+}
+
+function toggleFull() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
+
+/* ==========================================================================
+   Wiring
+   ========================================================================== */
+$$('.tab').forEach(t => t.addEventListener('click', () => {
+  $$('.tab').forEach(x => x.classList.toggle('on', x === t));
+  $$('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === t.dataset.tab));
+}));
+
+qi.addEventListener('input', onTextInput);
+['keyup', 'mouseup', 'select', 'focus'].forEach(ev => qi.addEventListener(ev, captureSel));
+document.addEventListener('selectionchange', captureSel);
+
+function wrapSel(mark) {
+  const s = qi.selectionStart, e = qi.selectionEnd;
+  if (e <= s) { toast('Select the words you want to mark up', 'warn'); return; }
+  const v = qi.value, inner = v.slice(s, e);
+  const L = mark.length;
+  let nv, ns, ne;
+  if (v.slice(Math.max(0, s - L), s) === mark && v.slice(e, e + L) === mark) {
+    nv = v.slice(0, s - L) + inner + v.slice(e + L); ns = s - L; ne = e - L;
+  } else {
+    nv = v.slice(0, s) + mark + inner + mark + v.slice(e); ns = s + L; ne = e + L;
+  }
+  qi.value = nv;
+  qi.setSelectionRange(ns, ne);
+  qi.focus();
+  onTextInput();
+  captureSel();
+}
+
+$('#btnBold').addEventListener('click', () => wrapSel('**'));
+$('#btnItalic').addEventListener('click', () => wrapSel('_'));
+$('#btnSmartQuotes').addEventListener('click', () => {
+  const before = qi.value;
+  qi.value = before
+    .replace(/(^|[\s([{<])"/g, '$1\u201c').replace(/"/g, '\u201d')
+    .replace(/(^|[\s([{<])'/g, '$1\u2018').replace(/'/g, '\u2019')
+    .replace(/(\w)\s--\s(\w)/g, '$1 \u2014 $2')
+    .replace(/\.\.\./g, '\u2026');
+  onTextInput();
+  toast('Quotes and dashes tidied');
+});
+
+$('#btnAddSel').addEventListener('mousedown', e => e.preventDefault());
+$('#btnAddSel').addEventListener('click', addSelection);
+$('#btnAddAll').addEventListener('click', addFromBold);
+$('#btnClearSel').addEventListener('click', () => {
+  if (!st.highlights.length) return;
+  st.highlights = []; save(); renderSelList(); scheduleApply(false); toast('Highlights cleared');
+});
+$('#btnSortSel').addEventListener('click', () => {
+  st.highlights.sort((a, b) => a.start - b.start);
+  save(); renderSelList(); scheduleApply(false); toast('Sorted to match the quote');
+});
+
+$('#logoZone').addEventListener('click', () => $('#logoFile').click());
+$('#logoZone').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('#logoFile').click(); } });
+$('#logoFile').addEventListener('change', e => { if (e.target.files[0]) setLogo(e.target.files[0]); e.target.value = ''; });
+['dragenter', 'dragover'].forEach(ev => $('#logoZone').addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); $('#logoZone').classList.add('over'); }));
+['dragleave', 'drop'].forEach(ev => $('#logoZone').addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); $('#logoZone').classList.remove('over'); }));
+$('#logoZone').addEventListener('drop', e => { const f = e.dataTransfer.files[0]; if (f) setLogo(f); });
+$('#btnLogoClear').addEventListener('click', () => {
+  st.logo = null; st.logoPreset = null;
+  save(); renderMarkGrid(); updateLogoPreview(); scheduleApply(false); toast('Logo removed');
+});
+
+document.addEventListener('paste', e => {
+  if (!insOpen()) return;
+  const items = Array.from(e.clipboardData ? e.clipboardData.items : []);
+  const img = items.find(i => i.type.indexOf('image') === 0);
+  if (img) { e.preventDefault(); setLogo(img.getAsFile()); }
+});
+
+['dragenter', 'dragover'].forEach(ev => ins.addEventListener(ev, e => {
+  if (!e.dataTransfer.types.includes('Files')) return;
+  e.preventDefault(); ins.classList.add('dragover');
+}));
+['dragleave', 'drop'].forEach(ev => ins.addEventListener(ev, () => ins.classList.remove('dragover')));
+ins.addEventListener('drop', e => {
+  const f = e.dataTransfer.files[0];
+  if (!f) return;
+  e.preventDefault();
+  if (/json$/i.test(f.name)) readJsonFile(f);
+  else if (/^image\//.test(f.type)) setLogo(f);
+});
+
+$('#btnPreviewHl').addEventListener('click', () => play({ skipEntrance: true }));
+$('#btnShowAll').addEventListener('click', () => { stop(); showFinal(); });
+$('#btnReTear').addEventListener('click', () => { st.tearSeed = Math.floor(Math.random() * 1e8); save(); applyTear(); });
+$('#btnReplay').addEventListener('click', () => play());
+$('#btnCloseIns').addEventListener('click', () => setIns(false));
+
+$('#btnSavePreset').addEventListener('click', savePreset);
+$('#presetName').addEventListener('keydown', e => { if (e.key === 'Enter') savePreset(); });
+$('#btnExport').addEventListener('click', () => {
+  download(slug(st.author || st.text.slice(0, 24)) + '.quotecard.json',
+    { type: 'quotecard', version: 1, card: { name: st.author || 'Card', ts: Date.now(), state: st } });
+});
+$('#btnExportAll').addEventListener('click', () => {
+  const cards = presets.map(p => ({ name: p.name, ts: p.ts, state: p.state }));
+  cards.unshift({ name: 'Current', ts: Date.now(), state: st });
+  download('quote-cards.json', { type: 'quotecard', version: 1, cards });
+});
+$('#btnImport').addEventListener('click', () => $('#importFile').click());
+$('#importFile').addEventListener('change', e => { if (e.target.files[0]) readJsonFile(e.target.files[0]); e.target.value = ''; });
+$('#btnCopyJson').addEventListener('click', () => {
+  const txt = JSON.stringify({ type: 'quotecard', version: 1, card: { name: st.author || 'Card', state: st } }, null, 2);
+  navigator.clipboard.writeText(txt).then(() => toast('Copied to the clipboard'), () => toast('Clipboard blocked by the browser', 'warn'));
+});
+$('#btnSample').addEventListener('click', () => {
+  const next = Object.assign({}, st, { text: SAMPLE_TEXT, author: 'Marcus Aurelius', authorSub: 'Meditations', highlights: [] });
+  const p = parseText(SAMPLE_TEXT);
+  next.highlights = seedHighlights(p.plain);
+  loadState(next, 'Sample quote loaded');
+});
+$('#btnReset').addEventListener('click', () => {
+  if (!confirm('Reset every setting, the quote and its highlights? Saved cards are kept.')) return;
+  const next = JSON.parse(JSON.stringify(DEFAULTS));
+  next.highlights = seedHighlights(parseText(DEFAULTS.text).plain);
+  loadState(next, 'Back to defaults');
+});
+
+stage.addEventListener('click', () => {
+  if (st.manual && st.clickAdvance && pendingAdvance) advance();
+});
+
+/* ---------- keyboard ---------- */
+const TEXT_INPUT = /^(text|number|search|email|url|password)$/;
+document.addEventListener('keydown', e => {
+  const t = e.target;
+  const tag = t ? t.tagName : '';
+  const typing = !!t && (t.isContentEditable || tag === 'TEXTAREA' ||
+    (tag === 'INPUT' && TEXT_INPUT.test(t.type)));
+  // toggles, sliders, buttons and selects keep their own Space/Enter behaviour
+  const formControl = !typing && (tag === 'BUTTON' || tag === 'SELECT' ||
+    (tag === 'INPUT' && !TEXT_INPUT.test(t.type)));
+  const mod = e.metaKey || e.ctrlKey;
+
+  if (typing) {
+    if (t === qi && mod && e.key.toLowerCase() === 'b') { e.preventDefault(); wrapSel('**'); }
+    else if (t === qi && mod && e.key.toLowerCase() === 'i') { e.preventDefault(); wrapSel('_'); }
+    else if (t === qi && mod && e.key === 'Enter') { e.preventDefault(); addSelection(); }
+    else if (mod && e.key.toLowerCase() === 'r') { e.preventDefault(); play(); }
+    else if (e.key === 'Escape') { t.blur(); }
+    return;
+  }
+  if (mod || e.altKey) return;
+  if (formControl && (e.key === ' ' || e.key === 'Enter')) return;
+
+  const k = e.key.toLowerCase();
+  if (k === 's') { e.preventDefault(); toggleIns(); }
+  else if (k === 'r') { e.preventDefault(); play(); }
+  else if (k === 'h') { e.preventDefault(); toggleHints(); }
+  else if (k === 'f') { e.preventDefault(); toggleFull(); }
+  else if (k === 'g') {
+    e.preventDefault();
+    setVal('bg', st.bg === 'green' ? 'black' : 'green');
+    toast(st.bg === 'green' ? 'Chroma green' : 'Black');
+  }
+  else if (k === 'escape') { setIns(false); }
+  else if (k === ' ') { e.preventDefault(); if (pendingAdvance) advance(); else play(); }
+  else if (/^[1-9]$/.test(k) && presets[parseInt(k, 10) - 1]) { e.preventDefault(); loadPreset(presets[parseInt(k, 10) - 1].id); }
+});
+
+/* ---------- cursor, resize ---------- */
+let idleTimer;
+document.addEventListener('mousemove', () => {
+  document.body.classList.remove('hide-cursor');
+  clearTimeout(idleTimer);
+  if (!insOpen()) idleTimer = setTimeout(() => document.body.classList.add('hide-cursor'), 2200);
+});
+
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const wasPlaying = playing;
+    fitType(); applyTear(); layoutHighlights();
+    if (!wasPlaying) showFinal();
+  }, 140);
+});
+
+/* ==========================================================================
+   Boot
+   ========================================================================== */
+function seedHighlights(plain) {
+  const out = [];
+  SAMPLE_HL.forEach(s => {
+    const i = plain.indexOf(s);
+    if (i >= 0) out.push({ id: uid(), start: i, end: i + s.length, text: s, color: null });
+  });
+  return out;
+}
+
+function init() {
+  const had = load();
+  if (!Array.isArray(st.highlights)) st.highlights = [];
+  if (!had) st.highlights = seedHighlights(parseText(st.text).plain);
+
+  bindAll();
+  parsed = parseText(st.text);
+  reconcile();
+  syncAll();
+  renderSelList();
+  renderPresets();
+  applyAll(true);
+
+  const start = () => {
+    applyAll(true);
+    if (st.autoplay) play(); else showFinal();
+  };
+  if (document.fonts && document.fonts.ready) {
+    Promise.race([document.fonts.ready, new Promise(r => setTimeout(r, 2200))]).then(start);
+  } else {
+    setTimeout(start, 120);
+  }
+}
+
+init();
+})();
+</script>
+</body>
+</html>
