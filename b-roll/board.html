@@ -157,8 +157,8 @@ body.transparent,body.transparent #stage{background:transparent}
 
 /* ---------- edit overlays ---------- */
 #edit{position:absolute;inset:0;z-index:4;pointer-events:none;display:none}
-body.editing:not(.recording) #edit{display:block}
-.eh{position:absolute;pointer-events:auto;cursor:move;outline:2px solid transparent;outline-offset:3px}
+body.editing #edit{display:block}
+.eh{position:absolute;pointer-events:auto;cursor:move;touch-action:none;outline:2px solid transparent;outline-offset:3px}
 .eh:hover{outline-color:rgba(255,255,255,.75)}
 .eh-n:hover{outline-color:rgba(255,236,120,.9)}
 .rs{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#fff;border:4px solid #1d1f26;pointer-events:auto;cursor:nwse-resize}
@@ -166,10 +166,6 @@ body.editing:not(.recording) #edit{display:block}
 .gv{width:2px;height:1080px;top:0;left:959px}
 .gh{height:2px;width:1920px;left:0;top:539px}
 
-#reclayer{position:fixed;inset:0;z-index:55;cursor:crosshair;display:none;touch-action:none}
-body.recording #reclayer{display:block}
-#recbadge{position:fixed;left:16px;top:16px;z-index:60;display:none;background:#d32f2f;color:#fff;padding:7px 12px;border-radius:20px;font:600 13px/1 system-ui,sans-serif}
-body.recording #recbadge{display:block}
 #drop{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(10,12,16,.6);color:#fff;font:600 28px system-ui,sans-serif;pointer-events:none}
 body.dragging #drop{display:flex}
 #toast{position:fixed;left:16px;bottom:16px;z-index:300;background:#1d1f26;color:#eceef3;padding:9px 14px;border-radius:8px;font:13px system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
@@ -177,7 +173,7 @@ body.dragging #drop{display:flex}
 
 /* ---------- settings panel ---------- */
 #panel{position:fixed;top:0;right:0;bottom:0;width:380px;background:#17181d;color:#e6e7eb;font:13px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-y:auto;z-index:100;box-shadow:-10px 0 30px rgba(0,0,0,.35);transition:transform .22s ease}
-body:not(.panel-open) #panel{transform:translateX(105%)}
+body:not(.panel-open) #panel{transform:translateX(calc(100% + 80px));visibility:hidden;box-shadow:none;transition:transform .22s ease,visibility 0s .22s,box-shadow 0s .22s}
 #panel header{position:sticky;top:0;z-index:3;background:#17181d;padding:14px 16px 10px;border-bottom:1px solid #2a2c34}
 #panel h1{font-size:15px;margin:0 0 6px;font-weight:650;letter-spacing:.01em}
 .keys{display:flex;flex-wrap:wrap;gap:4px 10px;color:#a3a6b0;font-size:12px}
@@ -202,8 +198,6 @@ kbd{display:inline-block;min-width:18px;text-align:center;padding:1px 5px;border
 #panel button{background:#262931;color:#e6e7eb;border:1px solid #363944;border-radius:6px;padding:6px 10px;font:inherit;cursor:pointer}
 #panel button:hover{background:#30343e}
 #panel button.pri{background:#4058e0;border-color:#4058e0}
-#panel button.rec{background:#b3261e;border-color:#b3261e}
-body.recording #panel button.rec{animation:pulse 1s infinite}
 @keyframes pulse{50%{opacity:.6}}
 .tb button{min-width:36px}
 .hint{color:#8a8d98;font-size:11.5px;margin:6px 0;line-height:1.45}
@@ -247,16 +241,24 @@ body.recording #panel button.rec{animation:pulse 1s infinite}
 .hlL{position:absolute;inset:0;pointer-events:none}
 .hseg{position:absolute;background-repeat:no-repeat;background-size:100% 100%}
 
+/* photo surface draws; the handlebar moves */
+.eh-p{cursor:crosshair}
+.eh-p.panning{cursor:grabbing}
+.grab{position:absolute;pointer-events:auto;display:grid;place-items:center;width:36px;height:36px;border-radius:50%;
+  background:#1d1f26;color:#e6e7eb;cursor:grab;touch-action:none;user-select:none;
+  box-shadow:0 4px 14px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.14)}
+.grab:hover{background:#2a2d36}
+.grab:active,.grab.dragging{cursor:grabbing;background:#4058e0}
+#panel button.armed{background:#b3261e;border-color:#b3261e;color:#fff}
+
 </style>
 </head>
 <body class="panel-open editing">
 <div id="viewport"><div id="stage">
   <div id="grp"></div>
   <svg id="conn" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
-  <div id="edit"><div class="eh eh-p" title="Drag to move · Shift+drag to pan crop · scroll to zoom"></div><div class="eh eh-n" title="Drag to offset the note · scroll to change font size"></div><div class="rs" title="Drag to resize"></div><div class="guide gv"></div><div class="guide gh"></div></div>
+  <div id="edit"><div class="eh eh-p" title="Swipe to draw with the selected tool · Shift+drag to pan the crop · scroll to zoom"></div><div class="grab" title="Drag to move the photo and note" aria-label="Move photo and note"><svg viewBox="0 0 24 24" width="18" height="18"><g fill="currentColor"><circle cx="8" cy="6" r="1.9"/><circle cx="16" cy="6" r="1.9"/><circle cx="8" cy="12" r="1.9"/><circle cx="16" cy="12" r="1.9"/><circle cx="8" cy="18" r="1.9"/><circle cx="16" cy="18" r="1.9"/></g></svg></div><div class="eh eh-n" title="Drag to offset the note · scroll to change font size"></div><div class="rs" title="Drag to resize"></div><div class="guide gv"></div><div class="guide gh"></div></div>
 </div></div>
-<div id="reclayer"></div>
-<div id="recbadge">● Recording — draw on the photo · Esc to stop</div>
 <div id="drop">Drop image to replace the photo</div>
 <aside id="panel" aria-label="Settings"></aside>
 <input type="file" id="fileimg" accept="image/*" hidden>
@@ -734,7 +736,7 @@ const DEFAULTS = {
       highlighter: { color: '#ffe600', width: 4.5, opacity: .75, blend: 'hard-light', smooth: 6, speed: 1 },
       pen: { color: '#e53935', width: .9, opacity: 1, blend: 'normal', smooth: 4, speed: 1 },
       arrow: { color: '#e53935', width: .9, opacity: 1, blend: 'normal', smooth: 5, speed: 1 } } },
-  anim: { speed: 1, idle: true, idleAmp: 1, idleSpeed: 1 },
+  anim: { speed: 1, lead: 500, idle: true, idleAmp: 1, idleSpeed: 1 },
   out: { bg: '#00b140', transparent: false, shadow: 'soft' },
   hls: null,
   panelOpen: true
@@ -905,7 +907,7 @@ function splitText(root, mode) {
 
 /* ================= DOM refs ================= */
 const STAGE = $('#stage'), GRP = $('#grp'), CONNSVG = $('#conn');
-const EH_P = $('.eh-p'), EH_N = $('.eh-n'), RS = $('.rs'), GV = $('.gv'), GH = $('.gh');
+const EH_P = $('.eh-p'), EH_N = $('.eh-n'), RS = $('.rs'), GV = $('.gv'), GH = $('.gh'), GRAB = $('.grab');
 let REF = {}, RV = {}, GEO = null, CONN = null, RUN = null, COMPILED = [], REC = null;
 let IMG = { url: PLACEHOLDER, w: 1200, h: 900, obj: null };
 let SCALE = 1;
@@ -978,7 +980,7 @@ function layout() {
   [REF.nentry, REF.ntilt, REF.nbody, REF.nidle].forEach(e => e.style.transformOrigin = no);
   const nt = (RV.nt || 0) + (+P.noteRot || 0);
   REF.ntilt.style.transform = `rotate(${nt}deg)`;
-  GEO = { W, H, imgW, imgH, gx, gy, pv, pt, nw, nh, nx, ny, npv, nt, fs };
+  GEO = { W, H, imgW, imgH, imgX: l * W + bd, imgY: t * W + bd, gx, gy, pv, pt, nw, nh, nx, ny, npv, nt, fs };
   crop(); sizeCanvases(); updateConn(); editUI();
   const key = [nw, fs, P.font, P.textAlign, P.noteRot].join('|');   // text re-wrapped: re-measure highlight boxes
   if (LASTKEY && key !== LASTKEY && REF.text.querySelector('.hlL') && typeof rebuildSoon === 'function') rebuildSoon();
@@ -1023,6 +1025,8 @@ function bbox() {
 function editUI() {
   const g = GEO, set = (el, x, y, w, h) => { const s = el.style; s.left = x + 'px'; s.top = y + 'px'; if (w != null) { s.width = w + 'px'; s.height = h + 'px'; } };
   set(EH_P, g.gx, g.gy, g.W, g.H); set(EH_N, g.gx + g.nx, g.gy + g.ny, g.nw, g.nh); set(RS, g.gx + g.W, g.gy + g.H);
+  const tr = toStage(g.imgX + g.imgW, g.imgY);   // centered exactly on the picture's top-right corner (follows its tilt)
+  set(GRAB, tr.x - 18, tr.y - 18);
 }
 
 /* ================= connectors ================= */
@@ -1119,12 +1123,12 @@ function ratioLabel() {
 /* ================= playback ================= */
 function offsets(x, y, w, h) { return { l: -(x + w + 80), r: SW - x + 80, t: -(y + h + 80), b: SH - y + 80 }; }
 function makeCtx(instant) {
-  const sp = Math.max(.1, +S.anim.speed || 1), anims = [];
-  let end = 0;
-  const c = { instant, anims, A: +S.anim.idleAmp, P: eff(), V: RV, G: GEO, idleQ: [] };
+  const sp = Math.max(.1, +S.anim.speed || 1), anims = [], lead = instant ? 0 : Math.max(0, +S.anim.lead || 0);
+  let end = lead;
+  const c = { instant, anims, lead, A: +S.anim.idleAmp, P: eff(), V: RV, G: GEO, idleQ: [] };
   c.a = (el, kf, start, dur, easing = 'linear') => {
     if (!el) return null;
-    const d = start / sp, du = Math.max(1, dur / sp);
+    const d = lead + start / sp, du = Math.max(1, dur / sp);
     const an = el.animate(kf, { delay: d, duration: du, easing, fill: 'both' });
     anims.push(an); end = Math.max(end, d + du); return an;
   };
@@ -1139,17 +1143,20 @@ function makeCtx(instant) {
   return c;
 }
 
+let PLAYTOKEN = 0;
 function play(instant = false) {
   for (const a of document.getAnimations()) if (STAGE.contains(a.effect?.target)) a.cancel();
-  if (IMG.gif && IMG.blob && !instant) {   // fresh URL restarts an animated GIF from frame 1
-    const old = IMG.url; IMG.url = IMG.obj = URL.createObjectURL(IMG.blob); setTimeout(() => URL.revokeObjectURL(old), 1500);
-  }
   build(); layout();
-  const st = STY(), c = makeCtx(instant);
+  const st = STY(), c = makeCtx(instant), token = ++PLAYTOKEN;
+  if (c.lead) [GRP, CONNSVG].forEach(el => c.anims.push(el.animate([{ visibility: 'hidden' }, { visibility: 'hidden' }], { duration: c.lead })));   // pure background first
+  if (IMG.gif && IMG.blob && !instant) setTimeout(() => {   // fresh URL restarts an animated GIF from frame 1, timed to the reveal
+    if (token !== PLAYTOKEN) return;
+    const old = IMG.url; IMG.url = IMG.obj = URL.createObjectURL(IMG.blob); REF.img.src = IMG.url; setTimeout(() => URL.revokeObjectURL(old), 1500);
+  }, c.lead);
   st.entry(c);
   const revEnd = reveal(c, st);
   if (revEnd) layout();               // splitting text can nudge line metrics
-  if (c.after) c.after(revEnd * (+S.anim.speed || 1));
+  if (c.after) c.after((revEnd - c.lead) * (+S.anim.speed || 1));
   connAnims(c);
   const entryEnd = c.end();
   // idle loops
@@ -1382,7 +1389,7 @@ function compileStrokes() {
     const tool = S.marks.tools[s.tool] ? s.tool : 'pen', T = S.marks.tools[tool];
     const t0 = s.pts[0][2], t1 = s.pts.at(-1)[2];
     if (prevEnd != null) cur += Math.min(Math.max(t0 - prevEnd, 0), maxGap);
-    const g = smoothPts(s.pts, asp, +T.smooth || 0);
+    const g = tool === 'highlighter' ? smoothPts([s.pts[0], s.pts.at(-1)], asp, 0) : smoothPts(s.pts, asp, +T.smooth || 0);
     const dur = Math.max(120, (t1 - t0) / Math.max(.05, +T.speed || 1));
     out.push({ tool, ...g, start: cur, end: cur + dur });
     cur += dur; prevEnd = t1;
@@ -1457,21 +1464,6 @@ function toImg(X, Y) {
   const det = ex.x * ey.y - ex.y * ey.x || 1, dx = X - p0.left, dy = Y - p0.top;
   return [+((dx * ey.y - dy * ey.x) / det).toFixed(4), +((ex.x * dy - ex.y * dx) / det).toFixed(4)];
 }
-function startRec(append) {
-  play(true);
-  const last = S.marks.strokes.at(-1)?.pts.at(-1)?.[2];
-  if (!append) S.marks.strokes = [];
-  REC = { base: append && last != null ? last + 400 : 0, t0: null, cur: null };
-  document.body.classList.add('recording');
-  COMPILED = compileStrokes(); drawStrokes(Infinity); syncPanel();
-}
-function stopRec() {
-  if (!REC) return;
-  REC = null; document.body.classList.remove('recording');
-  save(); recompileStrokes(); syncPanel();
-  RUN.strokesDone = true; drawStrokes(Infinity);
-  toast(`${S.marks.strokes.length} stroke${S.marks.strokes.length === 1 ? '' : 's'} saved — press R to watch the replay`);
-}
 
 /* ================= panel markup ================= */
 const PANEL = $('#panel');
@@ -1526,10 +1518,10 @@ PANEL.innerHTML = `<header><h1>B-Roll Board</h1>
     RNG('Marker bleed', 'hl.bleed', 0, 100, 1, 'rebuild') + RNG('Marker thickness %', 'hl.thick', 30, 150, 1, 'rebuild') +
     RNG('Marker opacity', 'hl.opacity', .2, 1, .01, 'rebuild') + RNG('Marker roundness', 'hl.round', 0, 100, 1, 'rebuild') +
     `<div class="hint">Bleed softens and feathers the ink edges. These apply to the marker and watercolor styles.</div>` + RNG('Delay after entry', 'hl.delay', 0, 5000, 10, 'none') + RNG('Sweep ms', 'hl.dur', 100, 4000, 10, 'none') + RNG('Stagger ms', 'hl.stagger', 0, 4000, 10, 'none')) +
-  SEC('Image marks', `<div class="btns">${BTN('● Record new take', 'rec', 'rec')}${BTN('+ Add strokes', 'recadd')}${BTN('Stop', 'stop')}</div>
-    <div class="btns">${BTN('Undo stroke', 'undo')}${BTN('Clear all', 'clearmarks')}${BTN('Preview', 'replay')}</div>` +
+  SEC('Image marks', `<div class="hint">Swipe across the photo to draw with the selected tool. Strokes are added in order and replay after the entry animation. Ctrl+Z removes the last one.</div>
+    <div class="btns">${BTN('Clear strokes', 'clearmarks')}</div>` +
     SEL('Tool', 'marks.tool', [['highlighter', 'Highlighter'], ['pen', 'Pen'], ['arrow', 'Arrow']], 'toolsel') +
-    `<div class="hint">The settings below belong to the selected tool and apply to all of its strokes, instantly.</div>` +
+    `<div class="hint" id="toolhint"></div>` +
     `<label class="row full"><span>Color</span><input type="color" data-m="color" data-u="tool"></label>` +
     `<label class="row"><span>Width % of photo</span><input type="range" min="0.2" max="12" step="0.1" data-m="width" data-u="tool"><input type="number" min="0.2" max="12" step="0.1" data-m="width" data-u="tool" aria-label="Width % of photo"></label>` +
     `<label class="row"><span>Opacity</span><input type="range" min="0.05" max="1" step="0.01" data-m="opacity" data-u="tool"><input type="number" min="0.05" max="1" step="0.01" data-m="opacity" data-u="tool" aria-label="Opacity"></label>` +
@@ -1537,10 +1529,11 @@ PANEL.innerHTML = `<header><h1>B-Roll Board</h1>
     `<label class="row"><span>Smoothing</span><input type="range" min="0" max="10" step="0.1" data-m="smooth" data-u="tool"><input type="number" min="0" max="10" step="0.1" data-m="smooth" data-u="tool" aria-label="Smoothing"></label>` +
     `<label class="row"><span>Draw speed</span><input type="range" min="0.1" max="5" step="0.05" data-m="speed" data-u="tool"><input type="number" min="0.1" max="5" step="0.05" data-m="speed" data-u="tool" aria-label="Draw speed"></label>` +
     RNG('Delay after entry', 'marks.delay', 0, 10000, 10, 'none') + RNG('Max pause ms', 'marks.maxGap', 0, 5000, 10, 'marks') +
-    `<div class="hint" id="markinfo"></div><div class="hint">Draw on the photo while recording; timing is captured and replayed after the entry animation. Esc stops.</div>`) +
+    `<div class="hint" id="markinfo"></div>`) +
   SEC('Connector', CHK('Show', 'showConn', 'rebuild', 'p') + COL('Color', 'connColor', 'rebuild', 'p') +
     `<div class="hint">The string, wire, arrow or dimension lines, depending on the style.</div>`, false) +
-  SEC('Animation', RNG('Entry speed', 'anim.speed', .25, 3, .05, 'none') + CHK('Idle loop', 'anim.idle', 'rebuild') +
+  SEC('Animation', RNG('Blank lead-in ms', 'anim.lead', 0, 3000, 10, 'none') +
+    `<div class="hint">Background only for this long after each replay, before anything appears.</div>` + RNG('Entry speed', 'anim.speed', .25, 3, .05, 'none') + CHK('Idle loop', 'anim.idle', 'rebuild') +
     RNG('Idle intensity', 'anim.idleAmp', 0, 3, .05, 'rebuild') + RNG('Idle speed', 'anim.idleSpeed', .25, 3, .05, 'rebuild')) +
   SEC('Output', COL('Background', 'out.bg', 'output') + CHK('Transparent bg', 'out.transparent', 'output') +
     SEL('Shadows', 'out.shadow', [['soft', 'Soft (realistic)'], ['hard', 'Hard (no blur)'], ['off', 'Off (cleanest key)']], 'rebuild') +
@@ -1562,9 +1555,11 @@ function syncPanel() {
   $$('[data-g]', PANEL).forEach(el => setInput(el, getPath(S, el.dataset.g)));
   $$('[data-p]', PANEL).forEach(el => setInput(el, P[el.dataset.p]));
   $$('[data-m]', PANEL).forEach(el => setInput(el, tool[el.dataset.m]));
+  $$('[data-m="smooth"]', PANEL).forEach(el => el.closest('.row').style.display = S.marks.tool === 'highlighter' ? 'none' : '');
+  $('#toolhint').textContent = S.marks.tool === 'highlighter' ? 'Highlighter: press where the text starts and release where it ends. Lines within 6° snap level; hold Alt for any angle.' : 'The settings below belong to the selected tool and apply to all of its strokes, instantly.';
   setInput(TA, S.text); renderHlList();
   const n = S.marks.strokes.length, dur = COMPILED.length ? COMPILED.at(-1).end / 1000 : 0;
-  $('#markinfo').textContent = REC ? 'Recording — draw on the photo.' : n ? `${n} stroke${n > 1 ? 's' : ''}, ${dur.toFixed(1)} s playback.` : 'No marks recorded yet.';
+  $('#markinfo').textContent = n ? `${n} stroke${n > 1 ? 's' : ''}, ${dur.toFixed(1)} s playback.` : 'No strokes yet.';
 }
 let rebuildT = 0;
 const rebuildSoon = () => { clearTimeout(rebuildT); rebuildT = setTimeout(() => play(true), 120); };
@@ -1600,6 +1595,13 @@ function applyOutput() {
 function cycle(dir) { const i = STYLE_IDS.indexOf(S.style); S.style = STYLE_IDS[(i + dir + STYLE_IDS.length) % STYLE_IDS.length]; play(false); syncPanel(); save(); toast(STY().name); }
 function centerH() { const b = bbox(); S.gx += 960 - (b.l + b.r) / 2; }
 function centerV() { const b = bbox(); S.gy += 540 - (b.t + b.b) / 2; }
+/* two-click confirmation inside the panel (browser confirm() popups are silently blocked in some embeds) */
+function armed(btn, fn) {
+  if (!btn) return fn();
+  if (btn.classList.contains('armed')) { clearTimeout(btn._armT); btn.classList.remove('armed'); btn.textContent = btn._label; fn(); return; }
+  btn._label = btn.textContent; btn.classList.add('armed'); btn.textContent = 'Click again to confirm';
+  btn._armT = setTimeout(() => { btn.classList.remove('armed'); btn.textContent = btn._label; }, 3000);
+}
 const ACT = {
   prev: () => cycle(-1), next: () => cycle(1), replay: () => play(false),
   reroll: () => { S.seed = Math.floor(Math.random() * 99998) + 1; play(false); syncPanel(); save(); },
@@ -1608,11 +1610,13 @@ const ACT = {
   l3: () => { S.gx = Math.round(SW / 3); layout(); syncPanel(); save(); }, r3: () => { S.gx = Math.round(SW * 2 / 3); layout(); syncPanel(); save(); },
   pick: () => $('#fileimg').click(),
   rmimg: async () => { try { await DB.del('image'); } catch (e) { } IMG = { url: PLACEHOLDER, w: 1200, h: 900, obj: null }; play(false); toast('Placeholder image restored'); },
-  rec: () => startRec(false), recadd: () => startRec(true), stop: () => stopRec(),
-  undo: () => { S.marks.strokes.pop(); save(); recompileStrokes(); if (RUN) RUN.strokesDone = true; redrawStrokesNow(); syncPanel(); },
-  clearmarks: () => { if (!S.marks.strokes.length || confirm('Delete all recorded image marks?')) { S.marks.strokes = []; save(); recompileStrokes(); syncPanel(); } },
+  undo: () => { if (!S.marks.strokes.length) return; S.marks.strokes.pop(); save(); recompileStrokes(); if (RUN) RUN.strokesDone = true; redrawStrokesNow(); syncPanel(); },
+  clearmarks: b => {
+    if (!S.marks.strokes.length) { toast('There are no strokes to clear'); return; }
+    S.marks.strokes = []; LAST_STROKE_END = null; save(); recompileStrokes(); drawStrokes(Infinity); syncPanel(); toast('Strokes cleared');
+  },
   export: exportJSON, import: () => $('#filejson').click(),
-  reset: () => { if (confirm('Reset every setting to defaults? Your image stays.')) { S = clone(DEFAULTS); migrateHls(); save(); applyOutput(); play(false); syncPanel(); fit(); } }
+  reset: b => armed(b, () => { S = clone(DEFAULTS); migrateHls(); save(); applyOutput(); play(false); syncPanel(); fit(); toast('Settings reset'); })
 };
 PANEL.addEventListener('click', e => {
   const ha = e.target.closest('[data-hact]'), hs = e.target.closest('[data-hsel]');
@@ -1622,7 +1626,7 @@ PANEL.addEventListener('click', e => {
   e.preventDefault();
   const a = b.dataset.act;
   if (a.startsWith('w:')) { TA.focus(); toggleWrap(TA, a.slice(2)); return; }
-  ACT[a] && ACT[a]();
+  ACT[a] && ACT[a](b);
 });
 
 /* markdown toggles in the textarea */
@@ -1723,13 +1727,14 @@ ACT.hlbold = () => {
   hlChanged(); toast(`Added ${add.length} highlight${add.length > 1 ? 's' : ''} from bold text`);
 };
 ACT.hlsort = () => { S.hls.sort((a, b) => a.s - b.s); hlChanged(); };
-ACT.hlclear = () => { if (S.hls.length && confirm(`Remove all ${S.hls.length} highlights?`)) { S.hls = []; hlChanged(); } };
+ACT.hlclear = b => { if (S.hls.length) armed(b, () => { S.hls = []; hlChanged(); }); };
 
 /* ================= keyboard ================= */
 const isTyping = t => t && t.closest && t.closest('textarea,select,input[type=text],input[type=number],[contenteditable]');
 window.addEventListener('keydown', e => {
-  if (e.key === 'Escape' && REC) { stopRec(); return; }
-  if (isTyping(e.target) || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (isTyping(e.target)) return;
+  if ((e.ctrlKey || e.metaKey) && !e.shiftKey && e.key.toLowerCase() === 'z' && S.panelOpen) { e.preventDefault(); ACT.undo(); toast('Last stroke removed'); return; }
+  if (e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key.toLowerCase();
   if (k === 'r') { e.preventDefault(); play(false); }
   else if (k === 'f') { e.preventDefault(); document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
@@ -1767,23 +1772,19 @@ function dragger(el, onStart, onMove) {
     el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up);
   });
 }
-dragger(EH_P, e => ({ gx: S.gx, gy: S.gy, px: S.img.panX, py: S.img.panY, pan: e.shiftKey }), (dx, dy, ev, st) => {
-  if (st.pan) {
-    const ex = GEO.imgW - GEO.dw, ey = GEO.imgH - GEO.dh;
-    if (ex < -.5) S.img.panX = clamp(st.px + dx / ex * 100, 0, 100);
-    if (ey < -.5) S.img.panY = clamp(st.py + dy / ey * 100, 0, 100);
-  } else {
-    let x = st.gx + dx, y = st.gy + dy, sv = false, sh = false;
-    if (!ev.altKey) {
-      const b = bbox(), cx = (b.l + b.r) / 2 + (x - S.gx), cy = (b.t + b.b) / 2 + (y - S.gy);
-      if (Math.abs(cx - 960) < 12) { x += 960 - cx; sv = true; }
-      if (Math.abs(cy - 540) < 12) { y += 540 - cy; sh = true; }
-    }
-    S.gx = Math.round(x); S.gy = Math.round(y);
-    GV.style.display = sv ? 'block' : 'none'; GH.style.display = sh ? 'block' : 'none';
+dragger(GRAB, () => { GRAB.classList.add('dragging'); return { gx: S.gx, gy: S.gy }; }, (dx, dy, ev, st) => {
+  let x = st.gx + dx, y = st.gy + dy, sv = false, sh = false;
+  if (!ev.altKey) {
+    const b = bbox(), cx = (b.l + b.r) / 2 + (x - S.gx), cy = (b.t + b.b) / 2 + (y - S.gy);
+    if (Math.abs(cx - 960) < 12) { x += 960 - cx; sv = true; }
+    if (Math.abs(cy - 540) < 12) { y += 540 - cy; sh = true; }
   }
+  S.gx = Math.round(x); S.gy = Math.round(y);
+  GV.style.display = sv ? 'block' : 'none'; GH.style.display = sh ? 'block' : 'none';
   layout();
 });
+GRAB.addEventListener('pointerup', () => GRAB.classList.remove('dragging'));
+GRAB.addEventListener('pointercancel', () => GRAB.classList.remove('dragging'));
 dragger(RS, () => ({ gw: S.gw }), (dx, dy, ev, st) => { S.gw = Math.round(clamp(st.gw + dx * 2, 160, 1600)); layout(); });
 dragger(EH_N, () => { const P = eff(); return { x: +P.noteX, y: +P.noteY }; }, (dx, dy, ev, st) => {
   const per = S.per[S.style] ??= {};
@@ -1793,28 +1794,61 @@ dragger(EH_N, () => { const P = eff(); return { x: +P.noteX, y: +P.noteY }; }, (
 EH_P.addEventListener('wheel', e => { e.preventDefault(); S.img.zoom = +clamp(S.img.zoom * Math.exp(-e.deltaY * .0015), 1, 5).toFixed(3); layout(); syncPanel(); saveSoon(); }, { passive: false });
 EH_N.addEventListener('wheel', e => { e.preventDefault(); const per = S.per[S.style] ??= {}; per.fontSize = clamp(Math.round(+eff().fontSize - Math.sign(e.deltaY)), 10, 96); layout(); syncPanel(); saveSoon(); }, { passive: false });
 
-/* ================= recording input ================= */
-const RECL = $('#reclayer');
-RECL.addEventListener('pointerdown', e => {
-  if (!REC || e.button !== 0) return;
-  RECL.setPointerCapture(e.pointerId);
-  const now = performance.now(); if (REC.t0 == null) REC.t0 = now;
-  const tool = S.marks.tool, [u, v] = toImg(e.clientX, e.clientY);
-  REC.cur = { tool, pts: [[u, v, Math.round(REC.base + now - REC.t0)]] };
+/* ================= drawing on the photo ================= */
+let PAN = null, LAST_STROKE_END = null, HELD = [];
+// hold only what is actually moving (idle loops); finished entry animations must not be touched or they'd restart
+const holdMotion = () => { HELD = document.getAnimations().filter(a => STAGE.contains(a.effect?.target) && a.playState === 'running'); HELD.forEach(a => a.pause()); };
+const releaseMotion = () => { HELD.forEach(a => { if (a.playState === 'paused') a.play(); }); HELD = []; };
+EH_P.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  e.preventDefault(); EH_P.setPointerCapture(e.pointerId);
+  if (e.shiftKey) {   // pan the crop
+    PAN = { sx: e.clientX, sy: e.clientY, px: S.img.panX, py: S.img.panY }; EH_P.classList.add('panning'); return;
+  }
+  // settle the scene first so you draw on the final layout, and hold idle motion still while drawing
+  const busy = RUN && (performance.now() - RUN.t0 < RUN.idleStart || !RUN.strokesDone);
+  if (busy) { play(true); RUN.strokesDone = true; }
+  holdMotion();
+  const [u, v] = toImg(e.clientX, e.clientY);
+  if (u < 0 || u > 1 || v < 0 || v > 1) { releaseMotion(); return; }   // on the frame, not the picture
+  const now = performance.now(), prev = S.marks.strokes.at(-1)?.pts.at(-1)?.[2];
+  const gap = LAST_STROKE_END != null ? now - LAST_STROKE_END : 400;
+  REC = { t0: now, base: prev != null ? prev + gap : 0 };
+  REC.cur = { tool: S.marks.tool, pts: [[u, v, Math.round(REC.base)]] };
   S.marks.strokes.push(REC.cur); COMPILED = compileStrokes(); drawStrokes(Infinity);
 });
-RECL.addEventListener('pointermove', e => {
+EH_P.addEventListener('pointermove', e => {
+  if (PAN) {
+    const dx = (e.clientX - PAN.sx) / SCALE, dy = (e.clientY - PAN.sy) / SCALE, ex = GEO.imgW - GEO.dw, ey = GEO.imgH - GEO.dh;
+    if (ex < -.5) S.img.panX = clamp(PAN.px + dx / ex * 100, 0, 100);
+    if (ey < -.5) S.img.panY = clamp(PAN.py + dy / ey * 100, 0, 100);
+    layout(); return;
+  }
   if (!REC || !REC.cur) return;
-  const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
-  for (const ev of (evs.length ? evs : [e])) {
-    const [u, v] = toImg(ev.clientX, ev.clientY), last = REC.cur.pts.at(-1);
-    if (Math.hypot(u - last[0], v - last[1]) < .0008) continue;
-    REC.cur.pts.push([u, v, Math.round(REC.base + (ev.timeStamp || performance.now()) - REC.t0)]);
+  const T = t => Math.round(REC.base + t - REC.t0);
+  if (REC.cur.tool === 'highlighter') {   // straight line: start point + live end point
+    let [u, v] = toImg(e.clientX, e.clientY);
+    const s0 = REC.cur.pts[0], asp = GEO.imgW / GEO.imgH, ang = Math.abs(Math.atan2(v - s0[1], (u - s0[0]) * asp)) * 180 / Math.PI;
+    if (!e.altKey && (ang < 6 || ang > 174)) v = s0[1];   // snap level, like a line of text
+    REC.cur.pts[1] = [u, v, T(performance.now())];
+  } else {
+    const evs = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
+    for (const ev of (evs.length ? evs : [e])) {
+      const [u, v] = toImg(ev.clientX, ev.clientY), last = REC.cur.pts.at(-1);
+      if (Math.hypot(u - last[0], v - last[1]) < .0008) continue;
+      REC.cur.pts.push([u, v, T(ev.timeStamp || performance.now())]);
+    }
   }
   COMPILED = compileStrokes(); drawStrokes(Infinity);
 });
-const endStroke = () => { if (REC && REC.cur) { REC.cur = null; saveSoon(); syncPanel(); } };
-RECL.addEventListener('pointerup', endStroke); RECL.addEventListener('pointercancel', endStroke);
+function endPointer() {
+  if (PAN) { PAN = null; EH_P.classList.remove('panning'); save(); syncPanel(); return; }
+  if (!REC) return;
+  REC = null; LAST_STROKE_END = performance.now();
+  releaseMotion();
+  save(); recompileStrokes(); if (RUN) RUN.strokesDone = true; drawStrokes(Infinity); syncPanel();
+}
+EH_P.addEventListener('pointerup', endPointer); EH_P.addEventListener('pointercancel', endPointer);
 
 /* ================= image input ================= */
 /* detect the real format from the file's first bytes: files often arrive with a missing or wrong MIME type */
