@@ -20,6 +20,7 @@
   --font:"Segoe UI Variable Text","Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
 }
 *{box-sizing:border-box}
+.src-video{position:fixed;left:0;top:0;width:2px;height:2px;opacity:0;pointer-events:none}
 body.booting #empty, body.booting #panel, body.booting #toast, body.booting #overlay{display:none !important}
 [hidden]{display:none !important}
 html,body{margin:0;height:100%;overflow:hidden;background:var(--key);font-family:var(--font);color:var(--ink)}
@@ -121,10 +122,10 @@ body.panel-min .keys{display:none}
 
 <div id="empty">
   <div class="sheet">
-    <h1>Paste a screenshot to start</h1>
-    <p>Grab part of your screen with any screenshot tool, then press <kbd>Ctrl</kbd> + <kbd>V</kbd> here. You can also drop an image file onto this page.</p>
+    <h1>Paste a screenshot or drop a video</h1>
+    <p>Grab part of your screen with any screenshot tool, then press <kbd>Ctrl</kbd> + <kbd>V</kbd> here. You can also drop an image or video file onto this page. Videos play muted and loop forever.</p>
     <p>Crop it, pixelate private details, record highlights and boxes, then press <kbd>S</kbd> to play the whole sequence for OBS.</p>
-    <button class="primary" id="openFile2">Choose an image file</button>
+    <button class="primary" id="openFile2">Choose an image or video</button>
   </div>
 </div>
 
@@ -319,12 +320,12 @@ body.panel-min .keys{display:none}
       <summary>Project</summary>
       <div class="body">
         <div class="btns">
-          <button id="btnOpen">Open image…</button>
+          <button id="btnOpen">Open image or video…</button>
           <button id="btnExport">Export project</button>
           <button id="btnImport">Import project</button>
           <button class="danger" id="btnReset">Start over</button>
         </div>
-        <input type="file" id="fileImg" accept="image/*" hidden>
+        <input type="file" id="fileImg" accept="image/*,video/*" hidden>
         <input type="file" id="fileProj" accept=".json,application/json" hidden>
       </div>
     </details>
@@ -1889,6 +1890,11 @@ function loop(now) {
   requestAnimationFrame(loop);
   if (!S.ready) return;
   if (S.image && S.L) {
+    if (isVideo(S.image)) {
+      kickVideo(false);
+      const vt = S.image.currentTime;
+      if (vt !== S.vt && S.image.readyState >= 2) { S.vt = vt; S.dirtyBase = true; }
+    }
     if (S.dirtyBase) rebuildBase();
     buildRollers();
     const t = S.freezeT != null ? S.freezeT : (now - S.seqStart) / 1000;
@@ -2277,6 +2283,7 @@ function restartPage() {
   if (S.drag) { S.drag = null; S.drawing = null; }
   $('#toast').classList.remove('show');
   S.clock0 = performance.now();
+  if (isVideo(S.image)) { S.image.currentTime = 0; S.vt = -1; kickVideo(true); }
   play(0);
 }
 function previewEntrance() {
@@ -2321,15 +2328,61 @@ async function toggleFullscreen() {
 // ======================================================================
 // image input
 // ======================================================================
+// ---------- media: still images or looping videos ----------
+const VIDEO_EXT = /\.(mp4|m4v|webm|mov|mkv|ogv|ogg|avi|3gp)$/i;
+function isVideoBlob(b, hint) { return !!hint || (b.type || '').startsWith('video/') || VIDEO_EXT.test(b.name || ''); }
+// Videos are muted (so the browser lets them autoplay), loop forever and start at once.
+// No codec checks: if the browser can't decode the file, loading simply resolves to null.
+function loadMedia(blob, hint) {
+  if (!isVideoBlob(blob, hint)) return createImageBitmap(blob).catch(() => null);
+  return new Promise(res => {
+    const v = document.createElement('video');
+    v.muted = true; v.defaultMuted = true; v.loop = true; v.playsInline = true; v.preload = 'auto';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.className = 'src-video';
+    const url = URL.createObjectURL(blob);
+    v.addEventListener('loadeddata', () => {
+      if (!v.videoWidth || !v.videoHeight) { releaseMedia(v); res(null); return; }
+      v.width = v.videoWidth; v.height = v.videoHeight;
+      v.play().catch(() => {});
+      res(v);
+    }, { once: true });
+    v.addEventListener('error', () => { releaseMedia(v); res(null); }, { once: true });
+    v.src = url;
+    document.body.appendChild(v);
+  });
+}
+function isVideo(m) { return !!m && m.tagName === 'VIDEO'; }
+function releaseMedia(m) {
+  if (!m) return;
+  if (isVideo(m)) {
+    m.pause();
+    if (m.src.startsWith('blob:')) URL.revokeObjectURL(m.src);
+    m.removeAttribute('src'); m.load(); m.remove();
+  } else if (m.close) m.close();
+}
+// keep the video running; browsers can block or pause playback until the page is interacted with
+function kickVideo(force) {
+  const v = S.image;
+  if (!isVideo(v) || !v.paused) return;
+  const now = performance.now();
+  if (!force && now - (S.vKick || 0) < 1000) return;
+  S.vKick = now;
+  v.play().catch(() => {});
+}
+window.addEventListener('pointerdown', () => kickVideo(true), true);
+window.addEventListener('keydown', () => kickVideo(true), true);
+
 async function setImage(blob) {
-  let bmp;
-  try { bmp = await createImageBitmap(blob); }
-  catch (e) { toast('That file is not an image this browser can read'); return; }
+  const vid = isVideoBlob(blob);
+  const bmp = await loadMedia(blob);
+  if (!bmp) { if (!vid) toast('That file is not an image this browser can read'); return; }
   const p = P();
-  if ((p.annotations.length || p.pixel.length) && !confirm('Replace the screenshot? Strokes, boxes and pixelated areas will be removed.')) return;
-  S.image = bmp; S.imageBlob = blob;
+  if ((p.annotations.length || p.pixel.length) && !confirm('Replace the current media? Strokes, boxes and pixelated areas will be removed.')) { releaseMedia(bmp); return; }
+  if (S.image !== bmp) releaseMedia(S.image);
+  S.image = bmp; S.imageBlob = blob; S.vt = -1;
   try { await idbSet('image', blob); } catch (e) { toast('Could not store the image: ' + e.message); }
-  p.img = { w: bmp.width, h: bmp.height };
+  p.img = { w: bmp.width, h: bmp.height, video: vid };
   p.crop = { x: 0, y: 0, w: bmp.width, h: bmp.height };
   p.annotations = []; p.pixel = [];
   p.layout.offX = 0; p.layout.offY = 0; p.layout.scale = 1;
@@ -2337,12 +2390,12 @@ async function setImage(blob) {
   lenCache.clear();
   stop();
   changed('all'); syncUI(); saveNow();
-  toast(`Screenshot added: ${bmp.width} × ${bmp.height} px`);
+  toast(`${vid ? 'Video' : 'Screenshot'} added: ${bmp.width} × ${bmp.height} px`);
 }
 window.addEventListener('paste', e => {
   if (S.uiHidden) return;
   const items = e.clipboardData ? Array.from(e.clipboardData.items) : [];
-  const it = items.find(i => i.type.startsWith('image/'));
+  const it = items.find(i => i.type.startsWith('image/') || i.type.startsWith('video/'));
   if (it) { e.preventDefault(); setImage(it.getAsFile()); }
   else if (!(e.target instanceof HTMLInputElement)) toast('The clipboard has no image. Copy a screenshot first.');
 });
@@ -2350,7 +2403,7 @@ window.addEventListener('dragover', e => { e.preventDefault(); document.body.cla
 window.addEventListener('dragleave', e => { if (e.target === document.documentElement || !e.relatedTarget) document.body.classList.remove('dragging'); });
 window.addEventListener('drop', e => {
   e.preventDefault(); document.body.classList.remove('dragging');
-  const f = e.dataTransfer && Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/') || f.name.endsWith('.json'));
+  const f = e.dataTransfer && Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/') || isVideoBlob(f) || f.name.endsWith('.json'));
   if (!f) return;
   if (f.name.endsWith('.json')) importProject(f); else setImage(f);
 });
@@ -2377,11 +2430,14 @@ async function importProject(file) {
     const data = JSON.parse(await file.text());
     if (data.app !== 'paper-broll' || !data.project || !data.image) throw new Error('This is not a Paper B-Roll project file');
     const blob = await (await fetch(data.image)).blob();
-    const bmp = await createImageBitmap(blob);
+    const vid = isVideoBlob(blob, data.project.img && data.project.img.video);
+    const bmp = await loadMedia(blob, vid);
+    if (!bmp) return;
     await idbSet('image', blob);
-    S.image = bmp; S.imageBlob = blob;
+    releaseMedia(S.image);
+    S.image = bmp; S.imageBlob = blob; S.vt = -1;
     S.project = migrate(mergeDefaults(DEFAULTS, data.project));
-    S.project.img = { w: bmp.width, h: bmp.height };
+    S.project.img = { w: bmp.width, h: bmp.height, video: vid };
     S.history = []; S.future = []; S.selAnn = null; S.selPix = null;
     lenCache.clear(); rollerKey = '';
     stop();
@@ -2391,6 +2447,7 @@ async function importProject(file) {
 }
 async function resetAll() {
   if (!confirm('Start over? This removes the screenshot and resets every setting.')) return;
+  releaseMedia(S.image);
   S.project = clone(DEFAULTS); S.image = null; S.imageBlob = null;
   try { await idbSet('image', null); } catch (e) {}
   S.history = []; S.future = []; S.selAnn = null; S.selPix = null;
@@ -2656,8 +2713,8 @@ async function boot() {
   try {
     const blob = await idbGet('image');
     if (blob && S.project.img) {
-      S.image = await createImageBitmap(blob); S.imageBlob = blob;
-      if (!S.project.crop) S.project.crop = { x: 0, y: 0, w: S.image.width, h: S.image.height };
+      S.image = await loadMedia(blob, S.project.img.video); S.imageBlob = S.image ? blob : null; S.vt = -1;
+      if (S.image && !S.project.crop) S.project.crop = { x: 0, y: 0, w: S.image.width, h: S.image.height };
     }
   } catch (e) { console.warn('Could not restore image', e); }
   resizeRenderer();

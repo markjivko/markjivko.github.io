@@ -38,7 +38,7 @@ body.transparent,body.transparent #stage{background:transparent}
 .n-body{filter:var(--shN)}
 .p-frame{position:relative;border:0 solid transparent}
 .p-img{position:relative;overflow:hidden}
-.p-img img{position:absolute;max-width:none;user-select:none;-webkit-user-drag:none;pointer-events:none}
+.p-img .media{position:absolute;display:block;max-width:none;object-fit:fill;user-select:none;-webkit-user-drag:none;pointer-events:none}
 .p-img canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .k{position:absolute;width:0;height:0}
 .k0{left:0;top:0}.k1{left:100%;top:0}.k2{left:0;top:100%}
@@ -93,7 +93,7 @@ body.transparent,body.transparent #stage{background:transparent}
 .washi.w3{background:repeating-linear-gradient(90deg,#b9a6e8 0 6px,#d9cff5 6px 12px)}
 /* 3 field journal */
 .st-field .p-frame{background:#f4ead4}
-.st-field .p-img img{filter:sepia(.2) saturate(.88) contrast(.97)}
+.st-field .p-img .media{filter:sepia(.2) saturate(.88) contrast(.97)}
 .st-field .n-paper{background-color:#c9a679;background-image:var(--noise);color:#38220f;padding:.75em 1.15em .85em;line-height:1.32}
 .pc{width:calc(var(--W) * .12);height:calc(var(--W) * .12);background:linear-gradient(135deg,#3a332d,#0d0b0a 70%)}
 .pc-tl{left:calc(var(--W) * -.012);top:calc(var(--W) * -.012);clip-path:polygon(0 0,100% 0,0 100%)}
@@ -113,7 +113,7 @@ body.transparent,body.transparent #stage{background:transparent}
 .st-dark .n-paper.t3{background-color:#a3171c}
 /* 6 dossier */
 .st-dossier .p-frame{background:#fff}
-.st-dossier .p-img img{filter:grayscale(.45) contrast(1.06)}
+.st-dossier .p-img .media{filter:grayscale(.45) contrast(1.06)}
 .st-dossier .n-paper{background-color:#f3f0e6;background-image:repeating-linear-gradient(0deg,rgba(90,70,30,.035) 0 1px,transparent 1px 4px);color:#1e1e1e;padding:1em 1.3em 1.1em;line-height:1.5}
 .clipw{position:absolute;top:calc(var(--W) * -.055);width:calc(var(--W) * .05);height:calc(var(--W) * .16);margin-left:calc(var(--W) * -.025);filter:var(--shH)}
 .stampw{position:absolute;right:5%;top:7%}
@@ -168,7 +168,7 @@ body.editing #edit{display:block}
 
 #drop{position:fixed;inset:0;z-index:200;display:none;align-items:center;justify-content:center;background:rgba(10,12,16,.6);color:#fff;font:600 28px system-ui,sans-serif;pointer-events:none}
 body.dragging #drop{display:flex}
-#toast{position:fixed;left:16px;bottom:16px;z-index:300;background:#1d1f26;color:#eceef3;padding:9px 14px;border-radius:8px;font:13px system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
+#toast{position:fixed;left:16px;bottom:16px;z-index:300;max-width:min(640px,calc(100vw - 32px));background:#1d1f26;color:#eceef3;padding:9px 14px;border-radius:8px;font:13px system-ui,sans-serif;opacity:0;transform:translateY(8px);transition:.2s;pointer-events:none}
 #toast.on{opacity:1;transform:none}
 
 /* ---------- settings panel ---------- */
@@ -259,9 +259,9 @@ kbd{display:inline-block;min-width:18px;text-align:center;padding:1px 5px;border
   <svg id="conn" width="1920" height="1080" viewBox="0 0 1920 1080"></svg>
   <div id="edit"><div class="eh eh-p" title="Swipe to draw with the selected tool · Shift+drag to pan the crop · scroll to zoom"></div><div class="grab" title="Drag to move the photo and note" aria-label="Move photo and note"><svg viewBox="0 0 24 24" width="18" height="18"><g fill="currentColor"><circle cx="8" cy="6" r="1.9"/><circle cx="16" cy="6" r="1.9"/><circle cx="8" cy="12" r="1.9"/><circle cx="16" cy="12" r="1.9"/><circle cx="8" cy="18" r="1.9"/><circle cx="16" cy="18" r="1.9"/></g></svg></div><div class="eh eh-n" title="Drag to offset the note · scroll to change font size"></div><div class="rs" title="Drag to resize"></div><div class="guide gv"></div><div class="guide gh"></div></div>
 </div></div>
-<div id="drop">Drop image to replace the photo</div>
+<div id="drop">Drop a photo or video to replace the picture</div>
 <aside id="panel" aria-label="Settings"></aside>
-<input type="file" id="fileimg" accept="image/*" hidden>
+<input type="file" id="fileimg" accept="image/*,video/*,.mkv,.mk3d,.webm,.mov,.m4v,.avi,.wmv,.flv,.ts,.m2ts,.mts,.mpg,.mpeg,.ogv,.3gp,.mxf,.heic,.heif,.avif,.jxl,.tif,.tiff" hidden>
 <input type="file" id="filejson" accept="application/json,.json" hidden>
 <div id="toast" role="status"></div>
 <script>
@@ -727,7 +727,7 @@ const fontStack = f => `'${f}', ${/Courier|Special/.test(f) ? 'ui-monospace, mon
 const DEFAULTS = {
   style: 'cork', seed: 1987, gx: 960, gy: 455, gw: 600,
   text: 'The lighthouse at **Cape Harrow** — ==last place the signal was heard== before the *1987* blackout.',
-  img: { aspect: 'auto', zoom: 1, panX: 50, panY: 50 },
+  img: { aspect: 'auto', zoom: 1, panX: 50, panY: 50, vspeed: 1 },
   per: {},
   hl: { delay: 350, dur: 700, stagger: 450, bleed: 30, thick: 80, opacity: .85, round: 75 },
   look: { border: 0, imgRadius: 26, noteRadius: 16, edges: false },
@@ -909,7 +909,19 @@ function splitText(root, mode) {
 const STAGE = $('#stage'), GRP = $('#grp'), CONNSVG = $('#conn');
 const EH_P = $('.eh-p'), EH_N = $('.eh-n'), RS = $('.rs'), GV = $('.gv'), GH = $('.gh'), GRAB = $('.grab');
 let REF = {}, RV = {}, GEO = null, CONN = null, RUN = null, COMPILED = [], REC = null;
-let IMG = { url: PLACEHOLDER, w: 1200, h: 900, obj: null };
+let IMG = { url: PLACEHOLDER, w: 1200, h: 900 };
+/* the photo slot holds an <img> (photos, GIFs) or one persistent <video> that is moved into each rebuilt frame,
+   so slider tweaks never reload or restart it */
+let VIDEO = null;
+function mediaEl(slot) {
+  let el;
+  if (IMG.video && VIDEO) el = VIDEO;
+  else { el = document.createElement('img'); el.alt = ''; el.draggable = false; el.src = IMG.url; }
+  el.classList.add('media');
+  slot.replaceWith(el);
+  return el;
+}
+function applyVideoSpeed() { if (VIDEO) VIDEO.playbackRate = clamp(+S.img.vspeed || 1, .1, 4); }
 let SCALE = 1;
 
 /* ================= build ================= */
@@ -919,7 +931,7 @@ function build() {
   STAGE.className = `st-${S.style} hl-${P.hlStyle} sh-${S.out.shadow}` + (P.paper ? ` pp-${P.paper}` : '');
   GRP.innerHTML = `<div class="p-pos"><div class="p-entry"><div class="p-tilt">
     <div class="p-body"><div class="p-idle"><div class="p-frame">
-      <div class="p-img"><img alt="" draggable="false"><canvas class="cv" data-tool="highlighter"></canvas><canvas class="cv" data-tool="pen"></canvas><canvas class="cv" data-tool="arrow"></canvas><div class="ovl ovl-p"></div>${st.imgDecor ? st.imgDecor(RV, P) : ''}<i class="k k0"></i><i class="k k1"></i><i class="k k2"></i></div>
+      <div class="p-img"><i class="media-slot"></i><canvas class="cv" data-tool="highlighter"></canvas><canvas class="cv" data-tool="pen"></canvas><canvas class="cv" data-tool="arrow"></canvas><div class="ovl ovl-p"></div>${st.imgDecor ? st.imgDecor(RV, P) : ''}<i class="k k0"></i><i class="k k1"></i><i class="k k2"></i></div>
       ${st.frameDecor ? st.frameDecor(RV, P) : ''}</div></div></div>
     <div class="hw p-hw">${st.photoHw ? st.photoHw(RV, P) : ''}</div></div></div></div>
   <div class="n-pos"><div class="n-entry"><div class="n-tilt">
@@ -928,10 +940,9 @@ function build() {
   const q = s => GRP.querySelector(s);
   REF = {
     ppos: q('.p-pos'), pentry: q('.p-entry'), ptilt: q('.p-tilt'), pbody: q('.p-body'), pidle: q('.p-idle'), frame: q('.p-frame'), pimg: q('.p-img'),
-    img: q('.p-img img'), cv: Object.fromEntries($$('.cv', GRP).map(c => [c.dataset.tool, c])), ovlP: q('.ovl-p'), ovlN: q('.ovl-n'), k: [q('.k0'), q('.k1'), q('.k2')],
+    img: mediaEl(q('.media-slot')), cv: Object.fromEntries($$('.cv', GRP).map(c => [c.dataset.tool, c])), ovlP: q('.ovl-p'), ovlN: q('.ovl-n'), k: [q('.k0'), q('.k1'), q('.k2')],
     npos: q('.n-pos'), nentry: q('.n-entry'), ntilt: q('.n-tilt'), nbody: q('.n-body'), nidle: q('.n-idle'), paper: q('.n-paper'), text: q('.n-text')
   };
-  REF.img.src = IMG.url;
   REF.text.innerHTML = renderText(S.text, S.hls);
   applyToolCSS();
   if (st.after) st.after(REF, RV, P);
@@ -1149,9 +1160,15 @@ function play(instant = false) {
   build(); layout();
   const st = STY(), c = makeCtx(instant), token = ++PLAYTOKEN;
   if (c.lead) [GRP, CONNSVG].forEach(el => c.anims.push(el.animate([{ visibility: 'hidden' }, { visibility: 'hidden' }], { duration: c.lead })));   // pure background first
+  if (IMG.video && VIDEO && !instant) {   // rewind, hold the first frame through the blank lead-in, then play as the frame enters
+    VIDEO.pause(); try { VIDEO.currentTime = 0; } catch (e) { }
+    setTimeout(() => { if (token === PLAYTOKEN) { applyVideoSpeed(); VIDEO.play().catch(() => toast('Click anywhere to start the video (the browser blocked autoplay)')); } }, c.lead);
+  }
   if (IMG.gif && IMG.blob && !instant) setTimeout(() => {   // fresh URL restarts an animated GIF from frame 1, timed to the reveal
     if (token !== PLAYTOKEN) return;
-    const old = IMG.url; IMG.url = IMG.obj = URL.createObjectURL(IMG.blob); REF.img.src = IMG.url; setTimeout(() => URL.revokeObjectURL(old), 1500);
+    const old = IMG.url;   // a new URL is a new image, which restarts the animation from frame 1
+    IMG.url = old.startsWith('blob:') ? URL.createObjectURL(IMG.blob) : old.replace(/^data:([^;,]*)(;r=\d+)?/, `data:$1;r=${token}`);
+    REF.img.src = IMG.url; setTimeout(() => freeURL(old), 1500);
   }, c.lead);
   st.entry(c);
   const revEnd = reveal(c, st);
@@ -1493,8 +1510,9 @@ PANEL.innerHTML = `<header><h1>B-Roll Board</h1>
   SEC('Layout', RNG('Center X', 'gx', 0, 1920, 1, 'layout') + RNG('Center Y', 'gy', 0, 1080, 1, 'layout') + RNG('Total width', 'gw', 160, 1600, 1, 'layout') +
     `<div class="btns">${BTN('Center horizontally', 'ch')}${BTN('Center vertically', 'cv')}${BTN('Left third', 'l3')}${BTN('Right third', 'r3')}</div>
     <div class="hint">Drag the photo to move both props (snaps to center; hold Alt to skip snapping). Drag the round handle to resize. Drag the note to offset it.</div>`) +
-  SEC('Image', `<div class="btns">${BTN('Choose image…', 'pick')}${BTN('Use placeholder', 'rmimg')}</div>
-    <div class="hint">Or drop / paste an image anywhere. Shift+drag the photo to pan the crop, scroll over it to zoom.</div>` +
+  SEC('Image & video', `<div class="btns">${BTN('Choose image or video…', 'pick')}${BTN('Use placeholder', 'rmimg')}</div>
+    <div class="hint">Or drop / paste a photo, GIF or video anywhere. Videos play muted and loop, starting from the first frame on every replay. Shift+drag the photo to pan the crop, scroll over it to zoom.</div>` +
+    RNG('Video speed', 'img.vspeed', .25, 2, .05, 'video') +
     SEL('Crop aspect', 'img.aspect', [['auto', 'Original'], '1:1', '4:5', '3:4', '2:3', '4:3', '3:2', '16:9'], 'layout') +
     RNG('Zoom', 'img.zoom', 1, 5, .01, 'layout') + RNG('Pan X', 'img.panX', 0, 100, .1, 'layout') + RNG('Pan Y', 'img.panY', 0, 100, .1, 'layout') +
     RNG('Extra tilt °', 'photoRot', -20, 20, .1, 'layout', 'p')) +
@@ -1569,6 +1587,7 @@ function applyU(u) {
   else if (u === 'style') { play(false); syncPanel(); }
   else if (u === 'output') applyOutput();
   else if (u === 'marks') { recompileStrokes(); syncPanel(); }
+  else if (u === 'video') applyVideoSpeed();
   else if (u === 'toolsel') syncPanel();
   else if (u === 'tool') { applyToolCSS(); recompileStrokes(); }
 }
@@ -1609,7 +1628,7 @@ const ACT = {
   ch: () => { centerH(); layout(); syncPanel(); save(); }, cv: () => { centerV(); layout(); syncPanel(); save(); },
   l3: () => { S.gx = Math.round(SW / 3); layout(); syncPanel(); save(); }, r3: () => { S.gx = Math.round(SW * 2 / 3); layout(); syncPanel(); save(); },
   pick: () => $('#fileimg').click(),
-  rmimg: async () => { try { await DB.del('image'); } catch (e) { } IMG = { url: PLACEHOLDER, w: 1200, h: 900, obj: null }; play(false); toast('Placeholder image restored'); },
+  rmimg: async () => { try { await DB.del('image'); } catch (e) { } freeURL(IMG.url); dropVideo(); IMG = { url: PLACEHOLDER, w: 1200, h: 900 }; play(false); toast('Placeholder image restored'); },
   undo: () => { if (!S.marks.strokes.length) return; S.marks.strokes.pop(); save(); recompileStrokes(); if (RUN) RUN.strokesDone = true; redrawStrokesNow(); syncPanel(); },
   clearmarks: b => {
     if (!S.marks.strokes.length) { toast('There are no strokes to clear'); return; }
@@ -1859,39 +1878,128 @@ async function sniffType(blob) {
   if (str(0, 3) === 'GIF') return 'image/gif';
   if (str(0, 4) === 'RIFF' && str(8, 4) === 'WEBP') return 'image/webp';
   if (str(0, 2) === 'BM') return 'image/bmp';
-  if (str(4, 4) === 'ftyp') { const brand = str(8, 4); if (/avi[fs]/.test(brand)) return 'image/avif'; if (/hei[cxms]|hev[cx]|mif1|msf1/.test(brand)) return 'image/heic'; }
+  if (str(4, 4) === 'ftyp') {
+    const brand = str(8, 4);
+    if (/avi[fs]/.test(brand)) return 'image/avif';
+    if (/hei[cxms]|mif1|msf1/.test(brand)) return 'image/heic';
+    return 'video/mp4';                                   // mp4, m4v, mov (qt), 3gp: hand them to the video decoder
+  }
+  if (b[0] === 0x1A && b[1] === 0x45 && b[2] === 0xDF && b[3] === 0xA3) return 'video/webm';   // WebM / Matroska
+  if (str(0, 4) === 'OggS') return 'video/ogg';
+  if (str(0, 4) === 'RIFF' && str(8, 4) === 'AVI ') return 'video/avi';
   const head = new TextDecoder().decode(await blob.slice(0, 512).arrayBuffer());
   if (/<svg[\s>]/i.test(head)) return 'image/svg+xml';
-  return /^image\//.test(blob.type) ? blob.type : '';
+  return '';
+}
+/* which decoder to try first; the other one is always tried too, and only the browser decides what fails */
+const VIDEO_EXT = /\.(mkv|mk3d|webm|mp4|m4v|mov|qt|avi|wmv|asf|flv|f4v|ts|m2ts|mts|mpg|mpeg|m2v|ogv|ogg|3gp|3g2|mxf|vob|divx|hevc|h264|y4m)$/i;
+async function guessKind(blob) {
+  const t = await sniffType(blob).catch(() => '');
+  if (t) return t.split('/')[0];
+  if (/^(image|video)\//.test(blob.type)) return blob.type.split('/')[0];
+  if (blob.name && VIDEO_EXT.test(blob.name)) return 'video';
+  return 'image';
 }
 const loadEl = url => new Promise((res, rej) => { const im = new Image(); im.onload = () => res(im); im.onerror = () => rej(new Error('load failed')); im.src = url; });
-async function loadImageBlob(blob, { store = true, resetCrop = true, quiet = false, replay = true } = {}) {
+async function loadImageBlob(blob, opts = {}) {
   if (!blob) return;
-  const type = await sniffType(blob);
-  if (type === 'image/heic') { toast('HEIC photos can\'t be shown by the browser — export it as JPEG or PNG first'); return; }
-  if (!type) { toast('That file is not an image this browser can read'); return; }
-  if (blob.type !== type) blob = new Blob([blob], { type });
-  let url = URL.createObjectURL(blob), im;
-  try { im = await loadEl(url); }
-  catch (e) {   // fallback decoder: re-encode through a canvas (loses animation, so not for GIF)
-    URL.revokeObjectURL(url);
+  const first = await guessKind(blob), order = first === 'video' ? [tryVideo, tryImage] : [tryImage, tryVideo];
+  const fails = [];
+  for (const attempt of order) {
+    const r = await attempt(blob);
+    if (r.ok) return r.apply(opts);
+    fails.push(r);
+  }
+  const primary = fails.find(f => f.kind === first);
+  toast(`The browser couldn't open this file${primary && primary.why ? ': ' + primary.why : '.'}`, 6000);
+}
+/* Media URLs: blob: first; if the page hosting this file forbids blob: media (a CSP from a preview panel or local server),
+   fall back to data: URLs for the rest of the session. Nothing here refuses a file; only the browser can. */
+let URLMODE = 'blob';
+const freeURL = u => { if (u && u.startsWith('blob:')) URL.revokeObjectURL(u); };
+async function srcFor(blob, mode, mime) {
+  if (mode === 'blob') return URL.createObjectURL(blob);
+  const typed = mime && blob.type !== mime ? new Blob([blob], { type: mime }) : blob;
+  return await blobToDataURL(typed);
+}
+const CODEC_ERR = /DEMUXER|DECOD|FFmpeg|no supported|codec|unsupported format/i;
+async function tryImage(blob) {
+  const mime = /^image\//.test(blob.type) ? blob.type : (await sniffType(blob).catch(() => '')) || 'image/png';
+  const modes = URLMODE === 'blob' ? ['blob', 'data'] : ['data'];
+  let url = null, im = null;
+  for (const m of modes) {
+    try { url = await srcFor(blob, m, mime); im = await loadEl(url); if (m === 'data' && URLMODE === 'blob') URLMODE = 'data'; break; }
+    catch (e) { freeURL(url); url = null; }
+  }
+  if (!im) {   // last chance: the browser's bitmap decoder, re-encoded to PNG (loses animation)
     try {
       const bmp = await createImageBitmap(blob), cv = document.createElement('canvas');
       cv.width = bmp.width; cv.height = bmp.height; cv.getContext('2d').drawImage(bmp, 0, 0);
-      blob = await new Promise(r => cv.toBlob(r, 'image/png')); url = URL.createObjectURL(blob); im = await loadEl(url);
-    } catch (e2) { toast(`This ${type.split('/')[1].toUpperCase()} file is damaged or uses an encoding the browser can't read`); return; }
+      blob = await new Promise(r => cv.toBlob(r, 'image/png'));
+      url = await srcFor(blob, URLMODE, 'image/png'); im = await loadEl(url);
+    } catch (e2) { freeURL(url); return { ok: false, kind: 'image', why: 'not an image format this browser can decode' }; }
   }
-  if (IMG.obj) URL.revokeObjectURL(IMG.obj);
-  IMG = { url, obj: url, blob, gif: blob.type === 'image/gif', w: im.naturalWidth || 1200, h: im.naturalHeight || 900 };
+  const gif = mime === 'image/gif' || (await sniffType(blob).catch(() => '')) === 'image/gif';
+  return { ok: true, apply: opts => applyImage(blob, url, im, gif, opts) };
+}
+async function applyImage(blob, url, im, gif, { store = true, resetCrop = true, quiet = false, replay = true } = {}) {
+  freeURL(IMG.url);
+  dropVideo();
+  IMG = { url, blob, gif, w: im.naturalWidth || 1200, h: im.naturalHeight || 900 };
   if (store) { try { await DB.set('image', blob); } catch (e) { toast('Image shown, but it could not be stored for the next session'); } }
   if (resetCrop) { S.img.zoom = 1; S.img.panX = 50; S.img.panY = 50; save(); }
   if (replay) play(false);
   syncPanel();
   if (!quiet) toast(IMG.gif ? 'Animated GIF loaded' : 'Image replaced');
 }
+function dropVideo() { if (VIDEO) { VIDEO.pause(); VIDEO.removeAttribute('src'); VIDEO.load(); VIDEO.remove(); VIDEO = null; } }
+function openVideo(url) {
+  const v = document.createElement('video');
+  Object.assign(v, { muted: true, defaultMuted: true, loop: true, playsInline: true, preload: 'auto', disablePictureInPicture: true });
+  v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+  return new Promise(done => {   // no time limit: wait for the browser to either show a picture or report an error
+    v.addEventListener('loadedmetadata', () => done({ v, ok: !!v.videoWidth, why: v.videoWidth ? '' : 'it opened, but has no picture track the browser can decode' }), { once: true });
+    v.addEventListener('error', () => done({ v, ok: false, why: ((v.error && v.error.message) || `media error ${v.error ? v.error.code : ''}`).trim() }), { once: true });
+    v.src = url;
+  });
+}
+async function tryVideo(blob) {
+  const slow = setTimeout(() => toast('Still opening the video…', 8000), 2500);
+  const mime = /^video\//.test(blob.type) ? blob.type : (await sniffType(blob).catch(() => '')) || 'video/mp4';
+  let url = await srcFor(blob, URLMODE, mime), r = await openVideo(url), blocked = false;
+  if (!r.ok && URLMODE === 'blob' && !CODEC_ERR.test(r.why)) {   // blob: refused by the page, not by the decoder: retry with the bytes inline
+    blocked = true; freeURL(url);
+    if (blob.size > 150e6) toast('This page blocks local file links, so the video is being embedded in memory — large files take a moment…', 8000);
+    url = await srcFor(blob, 'data', mime); r = await openVideo(url);
+    if (r.ok) URLMODE = 'data';
+  }
+  clearTimeout(slow);
+  if (!r.ok) {
+    r.v.removeAttribute('src'); r.v.load(); freeURL(url);
+    const why = blocked && !CODEC_ERR.test(r.why)
+      ? 'the page it is open in blocks local video (a security policy from the preview or server showing it). Open the HTML file directly in Chrome instead'
+      : r.why;
+    return { ok: false, kind: 'video', why };
+  }
+  return { ok: true, apply: opts => applyVideo(blob, url, r.v, opts) };
+}
+async function applyVideo(blob, url, v, { store = true, resetCrop = true, quiet = false, replay = true } = {}) {
+  freeURL(IMG.url);
+  dropVideo();
+  VIDEO = v;
+  IMG = { url, blob, video: true, w: v.videoWidth, h: v.videoHeight };
+  if (store) {
+    try { await DB.set('image', blob); }
+    catch (e) { toast('Video shown, but it is too large to be stored for the next session'); }
+  }
+  if (resetCrop) { S.img.zoom = 1; S.img.panX = 50; S.img.panY = 50; save(); }
+  if (replay) play(false); else { build(); layout(); }
+  syncPanel();
+  if (!quiet) toast(`Video loaded (${v.videoWidth}×${v.videoHeight}${isFinite(v.duration) ? ', ' + v.duration.toFixed(1) + ' s' : ''})`);
+}
 $('#fileimg').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadImageBlob(f); e.target.value = ''; });
 window.addEventListener('paste', e => {
-  const items = [...(e.clipboardData?.items || [])], it = items.find(i => i.type.startsWith('image/'));
+  const items = [...(e.clipboardData?.items || [])], it = items.find(i => /^(image|video)\//.test(i.type)) || items.find(i => i.kind === 'file');
   if (!it) return;
   if (isTyping(e.target) && items.some(i => i.type === 'text/plain')) return;
   e.preventDefault(); loadImageBlob(it.getAsFile());
@@ -1902,10 +2010,10 @@ window.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth =
 window.addEventListener('dragover', e => e.preventDefault());
 window.addEventListener('drop', async e => {
   e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
-  const files = [...e.dataTransfer.files], f = files.find(f => f.type.startsWith('image/')) || files[0];
+  const files = [...e.dataTransfer.files], f = files.find(f => /^(image|video)\//.test(f.type)) || files[0];
   if (f) return loadImageBlob(f);
   const uri = e.dataTransfer.getData('text/uri-list');
-  if (uri) { try { const r = await fetch(uri); loadImageBlob(await r.blob()); } catch (err) { toast('That image is blocked by its website — save it and drop the file instead'); } }
+  if (uri) { try { const r = await fetch(uri); loadImageBlob(await r.blob()); } catch (err) { toast('That file is blocked by its website — save it and drop the file instead'); } }
 });
 
 /* ================= presets ================= */
@@ -1933,7 +2041,7 @@ $('#filejson').addEventListener('change', async e => {
 
 /* ================= toast & init ================= */
 let toastT = 0;
-function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), 2400); }
+function toast(msg, ms = 2400) { const t = $('#toast'); t.textContent = msg; t.classList.add('on'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('on'), ms); }
 
 (async function init() {
   document.body.classList.toggle('panel-open', S.panelOpen); document.body.classList.toggle('editing', S.panelOpen);
