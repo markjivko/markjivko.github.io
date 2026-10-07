@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Quote Card · B-roll Generator</title>
+<title>Quote</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=EB+Garamond:ital,wght@0,400..700;1,400..700&family=Inter:wght@300..700&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400..700;1,400..700&family=Oswald:wght@400..700&family=Playfair+Display:ital,wght@0,400..700;1,400..700&family=Special+Elite&family=Work+Sans:ital,wght@0,300..700;1,300..700&display=swap" rel="stylesheet">
@@ -31,21 +31,16 @@ body.hide-cursor, body.hide-cursor * { cursor: none !important; }
 
 /* ---------- STAGE ---------- */
 
-/* While the panel is open the stage is scaled into the space left beside it,
-   so the whole card stays visible instead of hiding behind the inspector.
-   It snaps back the moment the panel closes, so a recording is never scaled. */
+/* The stage is never transformed or resized by the panel: what you see is
+   exactly what gets recorded, panel open or closed. */
 body { background: var(--bg, #000); }
 #stage {
   position: fixed; inset: 0;
-  transform-origin: 0 50%;
-  transition: transform .34s cubic-bezier(.4,.9,.25,1);
   background: var(--bg, #000);
   display: block;
   overflow: hidden;
   transition: background-color .25s ease;
 }
-
-body.docked #stage { transform: scale(var(--dock-k, 1)); }
 
 #vignette {
   position: absolute; inset: 0; pointer-events: none;
@@ -905,7 +900,7 @@ kbd {
   gap: calc(var(--np-u, 10px) * 1.4);
   font-family: var(--author-font, 'Inter', sans-serif);
   font-weight: 600;
-  font-size: calc(var(--np-u, 10px) * 1.45);
+  font-size: max(var(--fl-meta, 19px), calc(var(--np-u, 10px) * 1.45));
   letter-spacing: .16em;
   text-transform: uppercase;
   color: var(--ink);
@@ -941,7 +936,7 @@ kbd {
   font-family: var(--quote-font, serif);
   font-weight: 700;
   text-transform: uppercase;
-  font-size: calc(var(--np-u, 10px) * 2.5);
+  font-size: max(var(--fl-head, 30px), calc(var(--np-u, 10px) * 2.5));
   line-height: 1.1;
   letter-spacing: .005em;
   color: var(--ink);
@@ -949,6 +944,18 @@ kbd {
 }
 
 #stage.np #authorRow { margin-top: calc(var(--np-u, 10px) * 1.2); }
+/* the marker overhangs the last line of the quote; leave room for it so the
+   stroke never runs over the sheet's border */
+#stage.np #npLeft { padding-bottom: calc(var(--fs, 34px) * .5); }
+/* On the front page the attribution sits in its own column, so it is sized
+   from the page rather than from the quote: shrinking the quote to make room
+   must never drag the name down with it. */
+#stage.np #authorName {
+  font-size: max(var(--fl-auth, 24px), calc(var(--np-u, 10px) * 4.3 * var(--author-scale, .46)));
+}
+#stage.np #authorSub {
+  font-size: max(var(--fl-sub, 19px), calc(var(--np-u, 10px) * 4.3 * var(--author-scale, .46) * .82));
+}
 
 /* ---- the photograph ---- */
 #npImgWrap {
@@ -1273,8 +1280,7 @@ kbd {
         <div class="row">
           <label class="check"><input type="checkbox" data-bind="vignette"><span class="box"></span> Vignette</label>
           <label class="check"><input type="checkbox" data-bind="guides"><span class="box"></span> Safe-area guides</label>
-          <label class="check"><input type="checkbox" data-bind="insDock"><span class="box"></span> Shrink the stage beside this panel</label>
-          <p class="note">Keeps the whole card visible while you work. It snaps back to full size the moment the panel closes, so nothing you record is ever scaled.</p>
+
         </div>
       
       </div>
@@ -1951,7 +1957,6 @@ const DEFAULTS = {
   npCapJustify: true,
 
   insWidth: 462,
-  insDock: true,
   insOpen: ['quote'],
 
   sfxOn: true,
@@ -2126,7 +2131,7 @@ function fitType() {
   if (!st.autoFit) { setFs(36 * st.fontScale); return; }
 
   let lo = 8, hi = 92, best = 8;
-  for (let i = 0; i < 15; i++) {
+  for (let i = 0; i < 11; i++) {
     const mid = (lo + hi) / 2;
     setFs(mid * st.fontScale);
     if (paperEl.offsetHeight <= maxPx + 0.5) { best = mid; lo = mid; } else { hi = mid; }
@@ -2274,17 +2279,14 @@ function alignRules() {
 }
 
 function layoutHighlights() {
-  // an !important inline rule outranks both the ambient loop and the docking
-  // scale, so everything is measured at its true size and released again
-  // inside the same frame
+  // an !important inline rule outranks the ambient loop, so the card is
+  // measured at its true size and released again inside the same frame
   idleEl.style.setProperty('transform', 'none', 'important');
-  stage.style.setProperty('transform', 'none', 'important');
   try {
     alignRules();
     measureHighlights();
   } finally {
     idleEl.style.removeProperty('transform');
-    stage.style.removeProperty('transform');
   }
 }
 
@@ -2319,7 +2321,7 @@ function clearInk() {
    Applying style state
    ========================================================================== */
 function bgColor() {
-  if (st.bg === 'green') return '#00b140';
+  if (st.bg === 'green') return '#00ff00';
   if (st.bg === 'blue')  return '#0047bb';
   if (st.bg === 'custom') return st.bgCustom;
   return '#000000';
@@ -2355,7 +2357,6 @@ function applyStyle() {
 
   root.style.setProperty('--ins-w', st.insWidth + 'px');
   root.style.setProperty('--np-cap-align', st.npCapJustify ? 'justify' : 'left');
-  syncDock();
 
   stage.classList.toggle('np', st.npOn);
 
@@ -2457,6 +2458,17 @@ function npApplyCrop() {
    page fits by searching for the largest scale whose furniture still leaves
    room for the quote inside the height cap.  The quote is then grown into
    whatever room is left. */
+/* Readable floors for the front page, set for a 1080p recording and scaled
+   with the window.  Below these sizes type breaks up once a video is
+   compressed and watched on a phone. */
+function npFloors() {
+  const k = window.innerHeight / 1080;
+  return { quote: 44 * k, head: 30 * k, auth: 24 * k, sub: 19 * k, copy: 21 * k, meta: 19 * k };
+}
+
+/* The front page is fitted in priority order.  The quote is the reason the
+   card exists, so it is grown first; the masthead and banner are the part
+   that gives way.  Every other line holds a readable floor. */
 function fitSheet() {
   const baseU = (paperEl.offsetWidth || 1000) / 100;
   root.style.setProperty('--np-u', baseU.toFixed(3) + 'px');
@@ -2467,44 +2479,62 @@ function fitSheet() {
     return;
   }
 
+  const F = npFloors();
+  const r = root.style;
+  r.setProperty('--fl-head', F.head.toFixed(1) + 'px');
+  r.setProperty('--fl-auth', F.auth.toFixed(1) + 'px');
+  r.setProperty('--fl-sub',  F.sub.toFixed(1) + 'px');
+  r.setProperty('--fl-meta', F.meta.toFixed(1) + 'px');
+
   const vh = window.innerHeight;
   const maxPx = vh * Math.max(st.maxH, st.minH + 3) / 100;
-  const body = $('#npBody'), head = $('#npHead'), cap = $('#npCap');
+  const body = $('#npBody'), head = $('#npHead'), cap = $('#npCap'), aside = $('#npAside');
 
-  // measure the furniture on its own: no picture, no minimum sheet height, the
-  // quote at its smallest
-  root.style.setProperty('--paper-min-h', '0px');
-  npWrap.style.maxHeight = '0px';
-  cap.style.fontSize = '';
-  setFs(11);
-  fitNpType();
+  const qFloor = F.quote * st.fontScale;
+  let capK = 1;
 
-  // the masthead block is not allowed to swallow the page
-  let u = baseU;
-  const headCap = maxPx * 0.38;
-  if (head.offsetHeight > headCap) {
-    u = baseU * Math.max(0.45, headCap / head.offsetHeight);
-    root.style.setProperty('--np-u', u.toFixed(3) + 'px');
+  // lay the page out with the furniture at scale m and the quote at its floor;
+  // report whether it fits.  One layout per question, so the search is cheap.
+  const fitsAt = m => {
+    const u = baseU * m;
+    r.setProperty('--np-u', u.toFixed(3) + 'px');
+    r.setProperty('--paper-min-h', '0px');
     fitNpType();
+    cap.style.fontSize = (Math.max(F.copy, 1.55 * st.npCapScale * u) * capK).toFixed(2) + 'px';
+    npWrap.style.maxHeight = '0px';
+    setFs(qFloor);
+
+    // the room the two columns actually get: the body less its own top padding
+    const avail = Math.max(0, maxPx - (paperEl.offsetHeight - body.offsetHeight)
+      - (parseFloat(getComputedStyle(body).paddingTop) || 0));
+    // the picture takes its share, but never at the cost of the words around it
+    const words = aside.offsetHeight;
+    const fig = Math.max(0, Math.min(avail * st.npFigShare, avail - words));
+    npWrap.style.maxHeight = fig.toFixed(1) + 'px';
+    return paperEl.offsetHeight <= maxPx + 0.5;
+  };
+
+  // the masthead block is held to under a third of the page to begin with
+  r.setProperty('--np-u', baseU.toFixed(3) + 'px');
+  r.setProperty('--paper-min-h', '0px');
+  fitNpType();
+  let m = 1;
+  const headCap = maxPx * 0.3;
+  if (head.offsetHeight > headCap) m = Math.max(0.35, headCap / head.offsetHeight);
+
+  // and gives up more only if the quote would otherwise fall below its floor
+  if (!fitsAt(m)) {
+    let lo = 0.35, hi = m, best = 0.35;
+    for (let i = 0; i < 6; i++) {
+      const mid = (lo + hi) / 2;
+      if (fitsAt(mid)) { best = mid; lo = mid; } else { hi = mid; }
+    }
+    m = best;
+    // a very long column of set copy is the last thing to give way, so the
+    // quote keeps its floor even then
+    for (let i = 0; i < 6 && !fitsAt(m); i++) capK *= 0.88;
   }
-
-  // everything that is not furniture belongs to the two columns
-  const chrome = paperEl.offsetHeight - body.offsetHeight;
-  const avail = Math.max(u * 12, maxPx - chrome);
-
-  // the picture takes its share of the right column and the quote gets the rest
-  const fig = clamp(avail * st.npFigShare, u * 6, Math.max(u * 6, avail - u * 7));
-  npWrap.style.maxHeight = fig.toFixed(1) + 'px';
-
-  // set copy is pulled back until the picture column fits rather than being clipped
-  const aside = $('#npAside');
-  let cu = 1.55 * st.npCapScale;
-  cap.style.fontSize = (cu * u).toFixed(2) + 'px';
-  for (let i = 0; i < 6 && aside.offsetHeight > avail + 0.5; i++) {
-    cu *= Math.max(0.55, avail / aside.offsetHeight);
-    cap.style.fontSize = (cu * u).toFixed(2) + 'px';
-  }
-
+  fitsAt(m);
   fitType();
 }
 
@@ -3463,21 +3493,11 @@ function readJsonFile(file) {
    Inspector chrome
    ========================================================================== */
 function insOpen() { return ins.classList.contains('open'); }
-function syncDock() {
-  const on = st.insDock && insOpen();
-  if (on) {
-    const free = Math.max(320, window.innerWidth - ins.offsetWidth);
-    root.style.setProperty('--dock-k', (free / window.innerWidth).toFixed(4));
-  }
-  document.body.classList.toggle('docked', !!on);
-}
-
 function setIns(open) {
   ins.classList.toggle('open', open);
   hints.classList.toggle('shifted', open);
   if (open) document.body.classList.remove('hide-cursor');
   else if (document.activeElement && ins.contains(document.activeElement)) document.activeElement.blur();
-  syncDock();
 }
 function toggleIns() { setIns(!insOpen()); }
 
@@ -3902,7 +3922,6 @@ document.addEventListener('pointermove', e => {
   st.insWidth = Math.round(clamp(gripFrom.w + (gripFrom.x - e.clientX), 360,
     Math.min(840, window.innerWidth - 180)));
   root.style.setProperty('--ins-w', st.insWidth + 'px');
-  syncDock();
 });
 ['pointerup', 'pointercancel'].forEach(ev => document.addEventListener(ev, () => {
   if (!gripFrom) return;
@@ -3965,7 +3984,6 @@ window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
     const wasPlaying = playing;
-    syncDock();
     fitSheet(); applyTear(); layoutHighlights(); npApplyCrop();
     if (!wasPlaying) showFinal();
   }, 140);

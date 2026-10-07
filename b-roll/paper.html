@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Paper B-Roll</title>
+<title>Paper</title>
 <style>
 :root{
-  --key:#00b140;
+  --key:#00ff00;
   --panel:#1f2328;
   --panel-2:#292e35;
   --line:#3a4049;
@@ -114,7 +114,7 @@ body.panel-min .keys{display:none}
   if(u.hidden)document.body.classList.add('clean');
   if(u.left)document.body.classList.add('panel-left');
   var p=JSON.parse(localStorage.getItem('paperBroll.project.v1')||'null');
-  if(p&&p.stage&&p.stage.key){var k=String(p.stage.key).toLowerCase();if(['#000000','#00b140','#0047bb'].indexOf(k)<0)k=k==='#0000ff'?'#0047bb':'#00b140';document.documentElement.style.setProperty('--key',k);}
+  if(p&&p.stage&&p.stage.key){var k=String(p.stage.key).toLowerCase();if(['#000000','#00ff00','#0047bb'].indexOf(k)<0)k=k==='#0000ff'?'#0047bb':'#00ff00';document.documentElement.style.setProperty('--key',k);}
 }catch(e){}})();
 </script>
 <canvas id="gl"></canvas>
@@ -247,7 +247,7 @@ body.panel-min .keys{display:none}
         <label class="row"><span>Scale</span><input type="range" data-bind="texture.scale" min="0.5" max="3" step="0.05"><output></output></label>
         <label class="row full"><span>Scene background</span><select data-bind="stage.key">
           <option value="#000000">Black</option>
-          <option value="#00b140">Chroma green (#00B140)</option>
+          <option value="#00ff00">Chroma green (#00FF00)</option>
           <option value="#0047bb">Chroma blue (#0047BB)</option>
         </select></label>
       </div>
@@ -442,11 +442,11 @@ const IDLE_IDS = { none: 0, pulse: 1, heartbeat: 2, dangle: 3, float: 4, sway: 5
 const HL_LABEL = { marker: 'Highlighter', neon: 'Neon glow', spot: 'Spotlight', pen: 'Ink pen', laser: 'Laser trail' };
 
 const DEFAULTS = {
-  version: 5,
+  version: 6,
   img: null,
   crop: null,
   layout: { scale: 1, offX: 0, offY: 0, padding: 60 },
-  stage: { key: '#00b140' },
+  stage: { key: '#00ff00' },
   pixel: [],
   annotations: [],
   tools: {
@@ -474,11 +474,11 @@ const DEFAULTS = {
   sound: { on: true, volume: 0.8, entrance: true, entranceVolume: 0.4, highlights: true, video: true, videoVolume: 1 },
 };
 
-const SCENE_KEYS = ['#000000', '#00b140', '#0047bb'];
+const SCENE_KEYS = ['#000000', '#00ff00', '#0047bb'];
 function sceneKey(v) {
   v = String(v || '').toLowerCase();
   if (SCENE_KEYS.includes(v)) return v;
-  return v === '#0000ff' ? '#0047bb' : '#00b140';
+  return v === '#0000ff' ? '#0047bb' : '#00ff00';   // any other green becomes pure green
 }
 function migrate(p) {
   if ((p.version || 1) < 2) {
@@ -508,6 +508,11 @@ function migrate(p) {
   if (p.version < 5) {
     p.version = 5;
     // scene background is now black, chroma green or chroma blue
+    p.stage.key = sceneKey(p.stage.key);
+  }
+  if (p.version < 6) {
+    p.version = 6;
+    // chroma green is now pure #00FF00
     p.stage.key = sceneKey(p.stage.key);
   }
   return p;
