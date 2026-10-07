@@ -317,6 +317,18 @@ body.panel-min .keys{display:none}
     </details>
 
     <details>
+      <summary>Sound</summary>
+      <div class="body">
+        <p class="hint" style="color:var(--muted);font-size:12px;line-height:1.45;margin:0 0 8px">Every entrance effect and highlight style has its own sound, timed to its motion. Browsers only allow sound after a key press or click on the page, so press <b>R</b> once before recording.</p>
+        <label class="row check"><span>Play sounds</span><input type="checkbox" data-bind="sound.on"></label>
+        <label class="row"><span>Volume</span><input type="range" data-bind="sound.volume" min="0" max="1" step="0.01"><output></output></label>
+        <label class="row check"><span>Entrance sound</span><input type="checkbox" data-bind="sound.entrance"></label>
+        <label class="row"><span>Entrance volume</span><input type="range" data-bind="sound.entranceVolume" min="0" max="1" step="0.01"><output></output></label>
+        <label class="row check"><span>Highlight sounds</span><input type="checkbox" data-bind="sound.highlights"></label>
+      </div>
+    </details>
+
+    <details>
       <summary>Project</summary>
       <div class="body">
         <div class="btns">
@@ -452,6 +464,7 @@ const DEFAULTS = {
   shadow: { on: true, blur: 38, x: 0, y: 16, opacity: 0.5 },
   timing: { startDelay: 0.6, afterEntrance: 0.5, speed: 900, gap: 0.35, strokeEase: 'sine.inOut' },
   idle: { type: 'dangle', amount: 1, speed: 1 },
+  sound: { on: true, volume: 0.8, entrance: true, entranceVolume: 0.4, highlights: true },
 };
 
 const SCENE_KEYS = ['#000000', '#00b140', '#0047bb'];
@@ -1880,7 +1893,417 @@ function changed(kind) {
   if (S.L) S.sched = buildSchedule();
   applyShadow();
   document.body.classList.toggle('no-image', !S.image);
+  // pre-render the sounds for the new sequence (debounced while a slider is dragged)
+  clearTimeout(S.sfxTimer);
+  S.sfxTimer = setTimeout(() => { if (S.L && S.sched) SFX.setEvents(buildSfxEvents()); }, 150);
   save();
+}
+
+// ======================================================================
+// sound effects — every sound is synthesised here (no audio files), rendered offline to the
+// exact length of its effect, and scheduled on the audio clock in sync with playback
+// ======================================================================
+const SFX = (() => {
+  const AC = window.AudioContext || window.webkitAudioContext;
+  const OAC = window.OfflineAudioContext || window.webkitOfflineAudioContext;
+  const SR = 48000;
+  let ctx = null, master = null;
+  const cache = new Map();           // key -> AudioBuffer | Promise
+  const active = new Set();
+  let events = [], fired = new Set();
+
+  function ensure() {
+    if (!AC) return null;
+    if (!ctx) {
+      ctx = new AC({ latencyHint: 'interactive' });
+      master = ctx.createGain();
+      master.connect(ctx.destination);
+    }
+    return ctx;
+  }
+  function resume() { if (ensure() && ctx.state !== 'running') ctx.resume().catch(() => {}); }
+
+  // first x in [0,1] where the easing reaches y (works for overshooting eases too)
+  function invEase(fn, y) {
+    if (y <= 0) return 0;
+    let prev = 0;
+    for (let i = 1; i <= 400; i++) {
+      const x = i / 400, v = fn(x);
+      if (v >= y) { const pv = fn(prev); return prev + (x - prev) * clamp((y - pv) / ((v - pv) || 1), 0, 1); }
+      prev = x;
+    }
+    return 1;
+  }
+
+  // ---------------------------------------------------------------- building blocks
+  function kit(oc, seed) {
+    const R = rng(seed);
+    const out = oc.createGain();
+    const soft = oc.createBiquadFilter(); soft.type = 'lowpass'; soft.frequency.value = 4200; soft.Q.value = 0.5;
+    const comp = oc.createDynamicsCompressor();
+    comp.threshold.value = -22; comp.knee.value = 18; comp.ratio.value = 4; comp.attack.value = 0.012; comp.release.value = 0.2;
+    out.connect(soft).connect(comp).connect(oc.destination);
+    const noiseBuf = (dur, kind) => {
+      const n = Math.max(2, Math.ceil(dur * oc.sampleRate));
+      const b = oc.createBuffer(1, n, oc.sampleRate), d = b.getChannelData(0);
+      let l = 0, b0 = 0, b1 = 0, b2 = 0;
+      for (let i = 0; i < n; i++) {
+        const w = R() * 2 - 1;
+        if (kind === 'brown') { l = (l + 0.02 * w) / 1.02; d[i] = l * 3.5; }
+        else if (kind === 'pink') { b0 = 0.99765 * b0 + w * 0.099046; b1 = 0.963 * b1 + w * 0.2965164; b2 = 0.57 * b2 + w * 1.0526913; d[i] = (b0 + b1 + b2 + w * 0.1848) * 0.22; }
+        else d[i] = w;
+      }
+      return b;
+    };
+    const noise = (t, dur, kind = 'white') => {
+      const s = oc.createBufferSource();
+      s.buffer = noiseBuf(dur + 0.02, kind);
+      s.start(Math.max(0, t)); s.stop(Math.max(0, t) + dur + 0.02);
+      return s;
+    };
+    const panner = (p0, p1, t0, t1) => {
+      const p = oc.createStereoPanner();
+      p.pan.setValueAtTime(clamp(p0, -1, 1), Math.max(0, t0));
+      if (p1 !== undefined && p1 !== p0) p.pan.linearRampToValueAtTime(clamp(p1, -1, 1), Math.max(t0 + 0.001, t1));
+      p.connect(out);
+      return p;
+    };
+    // smooth swell: rises to g at peak (0..1 of dur), falls back to silence
+    const swell = (t0, dur, peak, g) => {
+      const e = oc.createGain();
+      e.gain.setValueAtTime(0, 0);
+      const N = 64, c = new Float32Array(N);
+      for (let i = 0; i < N; i++) {
+        const x = i / (N - 1);
+        const v = x < peak ? Math.sin(Math.PI / 2 * x / peak) : Math.cos(Math.PI / 2 * (x - peak) / (1 - peak));
+        c[i] = g * v * v;
+      }
+      c[N - 1] = 0;
+      e.gain.setValueCurveAtTime(c, Math.max(0, t0), Math.max(0.01, dur));
+      return e;
+    };
+    const filt = (type, f, q) => { const f2 = oc.createBiquadFilter(); f2.type = type; f2.frequency.value = f; f2.Q.value = q; return f2; };
+    // band of noise sweeping f0 -> f1
+    const whoosh = (t0, dur, f0, f1, q, peak, g, p0 = 0, p1 = p0, kind = 'pink', type = 'bandpass') => {
+      const f = filt(type, f0, q);
+      f.frequency.setValueAtTime(f0, t0);
+      f.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t0 + dur);
+      noise(t0, dur, kind).connect(f).connect(swell(t0, dur, peak, g)).connect(panner(p0, p1, t0, t0 + dur));
+      return f;
+    };
+    // short filtered noise burst: clicks, crinkles, snaps
+    const tick = (t, f, q, g, len, p = 0) => {
+      const e = oc.createGain();
+      e.gain.setValueAtTime(0, 0);
+      e.gain.setValueAtTime(g, t);
+      e.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      noise(t, len, 'white').connect(filt('bandpass', f, q)).connect(e).connect(panner(p, p, t, t));
+    };
+    // low sine drop: knocks, landings
+    const thump = (t, f, g, len, p = 0) => {
+      const o = oc.createOscillator(), e = oc.createGain();
+      o.frequency.setValueAtTime(f, t); o.frequency.exponentialRampToValueAtTime(f * 0.45, t + len);
+      e.gain.setValueAtTime(0, 0); e.gain.setValueAtTime(0.0001, t);
+      e.gain.exponentialRampToValueAtTime(g, t + 0.004); e.gain.exponentialRampToValueAtTime(0.0001, t + len);
+      o.connect(e).connect(panner(p, p, t, t)); o.start(t); o.stop(t + len + 0.02);
+    };
+    const tone = (t0, dur, type, f0, f1, g, peak, p0 = 0, p1 = p0) => {
+      const o = oc.createOscillator();
+      o.type = type;
+      o.frequency.setValueAtTime(f0, t0); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t0 + dur);
+      const e = swell(t0, dur, peak, g);
+      o.connect(e).connect(panner(p0, p1, t0, t0 + dur)); o.start(t0); o.stop(t0 + dur + 0.02);
+      return { o, e };
+    };
+    // gain that follows the speed of the eased motion: loud while the paper moves fast,
+    // fading as it slows, silent once it has settled
+    const motion = (t0, dur, ease, g) => {
+      const N = 160, c = new Float32Array(N), h = 0.004;
+      let mx = 0;
+      for (let i = 0; i < N; i++) {
+        const x = i / (N - 1), a = clamp(x - h, 0, 1), b = clamp(x + h, 0, 1);
+        c[i] = Math.abs(ease(b) - ease(a)) / (b - a || 1);
+        mx = Math.max(mx, c[i]);
+      }
+      for (let i = 0; i < N; i++) {
+        const x = i / (N - 1);
+        const att = clamp(x / 0.05, 0, 1), rel = 1 - clamp((x - 0.85) / 0.15, 0, 1);
+        c[i] = g * Math.sqrt(c[i] / (mx || 1)) * att * att * (3 - 2 * att) * rel * rel * (3 - 2 * rel);
+      }
+      c[N - 1] = 0;
+      const e = oc.createGain(); e.gain.setValueAtTime(0, 0); e.gain.setValueCurveAtTime(c, Math.max(0, t0), Math.max(0.05, dur));
+      return e;
+    };
+    // filter frequency that rises with the motion's progress
+    const followFreq = (param, t0, dur, ease, f0, f1) => {
+      const N = 96, c = new Float32Array(N);
+      for (let i = 0; i < N; i++) c[i] = f0 + (f1 - f0) * clamp(ease(i / (N - 1)), 0, 1.05);
+      param.setValueCurveAtTime(c, Math.max(0, t0), Math.max(0.05, dur));
+    };
+    return { R, out, noise, panner, swell, filt, whoosh, tick, thump, tone, motion, followFreq };
+  }
+
+  // ---------------------------------------------------------------- recipes
+  // Each recipe gets the effect duration d and an easing so sounds track the motion.
+  // Sound palette: soft paper and air. Pink noise, broad gentle filters, smooth swells, low soft
+  // landings; no buzzing, no resonant clicks, no harsh highs.
+  const RECIPES = {
+    // two rollers part: a smooth paper slide drifting apart left and right, faint layer ruffles, soft wooden settle
+    papyrus(K, d, o) {
+      const land = invEase(o.ease, 0.97) * d;
+      for (const side of [-1, 1]) {
+        const f = K.filt('bandpass', 300, 0.5);
+        K.followFreq(f.frequency, 0, d, o.ease, side < 0 ? 280 : 310, side < 0 ? 900 : 950);
+        K.noise(0, d, 'pink').connect(f).connect(K.motion(0, d, o.ease, 0.55)).connect(K.panner(side * 0.1, side * 0.75, 0, land));
+      }
+      K.noise(0, d, 'brown').connect(K.filt('lowpass', 160, 0.5)).connect(K.motion(0, d, o.ease, 0.6)).connect(K.panner(0, 0, 0, 0));
+      const N = 10;
+      for (let i = 1; i < N; i++) {
+        const t = invEase(o.ease, i / N) * d, side = i % 2 ? -1 : 1;
+        K.whoosh(Math.max(0, t - 0.06), 0.14, 700, 1200, 0.7, 0.5, 0.08, side * 0.5);
+      }
+      K.thump(land, 130, 0.3, 0.16, -0.7); K.thump(land + 0.04, 120, 0.3, 0.16, 0.7);
+    },
+    // a poster unrolls: one smooth paper slide that follows the paper's speed and settles as it lands
+    roll(K, d, o) {
+      const land = invEase(o.ease, 0.97) * d;
+      const f = K.filt('bandpass', 260, 0.45);
+      K.followFreq(f.frequency, 0, d, o.ease, 260, 1000);
+      K.noise(0, d, 'pink').connect(f).connect(K.motion(0, d, o.ease, 0.8)).connect(K.panner(-0.2, 0.2, 0, land));
+      K.noise(0, d, 'brown').connect(K.filt('lowpass', 320, 0.5)).connect(K.motion(0, d, o.ease, 0.35)).connect(K.panner(0, 0, 0, 0));
+      K.thump(land, 100, 0.22, 0.16);
+    },
+    // a soft whoosh each half turn, slowing and deepening as the spin winds down, then a gentle landing
+    spin(K, d, o) {
+      const spins = Math.max(0.25, o.spins || 2), n = Math.max(1, Math.round(spins * 2));
+      K.whoosh(0, d * 0.9, 250, 650, 0.5, 0.3, 0.3);
+      let prev = 0;
+      for (let k = 1; k <= n; k++) {
+        const t = invEase(o.ease, k / n) * d, gap = Math.max(0.06, t - prev);
+        const len = Math.min(0.4, Math.max(0.14, gap * 1.5));
+        const f = clamp(1500 - gap * 2500, 450, 1300);
+        K.whoosh(Math.max(0, t - len * 0.6), len, f * 0.75, f * 1.2, 0.7, 0.55, 0.6 * (0.6 + 0.4 * k / n), k % 2 ? -0.4 : 0.4, k % 2 ? 0.4 : -0.4);
+        prev = t;
+      }
+      const end = invEase(o.ease, 0.98) * d;
+      K.whoosh(Math.max(0, end - 0.08), 0.3, 600, 250, 0.5, 0.3, 0.35); K.thump(end, 90, 0.3, 0.25);
+    },
+    // a page turning: an airy, rounded swish and a soft settle
+    turn(K, d, o) {
+      const land = invEase(o.ease, 0.97) * d;
+      const f = K.filt('bandpass', 450, 0.5);
+      K.followFreq(f.frequency, 0, d, o.ease, 450, 1600);
+      K.noise(0, d, 'pink').connect(f).connect(K.motion(0, d, o.ease, 0.7)).connect(K.panner(0.4, -0.3, 0, land));
+      K.thump(land, 110, 0.2, 0.15);
+    },
+    // a letter opening: two gentle flap swishes, each settling with a soft crease
+    fold(K, d, o) {
+      const a = invEase(o.ease, 0.55) * d, b0 = invEase(o.ease, 0.42) * d, b = invEase(o.ease, 0.985) * d;
+      K.whoosh(0, Math.max(0.15, a), 350, 1100, 0.55, 0.65, 0.6, -0.3, -0.1);
+      K.whoosh(b0, Math.max(0.15, b - b0), 330, 1000, 0.55, 0.65, 0.6, 0.3, 0.1);
+      for (const [t, p] of [[a, -0.25], [b, 0.25]]) { K.whoosh(Math.max(0, t - 0.03), 0.12, 900, 600, 0.8, 0.3, 0.18, p); K.thump(t, 140, 0.25, 0.14, p); }
+    },
+    // zig-zag panels opening: a row of soft paper flaps, rising gently and sweeping across
+    accordion(K, d, o) {
+      const N = Math.max(2, o.folds || 6);
+      K.whoosh(0, d, 300, 900, 0.5, 0.4, 0.35, -0.5, 0.5);
+      for (let i = 1; i <= N; i++) {
+        const t = invEase(o.ease, i / (N + 0.5)) * d, p = -0.6 + 1.2 * i / N;
+        K.whoosh(Math.max(0, t - 0.07), 0.16, 400 * Math.pow(1.1, i), 700 * Math.pow(1.1, i), 0.7, 0.45, 0.22, p);
+        K.thump(t, 150 + 12 * i, 0.12, 0.1, p);
+      }
+    },
+    // a crumpled sheet relaxing: a soft, sparse rustle that calms down as it flattens
+    crumple(K, d, o) {
+      K.whoosh(0, d, 300, 800, 0.5, 0.25, 0.55, 0, 0);
+      for (let i = 0; i < 26; i++) {
+        const t = d * 0.8 * Math.pow(K.R(), 1.7), f = 700 + K.R() * 900;
+        K.whoosh(t, 0.06 + K.R() * 0.1, f, f * 1.2, 0.8, 0.4, (0.08 + K.R() * 0.1) * (1 - 0.7 * t / d), (K.R() - 0.5));
+      }
+      K.thump(invEase(o.ease, 0.97) * d, 110, 0.22, 0.18);
+    },
+    // falling leaf: airy swings left and right, soft landing
+    flutter(K, d, o) {
+      const f = K.whoosh(0, d, 500, 900, 0.6, 0.45, 0.85, 0, 0, 'pink', 'lowpass');
+      const p = K.out.context.createStereoPanner(), N = 96, c = new Float32Array(N), cf = new Float32Array(N);
+      for (let i = 0; i < N; i++) { const x = i / (N - 1), k = 1 - o.ease(x); c[i] = clamp(0.8 * Math.sin(x * Math.PI * 2.2) * k, -1, 1); cf[i] = 400 + 900 * Math.abs(Math.cos(x * Math.PI * 2.2)) * k; }
+      f.frequency.cancelScheduledValues(0); f.frequency.setValueCurveAtTime(cf, 0, d);
+      p.pan.setValueCurveAtTime(c, 0, d);
+      f.disconnect(); const g = K.swell(0, d, 0.45, 0.85); f.connect(g).connect(p).connect(K.out);
+      const land = invEase(o.ease, 0.97) * d;
+      K.thump(land, 100, 0.3, 0.22);
+    },
+    // soft breath with a faint shimmer
+    fade(K, d) {
+      K.whoosh(0, d, 220, 750, 0.5, 0.55, 0.8, 0, 0, 'pink', 'lowpass');
+      K.tone(0, d, 'sine', 660, 700, 0.04, 0.5, -0.3, -0.3);
+      K.tone(d * 0.1, d * 0.9, 'sine', 990, 1050, 0.025, 0.5, 0.3, 0.3);
+    },
+    none(K) { K.whoosh(0, 0.18, 600, 250, 0.5, 0.3, 0.5); K.thump(0.05, 120, 0.3, 0.15); },
+
+    // ---- highlights
+    // felt-tip on paper: a soft, low swish that fades in and out with the stroke
+    marker(K, d) {
+      const oc = K.out.context, N = 64, c = new Float32Array(N);
+      for (let i = 0; i < N; i++) {
+        const x = i / (N - 1), up = clamp(x / 0.18, 0, 1), down = clamp((1 - x) / 0.35, 0, 1);
+        c[i] = Math.min(up * up * (3 - 2 * up), down * down * (3 - 2 * down)) * (0.85 + 0.15 * Math.sin(x * Math.PI));
+      }
+      c[N - 1] = 0;
+      const e = oc.createGain(); e.gain.setValueAtTime(0, 0); e.gain.setValueCurveAtTime(c, 0, Math.max(0.05, d));
+      const f = K.filt('lowpass', 700, 0.4);
+      f.frequency.setValueAtTime(700, 0); f.frequency.linearRampToValueAtTime(1100, d);
+      K.noise(0, d, 'pink').connect(K.filt('highpass', 120, 0.5)).connect(f).connect(e).connect(K.panner(-0.2, 0.2, 0, d));
+    },
+    // neon: a smooth, warm glow-hum that swells along the line (no buzz)
+    neon(K, d) {
+      const L = d + 0.2;
+      K.tone(0, L, 'sine', 196, 208, 0.35, 0.35, -0.2, 0.2);
+      K.tone(0, L, 'sine', 392, 416, 0.12, 0.4, 0.2, -0.2);
+      K.tone(0, L, 'sine', 588, 620, 0.05, 0.45);
+      K.whoosh(0, L, 500, 1400, 0.5, 0.4, 0.25);
+    },
+    // deep cinematic sweep with a sub swell
+    spot(K, d) {
+      const L = Math.max(0.35, d + 0.2);
+      K.whoosh(0, L, 200, 1100, 0.6, 0.45, 0.9, 0, 0, 'pink', 'lowpass');
+      K.tone(0, L, 'sine', 55, 90, 0.5, 0.4);
+    },
+    // ink pen: a light, smooth pencil-like glide, a little brighter than the highlighter
+    pen(K, d) {
+      const oc = K.out.context, e = oc.createGain();
+      e.gain.setValueAtTime(0, 0); e.gain.linearRampToValueAtTime(0.5, Math.min(0.06, d / 3));
+      e.gain.setValueAtTime(0.5, Math.max(0.07, d - 0.1)); e.gain.linearRampToValueAtTime(0, d);
+      const f = K.filt('bandpass', 1500, 0.8);
+      f.frequency.setValueAtTime(1400, 0); f.frequency.linearRampToValueAtTime(1800, d);
+      K.noise(0, d, 'pink').connect(f).connect(e).connect(K.panner(-0.25, 0.25, 0, d));
+    },
+    // laser: a smooth falling sine glide with a soft airy trail
+    laser(K, d) {
+      const L = Math.max(0.3, Math.min(d, 1.4));
+      K.tone(0, L, 'sine', 1400, 380, 0.5, 0.15, -0.4, 0.4);
+      K.tone(0, L, 'sine', 2100, 570, 0.1, 0.15, -0.4, 0.4);
+      K.whoosh(0, L, 2200, 700, 0.7, 0.25, 0.35, 0.4, -0.4);
+    },
+    // a box tracing itself: a gentle rising glide with a soft tap at each corner
+    box(K, d, o) {
+      if (o.anim === 'grow') {
+        K.tone(0, Math.min(0.45, d), 'sine', 110, 200, 0.6, 0.35);
+        K.whoosh(0, Math.min(0.5, d), 300, 1000, 0.5, 0.5, 0.45);
+        return;
+      }
+      K.whoosh(0, d, 350, 1000, 0.6, 0.6, 0.45, -0.3, 0.3);
+      K.tone(0, d, 'sine', 260, 520, 0.18, 0.7, -0.3, 0.3);
+      const pans = o.anim === 'split' ? [-0.4, 0.4] : [0];
+      for (const fr of o.corners) {
+        const t = invEase(o.ease, fr) * d;
+        for (const p of pans) K.thump(t, 260, 0.2, 0.09, p);
+      }
+    },
+  };
+
+  // ---------------------------------------------------------------- rendering & playback
+  function render(kind, d, o) {
+    if (!OAC || !RECIPES[kind]) return Promise.resolve(null);
+    const len = d + 0.6;
+    const oc = new OAC(2, Math.ceil(len * SR), SR);
+    try { RECIPES[kind](kit(oc, o.seed || 1), d, o); } catch (e) { return Promise.resolve(null); }
+    return oc.startRendering().then(buf => {
+      let peak = 0, sum = 0, cnt = 0;
+      const act = Math.min(buf.length, Math.ceil((d + 0.1) * SR));
+      for (let c = 0; c < buf.numberOfChannels; c++) {
+        const a = buf.getChannelData(c);
+        for (let i = 0; i < a.length; i++) { const v = Math.abs(a[i]); if (v > peak) peak = v; if (i < act) { sum += v * v; cnt++; } }
+      }
+      const rms = Math.sqrt(sum / Math.max(1, cnt));
+      const k = peak > 0 ? Math.min(0.85 / peak, 0.11 / Math.max(rms, 1e-6)) * (o.gain || 1) : 0;
+      // entrance sounds end with the animation: fade to silence by o.endAt
+      const end = o.endAt ? Math.min(buf.length, Math.round(o.endAt * SR)) : buf.length;
+      const fade = Math.round((o.endAt ? 0.12 : 0.02) * SR);
+      for (let c = 0; c < buf.numberOfChannels; c++) {
+        const a = buf.getChannelData(c);
+        for (let i = 0; i < a.length; i++) a[i] *= k;
+        for (let i = 0; i < fade && end - 1 - i >= 0; i++) a[end - 1 - i] *= i / fade;
+        a.fill(0, end);
+      }
+      return buf;
+    }).catch(() => null);
+  }
+  function get(ev) {
+    let v = cache.get(ev.key);
+    if (v === undefined) {
+      v = render(ev.kind, ev.d, ev.o).then(b => { cache.set(ev.key, b); return b; });
+      cache.set(ev.key, v);
+      if (cache.size > 120) cache.delete(cache.keys().next().value);
+    }
+    return v;
+  }
+  return {
+    resume,
+    setEvents(list) { events = list; for (const ev of list) get(ev); },
+    buffer: get,
+    reset() { fired = new Set(); this.stopAll(); },
+    stopAll() { for (const s of active) { try { s.stop(); } catch (e) {} } active.clear(); },
+    setVolume(v) { if (master) master.gain.value = v; },
+    // called every frame while the sequence runs; schedules sounds slightly ahead on the audio clock
+    tick(t) {
+      if (!ensure() || ctx.state !== 'running') return;
+      for (const ev of events) {
+        if (fired.has(ev.id) || ev.at - t > 0.15) continue;
+        const b = cache.get(ev.key);
+        if (!(b instanceof AudioBuffer) && t - ev.at < 0.3) continue;   // still rendering: try again shortly
+        fired.add(ev.id);
+        if (!(b instanceof AudioBuffer) || t - ev.at > 0.3) continue; // joined mid-way: don't play late
+        const src = ctx.createBufferSource(), vg = ctx.createGain();
+        src.buffer = b;
+        vg.gain.value = ev.vol ?? 1;
+        src.connect(vg).connect(master);
+        // slightly late (a hitch): start now, skipping ahead so it stays in sync
+        if (ev.at >= t) src.start(ctx.currentTime + (ev.at - t)); else src.start(ctx.currentTime, t - ev.at);
+        active.add(src);
+        src.onended = () => active.delete(src);
+      }
+    },
+    RECIPES,
+  };
+})();
+['pointerdown', 'keydown'].forEach(n => window.addEventListener(n, () => SFX.resume(), true));
+// sounds are scheduled on their own timer so slow or dropped animation frames never skip one
+setInterval(() => {
+  if (S.ready && S.playing && S.freezeT == null) SFX.tick((performance.now() - S.seqStart) / 1000);
+}, 25);
+
+// boxes: where the corners fall along the draw-in (0..1), for the corner ticks
+function boxCorners(a) {
+  const s = sty(a), r = Math.max(0, Math.min(s.radius, a.w / 2, a.h / 2));
+  const W = a.w - 2 * r, H = a.h - 2 * r, q = Math.PI * r / 2, per = 2 * (W + H) + 4 * q;
+  if (per <= 0) return [];
+  if (s.anim === 'split') return [(W + q / 2) / (per / 2), (W + 2 * q + H + q / 2) / (per / 2)].map(v => clamp(v, 0, 1));
+  return [W + q / 2, W + 2 * q + H + q / 2, 2 * W + 3 * q + H + q / 2, 2 * W + 4 * q + 2 * H - q / 2].map(v => clamp(v / per, 0, 1));
+}
+// the list of sounds for the current sequence
+function buildSfxEvents() {
+  const p = P(), sd = p.sound, sch = S.sched, out = [];
+  if (!sd.on || !sch || !S.L) return out;
+  const r3 = v => Math.round(v * 1000) / 1000;
+  if (sd.entrance) {
+    const eff = EFFECTS[p.paper.effect] ? p.paper.effect : 'none';
+    const d = eff === 'none' ? 0.2 : Math.max(0.2, sch.dur);
+    const o = { ease: S.easeFn, spins: p.paper.spins, folds: p.paper.folds, seed: 11, gain: 1, endAt: eff === 'none' ? 0 : d };
+    out.push({ id: 'entrance', at: sch.T0, kind: eff, d, o, vol: sd.entranceVolume ?? 0.4, key: ['e', eff, r3(d), p.paper.ease, p.paper.spins, p.paper.folds].join('|') });
+  }
+  if (sd.highlights) {
+    p.annotations.forEach((a, i) => {
+      const s = sch.ann[i]; if (!s) return;
+      const kind = a.type === 'rect' ? 'box' : a.mode;
+      const easeName = isSpot(a) ? (hlStyle('spot').ease || 'power2.out') : p.timing.strokeEase;
+      const o = { ease: s.ease, seed: hashStr(a.id) % 9973 + 1, gain: kind === 'marker' ? 0.45 : 0.8 };
+      let extra = '';
+      if (kind === 'box') { o.anim = hlStyle('box').anim; o.corners = boxCorners(a); extra = o.anim + ':' + o.corners.map(r3).join(','); }
+      out.push({ id: a.id, at: s.start, kind, d: Math.max(0.12, s.dur), o, key: ['a', kind, a.id, r3(s.dur), easeName, extra].join('|') });
+    });
+  }
+  return out;
 }
 
 // ======================================================================
@@ -1901,6 +2324,7 @@ function loop(now) {
     const fr = S.playing ? frameAt(t) : editFrame();
     if (S.playing) syncScrub(t);
     applyFrame(fr);
+    SFX.setVolume(P().sound.on ? P().sound.volume : 0);
     if (paperMesh.visible) updateLasers(fr, t, now); else U.uLaserOn.value = 0;
   } else {
     paperMesh.visible = false; rollers.visible = false;
@@ -2253,10 +2677,12 @@ function play(from = 0) {
   S.freezeT = null;
   S.seqStart = performance.now() - from * 1000;
   S.playing = true; S.compKey = '';
+  SFX.reset(); SFX.setEvents(buildSfxEvents());
   updatePlayUI();
 }
 function stop() {
   S.playing = false; S.freezeT = null; S.compKey = '';
+  SFX.reset();
   updatePlayUI();
   $('#scrub').value = 1;
 }
@@ -2733,7 +3159,7 @@ async function boot() {
   requestAnimationFrame(() => document.body.classList.remove('booting'));
   requestAnimationFrame(loop);
 }
-window.__paperBroll = { S, setImage, play, stop, scrubTo, setUiHidden, previewFor, setTool, changed, frameAt, P, syncUI };
+window.__paperBroll = { SFX, buildSfxEvents, S, setImage, play, stop, scrubTo, setUiHidden, previewFor, setTool, changed, frameAt, P, syncUI };
 boot();
 })();
 </script>

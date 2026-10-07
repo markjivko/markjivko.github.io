@@ -500,7 +500,9 @@ body.hide-cursor, body.hide-cursor * { cursor: none !important; }
   font-size: 13px;
   display: flex; flex-direction: column;
   transform: translateX(102%);
-  transition: transform .34s cubic-bezier(.4,.9,.25,1), box-shadow .22s ease;
+  /* the shadow is bound to .open rather than transitioned: a transition can
+     stall mid-flight and leave the shadow painted over the frame */
+  transition: transform .34s cubic-bezier(.4,.9,.25,1);
   z-index: 100;
   box-shadow: none;
 }
@@ -838,6 +840,7 @@ kbd {
     <button class="tab" data-tab="marker">Marker</button>
     <button class="tab" data-tab="design">Design</button>
     <button class="tab" data-tab="timing">Timing</button>
+    <button class="tab" data-tab="sound">Sound</button>
     <button class="tab" data-tab="presets">Presets</button>
   </nav>
 
@@ -1328,6 +1331,57 @@ kbd {
 
     </section>
 
+    <!-- ---------------- SOUND ---------------- -->
+    <section class="pane" data-pane="sound">
+
+      <div class="group">
+        <h2>Whooshes</h2>
+        <p class="note">Every sound is synthesised in the page &mdash; pink noise pushed through a sweeping filter &mdash; so nothing is downloaded, and each one is built from the animation that fires it. A slow entrance gets a long whoosh, a short marker stroke a short one.</p>
+        <label class="check"><input type="checkbox" data-bind="sfxOn"><span class="box"></span> Sound on</label>
+        <div class="field" style="margin-top:10px">
+          <div class="lbl"><span>Volume</span><span class="val" data-val-for="sfxVolume"></span></div>
+          <input type="range" data-bind="sfxVolume" min="0" max="1" step="0.01" data-unit="%" data-mul="100">
+        </div>
+        <div class="field">
+          <div class="lbl"><span>Take to take variation</span><span class="val" data-val-for="sfxVariation"></span></div>
+          <input type="range" data-bind="sfxVariation" min="0" max="0.5" step="0.01" data-unit="%" data-mul="100">
+        </div>
+        <p class="note">Variation nudges the pitch and sweep a little on every play, so several takes cut together do not sound copy-pasted.</p>
+      </div>
+
+      <div class="group">
+        <h2>What makes a sound</h2>
+        <label class="check"><input type="checkbox" data-bind="sfxEntrance"><span class="box"></span> Card entering</label>
+        <label class="check"><input type="checkbox" data-bind="sfxHighlight"><span class="box"></span> Each highlight stroke</label>
+        <label class="check"><input type="checkbox" data-bind="sfxReveal"><span class="box"></span> Text appearing</label>
+        <label class="check"><input type="checkbox" data-bind="sfxWords"><span class="box"></span> Each word landing</label>
+        <div class="field" style="margin:6px 0 2px 39px">
+          <div class="lbl"><span>Word pop level</span><span class="val" data-val-for="sfxWordLevel"></span></div>
+          <input type="range" data-bind="sfxWordLevel" min="0" max="1" step="0.01" data-unit="%" data-mul="100">
+        </div>
+        <label class="check"><input type="checkbox" data-bind="sfxExit"><span class="box"></span> Card leaving</label>
+        <label class="check"><input type="checkbox" data-bind="sfxAmbient"><span class="box"></span> Breath on the ambient loop</label>
+        <p class="note">Entrance, marker and exit each follow the style you picked, so Swoop, Rise and Drop are three different moves, and Swipe, Fade, Pop and Underline are four different strokes. Word pops only fire when Text appears is set to Word by word.</p>
+      </div>
+
+      <div class="group">
+        <h2>Audition</h2>
+        <div class="row tight">
+          <button class="btn" id="btnSfxIn">Entrance</button>
+          <button class="btn" id="btnSfxHl">Marker</button>
+        </div>
+        <div class="row tight" style="margin-top:6px">
+          <button class="btn" id="btnSfxRv">Text</button>
+          <button class="btn" id="btnSfxWd">Word pops</button>
+        </div>
+        <div class="row tight" style="margin-top:6px">
+          <button class="btn" id="btnSfxEx">Exit</button>
+        </div>
+        <p class="note" style="margin-top:8px">Browsers keep audio muted until the page has been clicked or typed in. Pressing R to replay counts, so in practice it is already unlocked by the time you record.</p>
+      </div>
+
+    </section>
+
     <!-- ---------------- PRESETS ---------------- -->
     <section class="pane" data-pane="presets">
 
@@ -1520,6 +1574,17 @@ const DEFAULTS = {
   loop: false,
   loopDelay: 3000,
   exitStyle: 'hold',
+
+  sfxOn: true,
+  sfxVolume: 0.6,
+  sfxVariation: 0.25,
+  sfxEntrance: true,
+  sfxHighlight: true,
+  sfxReveal: true,
+  sfxWords: true,
+  sfxWordLevel: 0.55,
+  sfxExit: true,
+  sfxAmbient: false,
 
   hintsHidden: false
 };
@@ -1923,6 +1988,8 @@ function applyStyle() {
   }
   s.setProperty('--logo-ink', st.logoTint === 'custom' ? st.logoTintColor : 'var(--ink)');
 
+  Sfx.sync();
+
   $('#keyNote').textContent = (st.bg === 'green' || st.bg === 'blue')
     ? 'For the cleanest key, pull the shadow down and keep the vignette off — soft shadows fringe when you pull a matte.'
     : '';
@@ -2036,6 +2103,289 @@ function pickMark(id) {
 }
 
 /* ==========================================================================
+   Sound
+   Every whoosh is synthesised here rather than sampled, so nothing is fetched
+   and the file stays small.  Pink noise through a sweeping bandpass is the
+   bones of a paper whoosh; the recipes below give each effect its own sweep
+   range, resonance, envelope and stereo travel so they stay tellable apart.
+   Durations come from the animation that triggers them, so a slow entrance
+   gets a long whoosh and a short marker stroke a short one.
+   ========================================================================== */
+const Sfx = (function () {
+  let ctx = null, master = null, noise = null, warned = false;
+  let ambientTimer = null, ambientSig = '';
+  const live = new Set();
+
+  /* Pink noise reads as paper and cloth; white noise reads as hiss. */
+  function makeNoise(c, secs) {
+    const n = Math.floor(c.sampleRate * secs);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+    for (let i = 0; i < n; i++) {
+      const w = Math.random() * 2 - 1;
+      b0 = 0.99886 * b0 + w * 0.0555179;
+      b1 = 0.99332 * b1 + w * 0.0750759;
+      b2 = 0.96900 * b2 + w * 0.1538520;
+      b3 = 0.86650 * b3 + w * 0.3104856;
+      b4 = 0.55000 * b4 + w * 0.5329522;
+      b5 = -0.7616 * b5 - w * 0.0168980;
+      d[i] = (b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362) * 0.11;
+      b6 = w * 0.115926;
+    }
+    return buf;
+  }
+
+  function ensure() {
+    if (ctx) return true;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return false;
+    try { ctx = new AC(); } catch (e) { return false; }
+    master = ctx.createGain();
+    master.gain.value = st.sfxVolume;
+    master.connect(ctx.destination);
+    noise = makeNoise(ctx, 2.6);
+    return true;
+  }
+
+  /* Browsers keep audio suspended until the page is touched.  Any key or
+     click unlocks it, and pressing R to replay does the job by itself. */
+  function unlock() {
+    if (!ensure()) return;
+    if (ctx.state !== 'running') ctx.resume();
+  }
+
+  function gate() {
+    if (!st.sfxOn) return false;
+    if (!ensure()) return false;
+    if (ctx.state !== 'running') {
+      ctx.resume();
+      if (!warned) { warned = true; toast('Press a key or click once to let the browser play sound', 'warn'); }
+      return false;
+    }
+    return true;
+  }
+
+  function vary(x, amt) {
+    const v = (st.sfxVariation || 0) * amt;
+    return x * (1 + (Math.random() * 2 - 1) * v);
+  }
+
+  function track(node) {
+    live.add(node);
+    node.onended = () => live.delete(node);
+  }
+
+  function panner(from, to, t, dur) {
+    if (!ctx.createStereoPanner) return ctx.createGain();
+    const p = ctx.createStereoPanner();
+    const a = clamp(from == null ? 0 : from, -1, 1);
+    const b = clamp(to == null ? a : to, -1, 1);
+    p.pan.setValueAtTime(a, t);
+    if (b !== a) p.pan.linearRampToValueAtTime(b, t + dur);
+    return p;
+  }
+
+  /* Swept-bandpass noise: the whoosh itself. */
+  function whoosh(o) {
+    const t = ctx.currentTime + (o.delay || 0);
+    const dur = Math.max(0.03, o.dur);
+    const src = ctx.createBufferSource();
+    src.buffer = noise;
+    src.loop = true;
+    src.playbackRate.value = o.rate || 1;
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.Q.value = o.q == null ? 1.2 : o.q;
+    bp.frequency.setValueAtTime(Math.max(40, o.f0), t);
+    bp.frequency.exponentialRampToValueAtTime(Math.max(40, o.f1), t + dur);
+
+    const hp = ctx.createBiquadFilter();
+    hp.type = 'highpass';
+    hp.frequency.value = o.hp || 100;
+
+    const g = ctx.createGain();
+    const peak = Math.max(0.0002, o.gain);
+    const atk = dur * (o.attack == null ? 0.35 : o.attack);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(peak, t + atk);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+
+    const p = panner(o.panFrom, o.panTo, t, dur);
+    src.connect(bp); bp.connect(hp); hp.connect(g); g.connect(p); p.connect(master);
+    track(src);
+    src.start(t, Math.random() * 1.6);
+    src.stop(t + dur + 0.06);
+  }
+
+  /* The sheet landing. */
+  function thump(o) {
+    const t = ctx.currentTime + (o.delay || 0);
+    const dur = o.dur || 0.2;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(o.f0 || 150, t);
+    osc.frequency.exponentialRampToValueAtTime(o.f1 || 46, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, o.gain || 0.25), t + 0.008);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g); g.connect(master);
+    track(osc);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  }
+
+  /* A flick of paper — short, bright, almost a click. */
+  function tick(o) {
+    const t = ctx.currentTime + (o.delay || 0);
+    const dur = o.dur || 0.045;
+    const src = ctx.createBufferSource();
+    src.buffer = noise; src.loop = true;
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass'; bp.Q.value = o.q || 1.4;
+    bp.frequency.value = o.f || 2300;
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, o.gain || 0.12), t + dur * 0.18);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    const p = panner(o.pan, o.pan, t, dur);
+    src.connect(bp); bp.connect(g); g.connect(p); p.connect(master);
+    track(src);
+    src.start(t, Math.random() * 1.6);
+    src.stop(t + dur + 0.03);
+  }
+
+  /* Pitched blip for the pop marker. */
+  function blip(o) {
+    const t = ctx.currentTime + (o.delay || 0);
+    const dur = o.dur || 0.14;
+    const osc = ctx.createOscillator();
+    osc.type = o.type || 'triangle';
+    osc.frequency.setValueAtTime(o.f0, t);
+    osc.frequency.exponentialRampToValueAtTime(o.f1, t + dur);
+    const g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.0002, o.gain), t + dur * 0.12);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    const p = panner(o.pan, o.pan, t, dur);
+    osc.connect(g); g.connect(p); p.connect(master);
+    track(osc);
+    osc.start(t); osc.stop(t + dur + 0.03);
+  }
+
+  /* ---------------- recipes ---------------- */
+
+  function entrance(kind, D) {
+    if (!st.sfxEntrance || !gate()) return;
+    D = clamp(D, 0.15, 3);
+    if (kind === 'swoop') {
+      // long rising sweep travelling left to centre, a flutter behind it, then the landing
+      whoosh({ dur: D * 0.98, f0: vary(240, .12), f1: vary(2600, .12), q: 0.9, gain: 0.30, attack: 0.58, hp: 110, panFrom: -0.38, panTo: 0.12 });
+      whoosh({ dur: D * 0.60, delay: D * 0.28, f0: vary(1100, .15), f1: vary(3900, .15), q: 3.2, gain: 0.10, attack: 0.5, hp: 420, panFrom: 0.3, panTo: -0.06 });
+      thump({ delay: D * 0.9, f0: 152, f1: 46, dur: 0.24, gain: 0.26 });
+      tick({ delay: D * 0.93, gain: 0.13, f: vary(2100, .1) });
+    } else if (kind === 'rise') {
+      // soft and low, barely a lift
+      whoosh({ dur: D * 0.95, f0: vary(170, .1), f1: vary(880, .1), q: 1.5, gain: 0.17, attack: 0.62, hp: 80, panFrom: -0.1, panTo: 0.06 });
+      thump({ delay: D * 0.88, f0: 108, f1: 40, dur: 0.2, gain: 0.12 });
+    } else if (kind === 'drop') {
+      // falling sweep that ends in a slap
+      whoosh({ dur: D * 0.92, f0: vary(2400, .12), f1: vary(300, .12), q: 1.1, gain: 0.26, attack: 0.3, hp: 120, panFrom: 0.2, panTo: -0.12 });
+      tick({ delay: D * 0.9, gain: 0.3, f: vary(1500, .12), q: 0.9, dur: 0.1 });
+      thump({ delay: D * 0.9, f0: 210, f1: 54, dur: 0.18, gain: 0.3 });
+    } else {
+      tick({ gain: 0.12, f: 1800, dur: 0.06 });
+    }
+  }
+
+  function highlight(style, D, pan) {
+    if (!st.sfxHighlight || !gate()) return;
+    D = clamp(D, 0.06, 3);
+    pan = clamp(pan || 0, -0.8, 0.8);
+    if (style === 'marker') {
+      // felt tip dragging: mid band for the squeak, a low layer for the body
+      whoosh({ dur: D, f0: vary(620, .18), f1: vary(1520, .18), q: 1.5, gain: 0.20, attack: 0.3, hp: 260, panFrom: pan - 0.18, panTo: pan + 0.18, rate: vary(1, .12) });
+      whoosh({ dur: D * 0.9, f0: vary(175, .15), f1: vary(300, .15), q: 0.8, gain: 0.085, attack: 0.35, hp: 70, panFrom: pan, panTo: pan });
+    } else if (style === 'underline') {
+      whoosh({ dur: D * 0.78, f0: vary(1550, .15), f1: vary(2950, .15), q: 4.2, gain: 0.15, attack: 0.24, hp: 700, panFrom: pan - 0.14, panTo: pan + 0.14 });
+    } else if (style === 'fade') {
+      whoosh({ dur: D * 1.1, f0: vary(420, .15), f1: vary(1080, .15), q: 0.6, gain: 0.12, attack: 0.72, hp: 170, panFrom: pan, panTo: pan });
+    } else {
+      blip({ dur: 0.15, f0: vary(300, .18), f1: vary(920, .18), gain: 0.15, pan: pan });
+      tick({ gain: 0.09, f: vary(2700, .2), dur: 0.035, pan: pan });
+    }
+  }
+
+  /* Each word landing: a short pitched body with a paper tick on top.  The
+     phrase falls in pitch as it runs and each word is panned to where it
+     actually sits on the sheet, so a line reads left to right instead of
+     rattling out of the middle like a typewriter. */
+  function words(list, stepMs) {
+    if (!st.sfxWords || !gate()) return;
+    if (!list || !list.length) return;
+    const n = Math.min(list.length, 180);
+    const lvl = st.sfxWordLevel;
+    for (let i = 0; i < n; i++) {
+      const w = list[i];
+      const t = n > 1 ? i / (n - 1) : 0;
+      const len = Math.min(w.len || 4, 12);
+      const base = vary(575 - 180 * t - len * 9, .07);
+      const d = i * stepMs / 1000;
+      blip({ delay: d, dur: 0.055 + len * 0.004, f0: base, f1: base * 0.64,
+             gain: 0.11 * lvl, pan: w.pan, type: 'triangle' });
+      tick({ delay: d, gain: 0.055 * lvl, f: vary(2650 - 550 * t, .2), dur: 0.026, q: 1.7, pan: w.pan });
+    }
+  }
+
+  function reveal(kind, list, stepMs) {
+    if (!gate()) return;
+    if (kind === 'fade') {
+      if (st.sfxReveal) whoosh({ dur: 0.52, f0: 380, f1: 1150, q: 0.7, gain: 0.095, attack: 0.62, hp: 150 });
+    } else if (kind === 'words') {
+      words(list, stepMs);
+    }
+  }
+
+  function exit(kind, D) {
+    if (!st.sfxExit || !gate()) return;
+    D = clamp(D, 0.15, 3);
+    if (kind === 'swoop') {
+      whoosh({ dur: D * 0.95, f0: vary(380, .12), f1: vary(3100, .12), q: 1.0, gain: 0.24, attack: 0.42, hp: 130, panFrom: 0.05, panTo: -0.4 });
+      whoosh({ dur: D * 0.5, delay: D * 0.4, f0: vary(1600, .15), f1: vary(4200, .15), q: 3, gain: 0.08, attack: 0.5, hp: 500, panFrom: -0.2, panTo: -0.5 });
+    } else {
+      whoosh({ dur: D * 1.05, f0: vary(900, .12), f1: vary(220, .12), q: 0.8, gain: 0.13, attack: 0.5, hp: 90 });
+    }
+  }
+
+  /* A breath of paper each time the ambient loop changes direction. */
+  function sync() {
+    if (master && ctx) master.gain.value = st.sfxVolume;
+    const sig = [st.sfxOn, st.sfxAmbient, st.idleMotion, st.idleDur].join('|');
+    if (sig === ambientSig) return;
+    ambientSig = sig;
+    clearInterval(ambientTimer);
+    ambientTimer = null;
+    if (!st.sfxOn) panic();
+    if (!st.sfxOn || !st.sfxAmbient || st.idleMotion === 'none') return;
+    const half = Math.max(1200, st.idleDur * 500);
+    ambientTimer = setInterval(() => {
+      if (!gate()) return;
+      const p = (Math.random() - 0.5) * 0.6;
+      whoosh({ dur: vary(0.6, .2), f0: vary(300, .2), f1: vary(880, .2), q: 1.1, gain: 0.042, attack: 0.5, hp: 150, panFrom: p, panTo: -p });
+    }, half);
+  }
+
+  function panic() {
+    live.forEach(n => { try { n.stop(); } catch (e) {} try { n.disconnect(); } catch (e) {} });
+    live.clear();
+  }
+
+  return { unlock, entrance, highlight, reveal, words, exit, sync, panic,
+           ready: () => !!ctx && ctx.state === 'running' };
+})();
+
+/* ==========================================================================
    Timeline
    ========================================================================== */
 let playing = false, runId = 0, pendingAdvance = null;
@@ -2056,7 +2406,19 @@ function advance() { if (pendingAdvance) { const p = pendingAdvance; pendingAdva
 
 const msPerChar = () => 60000 / (st.wpm * 5.2);
 
+/* Pan and weight for every word, measured from layout so an ambient tilt
+   cannot skew it. */
+function wordPlaces() {
+  const cw = contentEl.offsetWidth || 1;
+  return wordEntries.map(e => {
+    const el = e.node.parentElement;
+    const x = (el.offsetLeft + el.offsetWidth / 2) / cw;
+    return { pan: clamp((x - 0.5) * 1.4, -0.85, 0.85), len: e.end - e.start };
+  });
+}
+
 function revealText() {
+  Sfx.reveal(st.reveal, wordPlaces(), clamp(60 / st.speed, 18, 140));
   if (st.reveal === 'none') {
     contentEl.classList.add('shown');
   } else if (st.reveal === 'words') {
@@ -2092,6 +2454,9 @@ async function sweep(g, id) {
     const w = parseFloat(el.style.width) || 40;
     const chars = w / (fs * 0.5);
     const dur = clamp(chars * msPerChar() * st.sweepScale, 110, 5000) / st.speed;
+    const pw = paperEl.offsetWidth || 1;
+    const mid = (parseFloat(el.style.left) || 0) + w / 2;
+    Sfx.highlight(st.hlStyle, dur / 1000, (mid / pw - 0.5) * 1.3);
     drawRect(el, dur);
     await wait(li < g.els.length - 1 ? dur * 0.86 : dur * 0.5);
     if (id !== runId) return;
@@ -2124,6 +2489,7 @@ async function runHighlights(id) {
 
 function exitAnim() {
   const d = clamp(st.entranceDur * 0.85, 250, 2200);
+  Sfx.exit(st.exitStyle, d / 1000);
   const to = st.exitStyle === 'swoop'
     ? { transform: 'translateY(calc(-50% - 118vh)) rotate(-6deg) scale(.95)', opacity: 0 }
     : { transform: 'translateY(-50%) scale(.99)', opacity: 0 };
@@ -2137,6 +2503,7 @@ async function play(opts) {
   opts = opts || {};
   const id = ++runId;
   killTimers();
+  Sfx.panic();
   playing = true;
 
   paperWrap.getAnimations().forEach(a => a.cancel());
@@ -2171,6 +2538,7 @@ async function play(opts) {
         rise:  { transform: 'translateY(calc(-50% + 70px)) scale(.985)', opacity: 0 },
         drop:  { transform: 'translateY(calc(-50% - 110px)) scale(1.04)', opacity: 0 }
       }[st.entrance];
+      Sfx.entrance(st.entrance, dur / 1000);
       const a = paperWrap.animate(
         [from, { transform: 'translateY(-50%) rotate(0deg) scale(1)', opacity: 1 }],
         { duration: dur, easing: 'cubic-bezier(.18,' + y1 + ',.3,1)', fill: 'both' });
@@ -2209,7 +2577,7 @@ async function play(opts) {
   }
 }
 
-function stop() { runId++; killTimers(); playing = false; }
+function stop() { runId++; killTimers(); Sfx.panic(); playing = false; }
 
 /* ==========================================================================
    Toast
@@ -2706,6 +3074,17 @@ $('#btnPreviewHl').addEventListener('click', () => play({ skipEntrance: true }))
 $('#btnShowAll').addEventListener('click', () => { stop(); showFinal(); });
 $('#btnReTear').addEventListener('click', () => { st.tearSeed = Math.floor(Math.random() * 1e8); save(); applyTear(); });
 $('#btnReplay').addEventListener('click', () => play());
+
+$('#btnSfxIn').addEventListener('click', () => { Sfx.unlock(); Sfx.entrance(st.entrance, clamp(st.entranceDur / 1000, .2, 3)); });
+$('#btnSfxHl').addEventListener('click', () => { Sfx.unlock(); Sfx.highlight(st.hlStyle, 0.7 / st.speed, -0.2); });
+$('#btnSfxRv').addEventListener('click', () => { Sfx.unlock(); Sfx.reveal(st.reveal, wordPlaces(), clamp(60 / st.speed, 18, 140)); });
+$('#btnSfxWd').addEventListener('click', () => {
+  Sfx.unlock();
+  let list = wordPlaces();
+  if (!list.length) list = Array.from({ length: 9 }, (_, i) => ({ pan: (i / 8 - 0.5) * 1.3, len: 3 + (i % 5) }));
+  Sfx.words(list, clamp(60 / st.speed, 18, 140));
+});
+$('#btnSfxEx').addEventListener('click', () => { Sfx.unlock(); Sfx.exit(st.exitStyle, clamp(st.entranceDur * 0.85 / 1000, .25, 2.2)); });
 $('#btnCloseIns').addEventListener('click', () => setIns(false));
 
 $('#btnSavePreset').addEventListener('click', savePreset);
@@ -2744,6 +3123,8 @@ stage.addEventListener('click', () => {
 
 /* ---------- keyboard ---------- */
 const TEXT_INPUT = /^(text|number|search|email|url|password)$/;
+['pointerdown', 'keydown'].forEach(ev =>
+  document.addEventListener(ev, () => Sfx.unlock(), { capture: true }));
 document.addEventListener('keydown', e => {
   const t = e.target;
   const tag = t ? t.tagName : '';
