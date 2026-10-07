@@ -770,7 +770,7 @@ const fontStack = f => `'${f}', ${/Courier|Special/.test(f) ? 'ui-monospace, mon
 const DEFAULTS = {
   style: 'cork', seed: 1987, gx: 960, gy: 455, gw: 600,
   text: 'The lighthouse at **Cape Harrow** — ==last place the signal was heard== before the *1987* blackout.',
-  img: { aspect: 'auto', zoom: 1, panX: 50, panY: 50, vspeed: 1 },
+  img: { aspect: 'auto', zoom: 1, panX: 50, panY: 50, vspeed: 1, vloop: true },
   per: {},
   hl: { delay: 350, dur: 700, stagger: 450, bleed: 30, thick: 80, opacity: .85, round: 75 },
   look: { border: 0, imgRadius: 26, noteRadius: 16, edges: false },
@@ -965,7 +965,7 @@ function mediaEl(slot) {
   slot.replaceWith(el);
   return el;
 }
-function applyVideoSpeed() { if (VIDEO) VIDEO.playbackRate = clamp(+S.img.vspeed || 1, .1, 4); }
+function applyVideoSpeed() { if (!VIDEO) return; VIDEO.playbackRate = clamp(+S.img.vspeed || 1, .1, 4); VIDEO.loop = S.img.vloop !== false; }   // played once, a video holds its last frame
 let SCALE = 1;
 
 /* ================= build ================= */
@@ -1685,8 +1685,9 @@ PANEL.innerHTML = `<header><h1>B-Roll Board</h1>
     `<div class="btns">${BTN('Center horizontally', 'ch')}${BTN('Center vertically', 'cv')}${BTN('Left third', 'l3')}${BTN('Right third', 'r3')}</div>
     <div class="hint">Drag the photo to move both props (snaps to center; hold Alt to skip snapping). Drag the round handle to resize. Drag the note to offset it.</div>`) +
   SEC('Image & video', `<div class="btns">${BTN('Choose image or video…', 'pick')}${BTN('Use placeholder', 'rmimg')}</div>
-    <div class="hint">Or drop / paste a photo, GIF or video anywhere. Videos play with their own sound and loop, starting from the first frame on every replay (set its level under Sound → Video soundtrack). Shift+drag the photo to pan the crop, scroll over it to zoom.</div>` +
-    RNG('Video speed', 'img.vspeed', .25, 2, .05, 'video') +
+    <div class="hint">Or drop / paste a photo, GIF or video anywhere. Videos play with their own sound, starting from the first frame on every replay (set its level under Sound → Video soundtrack). Shift+drag the photo to pan the crop, scroll over it to zoom.</div>` +
+    RNG('Video speed', 'img.vspeed', .25, 2, .05, 'video') + CHK('Loop video', 'img.vloop', 'video') +
+    `<div class="hint">Off: the video plays once and stops on its last frame. R plays it again from the start.</div>` +
     SEL('Crop aspect', 'img.aspect', [['auto', 'Original'], '1:1', '4:5', '3:4', '2:3', '4:3', '3:2', '16:9'], 'layout') +
     RNG('Zoom', 'img.zoom', 1, 5, .01, 'layout') + RNG('Pan X', 'img.panX', 0, 100, .1, 'layout') + RNG('Pan Y', 'img.panY', 0, 100, .1, 'layout') +
     RNG('Extra tilt °', 'photoRot', -20, 20, .1, 'layout', 'p')) +
@@ -1765,7 +1766,7 @@ function applyU(u) {
   else if (u === 'style') { play(false); syncPanel(); }
   else if (u === 'output') applyOutput();
   else if (u === 'marks') { recompileStrokes(); syncPanel(); }
-  else if (u === 'video') applyVideoSpeed();
+  else if (u === 'video') { applyVideoSpeed(); if (VIDEO && VIDEO.loop && VIDEO.ended) VIDEO.play().catch(() => { }); }
   else if (u === 'snd') { sndVolume(); applyVideoAudio(); if (!S.snd.on) sndStop(); }
   else if (u === 'toolsel') syncPanel();
   else if (u === 'tool') { applyToolCSS(); recompileStrokes(); }
@@ -2166,7 +2167,7 @@ async function tryVideo(blob) {
 async function applyVideo(blob, url, v, { store = true, resetCrop = true, quiet = false, replay = true } = {}) {
   freeURL(IMG.url);
   dropVideo();
-  VIDEO = v; applyVideoAudio();
+  VIDEO = v; applyVideoSpeed(); applyVideoAudio();
   IMG = { url, blob, video: true, w: v.videoWidth, h: v.videoHeight };
   if (store) {
     try { await DB.set('image', blob); }

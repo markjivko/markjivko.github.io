@@ -285,6 +285,10 @@ body.panel-min .keys{display:none}
           <option value="power2.inOut">Strong start and stop</option>
           <option value="power2.out">Fast start</option>
         </select></label>
+        <label class="row full" title="For videos: loop forever, or play once and hold the last frame. R plays it again from the start."><span>Video playback</span><select data-bind="video.mode">
+          <option value="loop">Loop forever</option>
+          <option value="once">Play once</option>
+        </select></label>
       </div>
     </details>
 
@@ -466,6 +470,7 @@ const DEFAULTS = {
   shadow: { on: true, blur: 38, x: 0, y: 16, opacity: 0.5 },
   timing: { startDelay: 0.6, afterEntrance: 0.5, speed: 900, gap: 0.35, strokeEase: 'sine.inOut' },
   idle: { type: 'dangle', amount: 1, speed: 1 },
+  video: { mode: 'loop' },
   sound: { on: true, volume: 0.8, entrance: true, entranceVolume: 0.4, highlights: true, video: true, videoVolume: 1 },
 };
 
@@ -2712,7 +2717,7 @@ function restartPage() {
   if (S.drag) { S.drag = null; S.drawing = null; }
   $('#toast').classList.remove('show');
   S.clock0 = performance.now();
-  if (isVideo(S.image)) { S.image.currentTime = 0; S.vt = -1; kickVideo(true); }
+  if (isVideo(S.image)) { S.image.currentTime = 0; S.vt = -1; S.image.play().catch(() => {}); }
   play(0);
 }
 function previewEntrance() {
@@ -2774,6 +2779,7 @@ function loadMedia(blob, hint) {
     v.addEventListener('loadeddata', () => {
       if (!v.videoWidth || !v.videoHeight) { releaseMedia(v); res(null); return; }
       v.width = v.videoWidth; v.height = v.videoHeight;
+      v.loop = P().video.mode !== 'once';
       v.play().catch(() => {});
       res(v);
     }, { once: true });
@@ -2794,7 +2800,7 @@ function releaseMedia(m) {
 // keep the video running; browsers can block or pause playback until the page is interacted with
 function kickVideo(force) {
   const v = S.image;
-  if (!isVideo(v) || !v.paused) return;
+  if (!isVideo(v) || !v.paused || v.ended) return;
   const now = performance.now();
   if (!force && now - (S.vKick || 0) < 1000) return;
   S.vKick = now;
@@ -2809,6 +2815,9 @@ function applyVideoAudio() {
   const want = !!(sd.video && allowed);
   const vol = clamp((sd.videoVolume ?? 1) * (sd.volume ?? 1), 0, 1);
   if (Math.abs(v.volume - vol) > 0.001) v.volume = vol;
+  // loop forever, or play once and hold the last frame
+  const loop = P().video.mode !== 'once';
+  if (v.loop !== loop) { v.loop = loop; if (loop && v.ended) { v.currentTime = 0; v.play().catch(() => {}); } }
   if (v.muted === want) v.muted = !want;
 }
 function onGesture() { S.gestured = true; applyVideoAudio(); kickVideo(true); }
