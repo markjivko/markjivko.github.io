@@ -123,7 +123,7 @@ body.panel-min .keys{display:none}
 <div id="empty">
   <div class="sheet">
     <h1>Paste a screenshot or drop a video</h1>
-    <p>Grab part of your screen with any screenshot tool, then press <kbd>Ctrl</kbd> + <kbd>V</kbd> here. You can also drop an image or video file onto this page. Videos play muted and loop forever.</p>
+    <p>Grab part of your screen with any screenshot tool, then press <kbd>Ctrl</kbd> + <kbd>V</kbd> here. You can also drop an image or video file onto this page. Videos loop forever with their own sound.</p>
     <p>Crop it, pixelate private details, record highlights and boxes, then press <kbd>S</kbd> to play the whole sequence for OBS.</p>
     <button class="primary" id="openFile2">Choose an image or video</button>
   </div>
@@ -319,12 +319,14 @@ body.panel-min .keys{display:none}
     <details>
       <summary>Sound</summary>
       <div class="body">
-        <p class="hint" style="color:var(--muted);font-size:12px;line-height:1.45;margin:0 0 8px">Every entrance effect and highlight style has its own sound, timed to its motion. Browsers only allow sound after a key press or click on the page, so press <b>R</b> once before recording.</p>
+        <p class="hint" style="color:var(--muted);font-size:12px;line-height:1.45;margin:0 0 8px">Every entrance effect and highlight style has its own sound, timed to its motion, and videos play their own audio. Browsers only allow sound after a key press or click on the page, so press <b>R</b> once before recording.</p>
         <label class="row check"><span>Play sounds</span><input type="checkbox" data-bind="sound.on"></label>
         <label class="row"><span>Volume</span><input type="range" data-bind="sound.volume" min="0" max="1" step="0.01"><output></output></label>
         <label class="row check"><span>Entrance sound</span><input type="checkbox" data-bind="sound.entrance"></label>
         <label class="row"><span>Entrance volume</span><input type="range" data-bind="sound.entranceVolume" min="0" max="1" step="0.01"><output></output></label>
         <label class="row check"><span>Highlight sounds</span><input type="checkbox" data-bind="sound.highlights"></label>
+        <label class="row check"><span>Video sound</span><input type="checkbox" data-bind="sound.video"></label>
+        <label class="row"><span>Video volume</span><input type="range" data-bind="sound.videoVolume" min="0" max="1" step="0.01"><output></output></label>
       </div>
     </details>
 
@@ -464,7 +466,7 @@ const DEFAULTS = {
   shadow: { on: true, blur: 38, x: 0, y: 16, opacity: 0.5 },
   timing: { startDelay: 0.6, afterEntrance: 0.5, speed: 900, gap: 0.35, strokeEase: 'sine.inOut' },
   idle: { type: 'dangle', amount: 1, speed: 1 },
-  sound: { on: true, volume: 0.8, entrance: true, entranceVolume: 0.4, highlights: true },
+  sound: { on: true, volume: 0.8, entrance: true, entranceVolume: 0.4, highlights: true, video: true, videoVolume: 1 },
 };
 
 const SCENE_KEYS = ['#000000', '#00b140', '#0047bb'];
@@ -2314,6 +2316,7 @@ function loop(now) {
   if (!S.ready) return;
   if (S.image && S.L) {
     if (isVideo(S.image)) {
+      applyVideoAudio();
       kickVideo(false);
       const vt = S.image.currentTime;
       if (vt !== S.vt && S.image.readyState >= 2) { S.vt = vt; S.dirtyBase = true; }
@@ -2757,7 +2760,8 @@ async function toggleFullscreen() {
 // ---------- media: still images or looping videos ----------
 const VIDEO_EXT = /\.(mp4|m4v|webm|mov|mkv|ogv|ogg|avi|3gp)$/i;
 function isVideoBlob(b, hint) { return !!hint || (b.type || '').startsWith('video/') || VIDEO_EXT.test(b.name || ''); }
-// Videos are muted (so the browser lets them autoplay), loop forever and start at once.
+// Videos loop forever and start at once. They start muted, because browsers block autoplay with
+// sound until the page has had a key press or click; the sound switches on at that first gesture.
 // No codec checks: if the browser can't decode the file, loading simply resolves to null.
 function loadMedia(blob, hint) {
   if (!isVideoBlob(blob, hint)) return createImageBitmap(blob).catch(() => null);
@@ -2796,8 +2800,20 @@ function kickVideo(force) {
   S.vKick = now;
   v.play().catch(() => {});
 }
-window.addEventListener('pointerdown', () => kickVideo(true), true);
-window.addEventListener('keydown', () => kickVideo(true), true);
+// unmute (and set the level of) the video's own audio once the browser allows sound
+function applyVideoAudio() {
+  const v = S.image;
+  if (!isVideo(v)) return;
+  const sd = P().sound;
+  const allowed = S.gestured || (navigator.userActivation && navigator.userActivation.hasBeenActive);
+  const want = !!(sd.video && allowed);
+  const vol = clamp((sd.videoVolume ?? 1) * (sd.volume ?? 1), 0, 1);
+  if (Math.abs(v.volume - vol) > 0.001) v.volume = vol;
+  if (v.muted === want) v.muted = !want;
+}
+function onGesture() { S.gestured = true; applyVideoAudio(); kickVideo(true); }
+window.addEventListener('pointerdown', onGesture, true);
+window.addEventListener('keydown', onGesture, true);
 
 async function setImage(blob) {
   const vid = isVideoBlob(blob);
