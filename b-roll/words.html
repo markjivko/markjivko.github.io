@@ -51,11 +51,11 @@
 
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:#00ff00}
-body.panel-open{background:#202024}
 #viewport{position:fixed;inset:0;overflow:hidden}
 #stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:#00ff00;overflow:hidden;contain:strict}
 #stage canvas{position:absolute;left:0;top:0;width:1920px;height:1080px;display:none}
 #dom{position:absolute;left:0;top:0;width:1920px;height:1080px}
+#stage.blank #dom,#stage.blank canvas{visibility:hidden}
 body.nocursor,body.nocursor *{cursor:none!important}
 .lyr{position:absolute;left:0;top:0;width:1920px;height:1080px}
 .wd{position:absolute;white-space:pre;font-kerning:normal;text-rendering:geometricPrecision}
@@ -9604,19 +9604,24 @@ const App = {
 
 const Player = {
   run: null, t0: 0, manual: null, error: null,
-  start(s) {
+  // lead (seconds): keep the stage blank (background only) before the animation begins
+  start(s, lead = 0) {
+    const press = performance.now();
     this.stop();
     if (!s) return;
+    const stg = $('#stage');
     try {
       const c = makeRun(s);
       this.run = c;
+      if (lead > 0) stg.classList.add('blank'); else stg.classList.remove('blank');
       if (c.E.init) c.E.init(c);
-      this.t0 = performance.now(); c.lastT = -1e-6;
+      // t=0 is lead seconds after the key press (or right after init, if init took longer)
+      this.t0 = Math.max(press + lead * 1000, performance.now()); c.lastT = -1e-6;
       this.error = null;
-      this.tick(performance.now());
-    } catch (e) { console.error(e); this.error = e; Panel.showError && Panel.showError(e); }
+      if (lead <= 0) this.tick(performance.now());
+    } catch (e) { stg.classList.remove('blank'); console.error(e); this.error = e; Panel.showError && Panel.showError(e); }
   },
-  restart() { Player.start(App.current()); },
+  restart(lead = 0) { Player.start(App.current(), lead); },
   stop() {
     const c = this.run;
     if (c) { try { c.E.dispose && c.E.dispose(c); } catch (e) { } try { dispose3(c); } catch (e) { } c._dispose.forEach(f => { try { f(); } catch (e) { } }); }
@@ -9628,7 +9633,9 @@ const Player = {
   },
   tick(now) {
     const c = this.run; if (!c) return;
+    if (this.manual == null && now < this.t0) return; // lead-in: stage stays blank
     const t = this.manual != null ? this.manual : (now - this.t0) / 1000;
+    STAGE.dom.parentNode.classList.remove('blank'); // first frame is drawn below, before the next paint
     try {
       c.E.frame(c, t);
       for (const rec of c._deco) { const p = rec.dp != null ? rec.dp : (rec.unit && rec.unit.fin ? c.ip(rec.unit, rec.j, t) : c.p(rec.w, t)); decoP(rec, p); }
@@ -9640,8 +9647,8 @@ const Player = {
 
 // ---------- stage sizing (always 1920x1080 logical)
 function resize() {
-  const panelOpen = Panel.open;
-  const pw = panelOpen ? Panel.width() : 0;
+  // the panel is a pure overlay: the stage always fills the window exactly as when the panel is hidden
+  const pw = 0;
   const aw = Math.max(200, innerWidth - pw), ah = innerHeight;
   const s = Math.min(aw / W, ah / H);
   STAGE.scale = s;
@@ -9654,7 +9661,6 @@ function resize() {
     STAGE.c2d.width = Math.round(W * rs); STAGE.c2d.height = Math.round(H * rs);
     if (G3.r) { G3.r.setPixelRatio(rs); G3.r.setSize(W, H, false); }
   }
-  document.body.classList.toggle('panel-open', panelOpen);
 }
 
 // ---------- hotkeys (ignored while typing in the panel)
@@ -9667,7 +9673,7 @@ document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && isTyping(e)) { e.target.blur(); return; }
   if (isTyping(e) || e.ctrlKey || e.metaKey || e.altKey) return;
   const k = e.key.toLowerCase();
-  if (k === 'r') { e.preventDefault(); SFX.ensure(); Player.restart(); }
+  if (k === 'r') { e.preventDefault(); if (e.repeat) return; SFX.ensure(); Player.restart(.5); }
   else if (k === 's') { e.preventDefault(); Panel.toggle(); }
   else if (k === 'f') { e.preventDefault(); toggleFullscreen(); }
   else if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); SFX.ensure(); App.select(App.cur + 1); }
