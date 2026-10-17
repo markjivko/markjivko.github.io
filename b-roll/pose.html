@@ -1,0 +1,1881 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pose</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo+Black&family=Bangers&family=Bebas+Neue&family=Bungee&family=Caveat:wght@700&family=Comic+Neue:wght@700&family=Fredoka:wght@400;600;700&family=Inter:wght@400;500;600;700;800;900&family=Lilita+One&family=Luckiest+Guy&family=Montserrat:wght@400;600;700;800;900&family=Oswald:wght@400;600;700&family=Permanent+Marker&family=Poppins:wght@400;600;700;800;900&family=Righteous&family=Rubik:wght@400;600;700;800;900&family=Titan+One&display=swap">
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}</script>
+<style>
+:root{--scene-bg:#00ff00;--ui-bg:rgba(17,19,25,.95);--ui-bg2:rgba(255,255,255,.05);--ui-fg:#e8ebf2;--ui-mut:#8a92a6;--ui-acc:#ffd23f;--ui-line:rgba(255,255,255,.08)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--scene-bg)}
+body{font:12.5px/1.35 Inter,system-ui,sans-serif;color:var(--ui-fg)}
+body.rec,body.rec *{cursor:none!important}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--scene-bg)}
+#gl{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+#overlay{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
+#dropHint{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none}
+#dropHint div{font:600 34px Inter,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:28px 44px;border-radius:18px;border:3px dashed rgba(255,255,255,.7)}
+body.noimg #dropHint{display:flex}
+body.dragging #dropHint{display:flex}
+
+/* ---------- subtitle text ---------- */
+#textBox{position:absolute;pointer-events:none;transform-origin:50% 50%}
+#textInner{width:100%;height:100%;display:flex;flex-direction:column}
+#textBlock{max-width:100%;font-family:var(--font);font-weight:var(--weight);font-size:var(--fs);color:var(--color);line-height:var(--lh);letter-spacing:var(--ls);word-spacing:var(--ws);text-transform:var(--tt);text-align:var(--align);-webkit-text-stroke:var(--stroke) var(--strokeColor);paint-order:stroke fill;text-shadow:var(--shadow);overflow-wrap:break-word}
+#textBlock.boxbg{background:var(--bg);padding:var(--pad) calc(var(--pad)*1.4);border-radius:var(--radius)}
+.w{display:inline-block;white-space:nowrap;perspective:600px}
+.w.clip{overflow:hidden;padding:0 .12em .08em;margin:0 -.12em -.08em;vertical-align:bottom}
+.wi{display:inline-block;transform-origin:50% 60%;will-change:transform,opacity;transition:color .08s,background-color .08s}
+.padwords .wi{padding:.02em .16em;margin:0 -.06em;border-radius:var(--radius)}
+.pills .wi{background:var(--bg)}
+.c{display:inline-block;white-space:pre;transform-origin:50% 70%;will-change:transform,opacity}
+.fi{font-style:italic}
+.fb{font-weight:900}
+.fu{text-decoration:underline;text-decoration-thickness:.09em;text-underline-offset:.12em}
+.wi.kw{position:relative}
+.kov{position:absolute;left:0;top:0;right:0;bottom:0;white-space:nowrap;pointer-events:none}
+.padwords .kov{padding:inherit}
+.caret{display:inline-block;width:0;position:relative}
+.caret::after{content:"";position:absolute;left:.04em;bottom:.12em;width:.08em;height:.9em;background:var(--hl);animation:blink .9s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+
+/* ---------- overlay ---------- */
+#overlay .ob{fill:rgba(255,210,63,.04);stroke:#ffd23f;stroke-width:1.5;stroke-dasharray:7 6;vector-effect:non-scaling-stroke}
+#overlay .oc.hov,#overlay .ob.hov{stroke-dasharray:none;stroke-width:2}
+#overlay .oc{fill:none;stroke:#fff;stroke-width:1.5;stroke-dasharray:7 6;vector-effect:non-scaling-stroke;opacity:.8}
+#overlay .hd{fill:#fff;stroke:#111;stroke-width:1.2;vector-effect:non-scaling-stroke}
+#overlay .hdy{fill:#ffd23f;stroke:#111;stroke-width:1.2;vector-effect:non-scaling-stroke}
+#overlay .ol{fill:#fff;stroke:#000;stroke-width:3px;paint-order:stroke;font-family:Inter,sans-serif;font-weight:700}
+#overlay .ln{stroke-width:2;vector-effect:non-scaling-stroke;fill:none}
+#overlay .lnd{stroke-width:1.5;stroke-dasharray:5 5;vector-effect:non-scaling-stroke;fill:none}
+#overlay .pt{stroke:#111;stroke-width:1.5;vector-effect:non-scaling-stroke}
+
+/* ---------- panel ---------- */
+#panel{position:fixed;top:12px;right:12px;width:384px;max-height:calc(100vh - 24px);display:flex;flex-direction:column;background:var(--ui-bg);border:1px solid var(--ui-line);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.45);backdrop-filter:blur(10px);z-index:10}
+body:not(.edit) #panel,body:not(.edit) #toast{display:none}
+#panelHead{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--ui-line)}
+#panelHead b{font-size:14px;letter-spacing:.2px}
+#panelHead .st{margin-left:auto;color:var(--ui-mut);font-size:11.5px;text-align:right}
+#panelBody{overflow-y:auto;padding:4px 0 10px;scrollbar-width:thin}
+details{border-bottom:1px solid var(--ui-line)}
+summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:12.5px;list-style:none;display:flex;align-items:center;gap:8px;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸";color:var(--ui-mut);transition:transform .15s}
+details[open]>summary::before{transform:rotate(90deg)}
+.sec{padding:0 14px 12px}
+.row{display:grid;grid-template-columns:44% 1fr;align-items:center;gap:8px;min-height:28px}
+.row>label{color:var(--ui-mut)}
+.row.chk{grid-template-columns:1fr auto}
+.rw{display:flex;align-items:center;gap:8px}
+.rw input[type=range]{flex:1;min-width:0;accent-color:var(--ui-acc)}
+.val{width:52px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ui-fg);font-size:11.5px}
+select,input[type=number],input[type=text]{width:100%;background:#0c0e13;color:var(--ui-fg);border:1px solid var(--ui-line);border-radius:7px;padding:5px 7px;font:inherit}
+input[type=color]{width:100%;height:26px;border:1px solid var(--ui-line);border-radius:7px;background:#0c0e13;padding:2px}
+input[type=checkbox]{accent-color:var(--ui-acc);width:16px;height:16px}
+button{background:rgba(255,255,255,.08);color:var(--ui-fg);border:1px solid var(--ui-line);border-radius:8px;padding:6px 10px;font:600 12px Inter,sans-serif;cursor:pointer}
+button:hover{background:rgba(255,255,255,.14)}
+button.pri{background:var(--ui-acc);color:#16130a;border-color:transparent}
+button.pri:hover{filter:brightness(1.08)}
+button.on{outline:2px solid var(--ui-acc)}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.note{color:var(--ui-mut);font-size:11.5px;margin:4px 0 8px;line-height:1.45}
+.note kbd,.keys kbd{background:#0c0e13;border:1px solid var(--ui-line);border-radius:4px;padding:0 5px;font:600 11px ui-monospace,monospace;color:var(--ui-fg)}
+.tb{display:flex;gap:4px;margin-bottom:6px;align-items:center}
+.tb button{width:30px;padding:4px 0}
+.tb .hint{color:var(--ui-mut);font-size:11px;margin-left:6px}
+#editor{min-height:110px;max-height:220px;overflow:auto;background:#0c0e13;border:1px solid var(--ui-line);border-radius:8px;padding:8px 10px;outline:none;font:14px/1.5 Inter,sans-serif;color:#fff}
+#editor:focus{border-color:rgba(255,210,63,.6)}
+#editor div{margin-bottom:6px}
+#editor i,#editor em{color:#8fd3ff}
+#editor b,#editor strong{color:#ffd23f}
+#editor u{text-decoration-color:#ff6b6b;text-decoration-thickness:2px}
+#takes{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+.take{display:grid;grid-template-columns:18px 1fr 52px 66px 8px;gap:6px;align-items:center;padding:5px 7px;border-radius:8px;background:var(--ui-bg2);cursor:pointer;border:1px solid transparent}
+.take.on{border-color:var(--ui-acc)}
+.take .tn{font-weight:800;color:var(--ui-acc);text-align:center}
+.take .tp{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#cfd4df}
+.take input{padding:3px 5px;font-size:11.5px}
+.take select{padding:3px 2px;font-size:11.5px}
+.take .ts{color:var(--ui-mut)}
+.ptrow{display:grid;grid-template-columns:12px 1fr auto auto;gap:7px;align-items:center;min-height:30px}
+.ptrow .dot{width:11px;height:11px;border-radius:50%;border:1px solid #111}
+.ptrow .nm{color:var(--ui-fg)}
+.ptrow .nm small{color:var(--ui-mut);display:block;font-size:10.5px}
+.ptrow button{padding:4px 8px}
+#poseBar{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid var(--ui-line)}
+#poseBar .pb{flex:1;display:flex;align-items:center;gap:8px;padding:5px 7px;border-radius:9px;background:var(--ui-bg2);border:1px solid transparent;cursor:pointer;font-weight:700;min-width:0}
+#poseBar .pb:hover{background:rgba(255,255,255,.09)}
+#poseBar .pb.on{border-color:var(--ui-acc);background:rgba(255,210,63,.1)}
+#poseBar .th{width:30px;height:30px;border-radius:6px;background:#0c0e13 center/contain no-repeat;flex:none;border:1px solid var(--ui-line)}
+#poseBar small{display:block;font-weight:500;color:var(--ui-mut);font-size:10.5px}
+#poseBar kbd{font:600 10px ui-monospace,monospace;color:var(--ui-mut);margin-left:auto}
+#panelFoot{padding:8px 14px 10px;border-top:1px solid var(--ui-line);color:var(--ui-mut);font-size:11px;display:flex;flex-wrap:wrap;gap:5px 12px}
+#panelFoot kbd{background:#0c0e13;border:1px solid var(--ui-line);border-radius:4px;padding:0 4px;font:600 10.5px ui-monospace,monospace;color:var(--ui-fg)}
+#toast{position:fixed;top:14px;left:50%;transform:translateX(-50%);background:#111;color:#fff;border:1px solid rgba(255,210,63,.5);border-radius:12px;padding:10px 14px;display:flex;gap:10px;align-items:center;z-index:20;box-shadow:0 12px 30px rgba(0,0,0,.4);transition:opacity .2s;max-width:min(680px,90vw)}
+#toast.hide{opacity:0;pointer-events:none}
+#toast button{padding:4px 9px}
+</style>
+</head>
+<body class="edit">
+<div id="stage">
+  <canvas id="gl"></canvas>
+  <div id="textBox"><div id="textInner"><div id="textBlock"></div></div></div>
+  <svg id="overlay" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div id="dropHint"><div>Drop a transparent PNG here, or click to choose</div></div>
+</div>
+
+<div id="panel">
+  <div id="panelHead"><b>Pose</b><div class="st" id="status"></div></div>
+  <div id="poseBar"></div>
+  <div id="panelBody"></div>
+  <div id="panelFoot"><span><kbd>S</kbd> panel</span><span><kbd>R</kbd> replay take</span><span><kbd>1</kbd><kbd>2</kbd><kbd>3</kbd> pose</span><span><kbd>←</kbd><kbd>→</kbd> take</span><span><kbd>F</kbd> fullscreen</span><span>Wheel on character = resize</span></div>
+</div>
+<div id="toast" class="hide"><span id="toastMsg"></span><span id="toastBtns" style="display:flex;gap:6px"></span></div>
+<input type="file" id="fileImg" accept="image/*" hidden>
+<input type="file" id="fileJson" accept=".json,application/json" hidden>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* =====================================================================
+   Basics
+   ===================================================================== */
+const W = 1920, H = 1080;
+const $ = s => document.querySelector(s);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const lerp = (a, b, t) => a + (b - a) * t;
+const hash = (a, b = 0) => { const x = Math.sin(a * 127.1 + b * 311.7 + 0.123) * 43758.5453; return x - Math.floor(x); };
+const clone = o => JSON.parse(JSON.stringify(o));
+const sstep = (a, b, x) => { const t = clamp((x - a) / (b - a)); return t * t * (3 - 2 * t); };
+function merge(base, over) {
+  for (const k in over) {
+    const v = over[k];
+    if (v && typeof v === 'object' && !Array.isArray(v) && base[k] && typeof base[k] === 'object' && !Array.isArray(base[k])) merge(base[k], v);
+    else if (v !== undefined) base[k] = v;
+  }
+  return base;
+}
+const getK = (o, k) => k.split('.').reduce((a, p) => (a == null ? a : a[p]), o);
+function setK(o, k, v) { const ps = k.split('.'); let a = o; for (let i = 0; i < ps.length - 1; i++) a = a[ps[i]]; a[ps[ps.length - 1]] = v; }
+const hexToV3 = (hex, v = new THREE.Vector3()) => { const n = parseInt(hex.replace('#', ''), 16); return v.set(((n >> 16) & 255) / 255, ((n >> 8) & 255) / 255, (n & 255) / 255); };
+const hexToRgba = (hex, a) => { const n = parseInt(hex.replace('#', ''), 16); return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`; };
+const lum = hex => { const v = hexToV3(hex); return 0.2126 * v.x + 0.7152 * v.y + 0.0722 * v.z; };
+
+const E = {
+  oc: p => 1 - Math.pow(1 - p, 3),
+  ob: p => { const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(p - 1, 3) + c1 * Math.pow(p - 1, 2); },
+  oe: p => p <= 0 ? 0 : p >= 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * 2.0944) + 1,
+  bounce: p => { const n1 = 7.5625, d1 = 2.75; if (p < 1 / d1) return n1 * p * p; if (p < 2 / d1) return n1 * (p -= 1.5 / d1) * p + 0.75; if (p < 2.5 / d1) return n1 * (p -= 2.25 / d1) * p + 0.9375; return n1 * (p -= 2.625 / d1) * p + 0.984375; },
+  ib: p => { const c1 = 1.70158, c3 = c1 + 1; return c3 * p * p * p - c1 * p * p; },
+};
+
+/* =====================================================================
+   Settings
+   ===================================================================== */
+const DEFAULT_SCRIPT = '<div>Okay so I <i>finally</i> tried the new coffee place downtown, and honestly? The latte art was a <b>literal masterpiece</b>.</div><div>Then they told me the PRICE. <u>Twelve dollars.</u> For one coffee!</div><div>Ten out of ten. | Would <i>absolutely</i> go broke there again.</div>';
+const DEMO_PTS = { eye1: { u: 282 / 700, v: 365 / 900 }, eye2: { u: 420 / 700, v: 365 / 900 }, m1: { u: 168 / 700, v: 470 / 900 }, m2: { u: 436 / 700, v: 478 / 900 }, neck: { u: 0.5, v: 600 / 900 }, fx: null };
+function newPose() {
+  return {
+    img: null, // 'demo' | 'idb' | null
+    char: { x: 80, y: 180, h: 900, mirror: false, facing: 'right' },
+    pts: { eye1: null, eye2: null, m1: null, m2: null, neck: null, fx: null },
+    eyes: { size: 0.045, aspect: 1.15 },
+    head: { maxAngle: 22, lift: 30, hinge: 'random', nod: 3, sway: 2, idleSway: 3, idleSpeed: 1, neckBand: 0.06 },
+    brows: { on: true, style: 'blade', size: 1, thick: 1, angle: 24, gap: 1.55, color: '#1c1410', outline: true, tremble: true },
+  };
+}
+function demoPose() { const p = newPose(); p.img = 'demo'; p.char = { x: 90, y: 260, h: 820, mirror: false, facing: 'right' }; p.pts = clone(DEMO_PTS); p.eyes = { size: 0.047, aspect: 0.95 }; return p; }
+const DEFAULTS = {
+  v: 3, pose: 0, poses: [demoPose(), newPose(), newPose()],
+  border: { on: true, w: 5, color: '#ffffff' },
+  scene: { bg: 'green', custom: '#00ff00', preDelay: 500, entry: 'pop', entryDur: 650, textDelay: 250, hideText: false, hideAfter: 2, exit: 'fade', exitDur: 450, exitChar: false, hideCursor: true },
+  talk: { flapsPerSyl: 1, snap: 0.65, randomness: 0.35, wiggle: 'auto', wiggleAngle: 3.5, wiggleSquash: 0.045, bodyBounce: 0.3, punct: true, breathing: true, blinking: true, blinkEvery: 3.5 },
+  fx: { winkEye: 'auto', lash: true, lashColor: '#1b1b1b', winkSparkle: true, bulge: 1.6, bulgeWobble: true, wide: 0.6, shock: true, shockSize: 120, shockColor: '#e8202a', hop: true, hopPx: 30, shockLines: false, linesColor: 'auto', sweat: false, punch: false, punchAmt: 0.07, angrySquint: 0.3, angryTint: 0.35, angryShake: true, response: 16, release: 250 },
+  text: { anim: 'pop', enterDur: 320, sync: 0, mode: 'chunk', chunk: 4, caret: true, highlight: 'color', hlColor: '#ffe53b', format: true, autoFit: true, loop: 'wobble', loopAmt: 0.5, loopSpeed: 1 },
+  style: { font: 'Montserrat', weight: 900, size: 76, upper: false, color: '#ffffff', stroke: 7, strokeColor: '#000000', shadow: 'none', bg: 'none', bgColor: '#000000', bgOpacity: 0.75, pad: 16, radius: 14, align: 'center', valign: 'center', lineHeight: 1.12, letter: 0, wordGap: 0.12 },
+  box: { x: 90, y: 690, w: 1050, h: 300 },
+  script: { html: DEFAULT_SCRIPT, durations: [], poses: [], current: 0, wpm: 165, pipeMs: 450 },
+};
+const POSE_KEYS = ['char', 'pts', 'eyes', 'head', 'brows'];
+// S.char / S.pts / S.eyes / S.head / S.brows always point at the active pose
+function bindPose(o) { for (const k of POSE_KEYS) Object.defineProperty(o, k, { get() { return o.poses[o.pose][k]; }, configurable: true, enumerable: false }); return o; }
+function normalize(saved) {
+  let s = clone(DEFAULTS);
+  const oldV = saved ? (saved.v || 1) : 3;
+  if (saved) {
+    saved = clone(saved);
+    if (saved.scene && saved.scene.hideText === undefined) {
+      saved.scene.hideText = !!(saved.scene.exit && saved.scene.exit !== 'none');
+      saved.scene.hideAfter = (saved.scene.hold ?? 2000) / 1000;
+      if (!saved.scene.exit || saved.scene.exit === 'none') saved.scene.exit = 'fade';
+      delete saved.scene.hold;
+    }
+    if (!saved.poses) { // migrate the single-character format
+      const p0 = demoPose();
+      if (saved.char) {
+        p0.char = { x: saved.char.x ?? 90, y: saved.char.y ?? 260, h: saved.char.h ?? 820, mirror: !!saved.char.mirror, facing: saved.char.facing || 'right' };
+        p0.img = saved.char.demo === false ? 'idb' : 'demo';
+        if (saved.char.border !== undefined) saved.border = { on: saved.char.border, w: saved.char.borderW ?? 5, color: saved.char.borderColor || '#ffffff' };
+      }
+      if (saved.pts) p0.pts = merge(newPose().pts, saved.pts);
+      if (saved.eyes) merge(p0.eyes, saved.eyes);
+      if (saved.talk) for (const k of Object.keys(p0.head)) if (saved.talk[k] !== undefined) p0.head[k] = saved.talk[k];
+      saved.poses = [p0, newPose(), newPose()]; saved.pose = 0;
+      delete saved.char; delete saved.pts; delete saved.eyes;
+    }
+    const poses = saved.poses; delete saved.poses;
+    s = merge(s, saved);
+    s.poses = [0, 1, 2].map(i => merge(newPose(), poses[i] || {}));
+    if (oldV < 3) { // new defaults: random head motion, bigger fish-eye scale
+      for (const p of s.poses) { delete p.pts.brow1; delete p.pts.brow2; if (p.head.hinge === 'auto') p.head.hinge = 'random'; p.head.lift = Math.max(p.head.lift, 30); }
+      s.fx.bulge = 1.6;
+    }
+  }
+  s.v = 3;
+  s.pose = clamp(s.pose | 0, 0, 2);
+  return bindPose(s);
+}
+const LS_SETTINGS = 'talkinghead.settings.v1';
+let S;
+try { S = normalize(JSON.parse(localStorage.getItem(LS_SETTINGS) || 'null')); } catch (e) { S = normalize(null); }
+let saveT = 0;
+function saveNow() { try { localStorage.setItem(LS_SETTINGS, JSON.stringify(S)); } catch (e) { console.warn('save failed', e); } }
+function saveSoon() { clearTimeout(saveT); saveT = setTimeout(saveNow, 250); }
+
+/* IndexedDB key/value for images (too large for localStorage) */
+const IDB = {
+  db: null,
+  async open() {
+    if (this.db) return this.db;
+    this.db = await new Promise((res, rej) => { const r = indexedDB.open('talking-head', 1); r.onupgradeneeded = () => r.result.createObjectStore('kv'); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); });
+    return this.db;
+  },
+  async get(k) { try { const db = await this.open(); return await new Promise((res, rej) => { const q = db.transaction('kv').objectStore('kv').get(k); q.onsuccess = () => res(q.result); q.onerror = () => rej(q.error); }); } catch (e) { return null; } },
+  async set(k, v) { try { const db = await this.open(); await new Promise((res, rej) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').put(v, k); t.oncomplete = res; t.onerror = () => rej(t.error); }); } catch (e) { console.warn(e); } },
+  async del(k) { try { const db = await this.open(); await new Promise((res) => { const t = db.transaction('kv', 'readwrite'); t.objectStore('kv').delete(k); t.oncomplete = res; t.onerror = res; }); } catch (e) { } },
+};
+
+/* =====================================================================
+   three.js scene
+   ===================================================================== */
+const stageEl = $('#stage');
+const renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), antialias: true, alpha: true, premultipliedAlpha: true });
+renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const cam = new THREE.OrthographicCamera(-W / 2, W / 2, H / 2, -H / 2, -100, 100);
+cam.position.set(W / 2, H / 2, 10);
+
+const VERT = `
+attribute vec2 aP; varying vec2 vP;
+void main(){ vP = aP; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+const FRAG = `
+precision highp float;
+uniform sampler2D uTex; uniform sampler2D uSdf;
+uniform vec2 uSize; uniform float uMirror; uniform float uScale; uniform float uAlpha;
+uniform float uNeckOn; uniform vec2 uNeck; uniform float uNeckAng; uniform vec2 uNeckOff; uniform float uNeckBand;
+uniform float uMouthOn; uniform vec2 uM1; uniform vec2 uN; uniform vec2 uHinge; uniform float uFlap; uniform vec2 uLift; uniform float uOpen;
+uniform vec4 uEye[2]; uniform vec4 uEyeFx[2]; uniform vec4 uEyeB[2]; uniform vec3 uLash; uniform float uLashOn;
+uniform float uBorderOn; uniform float uBorderW; uniform vec3 uBorderColor; uniform float uTint;
+varying vec2 vP;
+float gLash;
+mat2 rot(float a){ float c = cos(a), s = sin(a); return mat2(c, s, -s, c); }
+vec2 toUV(vec2 x){ vec2 uv = x / uSize; if(uMirror > 0.5) uv.x = 1.0 - uv.x; return uv; }
+vec4 tex(vec2 x){ vec2 uv = toUV(x); if(uv.x < 0.0 || uv.y < 0.0 || uv.x > 1.0 || uv.y > 1.0) return vec4(0.0); return texture2D(uTex, uv); }
+float sdf(vec2 x){ vec2 c = clamp(x, vec2(0.0), uSize); return texture2D(uSdf, toUV(c)).r + length(x - c); }
+vec2 eyeWarp(vec2 x){
+  for(int i = 0; i < 2; i++){
+    vec4 e = uEye[i]; vec4 f = uEyeFx[i]; vec4 eb = uEyeB[i];
+    if(f.w < 0.5) continue;
+    vec2 c = e.xy; float rx = e.z, ry = e.w;
+    float rm = max(rx, ry);
+    // fish-eye bulge: magnify M× at the centre, smoothly back to 1× at the lens edge (monotonic, no seam)
+    if(f.y > 0.001){
+      float M = 1.0 + f.y, Rb = rm * (1.4 + 0.7 * M);
+      vec2 db = x - c; float u = length(db) / Rb;
+      // never reach past the half-way line to the other eye, so two big eyes meet instead of squashing each other
+      if(eb.w > 0.5) u = max(u, dot(db, eb.xy) / eb.z);
+      if(u < 1.0){ float a = 1.0 / M; x = c + db * (a + (1.0 - a) * u * u * (3.0 - 2.0 * u)); }
+    }
+    // surprise widening
+    float R = rm * 1.75;
+    vec2 d = x - c; float r = length(d) / R;
+    if(r < 1.0 && f.z > 0.001){
+      float fw = 1.0 - smoothstep(0.35, 1.0, r);
+      d.y /= (1.0 + f.z * 0.8 * fw);
+      d.x /= (1.0 + f.z * 0.3 * fw);
+      x = c + d;
+    }
+    // wink / blink: squash the eye into a line, stretching the lid skin over it
+    float w = f.x;
+    if(w > 0.002){
+      vec2 dd = x - c;
+      float hx = dd.x / (rx * 1.25);
+      if(abs(hx) < 1.0){
+        float wl = w * (1.0 - smoothstep(0.82, 1.0, abs(hx)));
+        float m = ry * 0.75;
+        float ay = abs(dd.y);
+        if(ay < ry + m){
+          float L = ry * (1.0 - wl);
+          float k0 = ry * (1.0 + 0.3 * wl); // pull lid skin from just outside the eye outline
+          float sy = ay < L ? ay * ry / max(L, 0.001) : k0 + (ay - L) * (ry + m - k0) / max(ry + m - L, 0.001);
+          float arcY = ry * (0.15 - 0.4 * (1.0 - hx * hx));
+          float lt = max(ry * 0.1, 1.0 / uScale);
+          gLash = max(gLash, uLashOn * smoothstep(0.6, 0.95, wl) * (1.0 - smoothstep(lt * 0.5, lt, abs(dd.y - arcY))) * (1.0 - smoothstep(0.8, 0.95, abs(hx))));
+          x.y = c.y + sign(dd.y) * sy;
+        }
+      }
+    }
+  }
+  return x;
+}
+void main(){
+  vec2 p = vP;
+  vec2 q = p; float hw = 1.0;
+  if(uNeckOn > 0.5){
+    float w = smoothstep(uNeck.y + uNeckBand, uNeck.y - uNeckBand, p.y); hw = w;
+    q = uNeck + rot(-uNeckAng * w) * (p - uNeck - uNeckOff * w);
+  }
+  float sc = max(uScale, 0.0001);
+  vec4 col; float d = 1e5;
+  gLash = 0.0;
+  if(uMouthOn > 0.5){
+    vec2 qt = uHinge + rot(-uFlap) * (q - uHinge - uLift);
+    vec2 qb = q;
+    float st = dot(qt - uM1, uN);
+    float sb = dot(qb - uM1, uN);
+    float soft = (0.75 / sc) * clamp(uOpen * 8.0, 0.0, 1.0);
+    float mt = soft > 1e-4 ? smoothstep(-soft, soft, st) : step(0.0, st);
+    float mb = soft > 1e-4 ? smoothstep(soft, -soft, sb) : 1.0 - step(0.0, sb);
+    vec4 ct = tex(eyeWarp(qt)); float lt = gLash; gLash = 0.0;
+    vec4 cb = tex(eyeWarp(qb)); float lb = gLash;
+    ct.rgb = mix(ct.rgb, uLash * ct.a, lt); cb.rgb = mix(cb.rgb, uLash * cb.a, lb);
+    ct *= mt; cb *= mb;
+    col = ct + cb * (1.0 - ct.a);
+    if(uBorderOn > 0.5){ float dt = max(sdf(qt), -st); float db = max(sdf(qb), sb); d = min(dt, db); }
+  } else {
+    vec4 c = tex(eyeWarp(q)); c.rgb = mix(c.rgb, uLash * c.a, gLash); col = c;
+    if(uBorderOn > 0.5) d = sdf(q);
+  }
+  if(uTint > 0.001){ float tt = uTint * hw; col.rgb = mix(col.rgb, col.rgb * vec3(1.0, 0.42, 0.38) + vec3(0.24, 0.0, 0.0) * col.a, tt); }
+  if(uBorderOn > 0.5 && uBorderW > 0.01){
+    float dpx = d * sc;
+    float cov = 1.0 - smoothstep(uBorderW - 0.8, uBorderW + 0.8, dpx);
+    col = col + vec4(uBorderColor * cov, cov) * (1.0 - col.a);
+  }
+  col *= uAlpha;
+  if(col.a < 0.002) discard;
+  gl_FragColor = col;
+}`;
+
+const U = {
+  uTex: { value: null }, uSdf: { value: null }, uSize: { value: new THREE.Vector2(1, 1) }, uMirror: { value: 0 }, uScale: { value: 1 }, uAlpha: { value: 1 },
+  uNeckOn: { value: 0 }, uNeck: { value: new THREE.Vector2() }, uNeckAng: { value: 0 }, uNeckOff: { value: new THREE.Vector2() }, uNeckBand: { value: 20 },
+  uMouthOn: { value: 0 }, uM1: { value: new THREE.Vector2() }, uN: { value: new THREE.Vector2(0, -1) }, uHinge: { value: new THREE.Vector2() }, uFlap: { value: 0 }, uLift: { value: new THREE.Vector2() }, uOpen: { value: 0 },
+  uEye: { value: [new THREE.Vector4(), new THREE.Vector4()] }, uEyeB: { value: [new THREE.Vector4(), new THREE.Vector4()] }, uEyeFx: { value: [new THREE.Vector4(), new THREE.Vector4()] },
+  uLash: { value: new THREE.Vector3() }, uLashOn: { value: 1 },
+  uBorderOn: { value: 1 }, uBorderW: { value: 5 }, uBorderColor: { value: new THREE.Vector3(1, 1, 1) }, uTint: { value: 0 },
+};
+const charMat = new THREE.ShaderMaterial({ uniforms: U, vertexShader: VERT, fragmentShader: FRAG, transparent: true, premultipliedAlpha: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
+const charGroup = new THREE.Group(); scene.add(charGroup);
+let charMesh = null, IMG = null, imgTex = null, sdfTex = null;
+
+/* --- anime speed lines behind the character --- */
+const linesMat = new THREE.ShaderMaterial({
+  uniforms: { uC: { value: new THREE.Vector2() }, uR0: { value: 300 }, uR1: { value: 1200 }, uSeed: { value: 0 }, uA: { value: 0 }, uCol: { value: new THREE.Vector3(1, 1, 1) } },
+  vertexShader: `varying vec2 vW; void main(){ vW = (modelMatrix * vec4(position,1.0)).xy; gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }`,
+  fragmentShader: `precision highp float; uniform vec2 uC; uniform float uR0, uR1, uSeed, uA; uniform vec3 uCol; varying vec2 vW;
+  void main(){ vec2 d = vW - uC; float r = length(d); float a = atan(d.y, d.x) / 6.2831853 + 0.5; float N = 72.0;
+    float cell = floor(a * N); float f = fract(a * N);
+    float h = fract(sin(cell * 91.7 + uSeed * 13.1) * 43758.5); float h2 = fract(sin(cell * 37.3 + uSeed * 7.7) * 1234.5);
+    float r0 = uR0 * (0.85 + 0.5 * h2); float t = (r - r0) / (uR1 - r0);
+    float wd = (0.1 + 0.3 * h2) * clamp(t * 1.4, 0.0, 1.0);
+    float m = step(0.42, h) * (1.0 - smoothstep(wd * 0.5 - 0.04, wd * 0.5 + 0.04, abs(f - 0.5))) * step(0.0, t);
+    m *= uA; if(m < 0.003) discard; gl_FragColor = vec4(uCol * m, m); }`,
+  transparent: true, premultipliedAlpha: true, depthTest: false, depthWrite: false,
+});
+const linesMesh = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, H * 2), linesMat);
+linesMesh.position.set(W / 2, H / 2, 0); linesMesh.renderOrder = 0; linesMesh.visible = false; scene.add(linesMesh);
+
+/* --- FX sprites drawn on canvases --- */
+function cnv(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function drawShock(color) {
+  const c = cnv(256, 256), g = c.getContext('2d'); g.translate(128, 128); g.lineCap = 'round'; g.lineJoin = 'round';
+  const arm = () => { g.beginPath(); g.moveTo(-96, -26); g.quadraticCurveTo(-34, -34, -26, -96); };
+  const pass = (w, col) => { for (let q = 0; q < 4; q++) { g.save(); g.rotate(q * Math.PI / 2); arm(); g.lineWidth = w; g.strokeStyle = col; g.stroke(); g.restore(); } };
+  pass(46, '#ffffff'); pass(32, '#5a0a0f'); pass(22, color);
+  return c;
+}
+function drawSweat() {
+  const c = cnv(160, 220), g = c.getContext('2d');
+  g.beginPath(); g.moveTo(80, 12); g.bezierCurveTo(95, 60, 140, 110, 140, 150); g.arc(80, 150, 60, 0, Math.PI); g.bezierCurveTo(20, 110, 65, 60, 80, 12); g.closePath();
+  const gr = g.createLinearGradient(0, 20, 0, 210); gr.addColorStop(0, '#d9f4ff'); gr.addColorStop(1, '#5cc3ff');
+  g.fillStyle = gr; g.fill(); g.lineWidth = 9; g.strokeStyle = '#1b5f8f'; g.stroke();
+  g.beginPath(); g.ellipse(58, 150, 12, 24, -0.3, 0, Math.PI * 2); g.fillStyle = 'rgba(255,255,255,.9)'; g.fill();
+  return c;
+}
+function drawSparkle() {
+  const c = cnv(200, 200), g = c.getContext('2d'); g.translate(100, 100);
+  const star = (r, t) => { g.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4 - Math.PI / 2, rr = i % 2 ? t : r; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } g.closePath(); };
+  star(92, 18); g.fillStyle = '#fff6b0'; g.strokeStyle = '#7a5a00'; g.lineWidth = 7; g.lineJoin = 'round'; g.fill(); g.stroke();
+  star(46, 10); g.fillStyle = '#ffffff'; g.fill();
+  return c;
+}
+function makeSprite(canvas) {
+  const t = new THREE.CanvasTexture(canvas); t.colorSpace = THREE.SRGBColorSpace;
+  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, transparent: true, depthTest: false, depthWrite: false }));
+  s.renderOrder = 5; s.visible = false; scene.add(s); return s;
+}
+const shockSpr = makeSprite(drawShock(S.fx.shockColor));
+const sweatSpr = makeSprite(drawSweat());
+const sparkSpr = makeSprite(drawSparkle());
+/* --- generated angry eyebrows (5 styles). Texture: outer end left, inner end right --- */
+const BROW_W = 512, BROW_H = 220;
+function drawBrow(style, color, outline, outlineColor) {
+  const c = cnv(BROW_W, BROW_H), g = c.getContext('2d'); g.lineJoin = 'round'; g.lineCap = 'round';
+  let hairs = null;
+  const shape = () => {
+    g.beginPath();
+    if (style === 'arch') { g.moveTo(34, 150); g.quadraticCurveTo(220, 18, 480, 92); g.lineTo(478, 150); g.quadraticCurveTo(232, 80, 42, 174); }
+    else if (style === 'sharp') { g.moveTo(26, 126); g.lineTo(488, 54); g.lineTo(470, 170); g.lineTo(160, 140); }
+    else if (style === 'zigzag') { g.moveTo(30, 140); for (const [x, y] of [[90, 94], [140, 118], [200, 78], [252, 104], [312, 64], [362, 92], [422, 52], [484, 70]]) g.lineTo(x, y); g.lineTo(480, 152); g.quadraticCurveTo(250, 140, 34, 160); }
+    else { g.moveTo(36, 126); g.quadraticCurveTo(240, 56, 478, 70); g.lineTo(482, 152); g.quadraticCurveTo(250, 112, 40, 142); }
+    g.closePath();
+  };
+  if (style === 'bushy') {
+    hairs = [];
+    for (let i = 0; i < 150; i++) {
+      const x = 40 + hash(i, 1) * 430, yc = 128 - (x - 40) / 430 * 26 - Math.sin((x - 40) / 430 * Math.PI) * 22;
+      const y = yc + (hash(i, 2) - 0.5) * 46, a = -0.55 - hash(i, 3) * 0.5, L = 28 + hash(i, 4) * 34;
+      hairs.push([x, y, x + Math.cos(a) * L, y + Math.sin(a) * L, 7 + hash(i, 5) * 6]);
+    }
+  }
+  const bushyBase = () => { g.beginPath(); g.moveTo(40, 132); g.quadraticCurveTo(250, 40, 470, 96); g.lineTo(470, 140); g.quadraticCurveTo(250, 104, 44, 150); g.closePath(); };
+  if (outline) {
+    g.strokeStyle = outlineColor; g.fillStyle = outlineColor;
+    if (hairs) { bushyBase(); g.lineWidth = 26; g.stroke(); for (const [x0, y0, x1, y1, w] of hairs) { g.lineWidth = w + 16; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); } }
+    else { shape(); g.lineWidth = 24; g.stroke(); }
+  }
+  g.fillStyle = color; g.strokeStyle = color;
+  if (hairs) { bushyBase(); g.fill(); for (const [x0, y0, x1, y1, w] of hairs) { g.lineWidth = w; g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1, y1); g.stroke(); } }
+  else { shape(); g.fill(); }
+  return c;
+}
+const browMat = new THREE.MeshBasicMaterial({ transparent: true, depthTest: false, depthWrite: false, side: THREE.DoubleSide });
+const browMeshes = [0, 1].map(() => { const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), browMat); m.renderOrder = 4; m.visible = false; scene.add(m); return m; });
+let browKey = '';
+function updateBrowTex() {
+  const b = S.brows, key = [b.style, b.color, b.outline, S.border.color].join('|');
+  if (key === browKey) return; browKey = key;
+  const t = new THREE.CanvasTexture(drawBrow(b.style, b.color, b.outline, S.border.color)); t.colorSpace = THREE.SRGBColorSpace;
+  if (browMat.map) browMat.map.dispose(); browMat.map = t; browMat.needsUpdate = true;
+}
+function rebuildShockTex() { shockSpr.material.map.dispose(); shockSpr.material.map = new THREE.CanvasTexture(drawShock(S.fx.shockColor)); shockSpr.material.map.colorSpace = THREE.SRGBColorSpace; shockSpr.material.needsUpdate = true; }
+
+/* =====================================================================
+   Image handling: texture + signed distance field (for the border)
+   ===================================================================== */
+function edt1d(f, n, d, v, z) {
+  const INF = 1e20; let k = 0; v[0] = 0; z[0] = -INF; z[1] = INF;
+  for (let q = 1; q < n; q++) {
+    let s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]);
+    while (s <= z[k]) { k--; s = ((f[q] + q * q) - (f[v[k]] + v[k] * v[k])) / (2 * q - 2 * v[k]); }
+    k++; v[k] = q; z[k] = s; z[k + 1] = INF;
+  }
+  k = 0;
+  for (let q = 0; q < n; q++) { while (z[k + 1] < q) k++; d[q] = (q - v[k]) * (q - v[k]) + f[v[k]]; }
+}
+function edt2d(grid, w, h) {
+  const n = Math.max(w, h), f = new Float64Array(n), d = new Float64Array(n), v = new Int32Array(n), z = new Float64Array(n + 1);
+  for (let x = 0; x < w; x++) { for (let y = 0; y < h; y++) f[y] = grid[y * w + x]; edt1d(f, h, d, v, z); for (let y = 0; y < h; y++) grid[y * w + x] = d[y]; }
+  for (let y = 0; y < h; y++) { for (let x = 0; x < w; x++) f[x] = grid[y * w + x]; edt1d(f, w, d, v, z); for (let x = 0; x < w; x++) grid[y * w + x] = d[x]; }
+}
+function computeSDF(img, iw, ih) {
+  const sc = Math.min(1, 720 / Math.max(iw, ih));
+  const w = Math.max(2, Math.round(iw * sc)), h = Math.max(2, Math.round(ih * sc));
+  const c = cnv(w, h), g = c.getContext('2d', { willReadFrequently: true }); g.drawImage(img, 0, 0, w, h);
+  const a = g.getImageData(0, 0, w, h).data;
+  const N = w * h, out = new Float64Array(N), inn = new Float64Array(N);
+  for (let i = 0; i < N; i++) { const ins = a[i * 4 + 3] >= 128; out[i] = ins ? 0 : 1e20; inn[i] = ins ? 1e20 : 0; }
+  edt2d(out, w, h); edt2d(inn, w, h);
+  const data = new Uint16Array(N), toPx = iw / w;
+  for (let i = 0; i < N; i++) {
+    const dv = out[i] > 0 ? Math.sqrt(out[i]) - 0.5 : -(Math.sqrt(inn[i]) - 0.5);
+    data[i] = THREE.DataUtils.toHalfFloat(clamp(dv * toPx, -60000, 60000));
+  }
+  const t = new THREE.DataTexture(data, w, h, THREE.RedFormat, THREE.HalfFloatType);
+  t.magFilter = THREE.LinearFilter; t.minFilter = THREE.LinearFilter; t.unpackAlignment = 1; t.needsUpdate = true;
+  return t;
+}
+function buildCharGeometry() {
+  if (charMesh) { charGroup.remove(charMesh); charMesh.geometry.dispose(); }
+  const w = IMG.w, h = IMG.h, pad = Math.max(w, h) * 0.5;
+  const x0 = -pad, x1 = w + pad, y0 = -pad, y1 = h + pad;
+  const g = new THREE.BufferGeometry();
+  const P = [[x0, y0], [x0, y1], [x1, y0], [x1, y1]];
+  g.setAttribute('position', new THREE.Float32BufferAttribute(P.flatMap(([x, y]) => [x - w / 2, h - y, 0]), 3));
+  g.setAttribute('aP', new THREE.Float32BufferAttribute(P.flat(), 2));
+  g.setIndex([0, 1, 2, 2, 1, 3]);
+  charMesh = new THREE.Mesh(g, charMat); charMesh.renderOrder = 2; charMesh.frustumCulled = false;
+  charGroup.add(charMesh);
+}
+/* each pose keeps its own image, texture and distance field so switching is instant */
+const POSE_TEX = [null, null, null];
+function makePoseTex(img, url) {
+  const w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+  const tex = new THREE.Texture(img); tex.flipY = false; tex.premultiplyAlpha = true; tex.colorSpace = THREE.NoColorSpace;
+  tex.anisotropy = renderer.capabilities.getMaxAnisotropy(); tex.needsUpdate = true;
+  return { img, url, w, h, tex, sdf: computeSDF(img, w, h) };
+}
+function disposePoseTex(i) { const c = POSE_TEX[i]; if (c) { c.tex.dispose(); c.sdf.dispose(); } POSE_TEX[i] = null; }
+function applyPoseImage() {
+  const c = POSE_TEX[S.pose];
+  if (!c) {
+    IMG = null;
+    if (charMesh) { charGroup.remove(charMesh); charMesh.geometry.dispose(); charMesh = null; }
+    document.body.classList.add('noimg');
+    $('#dropHint div').textContent = `Pose ${S.pose + 1} is empty — drop a transparent PNG here, or click to choose`;
+    drawOverlay(); return;
+  }
+  IMG = { el: c.img, w: c.w, h: c.h, url: c.url };
+  U.uTex.value = c.tex; U.uSdf.value = c.sdf; U.uSize.value.set(c.w, c.h);
+  buildCharGeometry();
+  document.body.classList.remove('noimg');
+  drawOverlay();
+}
+function setPoseImage(i, img, url) { disposePoseTex(i); POSE_TEX[i] = makePoseTex(img, url); if (i === S.pose) applyPoseImage(); renderPoseBar(); }
+async function loadPoseImage(i) {
+  const p = S.poses[i];
+  try {
+    if (p.img === 'demo') setPoseImage(i, await loadImg(DEMO_URL()), 'demo');
+    else if (p.img === 'idb') {
+      let url = await IDB.get('pose:' + i);
+      if (!url && i === 0) url = await IDB.get('current'); // image saved by the previous version
+      if (url) setPoseImage(i, await loadImg(url), url); else p.img = null;
+    }
+  } catch (e) { console.warn('pose image failed', e); }
+}
+function selectPose(i) {
+  i = clamp(i, 0, 2);
+  S.pose = i; ARMED = null; GUIDED = null; hideToast();
+  applyPoseImage(); refreshUI(); renderPointsUI(); renderPoseBar(); renderPoseCopy(); saveSoon();
+}
+async function copyPose(from, to) {
+  S.poses[to] = clone(S.poses[from]);
+  const c = POSE_TEX[from];
+  if (c && S.poses[from].img === 'idb') await IDB.set('pose:' + to, c.url);
+  disposePoseTex(to);
+  if (c) POSE_TEX[to] = makePoseTex(c.img, c.url);
+  if (to === S.pose) applyPoseImage();
+  renderPoseBar(); saveNow(); toast(`Pose ${from + 1} copied to pose ${to + 1}.`, [], 1600);
+}
+async function clearPose(i) {
+  if (!confirm(`Clear pose ${i + 1} (image, points and its settings)?`)) return;
+  S.poses[i] = newPose(); disposePoseTex(i); await IDB.del('pose:' + i);
+  if (i === S.pose) { applyPoseImage(); refreshUI(); renderPointsUI(); }
+  renderPoseBar(); saveNow();
+}
+function renderPoseBar() {
+  const bar = $('#poseBar'); if (!bar) return; bar.innerHTML = '';
+  for (let i = 0; i < 3; i++) {
+    const c = POSE_TEX[i], b = document.createElement('div');
+    b.className = 'pb' + (i === S.pose ? ' on' : '');
+    const th = document.createElement('span'); th.className = 'th';
+    if (c) th.style.backgroundImage = `url("${c.url === 'demo' ? DEMO_URL() : c.url}")`;
+    const tx = document.createElement('span'); tx.innerHTML = `Pose ${i + 1}<small>${c ? (S.poses[i].img === 'demo' ? 'demo' : 'image') : 'empty'}</small>`;
+    const kb = document.createElement('kbd'); kb.textContent = i + 1;
+    b.append(th, tx, kb); b.onclick = () => selectPose(i);
+    bar.appendChild(b);
+  }
+}
+const loadImg = url => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = url; });
+const fileToDataURL = f => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsDataURL(f); });
+async function normalizeImage(url) {
+  const img = await loadImg(url);
+  const m = Math.max(img.naturalWidth, img.naturalHeight);
+  if (m <= 2600) return { img, url };
+  const sc = 2600 / m, c = cnv(Math.round(img.naturalWidth * sc), Math.round(img.naturalHeight * sc));
+  c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+  const u2 = c.toDataURL('image/png'); return { img: await loadImg(u2), url: u2 };
+}
+function fitCharDefault() {
+  const h = Math.min(900, H * 0.82), w = IMG.w * h / IMG.h;
+  S.char.h = Math.round(w > 900 ? 900 * IMG.h / IMG.w : h);
+  S.char.x = 80; S.char.y = H - S.char.h;
+}
+async function loadImageFile(file) {
+  const raw = await fileToDataURL(file);
+  const { img, url } = await normalizeImage(raw);
+  const i = S.pose, p = S.poses[i];
+  await IDB.set('pose:' + i, url);
+  p.img = 'idb';
+  for (const k in p.pts) p.pts[k] = null;
+  setPoseImage(i, img, url); fitCharDefault(); saveNow(); refreshUI(); renderPointsUI(); drawOverlay();
+  toast(`Loaded into pose ${i + 1}. Use <b>Guided setup</b> under Control points to mark eyes, mouth and neck (all optional).`, [['Guided setup', startGuided], ['Later', hideToast]]);
+}
+
+/* --- built-in demo character so everything can be tried immediately --- */
+function makeDemoURL() {
+  const c = cnv(700, 900), g = c.getContext('2d'); const OL = '#2a1d17'; g.lineJoin = 'round'; g.lineCap = 'round';
+  g.fillStyle = '#5b7cfa'; g.strokeStyle = OL; g.lineWidth = 8;
+  g.beginPath(); g.moveTo(100, 900); g.bezierCurveTo(100, 700, 190, 640, 350, 640); g.bezierCurveTo(510, 640, 600, 700, 600, 900); g.closePath(); g.fill(); g.stroke();
+  g.fillStyle = '#f1bf93'; g.beginPath(); g.roundRect(298, 500, 104, 175, 22); g.fill(); g.stroke();
+  g.beginPath(); g.moveTo(296, 646); g.lineTo(350, 715); g.lineTo(404, 646); g.closePath(); g.fill(); g.stroke();
+  for (const x of [164, 536]) { g.beginPath(); g.ellipse(x, 395, 34, 46, 0, 0, Math.PI * 2); g.fill(); g.stroke(); }
+  g.beginPath(); g.ellipse(350, 370, 190, 215, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+  g.fillStyle = '#4a2f22';
+  g.beginPath(); g.moveTo(160, 360); g.bezierCurveTo(130, 170, 280, 118, 360, 138); g.bezierCurveTo(475, 118, 580, 190, 542, 360);
+  g.bezierCurveTo(520, 270, 470, 228, 420, 248); g.bezierCurveTo(360, 280, 262, 230, 232, 272); g.bezierCurveTo(205, 300, 178, 330, 160, 360); g.closePath(); g.fill(); g.stroke();
+  g.strokeStyle = '#4a2f22'; g.lineWidth = 11;
+  g.beginPath(); g.moveTo(246, 300); g.quadraticCurveTo(282, 284, 316, 298); g.stroke();
+  g.beginPath(); g.moveTo(386, 298); g.quadraticCurveTo(420, 284, 456, 300); g.stroke();
+  for (const [x, y] of [[282, 365], [420, 365]]) {
+    g.fillStyle = '#fff'; g.strokeStyle = OL; g.lineWidth = 6; g.beginPath(); g.ellipse(x, y, 36, 42, 0, 0, Math.PI * 2); g.fill(); g.stroke();
+    g.fillStyle = '#2b2018'; g.beginPath(); g.arc(x + 9, y + 4, 18, 0, Math.PI * 2); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(x + 15, y - 3, 6, 0, Math.PI * 2); g.fill();
+  }
+  g.strokeStyle = OL; g.lineWidth = 6; g.beginPath(); g.moveTo(352, 405); g.quadraticCurveTo(372, 440, 348, 446); g.stroke();
+  g.fillStyle = 'rgba(255,110,110,.35)'; for (const x of [248, 456]) { g.beginPath(); g.arc(x, 448, 26, 0, Math.PI * 2); g.fill(); }
+  g.fillStyle = '#8c2b2b'; g.strokeStyle = OL; g.lineWidth = 6;
+  g.beginPath(); g.moveTo(292, 486); g.quadraticCurveTo(355, 540, 418, 482); g.quadraticCurveTo(355, 500, 292, 486); g.closePath(); g.fill(); g.stroke();
+  return c.toDataURL('image/png');
+}
+let demoURL = null;
+const DEMO_URL = () => demoURL || (demoURL = makeDemoURL());
+async function loadDemo() {
+  const i = S.pose; S.poses[i] = demoPose();
+  setPoseImage(i, await loadImg(DEMO_URL()), 'demo');
+  saveSoon(); refreshUI(); renderPointsUI(); drawOverlay();
+}
+
+/* =====================================================================
+   Script parsing & timeline
+   ===================================================================== */
+const SEG = (typeof Intl !== 'undefined' && Intl.Segmenter) ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
+const graphemes = s => SEG ? Array.from(SEG.segment(s), x => x.segment) : Array.from(s);
+function syllables(word) {
+  const w = word.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '');
+  if (!w) return 1;
+  if (/^\p{N}+$/u.test(w)) return Math.max(1, Math.round(w.length * 0.9));
+  const m = w.match(/[aeiouyàáâãäåèéêëìíîïòóôõöùúûüæœ]+/g);
+  if (!m) return Math.max(1, Math.ceil(w.length / 2.5));
+  let n = m.length; if (w.length > 3 && /[^le]e$/.test(w)) n--;
+  return Math.max(1, n);
+}
+function pauseOf(t) {
+  if (/(\.\.\.|…)["'”’)\]]*$/.test(t)) return 3;
+  if (/[.!?]["'”’)\]]*$/.test(t)) return 2.2;
+  if (/[,;:]["'”’)\]]*$/.test(t)) return 1.1;
+  if (/[—–-]$/.test(t)) return 1.1;
+  return 0.12;
+}
+function parseTakes(root) {
+  const paras = []; let cur = [];
+  const flush = () => { if (cur.some(c => c.ch.trim())) paras.push(cur); cur = []; };
+  const walk = (node, f) => {
+    if (node.nodeType === 3) { for (const ch of node.nodeValue) cur.push({ ch, ...f }); return; }
+    if (node.nodeType !== 1) return;
+    const tag = node.tagName;
+    if (tag === 'BR') { cur.push({ ch: ' ', ...f }); return; }
+    const block = /^(DIV|P|LI|H[1-6]|BLOCKQUOTE|UL|OL)$/.test(tag);
+    if (block) flush();
+    const g = { ...f };
+    if (tag === 'I' || tag === 'EM') g.i = true;
+    if (tag === 'B' || tag === 'STRONG') g.b = true;
+    if (tag === 'U') g.u = true;
+    const st = node.style;
+    if (st) {
+      if (st.fontStyle === 'italic') g.i = true;
+      if (st.fontWeight === 'bold' || +st.fontWeight >= 600) g.b = true;
+      if ((st.textDecoration || '').includes('underline') || (st.textDecorationLine || '').includes('underline')) g.u = true;
+    }
+    for (const c of node.childNodes) walk(c, g);
+    if (block) flush();
+  };
+  for (const c of root.childNodes) walk(c, {});
+  flush();
+  return paras.map(chars => {
+    const words = []; let w = null, lead = 0;
+    for (const c of chars) {
+      if (/\s/.test(c.ch)) { w = null; continue; }
+      // "|" = a short spoken pause; never shown in the captions
+      if (c.ch === '|') { w = null; if (words.length) words[words.length - 1].bar++; else lead++; continue; }
+      if (!w) { w = { text: '', i: 0, b: 0, u: 0, bar: 0 }; words.push(w); }
+      w.text += c.ch; if (c.i) w.i++; if (c.b) w.b++; if (c.u) w.u++;
+    }
+    const out = words.map(x => ({ text: x.text, i: x.i > 0, b: x.b > 0, u: x.u > 0, bar: x.bar }));
+    if (out.length) out[out.length - 1].bar = 0; // a pause after the last word would only delay the hold
+    out.lead = lead;
+    return out;
+  });
+}
+let TAKES = [];
+const TL = { words: [], T: 0 };
+function isAngry(t) { const L = t.replace(/[^\p{L}]/gu, ''); return L.length >= 2 && L === L.toUpperCase() && L !== L.toLowerCase(); }
+function weighted(words) {
+  return words.map((w, j) => ({ ...w, syl: syllables(w.text), pause: j === words.length - 1 ? 0 : pauseOf(w.text), q: /\?["'”’)]*$/.test(w.text), ex: /!["'”’)]*$/.test(w.text), a: isAngry(w.text) }));
+}
+const barCount = words => (words.lead || 0) + words.reduce((a, w) => a + (w.bar || 0), 0);
+function autoDur(words) {
+  const ws = weighted(words); const sum = ws.reduce((a, w) => a + w.syl + w.pause, 0);
+  return sum * (60 / (S.script.wpm * 1.4)) * 1000 + barCount(words) * S.script.pipeMs;
+}
+function buildTimeline() {
+  S.script.current = clamp(S.script.current, 0, Math.max(0, TAKES.length - 1));
+  const take = TAKES[S.script.current] || [];
+  const ws = weighted(take);
+  const given = +S.script.durations[S.script.current] || 0;
+  const T = given > 0 ? given * 1000 : autoDur(take);
+  // "|" pauses are fixed lengths; if a set total time is too short for them, they shrink to fit
+  const bars = barCount(take), fixed0 = bars * S.script.pipeMs, fixed = Math.min(fixed0, T * 0.75), pipe = bars ? fixed / bars : 0;
+  const sum = ws.reduce((a, w) => a + w.syl + w.pause, 0) || 1, unit = (T - fixed) / sum;
+  let t = (take.lead || 0) * pipe;
+  for (const w of ws) { w.s = t; w.se = t + w.syl * unit; t = w.se + w.pause * unit + (w.bar || 0) * pipe; w.n = t; }
+  if (ws.length) ws[ws.length - 1].n = T;
+  TL.words = ws; TL.T = T;
+  updateStatus();
+}
+
+/* =====================================================================
+   Text animations (33)
+   ===================================================================== */
+const GLYPHS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&@*+=?!<>';
+const ANIMS = [
+  ['instant', 'Instant word-by-word', 'w', p => ({ o: p > 0 ? 1 : 0 })],
+  ['typewriter', 'Typewriter', 'c', p => ({ o: p > 0 ? 1 : 0 }), { caret: true }],
+  ['typeFade', 'Typewriter (soft fade)', 'c', p => ({ o: p, y: (1 - E.oc(p)) * 0.12 }), { caret: true }],
+  ['pop', 'Pop (TikTok bounce-in)', 'w', p => ({ o: clamp(p * 4), s: Math.max(0.001, E.ob(p)) })],
+  ['bounceDrop', 'Bounce drop', 'w', p => ({ o: clamp(p * 5), y: -(1 - E.bounce(p)) * 1.1 })],
+  ['fadeUp', 'Fade up', 'w', p => ({ o: E.oc(p), y: (1 - E.oc(p)) * 0.6 })],
+  ['blurIn', 'Blur in (focus pull)', 'w', p => ({ o: E.oc(p), b: (1 - E.oc(p)) * 16, s: 1 + 0.25 * (1 - E.oc(p)) })],
+  ['slideLeft', 'Slide in', 'w', p => ({ o: E.oc(p), x: -(1 - E.oc(p)) * 1.4 })],
+  ['punchIn', 'Punch in (zoom)', 'w', p => ({ o: clamp(p * 3), s: 1 + 1.8 * Math.pow(1 - E.oc(p), 2) })],
+  ['flipX', 'Flip up (3D)', 'w', p => ({ o: clamp(p * 3), rx: (1 - E.ob(p)) * 95, origin: '50% 100%' })],
+  ['flipChars', 'Card-flip letters (3D)', 'c', p => ({ o: clamp(p * 3), ry: (1 - E.oc(p)) * -110 })],
+  ['wave', 'Wave (continuous)', 'c', (p, u) => ({ o: E.oc(p), y: (1 - E.oc(p)) * 0.5 + Math.sin(u.t * 6 - u.gi * 0.45) * 0.07 }), { loop: true }],
+  ['elastic', 'Elastic stretch', 'w', p => ({ o: clamp(p * 5), sx: 0.2 + 0.8 * E.oe(p), sy: 1.6 - 0.6 * E.oe(p) })],
+  ['glitch', 'Glitch / RGB split', 'w', (p, u) => { if (p >= 1) return {}; const q = Math.floor(u.t * 25), a = 1 - p; return { o: p < 0.08 ? 0 : (hash(u.gi, q) > 0.15 ? 1 : 0.3), x: (hash(u.gi + 3, q) - 0.5) * 0.25 * a, k: (hash(u.gi + 7, q) - 0.5) * 20 * a, sh: `${(0.09 * a).toFixed(3)}em 0 #ff1f5a, ${(-0.09 * a).toFixed(3)}em 0 #19e3ff` }; }],
+  ['scramble', 'Decode / scramble', 'c', (p, u) => ({ o: p > 0 ? 1 : 0, txt: (p >= 1 || !u.ch.trim()) ? u.ch : GLYPHS[Math.floor(hash(u.gi, Math.floor(u.t * 20)) * GLYPHS.length)] }), { dur: 2.2 }],
+  ['rotateIn', 'Rotate in', 'w', p => ({ o: clamp(p * 3), r: (1 - E.ob(p)) * -35, y: (1 - E.oc(p)) * 0.3, origin: '0% 100%' })],
+  ['spinChars', 'Spin letters', 'c', p => ({ o: clamp(p * 3), r: (1 - E.oc(p)) * -360, s: Math.max(0.001, E.oc(p)) })],
+  ['jelly', 'Jelly', 'w', p => { const w = Math.sin(p * Math.PI * 3) * (1 - p) * 0.45; return { o: clamp(p * 5), sx: 1 - w, sy: 1 + w, s: 0.7 + 0.3 * E.oc(Math.min(1, p * 3)) }; }],
+  ['rubber', 'Rubber band', 'w', p => { const w = Math.sin(p * Math.PI * 4) * (1 - p); return { o: clamp(p * 5), sx: 1 + 0.4 * w, sy: 1 - 0.25 * w }; }],
+  ['gravity', 'Falling letters', 'c', p => ({ o: clamp(p * 4), y: -(1 - E.bounce(p)) * 1.6 })],
+  ['cascade', 'Tumble letters', 'c', p => ({ o: E.oc(p), y: (1 - E.oc(p)) * -0.8, r: (1 - E.oc(p)) * -30 })],
+  ['zoomChars', 'Zoom letters', 'c', p => ({ o: clamp(p * 3), s: Math.max(0.001, E.ob(p)) })],
+  ['karaoke', 'Karaoke fill (all visible)', 'w', (p, u) => ({ o: 1, grad: u.sp })],
+  ['spotlight', 'Spotlight (all visible, dimmed)', 'w', p => ({ o: 0.25 + 0.75 * E.oc(p), s: p > 0 ? 1 + 0.15 * (1 - E.oc(p)) : 1 })],
+  ['shake', 'Shake in', 'w', (p, u) => { const q = Math.floor(u.t * 40), a = 1 - p; return { o: clamp(p * 5), x: (hash(u.gi, q) - 0.5) * 0.18 * a, y: (hash(u.gi + 1, q) - 0.5) * 0.18 * a, r: (hash(u.gi + 2, q) - 0.5) * 14 * a }; }],
+  ['swing', 'Swing (hanging sign)', 'w', p => ({ o: clamp(p * 5), r: 80 * Math.cos(p * Math.PI * 3) * Math.pow(1 - p, 2), origin: '50% 0%' })],
+  ['neon', 'Neon flicker', 'w', (p, u) => { const q = Math.floor(u.t * 30); const on = p >= 1 || (p > 0 && hash(u.gi, q) < 0.35 + p * 0.6); return { o: on ? 1 : (p > 0 ? 0.1 : 0), sh: on ? `0 0 .08em ${u.hl}, 0 0 .3em ${u.hl}, 0 0 .6em ${u.hl}` : '' }; }],
+  ['skewSlide', 'Skew slide', 'w', p => ({ o: E.oc(p), x: (1 - E.oc(p)) * 1.2, k: (1 - E.oc(p)) * -35 })],
+  ['stretchIn', 'Stretch & focus', 'w', p => ({ o: E.oc(p), sx: 1 + 0.9 * (1 - E.oc(p)), b: (1 - E.oc(p)) * 8 })],
+  ['rise', 'Rise from mask', 'w', p => ({ o: p > 0 ? 1 : 0, y: (1 - E.oc(p)) * 1.15 }), { clip: true }],
+  ['unfold', 'Unfold', 'w', p => ({ o: clamp(p * 3), sy: Math.max(0.001, E.ob(p)), origin: '50% 100%' })],
+  ['stamp', 'Stamp', 'w', p => { const q = Math.min(1, p * 1.6); return { o: clamp(p * 6), s: 1 + 1.3 * Math.pow(1 - q, 3) - 0.06 * Math.sin(Math.PI * clamp((p - 0.6) / 0.4)), r: (1 - E.oc(p)) * -12 }; }],
+  ['heartbeat', 'Heartbeat (pulses while spoken)', 'w', (p, u) => ({ o: clamp(p * 4), s: Math.max(0.001, E.ob(p)) * (u.active ? 1 + 0.09 * Math.abs(Math.sin(u.t * 9)) : 1) }), { loop: true }],
+];
+const ANIM = {}; for (const [id, name, unit, fn, opt] of ANIMS) ANIM[id] = { id, name, unit, fn, ...(opt || {}) };
+
+/* =====================================================================
+   Text DOM
+   ===================================================================== */
+const textBox = $('#textBox'), textBlock = $('#textBlock'), textInner = $('#textInner');
+const TX = { pages: [[0, -1]], page: -1, units: [], fs: 76, caret: null, caretAt: null };
+const SHADOWS = { none: () => 'none', soft: () => '0 .06em .18em rgba(0,0,0,.55)', hard: () => `.07em .07em 0 ${S.style.strokeColor}`, glow: () => `0 0 .12em ${S.text.hlColor}, 0 0 .35em ${S.text.hlColor}` };
+function applyTextStyle() {
+  const st = S.style, b = S.box, bs = textBox.style, ks = textBlock.style;
+  bs.left = b.x + 'px'; bs.top = b.y + 'px'; bs.width = b.w + 'px'; bs.height = b.h + 'px';
+  textInner.style.justifyContent = { top: 'flex-start', center: 'center', bottom: 'flex-end' }[st.valign];
+  textInner.style.alignItems = { left: 'flex-start', center: 'center', right: 'flex-end' }[st.align];
+  ks.setProperty('--font', `"${st.font}", Inter, sans-serif`);
+  ks.setProperty('--weight', st.weight);
+  ks.setProperty('--color', st.color);
+  ks.setProperty('--lh', st.lineHeight);
+  ks.setProperty('--ls', st.letter + 'em');
+  ks.setProperty('--ws', st.wordGap + 'em');
+  ks.setProperty('--tt', st.upper ? 'uppercase' : 'none');
+  ks.setProperty('--align', st.align);
+  ks.setProperty('--stroke', (st.stroke * 2 / st.size).toFixed(4) + 'em');
+  ks.setProperty('--strokeColor', st.strokeColor);
+  ks.setProperty('--shadow', SHADOWS[st.shadow]());
+  ks.setProperty('--bg', hexToRgba(st.bgColor, st.bgOpacity));
+  ks.setProperty('--pad', (st.pad / st.size).toFixed(3) + 'em');
+  ks.setProperty('--radius', (st.radius / st.size).toFixed(3) + 'em');
+  ks.setProperty('--hl', S.text.hlColor);
+  textBlock.classList.toggle('boxbg', st.bg === 'box');
+  textBlock.classList.toggle('pills', st.bg === 'pills');
+  textBlock.classList.toggle('padwords', st.bg === 'pills' || S.text.highlight === 'box');
+}
+function setFs(fs) { TX.fs = fs; textBlock.style.fontSize = fs + 'px'; }
+function renderWords(a, b) {
+  const anim = ANIM[S.text.anim] || ANIM.pop, charUnit = anim.unit === 'c';
+  textBlock.textContent = ''; TX.units = []; TX.caretAt = null; let gi = 0;
+  for (let i = a; i <= b; i++) {
+    const w = TL.words[i]; if (!w) continue;
+    const we = document.createElement('span'); we.className = 'w' + (anim.clip ? ' clip' : '');
+    const wi = document.createElement('span'); wi.className = 'wi';
+    if (S.text.format) { if (w.i) wi.classList.add('fi'); if (w.b) wi.classList.add('fb'); if (w.u) wi.classList.add('fu'); }
+    const unit = { w, i, we, wi, chars: [], hl: 0, gi: 0 };
+    if (charUnit) {
+      const gs = graphemes(w.text);
+      gs.forEach((g, k) => { const c = document.createElement('span'); c.className = 'c'; c.textContent = g; wi.appendChild(c); unit.chars.push({ el: c, ch: g, k, n: gs.length, gi: gi++ }); });
+    } else if (anim.id === 'karaoke') { wi.classList.add('kw'); wi.textContent = w.text; const kt = document.createElement('span'); kt.className = 'kov'; kt.textContent = w.text; wi.appendChild(kt); unit.kt = kt; unit.gi = gi++; }
+    else { wi.textContent = w.text; unit.gi = gi++; }
+    we.appendChild(wi); textBlock.appendChild(we);
+    if (i < b) textBlock.appendChild(document.createTextNode(' '));
+    TX.units.push(unit);
+  }
+}
+function fitsBox() {
+  const bw = S.box.w, bh = S.box.h;
+  return textBlock.offsetHeight <= bh + 0.5 && textBlock.scrollWidth <= bw + 0.5;
+}
+function fitSize(a, b) {
+  renderWords(a, b);
+  let lo = 10, hi = S.style.size;
+  setFs(hi); if (fitsBox()) return hi;
+  for (let k = 0; k < 9; k++) { const mid = (lo + hi) / 2; setFs(mid); if (fitsBox()) lo = mid; else hi = mid; }
+  return Math.floor(lo);
+}
+function computePages() {
+  const n = TL.words.length, m = S.text.mode;
+  if (!n) return [[0, -1]];
+  if (m === 'all') return [[0, n - 1]];
+  if (m === 'single') return TL.words.map((_, i) => [i, i]);
+  if (m === 'chunk') {
+    const pages = []; let st = 0; const N = Math.max(1, S.text.chunk | 0);
+    for (let i = 0; i < n; i++) { const end = (i - st + 1 >= N) || /[.!?…]["'”’)]*$/.test(TL.words[i].text) || TL.words[i].bar > 0 || i === n - 1; if (end) { pages.push([st, i]); st = i + 1; } }
+    return pages;
+  }
+  // 'pages': fill the box, then flip
+  renderWords(0, n - 1);
+  const pad = S.style.bg === 'box' ? (S.style.pad / S.style.size) * TX.fs * 2 : 0;
+  const bh = S.box.h - pad;
+  const pages = []; let st = 0, top0 = TX.units[0].we.offsetTop;
+  TX.units.forEach((u, i) => { const bot = u.we.offsetTop + u.we.offsetHeight; if (bot - top0 > bh && i > st) { pages.push([st, i - 1]); st = i; top0 = u.we.offsetTop; } });
+  pages.push([st, n - 1]);
+  return pages;
+}
+let textT = 0;
+function rebuildTextSoon() { clearTimeout(textT); textT = setTimeout(rebuildText, 60); }
+function rebuildText() {
+  applyTextStyle();
+  buildTimeline();
+  let fs = S.style.size;
+  setFs(fs);
+  if (S.text.autoFit && S.text.mode !== 'pages' && TL.words.length) {
+    const pages = computePages();
+    for (const [a, b] of pages) fs = Math.min(fs, fitSize(a, b));
+    setFs(fs);
+  }
+  TX.pages = computePages();
+  TX.page = -1;
+  renderPage(pageAt(lastTm));
+  drawOverlay();
+}
+function pageAt(tm) {
+  if (!isFinite(tm)) return TX.pages.length - 1;
+  let p = 0; for (let i = 0; i < TX.pages.length; i++) { const w = TL.words[TX.pages[i][0]]; if (w && tm >= w.s + S.text.sync) p = i; }
+  return p;
+}
+function renderPage(pi) {
+  pi = clamp(pi, 0, TX.pages.length - 1);
+  const [a, b] = TX.pages[pi] || [0, -1];
+  renderWords(a, b); TX.page = pi;
+}
+function applyUnit(el, st) {
+  let tr = '';
+  if (st.rx || st.ry) tr += 'perspective(500px) ';
+  if (st.x || st.y) tr += `translate(${(st.x || 0).toFixed(3)}em,${(st.y || 0).toFixed(3)}em) `;
+  if (st.r) tr += `rotate(${st.r.toFixed(2)}deg) `;
+  if (st.rx) tr += `rotateX(${st.rx.toFixed(2)}deg) `;
+  if (st.ry) tr += `rotateY(${st.ry.toFixed(2)}deg) `;
+  if (st.k) tr += `skewX(${st.k.toFixed(2)}deg) `;
+  const s = st.s ?? 1, sx = (st.sx ?? 1) * s, sy = (st.sy ?? 1) * s;
+  if (Math.abs(sx - 1) > 1e-4 || Math.abs(sy - 1) > 1e-4) tr += `scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
+  if (el._tr !== tr) { el.style.transform = tr; el._tr = tr; }
+  const o = Math.round((st.o ?? 1) * 1000) / 1000; if (el._o !== o) { el.style.opacity = o; el._o = o; }
+  const f = st.b > 0.05 ? `blur(${st.b.toFixed(1)}px)` : ''; if (el._f !== f) { el.style.filter = f; el._f = f; }
+  const sh = st.sh || ''; if (el._sh !== sh) { el.style.textShadow = sh; el._sh = sh; }
+  const og = st.origin || ''; if (el._og !== og) { el.style.transformOrigin = og; el._og = og; }
+  if (st.txt !== undefined && el._txt !== st.txt) { el.textContent = st.txt; el._txt = st.txt; }
+}
+function loopXf(kind, t, i, k) {
+  if (k <= 0.001) return {};
+  switch (kind) {
+    case 'wobble': return { r: Math.sin(t * 3.2 + i * 1.3) * 4 * k };
+    case 'float': return { y: Math.sin(t * 2.2) * 0.07 * k };
+    case 'wave': return { y: Math.sin(t * 4 - i * 0.8) * 0.08 * k };
+    case 'bounce': return { y: -Math.abs(Math.sin(t * 3 + i * 0.9)) * 0.12 * k };
+    case 'pulse': return { s: 1 + Math.sin(t * 4 + i * 0.7) * 0.05 * k };
+    case 'jelly': { const w = Math.sin(t * 5 + i * 1.1) * 0.07 * k; return { sx: 1 + w, sy: 1 - w }; }
+    case 'jitter': { const q = Math.floor(t * 12); return { x: (hash(i, q) - 0.5) * 0.05 * k, y: (hash(i + 9, q) - 0.5) * 0.05 * k, r: (hash(i + 4, q) - 0.5) * 4 * k }; }
+    case 'swing': return { r: Math.sin(t * 2.5 + i * 0.9) * 7 * k, origin: '50% 0%' };
+  }
+  return {};
+}
+function setStyleCached(el, prop, v) { const k = '_' + prop; if (el[k] !== v) { el.style[prop] = v; el[k] = v; } }
+function updateTextFrame(now, dt, P) {
+  const show = P.ph === 'static' || P.ph === 'talk' || P.ph === 'hold' || P.ph === 'exit';
+  // container (exit animation)
+  let o = show ? 1 : 0, tr = '';
+  if (P.ph === 'exit') {
+    const x = P.px;
+    if (S.scene.exit === 'cut') o = 0;
+    else if (S.scene.exit === 'fade') o = 1 - x;
+    else if (S.scene.exit === 'pop') { const s = 1 + 0.12 * Math.sin(Math.PI * Math.min(1, x * 2)) - E.ib(x); o = 1 - clamp((x - 0.6) / 0.4); tr = `scale(${Math.max(0.001, s).toFixed(4)})`; }
+    else if (S.scene.exit === 'slide') { o = 1 - x; tr = `translateY(${(E.ib(x) * 260).toFixed(1)}px)`; }
+  }
+  setStyleCached(textBox, 'opacity', String(o)); setStyleCached(textBox, 'transform', tr);
+  if (!show) { if (TX.page !== 0 && TX.pages.length) renderPage(0); return; }
+  const tm = P.tm, sync = S.text.sync;
+  const pi = pageAt(tm); if (pi !== TX.page) renderPage(pi);
+  const anim = ANIM[S.text.anim] || ANIM.pop, ed = Math.max(1, S.text.enterDur * (anim.dur || 1));
+  const t = now / 1000, talking = P.ph === 'talk', hl = S.text.hlColor, hm = S.text.highlight;
+  let lastRev = null;
+  const LP = S.text.loop, la = S.text.loopAmt, lt = t * S.text.loopSpeed;
+  setStyleCached(textBlock, 'transform', LP === 'sway' ? `rotate(${(Math.sin(lt * 1.6) * 2.5 * la).toFixed(3)}deg)` : LP === 'breathe' ? `scale(${(1 + Math.sin(lt * 2) * 0.035 * la).toFixed(4)})` : '');
+  for (const u of TX.units) {
+    const w = u.w, ws = w.s + sync;
+    const active = talking && tm >= w.s && tm < w.n;
+    u.hl += ((active ? 1 : 0) - u.hl) * Math.min(1, dt * 18);
+    const sp = isFinite(tm) ? clamp((tm - ws) / Math.max(1, w.se - w.s)) : 1;
+    const hOn = u.hl > 0.5 && hm !== 'none';
+    const hScale = (hm === 'scale' || hm === 'colorScale') ? 1 + 0.14 * u.hl : 1;
+    if (anim.id !== 'karaoke') setStyleCached(u.wi, 'color', hOn && (hm === 'color' || hm === 'colorScale') ? hl : (hOn && hm === 'box' ? (lum(hl) > 0.5 ? '#111111' : '#ffffff') : ''));
+    if (hm === 'box') setStyleCached(u.wi, 'backgroundColor', hOn ? hl : '');
+    if (anim.unit === 'c') {
+      const cd = ed * 0.6, span = (w.se - w.s) * 0.85;
+      for (const c of u.chars) {
+        const cs = ws + (c.k / c.n) * span;
+        const p = isFinite(tm) ? clamp((tm - cs) / cd) : 1;
+        applyUnit(c.el, anim.fn(p, { t, gi: c.gi, ch: c.ch, active, hl, sp }));
+        if (p > 0) lastRev = c.el;
+      }
+      applyUnit(u.wi, { s: hScale });
+    } else {
+      const p = isFinite(tm) ? clamp((tm - ws) / ed) : 1;
+      const st = anim.fn(p, { t, gi: u.gi, active, hl, sp });
+      st.s = (st.s ?? 1) * hScale;
+      applyUnit(u.wi, st);
+      if (st.grad !== undefined) {
+        const pc = (st.grad * 100).toFixed(2);
+        if (u.kt) { setStyleCached(u.kt, 'color', hl); setStyleCached(u.kt, 'clipPath', `inset(-20% ${(100 - st.grad * 100).toFixed(2)}% -20% -5%)`); }
+      }
+    }
+    // idle loop on the word wrapper (fades in once the word has entered)
+    const age = isFinite(tm) ? clamp((tm - ws - ed) / 350) : 1;
+    applyUnit(u.we, LP === 'none' ? {} : loopXf(LP, lt, u.i, la * age));
+  }
+  // caret
+  const wantCaret = anim.caret && S.text.caret && (P.ph === 'talk' || P.ph === 'hold');
+  if (!TX.caret) { TX.caret = document.createElement('span'); TX.caret.className = 'caret'; }
+  if (wantCaret && lastRev) { if (TX.caretAt !== lastRev || !TX.caret.isConnected) { lastRev.after(TX.caret); TX.caretAt = lastRev; } }
+  else if (TX.caret.isConnected) { TX.caret.remove(); TX.caretAt = null; }
+}
+
+/* =====================================================================
+   Playback timeline
+   ===================================================================== */
+const PLAY = { on: false, t0: 0 };
+const PV = { kind: null, until: 0, last: 'wink' };
+function preview(kind, ms = 1300) { if (kind === 'last') kind = PV.last; if (!kind) return; if (PV.kind !== kind || performance.now() > PV.until) PV.start = performance.now(); PV.kind = kind; PV.last = kind; PV.until = performance.now() + ms; }
+let lastTm = Infinity;
+function phaseInfo(now) {
+  if (!PLAY.on) return { ph: 'static', e: Infinity, tm: Infinity, pe: 1, px: 0 };
+  const sc = S.scene, e = now - PLAY.t0;
+  const entryEnd = sc.preDelay + sc.entryDur, talkStart = entryEnd + sc.textDelay, tm = e - talkStart;
+  const hideAt = textEndTime() + sc.hideAfter * 1000;
+  const ph = e < sc.preDelay ? 'blank' : e < entryEnd ? 'entry' : tm < 0 ? 'pre' : tm < TL.T ? 'talk' : (!sc.hideText || tm < hideAt) ? 'hold' : 'exit';
+  return { ph, e, tm, pe: clamp((e - sc.preDelay) / Math.max(1, sc.entryDur)), px: sc.exit === 'cut' ? 1 : clamp((tm - hideAt) / Math.max(1, sc.exitDur)) };
+}
+// moment the last word's entry animation has finished (relative to talking start)
+function textEndTime() {
+  const ws = TL.words; if (!ws.length) return 0;
+  const a = ANIM[S.text.anim] || ANIM.pop, last = ws[ws.length - 1];
+  const ed = Math.max(1, S.text.enterDur * (a.dur || 1));
+  const end = a.unit === 'c' ? last.s + (last.se - last.s) * 0.85 + ed * 0.6 : last.s + ed;
+  return Math.max(TL.T, end + S.text.sync);
+}
+function play() {
+  buildTimeline();
+  PLAY.on = true; PLAY.t0 = performance.now();
+  for (const k in SP) SP[k].reset();
+  lastWi = -1; prevU = false; prevI = false; nextBlink = PLAY.t0 + 2500;
+  TX.page = -1;
+}
+
+/* =====================================================================
+   Character animation
+   ===================================================================== */
+class Spring { constructor() { this.x = 0; this.v = 0; } reset() { this.x = 0; this.v = 0; } step(target, dt, k, zeta) { const c = 2 * Math.sqrt(k) * zeta, n = 4, h = dt / n; for (let i = 0; i < n; i++) { const a = k * (target - this.x) - c * this.v; this.v += a * h; this.x += this.v * h; } return this.x; } }
+const SP = { rot: new Spring(), sq: new Spring(), hop: new Spring(), wink: new Spring(), bulge: new Spring(), sur: new Spring(), shock: new Spring(), spark: new Spring(), tilt: new Spring(), punch: new Spring(), ang: new Spring(), idle: new Spring() };
+let lastWi = -1, wigSign = 1, prevU = false, prevI = false, sweatStart = 0, nextBlink = 0, blinkStart = -1e9;
+
+function dispPt(name) { const p = S.pts[name]; if (!p || !IMG) return null; return { x: (S.char.mirror ? 1 - p.u : p.u) * IMG.w, y: p.v * IMG.h }; }
+function geom() {
+  const G = { fs: S.char.facing === 'left' ? -1 : 1, eyes: [], mouthOn: false, neckOn: false };
+  const ry = S.eyes.size * IMG.h, rx = ry * S.eyes.aspect;
+  for (const n of ['eye1', 'eye2']) { const p = dispPt(n); if (p) G.eyes.push({ name: n, x: p.x, y: p.y, rx, ry }); }
+  const m1 = dispPt('m1'), m2 = dispPt('m2');
+  if (m1 && m2 && Math.hypot(m2.x - m1.x, m2.y - m1.y) > 2) {
+    G.mouthOn = true; G.m1 = m1; G.m2 = m2;
+    const dx = m2.x - m1.x, dy = m2.y - m1.y, L = Math.hypot(dx, dy);
+    let n = { x: dy / L, y: -dx / L }; if (n.y > 0) n = { x: -n.x, y: -n.y }; if (Math.abs(n.y) < 1e-4) n = { x: 0, y: -1 };
+    G.n = n;
+    const h = S.head.hinge;
+    G.back = G.fs > 0 ? (m1.x <= m2.x ? m1 : m2) : (m1.x >= m2.x ? m1 : m2);
+    G.front = G.back === m1 ? m2 : m1;
+    G.mid = { x: (m1.x + m2.x) / 2, y: (m1.y + m2.y) / 2 };
+    G.hinge = h === 'start' ? m1 : h === 'end' ? m2 : h === 'center' ? G.mid : G.back;
+  }
+  const nk = dispPt('neck'); if (nk) { G.neckOn = true; G.neck = nk; }
+  // eyebrows: always placed straight above each eye
+  G.brows = G.eyes.map(e => ({ x: e.x, y: e.y - ry * S.brows.gap, ry, w: rx * 3.2 * S.brows.size }));
+  if (G.brows.length === 2) { const [a, b] = G.brows; a.inR = b.x > a.x; b.inR = a.x > b.x; }
+  else if (G.brows.length === 1) G.brows[0].inR = G.fs > 0;
+  const R = ry;
+  if (G.eyes.length) { const c = G.eyes.reduce((a, e) => ({ x: a.x + e.x / G.eyes.length, y: a.y + e.y / G.eyes.length }), { x: 0, y: 0 }); G.eyeC = c; G.head = { x: c.x, y: c.y + R }; }
+  else if (G.mouthOn) G.head = { x: (G.m1.x + G.m2.x) / 2, y: (G.m1.y + G.m2.y) / 2 - 0.08 * IMG.h };
+  else G.head = { x: IMG.w / 2, y: IMG.h * 0.25 };
+  const fx = dispPt('fx');
+  G.fxA = fx || (G.eyeC ? { x: G.eyeC.x - G.fs * 2.6 * R, y: G.eyeC.y - 2.9 * R } : G.mouthOn ? { x: G.head.x - G.fs * 0.12 * IMG.w, y: G.head.y - 0.16 * IMG.h } : { x: IMG.w * (0.5 - G.fs * 0.15), y: IMG.h * 0.08 });
+  G.sweatA = G.eyeC ? { x: G.eyeC.x - G.fs * 4.0 * R, y: G.eyeC.y - 0.6 * R } : { x: G.fxA.x - G.fs * 0.05 * IMG.w, y: G.fxA.y + 0.1 * IMG.h };
+  return G;
+}
+function talkState(tm) {
+  const r = { open: 0, seed: 0, wi: -1, i: false, b: false, u: false, q: false, a: false, talking: false };
+  if (!isFinite(tm) || tm < 0 || !TL.words.length) return r;
+  const ws = TL.words, rel = S.fx.release;
+  for (let j = 0; j < ws.length; j++) {
+    const w = ws[j];
+    if (tm >= w.s && tm < w.n) r.wi = j;
+    if (tm >= w.s - 40 && tm <= w.se + rel) { if (w.i) r.i = true; if (w.b) r.b = true; if (w.u) r.u = true; if (w.q) r.q = true; if (w.a) r.a = true; }
+  }
+  if (tm < TL.T) {
+    r.talking = true;
+    if (r.wi >= 0) {
+      const w = ws[r.wi];
+      if (tm < w.se) {
+        const loc = (tm - w.s) / Math.max(1, w.se - w.s);
+        const fl = Math.max(1, Math.round(w.syl * S.talk.flapsPerSyl));
+        const k = Math.min(fl - 1, Math.floor(loc * fl)), x = loc * fl - k;
+        const amp = 1 - S.talk.randomness * hash(r.wi * 7.13, k);
+        r.open = amp * Math.pow(Math.max(0, Math.sin(Math.PI * x)), 1 / (1 + S.talk.snap * 5));
+        r.seed = r.wi * 17.31 + k * 3.7 + 0.5;
+      }
+    }
+  }
+  return r;
+}
+function entryXf(type, p, rect) {
+  const o = { dx: 0, dy: 0, s: 1, a: 1 };
+  if (p >= 1 || type === 'none') return o;
+  if (type === 'pop') o.s = Math.max(0.0001, E.ob(p));
+  else if (type === 'rise') o.dy = -(1 - E.oc(p)) * (rect.h + 40);
+  else if (type === 'slide') o.dx = -(1 - E.oc(p)) * (rect.x + rect.w + 60);
+  else if (type === 'drop') o.dy = (1 - E.bounce(p)) * (H + 40);
+  else if (type === 'fade') o.a = p;
+  return o;
+}
+const tmpV = new THREE.Vector3();
+function imgToWorld(pt, G, flapAng, lift, neckAng, neckOff) {
+  let x = pt.x, y = pt.y;
+  if (G.mouthOn && ((x - G.m1.x) * G.n.x + (y - G.m1.y) * G.n.y) > 0) {
+    const c = Math.cos(flapAng), s = Math.sin(flapAng), dx = x - G.hinge.x, dy = y - G.hinge.y;
+    x = G.hinge.x + c * dx - s * dy + lift.x; y = G.hinge.y + s * dx + c * dy + lift.y;
+  }
+  if (G.neckOn) {
+    const band = S.head.neckBand * IMG.h, w = sstep(G.neck.y + band, G.neck.y - band, y);
+    const a = neckAng * w, c = Math.cos(a), s = Math.sin(a), dx = x - G.neck.x, dy = y - G.neck.y;
+    x = G.neck.x + c * dx - s * dy + neckOff.x * w; y = G.neck.y + s * dx + c * dy + neckOff.y * w;
+  }
+  tmpV.set(x - IMG.w / 2, IMG.h - y, 0);
+  return charGroup.localToWorld(tmpV.clone());
+}
+function hideFx() { shockSpr.visible = sweatSpr.visible = sparkSpr.visible = linesMesh.visible = browMeshes[0].visible = browMeshes[1].visible = false; }
+function updateChar(now, dt, P) {
+  if (!IMG || !charMesh) { charGroup.visible = false; hideFx(); return; }
+  const t = now / 1000, G = geom(), rect = charRect(), s = rect.s;
+  const vis = P.ph !== 'blank';
+  charGroup.visible = vis;
+  if (!vis) { hideFx(); return; }
+  const st = talkState(P.tm);
+  const talking = st.talking && P.ph === 'talk';
+  let open = talking ? st.open : 0;
+  // live preview while adjusting settings
+  if (PV.kind && now < PV.until) {
+    if (PV.kind === 'wink') st.i = true; else if (PV.kind === 'bulge') st.b = true; else if (PV.kind === 'surprise') st.u = true; else if (PV.kind === 'angry') st.a = true;
+    else if (PV.kind === 'talk' && !talking) st.seed = Math.floor(t * 9 / Math.PI) * 5.13 + 0.7, open = Math.pow(Math.max(0, Math.sin(t * 9)), 1 / (1 + S.talk.snap * 5)) * (1 - S.talk.randomness * 0.5 * (0.5 + 0.5 * Math.sin(t * 2.3)));
+  }
+  const tk = S.talk, hd = S.head, fx = S.fx;
+
+  // word-level events
+  if (st.wi !== lastWi) {
+    if (st.wi >= 0 && talking) {
+      const w = TL.words[st.wi];
+      const wig = tk.wiggle === 'always' || (tk.wiggle === 'auto' && !G.mouthOn && !G.neckOn);
+      if (wig) { wigSign = -wigSign; SP.rot.v += wigSign * tk.wiggleAngle * 22; SP.sq.v += tk.wiggleSquash * 26; }
+      if (tk.punct && w.ex) SP.hop.v += fx.hopPx * 0.8 * 22;
+    }
+    lastWi = st.wi;
+  }
+  if (st.u && !prevU) { if (fx.hop) SP.hop.v += fx.hopPx * 22; sweatStart = now; SP.shock.v += 6; }
+  prevU = st.u;
+  if (st.i && !prevI) SP.spark.v += 8;
+  prevI = st.i;
+
+  // springs
+  const kResp = fx.response * fx.response;
+  SP.rot.step(0, dt, 160, 0.28); SP.sq.step(0, dt, 220, 0.3); SP.hop.step(0, dt, 190, 0.45);
+  const wink = SP.wink.step(st.i ? 1 : 0, dt, kResp * 1.4, 1.0);
+  const bulge = SP.bulge.step(st.b ? 1 : 0, dt, kResp, 0.32);
+  const sur = SP.sur.step(st.u ? 1 : 0, dt, kResp, 0.42);
+  const shock = SP.shock.step(st.u ? 1 : 0, dt, kResp * 1.3, 0.35);
+  const spark = SP.spark.step(st.i ? 1 : 0, dt, kResp, 0.35);
+  const tilt = SP.tilt.step(tk.punct && st.q && talking ? 1 : 0, dt, 90, 0.7);
+  const punch = SP.punch.step(fx.punch && st.u ? 1 : 0, dt, kResp, 0.5);
+  const angry = SP.ang.step(st.a ? 1 : 0, dt, kResp, 0.4), angC = clamp(angry);
+  const shake = fx.angryShake ? Math.sin(t * 43) * 1.4 * angC : 0;
+
+  // blink (idle + talking)
+  let blink = 0;
+  if (tk.blinking && G.eyes.length) {
+    if (now > nextBlink) { blinkStart = now; nextBlink = now + tk.blinkEvery * 1000 * (0.6 + 0.8 * Math.random()); }
+    const x = (now - blinkStart) / 170; if (x < 1) blink = Math.sin(Math.PI * x);
+  }
+
+  // entry / exit transforms
+  let ex = entryXf(S.scene.entry, P.ph === 'entry' ? P.pe : 1, rect);
+  if (P.ph === 'pre') ex = entryXf(S.scene.entry, 1, rect);
+  if (P.ph === 'exit' && S.scene.exitChar) { const x = P.px; ex = entryXf(S.scene.entry === 'none' ? 'fade' : S.scene.entry, 1 - x, rect); if (S.scene.entry === 'pop') ex.s = Math.max(0.0001, 1 - E.ib(x)); }
+
+  // body transform
+  const breath = tk.breathing ? 1 + 0.007 * Math.sin(t * 2.3) : 1;
+  const sq = SP.sq.x + tk.bodyBounce * open * 0.03;
+  // idle head sway left/right (held still while you place or drag points)
+  const idleK = SP.idle.step(EDIT && (ARMED || DRAG || OVERCHAR) ? 0 : 1, dt, 40, 1);
+  const isp = hd.idleSpeed, idleDeg = hd.idleSway * idleK * (0.75 * Math.sin(t * 1.1 * isp) + 0.25 * Math.sin(t * 2.3 * isp + 1.3));
+  let rotDeg = SP.rot.x;
+  if (!G.neckOn) rotDeg += tilt * -G.fs * 3 + shake + idleDeg * 0.6;
+  const bx = rect.x + rect.w / 2 + ex.dx, by = H - (rect.y + rect.h) + ex.dy + SP.hop.x;
+  charGroup.position.set(bx, by, 0);
+  charGroup.rotation.z = -rotDeg * Math.PI / 180;
+  charGroup.scale.set(s * ex.s * (1 + sq), s * ex.s * (1 - sq) * breath, 1);
+  charGroup.updateMatrixWorld(true);
+
+  // shader uniforms
+  U.uMirror.value = S.char.mirror ? 1 : 0;
+  U.uScale.value = s * ex.s;
+  U.uAlpha.value = ex.a;
+  U.uBorderOn.value = S.border.on ? 1 : 0; U.uBorderW.value = S.border.w; hexToV3(S.border.color, U.uBorderColor.value);
+  U.uTint.value = angC * fx.angryTint;
+  // mouth: either a fixed hinge, or (Random) every flap picks back hinge / front hinge / straight lift
+  let flapDir = -G.fs, angK = 1, liftK = hd.hinge === 'center' ? 1 : 0.3;
+  if (G.mouthOn && hd.hinge === 'random') {
+    const r1 = hash(st.seed, 1), r2 = hash(st.seed, 2), r3 = hash(st.seed, 3), r4 = hash(st.seed, 4);
+    if (r1 < 0.38) { G.hinge = G.back; flapDir = -G.fs; angK = 0.55 + 0.6 * r2; liftK = 0.1 + 0.5 * r3; }
+    else if (r1 < 0.72) { G.hinge = G.front; flapDir = G.fs; angK = 0.5 + 0.55 * r2; liftK = 0.15 + 0.5 * r3; }
+    else { G.hinge = G.mid; flapDir = r4 < 0.5 ? -1 : 1; angK = 0.25 * r2; liftK = 0.75 + 0.35 * r3; }
+  } else if (G.mouthOn && G.hinge === G.front) flapDir = G.fs; // fixed hinge at the front: lift the back of the head
+  const flapAng = G.mouthOn ? flapDir * open * angK * hd.maxAngle * Math.PI / 180 : 0;
+  const lift = G.mouthOn ? { x: G.n.x * open * liftK * hd.lift / s, y: G.n.y * open * liftK * hd.lift / s } : { x: 0, y: 0 };
+  U.uMouthOn.value = G.mouthOn ? 1 : 0;
+  if (G.mouthOn) { U.uM1.value.set(G.m1.x, G.m1.y); U.uN.value.set(G.n.x, G.n.y); U.uHinge.value.set(G.hinge.x, G.hinge.y); }
+  U.uFlap.value = flapAng; U.uLift.value.set(lift.x, lift.y); U.uOpen.value = open;
+  const sway = (talking ? hd.sway * Math.sin(t * 2.1) : 0) + idleDeg;
+  const neckAng = G.neckOn ? (G.fs * (open * hd.nod + sway - tilt * 8) + shake) * Math.PI / 180 : 0;
+  const neckOff = { x: 0, y: G.neckOn ? -open * hd.nod * 0.7 / s : 0 };
+  U.uNeckOn.value = G.neckOn ? 1 : 0;
+  if (G.neckOn) U.uNeck.value.set(G.neck.x, G.neck.y);
+  U.uNeckAng.value = neckAng; U.uNeckOff.value.set(neckOff.x, neckOff.y); U.uNeckBand.value = hd.neckBand * IMG.h;
+  // eyes
+  let winkSel = [0, 0];
+  if (G.eyes.length === 1) winkSel = [1, 0];
+  else if (G.eyes.length === 2) {
+    const we = fx.winkEye;
+    if (we === 'both') winkSel = [1, 1]; else if (we === 'eye1') winkSel = [1, 0]; else if (we === 'eye2') winkSel = [0, 1];
+    else { const front = G.fs > 0 ? (G.eyes[0].x >= G.eyes[1].x ? 0 : 1) : (G.eyes[0].x <= G.eyes[1].x ? 0 : 1); winkSel[front] = 1; }
+  }
+  const bulgeAmt = Math.max(0, bulge) * fx.bulge * (fx.bulgeWobble && st.b ? 1 + 0.1 * Math.sin(t * 24) : 1);
+  for (let i = 0; i < 2; i++) {
+    const e = G.eyes[i], ev = U.uEye.value[i], ef = U.uEyeFx.value[i];
+    if (!e) { ef.set(0, 0, 0, 0); continue; }
+    ev.set(e.x, e.y, e.rx, e.ry);
+    const o = G.eyes[1 - i], eb = U.uEyeB.value[i];
+    if (o) { const dx = o.x - e.x, dy = o.y - e.y, L = Math.hypot(dx, dy) || 1; eb.set(dx / L, dy / L, L / 2, 1); } else eb.set(0, 0, 1, 0);
+    ef.set(clamp(Math.max(blink, winkSel[i] * wink, angC * fx.angrySquint)), clamp(bulgeAmt, 0, 12), Math.max(0, sur) * fx.wide, 1);
+  }
+  U.uLashOn.value = fx.lash ? 1 : 0; hexToV3(fx.lashColor, U.uLash.value);
+
+  // FX sprites
+  const fxVis = P.ph !== 'entry' || P.pe > 0.6;
+  const shockS = Math.max(0, shock);
+  shockSpr.visible = fxVis && fx.shock && shockS > 0.02;
+  if (shockSpr.visible) {
+    const p = imgToWorld(G.fxA, G, flapAng, lift, neckAng, neckOff);
+    const pulse = st.u ? 1 + 0.1 * Math.sin(t * 17) : 1;
+    const sz = fx.shockSize * shockS * pulse * ex.s;
+    shockSpr.position.set(p.x, p.y, 1); shockSpr.scale.set(sz, sz, 1); shockSpr.material.rotation = 0.15 * Math.sin(t * 9);
+    shockSpr.material.opacity = clamp(shockS * 1.5);
+  }
+  sweatSpr.visible = fxVis && fx.sweat && sur > 0.05;
+  if (sweatSpr.visible) {
+    const p = imgToWorld(G.sweatA, G, flapAng, lift, neckAng, neckOff);
+    const slide = Math.min(1, (now - sweatStart) / 900);
+    const sz = fx.shockSize * 0.75 * ex.s;
+    sweatSpr.position.set(p.x, p.y - slide * 26, 1); sweatSpr.scale.set(sz * 0.73, sz, 1); sweatSpr.material.opacity = clamp(sur);
+  }
+  const winkIdx = winkSel[0] ? 0 : 1, we = G.eyes[winkIdx];
+  sparkSpr.visible = fxVis && fx.winkSparkle && !!we && spark > 0.05;
+  if (sparkSpr.visible) {
+    const p = imgToWorld({ x: we.x + G.fs * we.rx * 1.6, y: we.y - we.ry * 1.4 }, G, flapAng, lift, neckAng, neckOff);
+    const sz = fx.shockSize * 0.55 * Math.max(0, spark) * ex.s;
+    sparkSpr.position.set(p.x, p.y, 1); sparkSpr.scale.set(sz, sz, 1); sparkSpr.material.rotation = t * 2.5;
+  }
+  linesMesh.visible = fxVis && fx.shockLines && sur > 0.02;
+  if (linesMesh.visible) {
+    const hc = imgToWorld(G.head, G, flapAng, lift, neckAng, neckOff);
+    const lu = linesMat.uniforms;
+    lu.uC.value.set(hc.x, hc.y); lu.uR0.value = rect.h * 0.42; lu.uR1.value = rect.h * 1.6;
+    lu.uSeed.value = Math.floor(t * 14); lu.uA.value = clamp(sur);
+    const lc = fx.linesColor === 'auto' ? (S.scene.bg === 'black' || (S.scene.bg === 'custom' && lum(S.scene.custom) < 0.4) ? '#ffffff' : '#111111') : fx.linesColor;
+    hexToV3(lc, lu.uCol.value);
+  }
+  // angry eyebrows (generated): slam down from above the eyes
+  updateBrowTex();
+  const B = S.brows, showBrows = B.on && fxVis && angry > 0.02;
+  for (let i = 0; i < 2; i++) {
+    const m = browMeshes[i], br = G.brows[i];
+    if (!showBrows || !br) { m.visible = false; continue; }
+    const a = Math.max(0, angry);
+    const c = { x: br.x, y: br.y - (1 - Math.min(1, a)) * br.ry * 1.3 };
+    const p0 = imgToWorld(c, G, flapAng, lift, neckAng, neckOff), p1 = imgToWorld({ x: c.x + 10, y: c.y }, G, flapAng, lift, neckAng, neckOff);
+    const base = Math.atan2(p1.y - p0.y, p1.x - p0.x);
+    const ang = (B.angle * Math.min(1.25, a) + (B.tremble ? Math.sin(t * 38 + i * 2.1) * 1.8 * Math.min(1, a) : 0)) * Math.PI / 180;
+    const w = br.w * s * ex.s * (0.55 + 0.45 * a);
+    m.position.set(p0.x, p0.y, 1); m.rotation.z = base + (br.inR ? -ang : ang);
+    m.scale.set(br.inR ? w : -w, w * BROW_H / BROW_W * B.thick, 1); m.visible = true;
+  }
+  browMat.opacity = clamp(angry * 2.5);
+  // camera punch-in toward the head
+  const z = 1 + Math.max(0, punch) * fx.punchAmt;
+  if (Math.abs(z - cam.zoom) > 1e-5 || z !== 1) {
+    const hc = z !== 1 ? imgToWorld(G.head, G, flapAng, lift, neckAng, neckOff) : { x: W / 2, y: H / 2 };
+    cam.zoom = z; cam.position.x = hc.x + (W / 2 - hc.x) / z; cam.position.y = hc.y + (H / 2 - hc.y) / z; cam.updateProjectionMatrix();
+  }
+}
+
+/* =====================================================================
+   Stage fit, overlay, pointer editing
+   ===================================================================== */
+let STAGE_K = 1, EDIT = true, HOVER = null, OVERCHAR = false;
+function fitStage() {
+  const k = Math.min(innerWidth / W, innerHeight / H); STAGE_K = k;
+  const ox = (innerWidth - W * k) / 2, oy = (innerHeight - H * k) / 2;
+  stageEl.style.transform = `translate(${ox}px,${oy}px) scale(${k})`;
+  renderer.setPixelRatio(Math.min(2, k * (window.devicePixelRatio || 1)));
+  renderer.setSize(W, H, false);
+  drawOverlay();
+}
+function charRect() { const s = S.char.h / IMG.h; return { x: S.char.x, y: S.char.y, w: IMG.w * s, h: S.char.h, s }; }
+function ptStage(name) { const d = dispPt(name); if (!d) return null; const r = charRect(); return { x: r.x + d.x * r.s, y: r.y + d.y * r.s }; }
+function stageToSrc(X, Y) { const r = charRect(); const x = (X - r.x) / r.s, y = (Y - r.y) / r.s; let u = x / IMG.w; if (S.char.mirror) u = 1 - u; return { u: +u.toFixed(5), v: +(y / IMG.h).toFixed(5) }; }
+const PT = {
+  eye1: { label: 'Eye 1', sub: 'centre of an eye', color: '#4fc3f7' },
+  eye2: { label: 'Eye 2', sub: 'optional (skip for profile views)', color: '#81d4fa' },
+  m1: { label: 'Mouth start', sub: 'one end of the head split line', color: '#ff7a7a' },
+  m2: { label: 'Mouth end', sub: 'other end of the split line', color: '#ff4d4d' },
+  neck: { label: 'Neck', sub: 'pivot for nods & tilts', color: '#7ee787' },
+  fx: { label: 'Shock-mark spot', sub: 'optional, auto if empty', color: '#ffb74d' },
+};
+const PT_ORDER = ['eye1', 'eye2', 'm1', 'm2', 'neck', 'fx'];
+function drawOverlay() {
+  const ov = $('#overlay');
+  if (!EDIT) { ov.innerHTML = ''; return; }
+  const k = STAGE_K, hs = 6 / k, fsz = 13 / k; let h = '';
+  const sq = (x, y, cls) => `<rect x="${x - hs}" y="${y - hs}" width="${hs * 2}" height="${hs * 2}" class="${cls}"/>`;
+  if (IMG) {
+    const r = charRect();
+    h += `<defs><clipPath id="cc"><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/></clipPath></defs>`;
+    h += `<rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}" class="oc${HOVER === 'char' ? ' hov' : ''}"/>`;
+    h += sq(r.x, r.y, 'hd') + sq(r.x + r.w, r.y, 'hd') + sq(r.x, r.y + r.h, 'hd') + sq(r.x + r.w, r.y + r.h, 'hd');
+    if (HOVER === 'char') h += `<text x="${r.x + 4 / k}" y="${r.y - 7 / k}" font-size="${fsz}" class="ol">Character · drag to move · corners or mouse wheel to resize</text>`;
+    const m1 = ptStage('m1'), m2 = ptStage('m2');
+    if (m1 && m2) {
+      const dx = m2.x - m1.x, dy = m2.y - m1.y, L = Math.hypot(dx, dy) || 1, ex = dx / L * 4000, ey = dy / L * 4000;
+      h += `<line x1="${m1.x - ex}" y1="${m1.y - ey}" x2="${m2.x + ex}" y2="${m2.y + ey}" class="lnd" stroke="#ff6b6b" clip-path="url(#cc)"/>`;
+      h += `<line x1="${m1.x}" y1="${m1.y}" x2="${m2.x}" y2="${m2.y}" class="ln" stroke="#ff4d4d"/>`;
+      const G = geom(), r2 = charRect(), rnd = S.head.hinge === 'random';
+      for (const hg of rnd ? [G.back, G.front] : [G.hinge]) {
+        const hx = r2.x + hg.x * r2.s, hy = r2.y + hg.y * r2.s;
+        h += `<circle cx="${hx}" cy="${hy}" r="${11 / k}" fill="none" stroke="#fff" stroke-width="2" vector-effect="non-scaling-stroke"/>`;
+        h += `<text x="${hx + 12 / k}" y="${hy + 22 / k}" font-size="${fsz * 0.9}" class="ol">${rnd ? 'pivot' : 'hinge'}</text>`;
+      }
+    }
+    for (const n of ['eye1', 'eye2']) {
+      const p = ptStage(n); if (!p) continue;
+      const ry = S.eyes.size * S.char.h, rx = ry * S.eyes.aspect;
+      h += `<ellipse cx="${p.x}" cy="${p.y}" rx="${rx}" ry="${ry}" class="lnd" stroke="${PT[n].color}"/>`;
+    }
+    const nk = ptStage('neck');
+    if (nk) { const b = S.head.neckBand * S.char.h; h += `<line x1="${nk.x - 60 / k}" y1="${nk.y}" x2="${nk.x + 60 / k}" y2="${nk.y}" class="lnd" stroke="#7ee787"/><line x1="${nk.x}" y1="${nk.y - b}" x2="${nk.x}" y2="${nk.y + b}" class="ln" stroke="#7ee787"/>`; }
+    for (const n of PT_ORDER) {
+      const p = ptStage(n); if (!p) continue;
+      h += `<circle cx="${p.x}" cy="${p.y}" r="${7 / k}" fill="${PT[n].color}" class="pt"/>`;
+      h += `<text x="${p.x + 10 / k}" y="${p.y - 9 / k}" font-size="${fsz}" class="ol">${PT[n].label}</text>`;
+    }
+  }
+  const B = S.box;
+  h += `<rect x="${B.x}" y="${B.y}" width="${B.w}" height="${B.h}" class="ob${HOVER === 'box' ? ' hov' : ''}"/>`;
+  h += sq(B.x, B.y, 'hdy') + sq(B.x + B.w, B.y, 'hdy') + sq(B.x, B.y + B.h, 'hdy') + sq(B.x + B.w, B.y + B.h, 'hdy');
+  if (HOVER === 'box') h += `<text x="${B.x + 4 / k}" y="${B.y + B.h + 18 / k}" font-size="${fsz}" class="ol">Text box · drag to move · corners to resize</text>`;
+  ov.innerHTML = h;
+}
+function toStage(e) { const r = stageEl.getBoundingClientRect(); return { X: (e.clientX - r.left) / STAGE_K, Y: (e.clientY - r.top) / STAGE_K }; }
+function hitTest(X, Y) {
+  const tol = 11 / STAGE_K;
+  if (IMG) {
+    for (const n of PT_ORDER) { const p = ptStage(n); if (p && Math.hypot(X - p.x, Y - p.y) < tol) return { type: 'point', name: n, cur: 'grab' }; }
+    for (const n of ['eye1', 'eye2']) {
+      const p = ptStage(n); if (!p) continue;
+      const ry = S.eyes.size * S.char.h, rx = ry * S.eyes.aspect, e = Math.hypot((X - p.x) / rx, (Y - p.y) / ry);
+      if (Math.abs(e - 1) * Math.min(rx, ry) < tol * 0.7) return { type: 'eyeRing', name: n, p, cur: 'ew-resize' };
+    }
+  }
+  const B = S.box, bc = [[B.x, B.y], [B.x + B.w, B.y], [B.x, B.y + B.h], [B.x + B.w, B.y + B.h]];
+  for (let i = 0; i < 4; i++) if (Math.abs(X - bc[i][0]) < tol && Math.abs(Y - bc[i][1]) < tol) return { type: 'boxResize', c: i, cur: i === 0 || i === 3 ? 'nwse-resize' : 'nesw-resize' };
+  if (X >= B.x && X <= B.x + B.w && Y >= B.y && Y <= B.y + B.h) return { type: 'boxMove', cur: 'move' };
+  if (IMG) {
+    const r = charRect(), cc = [[r.x, r.y], [r.x + r.w, r.y], [r.x, r.y + r.h], [r.x + r.w, r.y + r.h]];
+    for (let i = 0; i < 4; i++) if (Math.abs(X - cc[i][0]) < tol && Math.abs(Y - cc[i][1]) < tol) return { type: 'charResize', c: i, cur: i === 0 || i === 3 ? 'nwse-resize' : 'nesw-resize' };
+    if (X >= r.x && X <= r.x + r.w && Y >= r.y && Y <= r.y + r.h) return { type: 'charMove', cur: 'move' };
+  }
+  return null;
+}
+let DRAG = null, ARMED = null, GUIDED = null;
+stageEl.addEventListener('pointerdown', e => {
+  if (e.button !== 0) return;
+  const { X, Y } = toStage(e);
+  if (!IMG) { $('#fileImg').click(); return; }
+  if (!EDIT) return;
+  if (ARMED) {
+    S.pts[ARMED] = stageToSrc(X, Y); saveSoon(); renderPointsUI(); drawOverlay();
+    if (GUIDED) advanceGuided(); else { ARMED = null; hideToast(); }
+    return;
+  }
+  const h = hitTest(X, Y); if (!h) return;
+  DRAG = { ...h, X0: X, Y0: Y, char: clone(S.char), box: clone(S.box), eyes: clone(S.eyes) };
+  stageEl.setPointerCapture(e.pointerId);
+  e.preventDefault();
+});
+let rafPending = false;
+stageEl.addEventListener('pointermove', e => {
+  if (!EDIT) return;
+  const { X, Y } = toStage(e);
+  if (!DRAG) {
+    const h = ARMED ? { cur: 'crosshair' } : hitTest(X, Y); stageEl.style.cursor = h ? h.cur : 'default';
+    const hv = h && h.type ? (/^char/.test(h.type) ? 'char' : /^box/.test(h.type) ? 'box' : null) : null;
+    if (IMG) { const r = charRect(); OVERCHAR = X >= r.x && X <= r.x + r.w && Y >= r.y && Y <= r.y + r.h; }
+    if (hv !== HOVER) { HOVER = hv; drawOverlay(); }
+    return;
+  }
+  const dX = X - DRAG.X0, dY = Y - DRAG.Y0, d = DRAG;
+  if (d.type === 'charMove') { S.char.x = Math.round(d.char.x + dX); S.char.y = Math.round(d.char.y + dY); }
+  else if (d.type === 'charResize') {
+    const A = IMG.w / IMG.h, r0 = { x: d.char.x, y: d.char.y, w: d.char.h * A, h: d.char.h };
+    const O = { x: d.c % 2 === 0 ? r0.x + r0.w : r0.x, y: d.c < 2 ? r0.y + r0.h : r0.y };
+    const nh = Math.max(80, Math.max(Math.abs(Y - O.y), Math.abs(X - O.x) / A));
+    S.char.h = Math.round(nh); S.char.x = Math.round(d.c % 2 === 0 ? O.x - nh * A : O.x); S.char.y = Math.round(d.c < 2 ? O.y - nh : O.y);
+  }
+  else if (d.type === 'boxMove') { S.box.x = Math.round(d.box.x + dX); S.box.y = Math.round(d.box.y + dY); }
+  else if (d.type === 'boxResize') {
+    const b = d.box; let x0 = b.x, y0 = b.y, x1 = b.x + b.w, y1 = b.y + b.h;
+    if (d.c % 2 === 0) x0 = Math.min(x1 - 120, X); else x1 = Math.max(x0 + 120, X);
+    if (d.c < 2) y0 = Math.min(y1 - 60, Y); else y1 = Math.max(y0 + 60, Y);
+    Object.assign(S.box, { x: Math.round(x0), y: Math.round(y0), w: Math.round(x1 - x0), h: Math.round(y1 - y0) });
+  }
+  else if (d.type === 'point') S.pts[d.name] = stageToSrc(X, Y);
+  else if (d.type === 'eyeRing') { const ry = Math.hypot((X - d.p.x) / S.eyes.aspect, Y - d.p.y); S.eyes.size = +clamp(ry / S.char.h, 0.005, 0.25).toFixed(4); }
+  if (!rafPending) {
+    rafPending = true;
+    requestAnimationFrame(() => {
+      rafPending = false; drawOverlay();
+      if (DRAG && DRAG.type === 'boxResize') rebuildTextSoon(); else applyTextStyle();
+    });
+  }
+});
+stageEl.addEventListener('pointerup', () => { if (DRAG) { DRAG = null; saveSoon(); refreshUI(); renderPointsUI(); } });
+stageEl.addEventListener('pointerleave', () => { OVERCHAR = false; if (!DRAG && HOVER) { HOVER = null; drawOverlay(); } });
+/* mouse wheel over the character resizes it around the cursor */
+let wheelUI = 0;
+stageEl.addEventListener('wheel', e => {
+  if (!EDIT || !IMG) return;
+  const { X, Y } = toStage(e), r = charRect();
+  if (X < r.x || X > r.x + r.w || Y < r.y || Y > r.y + r.h) return;
+  e.preventDefault();
+  const nh = clamp(S.char.h * Math.exp(-e.deltaY * 0.001), 80, 4000), k = nh / S.char.h;
+  S.char.x = Math.round(X - (X - S.char.x) * k); S.char.y = Math.round(Y - (Y - S.char.y) * k); S.char.h = Math.round(nh);
+  drawOverlay(); saveSoon(); clearTimeout(wheelUI); wheelUI = setTimeout(refreshUI, 120);
+}, { passive: false });
+
+/* drag & drop */
+let dragDepth = 0;
+addEventListener('dragenter', e => { e.preventDefault(); dragDepth++; document.body.classList.add('dragging'); });
+addEventListener('dragleave', e => { dragDepth = Math.max(0, dragDepth - 1); if (!dragDepth) document.body.classList.remove('dragging'); });
+addEventListener('dragover', e => e.preventDefault());
+addEventListener('drop', e => {
+  e.preventDefault(); dragDepth = 0; document.body.classList.remove('dragging');
+  const f = e.dataTransfer.files && e.dataTransfer.files[0]; if (!f) return;
+  if (/json/.test(f.type) || /\.json$/i.test(f.name)) importBackup(f);
+  else if (/^image\//.test(f.type)) loadImageFile(f);
+});
+$('#fileImg').addEventListener('change', e => { const f = e.target.files[0]; if (f) loadImageFile(f); e.target.value = ''; });
+$('#fileJson').addEventListener('change', e => { const f = e.target.files[0]; if (f) importBackup(f); e.target.value = ''; });
+
+/* =====================================================================
+   Toast & guided setup
+   ===================================================================== */
+function toast(html, buttons = [], ms = 0) {
+  $('#toastMsg').innerHTML = html;
+  const bb = $('#toastBtns'); bb.innerHTML = '';
+  for (const [l, fn] of buttons) { const b = document.createElement('button'); b.textContent = l; b.onclick = fn; bb.appendChild(b); }
+  $('#toast').classList.remove('hide');
+  clearTimeout(toast._t); if (ms) toast._t = setTimeout(hideToast, ms);
+}
+function hideToast() { $('#toast').classList.add('hide'); }
+function arm(name) {
+  if (!IMG) { toast('Load a character image first.', [], 2500); return; }
+  ARMED = name; GUIDED = null;
+  toast(`Click on the character to place <b>${PT[name].label}</b> <span style="opacity:.6">— ${PT[name].sub}</span>`, [['Cancel', () => { ARMED = null; hideToast(); }]]);
+}
+const GUIDE_ORDER = ['eye1', 'eye2', 'm1', 'm2', 'neck'];
+function startGuided() { if (!IMG) return; GUIDED = { i: 0 }; showGuided(); }
+function showGuided() {
+  const n = GUIDE_ORDER[GUIDED.i]; ARMED = n;
+  const tips = { eye1: 'Click the centre of the first eye.', eye2: 'Click the second eye — or Skip if only one eye is visible.', m1: 'Click where the head split starts — usually the back of the head at mouth level (this end becomes the hinge).', m2: 'Click where the split ends — the front corner of the mouth.', neck: 'Click the neck — the pivot for nods and tilts.' };
+  toast(`<b>${GUIDED.i + 1}/5 · ${PT[n].label}:</b> ${tips[n]}`, [['Skip', advanceGuided], ['Done', () => { GUIDED = null; ARMED = null; hideToast(); }]]);
+}
+function advanceGuided() {
+  GUIDED.i++;
+  if (GUIDED.i >= GUIDE_ORDER.length) { GUIDED = null; ARMED = null; toast('All set. Press <kbd>R</kbd> to preview.', [], 2500); return; }
+  showGuided();
+}
+
+/* =====================================================================
+   Panel
+   ===================================================================== */
+const CTLS = [];
+const R = (k, l, min, max, step, u, show) => ({ k, l, t: 'range', min, max, step, u, show });
+const SEL = (k, l, o, show, num) => ({ k, l, t: 'select', o, show, num });
+const CHK = (k, l, show) => ({ k, l, t: 'check', show });
+const COL = (k, l, show) => ({ k, l, t: 'color', show });
+const NOTE = html => ({ t: 'note', html });
+const BTNS = b => ({ t: 'buttons', b });
+const FONTS = ['Montserrat', 'Poppins', 'Inter', 'Rubik', 'Anton', 'Archivo Black', 'Bangers', 'Bebas Neue', 'Bungee', 'Luckiest Guy', 'Lilita One', 'Titan One', 'Fredoka', 'Oswald', 'Righteous', 'Permanent Marker', 'Comic Neue', 'Caveat'];
+const TEXT_PRESETS = {
+  'TikTok white': { style: { font: 'Montserrat', weight: 900, upper: false, color: '#ffffff', stroke: 7, strokeColor: '#000000', shadow: 'none', bg: 'none', letter: 0 }, text: { highlight: 'color', hlColor: '#ffe53b' } },
+  'Yellow pop': { style: { font: 'Luckiest Guy', weight: 400, upper: true, color: '#ffe53b', stroke: 8, strokeColor: '#000000', shadow: 'hard', bg: 'none', letter: 0.02 }, text: { highlight: 'colorScale', hlColor: '#ffffff' } },
+  'Boxed': { style: { font: 'Inter', weight: 800, upper: false, color: '#111111', stroke: 0, shadow: 'none', bg: 'pills', bgColor: '#ffffff', bgOpacity: 1, radius: 10, letter: 0 }, text: { highlight: 'box', hlColor: '#ff3b5c' } },
+  'Comic': { style: { font: 'Bangers', weight: 400, upper: true, color: '#ffffff', stroke: 6, strokeColor: '#1a1a1a', shadow: 'hard', bg: 'none', letter: 0.04 }, text: { highlight: 'colorScale', hlColor: '#ff4fa3' } },
+  'Minimal': { style: { font: 'Inter', weight: 700, upper: false, color: '#ffffff', stroke: 0, shadow: 'soft', bg: 'none', letter: -0.01 }, text: { highlight: 'none' } },
+  'Neon': { style: { font: 'Righteous', weight: 400, upper: false, color: '#ffffff', stroke: 0, shadow: 'glow', bg: 'none', letter: 0.01 }, text: { highlight: 'color', hlColor: '#00e5ff' } },
+};
+const SECTIONS = [
+  { title: 'Script & takes', open: true, custom: buildScriptUI },
+  {
+    title: 'Scene & recording', items: [
+      SEL('scene.bg', 'Background', [['green', 'Pure green #00FF00'], ['black', 'Pure black #000000'], ['custom', 'Custom colour']]),
+      COL('scene.custom', 'Custom colour', () => S.scene.bg === 'custom'),
+      R('scene.preDelay', 'Blank lead-in after R', 0, 3000, 50, 'ms'),
+      SEL('scene.entry', 'Character entry', [['pop', 'Pop'], ['rise', 'Rise from bottom'], ['slide', 'Slide from left'], ['drop', 'Drop & bounce'], ['fade', 'Fade in'], ['none', 'None (instant)']]),
+      R('scene.entryDur', 'Entry duration', 0, 2000, 10, 'ms'),
+      R('scene.textDelay', 'Talking starts after', 0, 3000, 10, 'ms'),
+      CHK('scene.hideText', 'Hide text after it finishes'),
+      R('scene.hideAfter', 'Hide after', 0, 20, 0.1, 's', () => S.scene.hideText),
+      SEL('scene.exit', 'Hide with', [['fade', 'Fade out'], ['pop', 'Pop out'], ['slide', 'Slide down'], ['cut', 'Instant cut']], () => S.scene.hideText),
+      R('scene.exitDur', 'Hide animation time', 100, 2000, 10, 'ms', () => S.scene.hideText && S.scene.exit !== 'cut'),
+      CHK('scene.exitChar', 'Character leaves too', () => S.scene.hideText),
+      CHK('scene.hideCursor', 'Hide mouse cursor while panel is hidden'),
+      BTNS([['Fullscreen (F)', toggleFullscreen]]),
+    ]
+  },
+  {
+    title: 'Character · this pose', custom: buildPoseToolsUI, items: [
+      R('char.x', 'Left', -800, 1920, 1, 'px'),
+      R('char.y', 'Top', -800, 1080, 1, 'px'),
+      R('char.h', 'Height', 80, 4000, 1, 'px'),
+      CHK('char.mirror', 'Mirror image'),
+      SEL('char.facing', 'Character faces', [['right', 'Right (towards the text)'], ['left', 'Left']]),
+      CHK('border.on', 'Outline border (all poses)'),
+      R('border.w', 'Border width', 0, 30, 0.5, 'px', () => S.border.on),
+      COL('border.color', 'Border colour', () => S.border.on),
+    ]
+  },
+  { title: 'Control points · this pose', open: true, custom: buildPointsUI },
+  {
+    title: 'Talking motion', items: [
+      NOTE('The head splits along the mouth line and the top half moves with every syllable. <b>Random</b> picks, per syllable, a pivot at either end of the mouth or a straight lift of the whole top, each with random strength. With no points placed, the whole character wiggles on every word. Settings marked (pose) are saved per pose.'),
+      SEL('head.hinge', 'Top-of-head motion (pose)', [['random', 'Random: either end + lift'], ['auto', 'Fixed hinge: back of head'], ['start', 'Fixed hinge: mouth start'], ['end', 'Fixed hinge: mouth end'], ['center', 'Straight lift only']]),
+      R('head.maxAngle', 'Max flap angle (pose)', 0, 70, 0.5, '°'),
+      R('head.lift', 'Max lift (pose)', 0, 150, 1, 'px'),
+      R('head.idleSway', 'Idle head sway (pose)', 0, 15, 0.1, '°'),
+      R('head.idleSpeed', 'Idle sway speed (pose)', 0.2, 3, 0.01, '×', () => S.head.idleSway > 0),
+      R('head.nod', 'Head nod (pose)', 0, 15, 0.1, '°'),
+      R('head.sway', 'Head sway (pose)', 0, 10, 0.1, '°'),
+      R('talk.flapsPerSyl', 'Flaps per syllable', 0.25, 3, 0.05, '×'),
+      R('talk.snap', 'Snappiness', 0, 1, 0.01, ''),
+      R('talk.randomness', 'Randomness', 0, 1, 0.01, ''),
+      SEL('talk.wiggle', 'Body wiggle per word', [['auto', 'Auto (only without points)'], ['always', 'Always'], ['never', 'Never']]),
+      R('talk.wiggleAngle', 'Wiggle angle', 0, 15, 0.1, '°'),
+      R('talk.wiggleSquash', 'Wiggle squash', 0, 0.2, 0.005, ''),
+      R('talk.bodyBounce', 'Body bounce', 0, 1, 0.01, ''),
+      CHK('talk.punct', 'Punctuation reactions (? tilts, ! hops)'),
+      CHK('talk.breathing', 'Idle breathing'),
+      CHK('talk.blinking', 'Natural blinking (needs eyes)'),
+      R('talk.blinkEvery', 'Blink every', 1, 10, 0.1, 's', () => S.talk.blinking),
+    ]
+  },
+  {
+    title: 'Eye effects', items: [
+      NOTE('<kbd>Ctrl</kbd>+<kbd>I</kbd> italic → wink · <kbd>Ctrl</kbd>+<kbd>B</kbd> bold → fish-eye bulge · <kbd>Ctrl</kbd>+<kbd>U</kbd> underline → surprised anime face with 💢 · CAPITALS → angry. Changing a setting previews it on the character.'),
+      BTNS([['▶ Wink', () => preview('wink', 1500)], ['▶ Fish-eye', () => preview('bulge', 1500)], ['▶ Surprise', () => preview('surprise', 1600)], ['▶ Angry', () => preview('angry', 1600)]]),
+      SEL('fx.winkEye', 'Wink with', [['auto', 'Auto (front eye)'], ['eye1', 'Eye 1'], ['eye2', 'Eye 2'], ['both', 'Both (blink)']]),
+      CHK('fx.lash', 'Draw closed-eye line'),
+      COL('fx.lashColor', 'Closed-eye line colour', () => S.fx.lash),
+      CHK('fx.winkSparkle', 'Wink sparkle ✦'),
+      R('fx.bulge', 'Fish-eye strength', 0, 8, 0.05, '×'),
+      CHK('fx.bulgeWobble', 'Bulge wobble'),
+      R('fx.wide', 'Surprise: eye widening', 0, 1.5, 0.01, ''),
+      CHK('fx.shock', 'Surprise: 💢 shock mark'),
+      R('fx.shockSize', 'Shock mark size', 30, 320, 1, 'px', () => S.fx.shock),
+      COL('fx.shockColor', 'Shock mark colour', () => S.fx.shock),
+      CHK('fx.hop', 'Surprise: jump'),
+      R('fx.hopPx', 'Jump height', 0, 120, 1, 'px'),
+      CHK('fx.shockLines', 'Surprise: anime speed lines'),
+      SEL('fx.linesColor', 'Speed lines colour', [['auto', 'Auto'], ['#ffffff', 'White'], ['#111111', 'Black']], () => S.fx.shockLines),
+      CHK('fx.sweat', 'Surprise: sweat drop'),
+      CHK('fx.punch', 'Surprise: camera punch-in'),
+      R('fx.punchAmt', 'Punch-in amount', 0, 0.3, 0.005, '', () => S.fx.punch),
+      R('fx.response', 'Effect speed', 4, 30, 0.5, ''),
+      R('fx.release', 'Hold effect after word', 0, 1500, 10, 'ms'),
+    ]
+  },
+  {
+    title: 'Angry eyebrows · CAPITALS', items: [
+      NOTE('Write a word in CAPITALS and big generated eyebrows slam down. They are placed straight above the eyes automatically. Style, size and distance are saved per pose; changing them previews the angry face.'),
+      BTNS([['▶ Preview angry', () => preview('angry', 1800)]]),
+      CHK('brows.on', 'Eyebrows when angry'),
+      SEL('brows.style', 'Style', [['blade', 'Blade'], ['arch', 'Arch'], ['sharp', 'Anime wedge'], ['zigzag', 'Zig-zag'], ['bushy', 'Bushy']]),
+      R('brows.size', 'Size', 0.4, 3, 0.01, '×'),
+      R('brows.thick', 'Thickness', 0.4, 2.5, 0.01, '×'),
+      R('brows.angle', 'Angry angle', 0, 50, 0.5, '°'),
+      R('brows.gap', 'Distance from eyes', 0.3, 6, 0.01, '×'),
+      COL('brows.color', 'Colour'),
+      CHK('brows.outline', 'Outline (border colour)'),
+      CHK('brows.tremble', 'Tremble'),
+      R('fx.angrySquint', 'Eye squint', 0, 0.8, 0.01, ''),
+      R('fx.angryTint', 'Red face', 0, 1, 0.01, ''),
+      CHK('fx.angryShake', 'Head shake'),
+    ]
+  },
+  {
+    title: 'Text animation', items: [
+      SEL('text.anim', 'Entry animation', ANIMS.map(a => [a[0], a[1]])),
+      R('text.enterDur', 'Word/letter entry time', 30, 1500, 10, 'ms'),
+      SEL('text.loop', 'Idle loop (infinite)', [['none', 'None'], ['wobble', 'Wobble'], ['float', 'Float'], ['wave', 'Wave'], ['bounce', 'Bounce'], ['pulse', 'Pulse'], ['jelly', 'Jelly'], ['jitter', 'Jitter'], ['swing', 'Swing'], ['sway', 'Sway (whole caption)'], ['breathe', 'Breathe (whole caption)']]),
+      R('text.loopAmt', 'Loop strength', 0, 2.5, 0.01, '', () => S.text.loop !== 'none'),
+      R('text.loopSpeed', 'Loop speed', 0.2, 3, 0.01, '×', () => S.text.loop !== 'none'),
+      R('text.sync', 'Text vs. mouth offset', -500, 500, 10, 'ms'),
+      SEL('text.mode', 'Display', [['chunk', 'Caption chunks (TikTok)'], ['single', 'One word at a time'], ['pages', 'Fill box, then flip'], ['all', 'Whole paragraph']]),
+      R('text.chunk', 'Words per chunk', 1, 12, 1, '', () => S.text.mode === 'chunk'),
+      SEL('text.highlight', 'Spoken-word highlight', [['color', 'Colour'], ['colorScale', 'Colour + grow'], ['scale', 'Grow'], ['box', 'Box behind word'], ['none', 'None']]),
+      COL('text.hlColor', 'Highlight colour'),
+      CHK('text.caret', 'Typewriter caret', () => ANIM[S.text.anim] && ANIM[S.text.anim].caret),
+      CHK('text.format', 'Show bold / italic / underline in text'),
+      CHK('text.autoFit', 'Auto-shrink to fit the box', () => S.text.mode !== 'pages'),
+    ]
+  },
+  {
+    title: 'Text style', custom: buildTextPresetsUI, items: [
+      SEL('style.font', 'Font', FONTS.map(f => [f, f])),
+      SEL('style.weight', 'Weight', [[400, 'Regular'], [600, 'Semibold'], [700, 'Bold'], [800, 'Extra bold'], [900, 'Black']], null, true),
+      R('style.size', 'Font size', 16, 220, 1, 'px'),
+      CHK('style.upper', 'UPPERCASE'),
+      COL('style.color', 'Text colour'),
+      R('style.stroke', 'Outline width', 0, 30, 0.5, 'px'),
+      COL('style.strokeColor', 'Outline colour', () => S.style.stroke > 0),
+      SEL('style.shadow', 'Shadow', [['none', 'None'], ['soft', 'Soft'], ['hard', 'Hard offset'], ['glow', 'Glow (highlight colour)']]),
+      SEL('style.bg', 'Background', [['none', 'None'], ['pills', 'Behind each word'], ['box', 'Box behind caption']]),
+      COL('style.bgColor', 'Background colour', () => S.style.bg !== 'none'),
+      R('style.bgOpacity', 'Background opacity', 0, 1, 0.01, '', () => S.style.bg !== 'none'),
+      R('style.pad', 'Box padding', 0, 60, 1, 'px', () => S.style.bg === 'box'),
+      R('style.radius', 'Corner radius', 0, 60, 1, 'px', () => S.style.bg !== 'none' || S.text.highlight === 'box'),
+      SEL('style.align', 'Align', [['left', 'Left'], ['center', 'Centre'], ['right', 'Right']]),
+      SEL('style.valign', 'Vertical', [['top', 'Top'], ['center', 'Middle'], ['bottom', 'Bottom']]),
+      R('style.lineHeight', 'Line height', 0.8, 2, 0.01, ''),
+      R('style.letter', 'Letter spacing', -0.08, 0.3, 0.005, 'em'),
+      R('style.wordGap', 'Extra word spacing', -0.1, 0.8, 0.01, 'em'),
+      R('box.x', 'Box left', -200, 1920, 1, 'px'),
+      R('box.y', 'Box top', -200, 1080, 1, 'px'),
+      R('box.w', 'Box width', 120, 1920, 1, 'px'),
+      R('box.h', 'Box height', 60, 1080, 1, 'px'),
+    ]
+  },
+  { title: 'Backup', custom: buildBackupUI },
+];
+function fmtVal(it, v) { const dec = it.step < 0.01 ? 3 : it.step < 0.1 ? 2 : it.step < 1 ? 1 : 0; return (+v).toFixed(dec) + (it.u || ''); }
+function makeCtl(it) {
+  const row = document.createElement('div');
+  if (it.t === 'note') { row.className = 'note'; row.innerHTML = it.html; return row; }
+  if (it.t === 'buttons') { row.className = 'btns'; for (const [l, fn, cls] of it.b) { const b = document.createElement('button'); b.textContent = l; if (cls) b.className = cls; b.onclick = fn; row.appendChild(b); } return row; }
+  row.className = 'row';
+  const lab = document.createElement('label'); lab.textContent = it.l; row.appendChild(lab);
+  let inp, val = null;
+  if (it.t === 'range') {
+    inp = document.createElement('input'); inp.type = 'range'; inp.min = it.min; inp.max = it.max; inp.step = it.step;
+    val = document.createElement('span'); val.className = 'val';
+    const w = document.createElement('div'); w.className = 'rw'; w.append(inp, val); row.appendChild(w);
+    inp.oninput = () => { setK(S, it.k, +inp.value); val.textContent = fmtVal(it, +inp.value); changed(it.k); };
+  } else if (it.t === 'select') {
+    inp = document.createElement('select');
+    for (const [v, l] of it.o) { const o = document.createElement('option'); o.value = v; o.textContent = l; inp.appendChild(o); }
+    inp.onchange = () => { setK(S, it.k, it.num ? +inp.value : inp.value); changed(it.k); };
+    row.appendChild(inp);
+  } else if (it.t === 'check') {
+    row.classList.add('chk'); inp = document.createElement('input'); inp.type = 'checkbox';
+    inp.onchange = () => { setK(S, it.k, inp.checked); changed(it.k); }; row.appendChild(inp);
+  } else if (it.t === 'color') {
+    inp = document.createElement('input'); inp.type = 'color';
+    inp.oninput = () => { setK(S, it.k, inp.value); changed(it.k); }; row.appendChild(inp);
+  }
+  CTLS.push({ it, row, inp, val });
+  return row;
+}
+function refreshUI() {
+  for (const c of CTLS) {
+    const v = getK(S, c.it.k);
+    if (c.it.t === 'check') c.inp.checked = !!v; else if (v !== undefined && v !== null) c.inp.value = v;
+    if (c.val) c.val.textContent = fmtVal(c.it, v);
+    if (c.it.show) c.row.style.display = c.it.show() ? '' : 'none';
+  }
+}
+const PV_MAP = [
+  [/^fx\.(winkEye|lash|lashColor|winkSparkle)$/, 'wink'], [/^eyes\./, 'wink'],
+  [/^fx\.bulge/, 'bulge'],
+  [/^fx\.(wide|shock|hop|sweat|punch|linesColor)/, 'surprise'],
+  [/^(brows\.|fx\.angry)/, 'angry'],
+  [/^head\.idle/, null],
+  [/^(head\.|talk\.(flapsPerSyl|snap|randomness))/, 'talk'],
+  [/^fx\.(response|release)$/, 'last'],
+];
+function changed(k) {
+  saveSoon();
+  if (k.startsWith('scene.bg') || k === 'scene.custom') applyBg();
+  if (k === 'fx.shockColor') rebuildShockTex();
+  if (/^(style|text|box)\./.test(k) || /^script\.(wpm|pipeMs)$/.test(k)) rebuildTextSoon();
+  if (/^script\.(wpm|pipeMs)$/.test(k)) renderTakes();
+  if (/^(char|eyes|pts|talk|head|brows|border)\./.test(k)) drawOverlay();
+  for (const [re, kind] of PV_MAP) if (re.test(k)) { if (kind) preview(kind, 1300); break; }
+  for (const c of CTLS) if (c.it.show) c.row.style.display = c.it.show() ? '' : 'none';
+}
+function buildPanel() {
+  const body = $('#panelBody');
+  for (const sec of SECTIONS) {
+    const d = document.createElement('details'); d.open = !!sec.open;
+    const sm = document.createElement('summary'); sm.textContent = sec.title; d.appendChild(sm);
+    const box = document.createElement('div'); box.className = 'sec'; d.appendChild(box);
+    if (sec.custom) sec.custom(box);
+    for (const it of sec.items || []) box.appendChild(makeCtl(it));
+    body.appendChild(d);
+  }
+}
+
+/* --- script editor & takes --- */
+let editorEl;
+function buildScriptUI(box) {
+  box.innerHTML = `<div class="tb"><button data-c="bold" title="Bold → fish-eye bulge (Ctrl+B)"><b>B</b></button><button data-c="italic" title="Italic → wink (Ctrl+I)"><i>I</i></button><button data-c="underline" title="Underline → surprised + 💢 (Ctrl+U)"><u>U</u></button><button data-c="removeFormat" title="Clear formatting">⌫</button><span class="hint">Each paragraph = one take</span></div>
+  <div id="editor" contenteditable="true" spellcheck="false"></div>
+  <div class="note"><b style="color:#8fd3ff">italic</b> winks · <b style="color:#ffd23f">bold</b> bulges the eyes · <u style="text-decoration-color:#ff6b6b">underline</u> = surprised anime face · CAPITALS = angry brows · <b>|</b> = short pause (hidden)</div>`;
+  editorEl = box.querySelector('#editor');
+  editorEl.innerHTML = S.script.html;
+  box.querySelectorAll('.tb button').forEach(b => b.addEventListener('mousedown', e => { e.preventDefault(); document.execCommand(b.dataset.c); onEditorInput(); }));
+  editorEl.addEventListener('input', onEditorInput);
+  editorEl.addEventListener('keydown', e => {
+    if ((e.ctrlKey || e.metaKey) && ['b', 'i', 'u'].includes(e.key.toLowerCase())) { e.preventDefault(); document.execCommand({ b: 'bold', i: 'italic', u: 'underline' }[e.key.toLowerCase()]); onEditorInput(); }
+    if (e.key === 'Escape') editorEl.blur();
+  });
+  editorEl.addEventListener('paste', e => { e.preventDefault(); const t = (e.clipboardData || window.clipboardData).getData('text/plain'); document.execCommand('insertText', false, t); });
+  box.appendChild(makeCtl(R('script.wpm', 'Auto pace (words/min)', 60, 320, 1, '')));
+  box.appendChild(makeCtl(R('script.pipeMs', 'Pause per | (pipe)', 50, 2000, 10, 'ms')));
+  const tk = document.createElement('div'); tk.id = 'takes'; box.appendChild(tk);
+  box.appendChild(makeCtl(BTNS([['▶ Play take (R)', play, 'pri'], ['◀ Prev', () => selectTake(S.script.current - 1)], ['Next ▶', () => selectTake(S.script.current + 1)]])));
+  box.appendChild(makeCtl(NOTE('Set a total time per take (seconds) to control the rhythm; leave empty for automatic pacing.')));
+}
+let edT = 0;
+function onEditorInput() { clearTimeout(edT); edT = setTimeout(() => { S.script.html = editorEl.innerHTML; TAKES = parseTakes(editorEl); renderTakes(); rebuildText(); saveSoon(); }, 200); }
+function renderTakes() {
+  const box = $('#takes'); if (!box) return; box.innerHTML = '';
+  TAKES.forEach((words, i) => {
+    const row = document.createElement('div'); row.className = 'take' + (i === S.script.current ? ' on' : '');
+    row.innerHTML = `<span class="tn">${i + 1}</span><span class="tp"></span><select title="Pose used for this take"><option value="">–</option><option value="0">Pose 1</option><option value="1">Pose 2</option><option value="2">Pose 3</option></select><input type="number" min="0" step="0.1" title="Total time (s)"><span class="ts">s</span>`;
+    const ps = row.querySelector('select'); ps.value = S.script.poses[i] ?? '';
+    ps.addEventListener('click', e => e.stopPropagation());
+    ps.addEventListener('change', () => { S.script.poses[i] = ps.value === '' ? '' : +ps.value; saveSoon(); if (i === S.script.current && ps.value !== '') selectPose(+ps.value); });
+    row.querySelector('.tp').textContent = words.map(w => w.text).join(' ');
+    const inp = row.querySelector('input'); inp.placeholder = (autoDur(words) / 1000).toFixed(1); inp.title = 'Total time in seconds (empty = automatic, shown in grey)';
+    const d = S.script.durations[i]; if (d) inp.value = d;
+    inp.addEventListener('click', e => e.stopPropagation());
+    inp.addEventListener('input', () => { S.script.durations[i] = +inp.value || 0; saveSoon(); if (i === S.script.current) { buildTimeline(); rebuildTextSoon(); } });
+    row.addEventListener('click', () => selectTake(i));
+    box.appendChild(row);
+  });
+}
+function selectTake(i) {
+  if (!TAKES.length) return;
+  S.script.current = clamp(i, 0, TAKES.length - 1); saveSoon();
+  const tp = S.script.poses[S.script.current]; if (tp !== '' && tp != null && tp !== S.pose) selectPose(tp);
+  PLAY.on = false; renderTakes(); rebuildText();
+}
+function updateStatus() {
+  const el = $('#status'); if (!el) return;
+  el.textContent = `Take ${TAKES.length ? S.script.current + 1 : 0}/${TAKES.length} · ${(TL.T / 1000).toFixed(1)}s`;
+}
+
+/* --- control points UI --- */
+function buildPointsUI(box) {
+  box.innerHTML = `<div class="note">All optional. Points are stored relative to the image, so they follow it when you move or resize the character.</div>
+    <div class="btns"><button class="pri" id="guidedBtn">Guided setup</button><button id="clearPts">Clear all points</button></div><div id="ptRows"></div>`;
+  box.querySelector('#guidedBtn').onclick = startGuided;
+  box.querySelector('#clearPts').onclick = () => { for (const k in S.pts) S.pts[k] = null; saveSoon(); renderPointsUI(); drawOverlay(); };
+  for (const it of [R('eyes.size', 'Eye size', 0.005, 0.2, 0.001, ''), R('eyes.aspect', 'Eye width / height', 0.5, 2.5, 0.01, ''), R('head.neckBand', 'Neck bend softness', 0.01, 0.3, 0.005, '')]) box.appendChild(makeCtl(it));
+}
+function renderPointsUI() {
+  const box = $('#ptRows'); if (!box) return; box.innerHTML = '';
+  for (const n of PT_ORDER) {
+    const row = document.createElement('div'); row.className = 'ptrow' + (S.pts[n] ? ' set' : '');
+    row.innerHTML = `<span class="dot" style="background:${PT[n].color}"></span><span class="nm">${PT[n].label}${S.pts[n] ? ' <span style="color:#7ee787">✓</span>' : ''}<small>${PT[n].sub}</small></span><button>${S.pts[n] ? 'Move' : 'Place'}</button><button title="Clear">✕</button>`;
+    const [bp, bc] = row.querySelectorAll('button');
+    bp.onclick = () => arm(n); bc.onclick = () => { S.pts[n] = null; saveSoon(); renderPointsUI(); drawOverlay(); };
+    box.appendChild(row);
+  }
+}
+
+/* --- text presets --- */
+function buildTextPresetsUI(box) {
+  const n = document.createElement('div'); n.className = 'note'; n.textContent = 'Quick looks:'; box.appendChild(n);
+  const b = document.createElement('div'); b.className = 'btns';
+  for (const name in TEXT_PRESETS) { const bt = document.createElement('button'); bt.textContent = name; bt.onclick = () => { merge(S, clone(TEXT_PRESETS[name])); saveSoon(); refreshUI(); rebuildText(); }; b.appendChild(bt); }
+  box.appendChild(b);
+}
+
+/* --- pose tools & backup --- */
+function buildPoseToolsUI(box) {
+  box.innerHTML = `<div class="note">Three poses, picked in the bar at the top of this panel (or keys <kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd>). Each pose has its own image, placement, control points, head and eyebrow settings. Takes can be tied to a pose in the take list.</div>
+    <div class="btns"><button class="pri" id="ptLoad">Load image…</button><button id="ptDemo">Demo character</button><button id="ptReset">Reset placement</button></div>
+    <div class="btns" id="ptCopy"></div>`;
+  box.querySelector('#ptLoad').onclick = () => $('#fileImg').click();
+  box.querySelector('#ptDemo').onclick = () => loadDemo();
+  box.querySelector('#ptReset').onclick = () => { if (IMG) { fitCharDefault(); saveSoon(); refreshUI(); drawOverlay(); } };
+  renderPoseCopy();
+}
+function renderPoseCopy() {
+  const el = $('#ptCopy'); if (!el) return; el.innerHTML = '';
+  for (let j = 0; j < 3; j++) if (j !== S.pose) { const b = document.createElement('button'); b.textContent = `Copy to pose ${j + 1}`; b.onclick = () => { if (!POSE_TEX[j] || confirm(`Overwrite pose ${j + 1}?`)) copyPose(S.pose, j); }; el.appendChild(b); }
+  const c = document.createElement('button'); c.textContent = 'Clear pose'; c.onclick = () => clearPose(S.pose); el.appendChild(c);
+}
+function buildBackupUI(box) {
+  box.innerHTML = `<div class="note">Everything is saved in this browser automatically. Export a file to move all three poses and settings to another browser or computer.</div>
+    <div class="btns"><button id="bkExport">Export backup…</button><button id="bkImport">Import backup…</button><button id="bkReset">Reset everything</button></div>`;
+  box.querySelector('#bkExport').onclick = () => {
+    const data = { format: 'talking-head-backup', version: 2, settings: JSON.parse(JSON.stringify(S)), images: [0, 1, 2].map(i => S.poses[i].img === 'idb' && POSE_TEX[i] ? POSE_TEX[i].url : null) };
+    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(data)], { type: 'application/json' }));
+    a.download = 'pose-backup.json'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  };
+  box.querySelector('#bkImport').onclick = () => $('#fileJson').click();
+  box.querySelector('#bkReset').onclick = async () => {
+    if (!confirm('Reset all poses and settings? (The script is kept.)')) return;
+    const keep = S.script; S = normalize(null); S.script = keep;
+    for (let i = 0; i < 3; i++) { disposePoseTex(i); await IDB.del('pose:' + i); }
+    await reloadAll();
+  };
+}
+async function reloadAll() {
+  for (let i = 0; i < 3; i++) { disposePoseTex(i); await loadPoseImage(i); }
+  applyPoseImage(); rebuildShockTex(); browKey = ''; saveNow();
+  refreshUI(); renderPointsUI(); renderPoseBar(); renderTakes(); applyBg(); rebuildText();
+}
+async function importBackup(f) {
+  try {
+    const data = JSON.parse(await f.text());
+    let settings, images;
+    if (data.format === 'talking-head-backup') { settings = data.settings; images = data.images || []; }
+    else if (data.format === 'talking-head-preset') { settings = data.settings; settings.char = { ...(settings.char || {}), demo: data.image === 'demo' }; images = [data.image !== 'demo' ? data.image : null]; }
+    else throw new Error('unknown file');
+    const keep = S.script; S = normalize(settings); S.script = keep;
+    for (let i = 0; i < 3; i++) { if (images[i]) { await IDB.set('pose:' + i, images[i]); S.poses[i].img = 'idb'; } }
+    await reloadAll(); toast('Backup imported.', [], 1800);
+  } catch (e) { console.warn(e); toast('That file is not a Pose backup.', [], 2500); }
+}
+
+/* =====================================================================
+   Misc: background, keys, fullscreen
+   ===================================================================== */
+function applyBg() {
+  const c = S.scene.bg === 'black' ? '#000000' : S.scene.bg === 'custom' ? S.scene.custom : '#00ff00';
+  document.documentElement.style.setProperty('--scene-bg', c);
+}
+function toggleFullscreen() { if (document.fullscreenElement) document.exitFullscreen(); else document.documentElement.requestFullscreen().catch(() => { }); }
+function setEdit(on) {
+  EDIT = on; document.body.classList.toggle('edit', on);
+  document.body.classList.toggle('rec', !on && S.scene.hideCursor);
+  if (!on) { ARMED = null; GUIDED = null; hideToast(); stageEl.style.cursor = ''; }
+  drawOverlay();
+}
+addEventListener('keydown', e => {
+  const tg = e.target, typing = tg && (tg.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName));
+  if ((e.ctrlKey || e.metaKey) && !typing && ['b', 'i', 'u'].includes(e.key.toLowerCase())) { e.preventDefault(); return; }
+  if (typing || e.ctrlKey || e.metaKey || e.altKey) return;
+  const k = e.key.toLowerCase();
+  if (k === 's') { setEdit(!EDIT); e.preventDefault(); }
+  else if (k === 'r') { play(); e.preventDefault(); }
+  else if (k === 'f') toggleFullscreen();
+  else if (k === '1' || k === '2' || k === '3') selectPose(+k - 1);
+  else if (k === 'arrowright' || k === 'n') selectTake(S.script.current + 1);
+  else if (k === 'arrowleft' || k === 'p') selectTake(S.script.current - 1);
+  else if (k === 'escape') { ARMED = null; GUIDED = null; hideToast(); }
+});
+addEventListener('resize', fitStage);
+
+/* =====================================================================
+   Main loop & boot
+   ===================================================================== */
+let lastNow = performance.now();
+function frame(now) {
+  const dt = Math.min(0.05, Math.max(0, (now - lastNow) / 1000)); lastNow = now;
+  if (window.__freezeE != null && PLAY.on) PLAY.t0 = now - window.__freezeE; // debug: hold playback at a fixed moment
+  const P = phaseInfo(now); lastTm = P.tm;
+  try { updateChar(now, dt, P); updateTextFrame(now, dt, P); } catch (err) { console.error(err); }
+  renderer.render(scene, cam);
+  requestAnimationFrame(frame);
+}
+window.__TH = { S: () => S, play, TL, PLAY, setEdit, selectTake, selectPose, preview, rebuildText, refreshUI, renderPointsUI };
+
+(async function boot() {
+  applyBg();
+  buildPanel(); refreshUI(); renderPointsUI(); renderPoseBar();
+  TAKES = parseTakes(editorEl); renderTakes();
+  fitStage();
+  for (let i = 0; i < 3; i++) await loadPoseImage(i);
+  applyPoseImage(); renderPoseBar(); saveNow();
+  rebuildText();
+  if (document.fonts) { document.fonts.ready.then(rebuildText); document.fonts.addEventListener('loadingdone', rebuildTextSoon); }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
