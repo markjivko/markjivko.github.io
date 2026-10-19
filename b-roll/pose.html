@@ -14,8 +14,10 @@
 html,body{margin:0;height:100%;overflow:hidden;background:var(--scene-bg)}
 body{font:12.5px/1.35 Inter,system-ui,sans-serif;color:var(--ui-fg)}
 body.rec,body.rec *{cursor:none!important}
-#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:hidden;background:var(--scene-bg)}
-#gl{position:absolute;left:0;top:0;width:1920px;height:1080px;display:block}
+#view{position:fixed;inset:0;overflow:hidden;background:var(--scene-bg)}
+#gl{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;overflow:visible;pointer-events:none}
+#stage #dropHint{pointer-events:none}
 #overlay{position:absolute;left:0;top:0;width:1920px;height:1080px;pointer-events:none;overflow:visible}
 #dropHint{position:absolute;inset:0;display:none;align-items:center;justify-content:center;pointer-events:none}
 #dropHint div{font:600 34px Inter,sans-serif;color:#fff;background:rgba(0,0,0,.55);padding:28px 44px;border-radius:18px;border:3px dashed rgba(255,255,255,.7)}
@@ -121,11 +123,13 @@ button.on{outline:2px solid var(--ui-acc)}
 </style>
 </head>
 <body class="edit">
+<div id="view">
+<canvas id="gl"></canvas>
 <div id="stage">
-  <canvas id="gl"></canvas>
   <div id="textBox"><div id="textInner"><div id="textBlock"></div></div></div>
   <svg id="overlay" viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg"></svg>
   <div id="dropHint"><div>Drop a transparent PNG here, or click to choose</div></div>
+</div>
 </div>
 
 <div id="panel">
@@ -262,7 +266,7 @@ const IDB = {
 /* =====================================================================
    three.js scene
    ===================================================================== */
-const stageEl = $('#stage');
+const stageEl = $('#stage'), viewEl = $('#view');
 const renderer = new THREE.WebGLRenderer({ canvas: $('#gl'), antialias: true, alpha: true, premultipliedAlpha: true });
 renderer.setClearColor(0x000000, 0);
 const scene = new THREE.Scene();
@@ -397,7 +401,7 @@ const linesMat = new THREE.ShaderMaterial({
     m *= uA; if(m < 0.003) discard; gl_FragColor = vec4(uCol * m, m); }`,
   transparent: true, premultipliedAlpha: true, depthTest: false, depthWrite: false,
 });
-const linesMesh = new THREE.Mesh(new THREE.PlaneGeometry(W * 2, H * 2), linesMat);
+const linesMesh = new THREE.Mesh(new THREE.PlaneGeometry(W * 8, H * 8), linesMat);
 linesMesh.position.set(W / 2, H / 2, 0); linesMesh.renderOrder = 0; linesMesh.visible = false; scene.add(linesMesh);
 
 /* --- FX sprites drawn on canvases --- */
@@ -983,7 +987,12 @@ function updateTextFrame(now, dt, P) {
    ===================================================================== */
 const PLAY = { on: false, t0: 0 };
 const PV = { kind: null, until: 0, last: 'wink' };
-function preview(kind, ms = 1300) { if (kind === 'last') kind = PV.last; if (!kind) return; if (PV.kind !== kind || performance.now() > PV.until) PV.start = performance.now(); PV.kind = kind; PV.last = kind; PV.until = performance.now() + ms; }
+function preview(kind, ms = 1300) {
+  if (kind === 'last') kind = PV.last; if (!kind) return;
+  const now = performance.now();
+  if (PV.kind !== kind || now > PV.until) { PV.start = now; PV.wi = -1; if (kind === 'blink') nextBlink = 0; }
+  PV.kind = kind; PV.last = kind; PV.until = now + ms;
+}
 let lastTm = Infinity;
 function phaseInfo(now) {
   if (!PLAY.on) return { ph: 'static', e: Infinity, tm: Infinity, pe: 1, px: 0 };
@@ -1076,9 +1085,9 @@ function entryXf(type, p, rect) {
   const o = { dx: 0, dy: 0, s: 1, a: 1 };
   if (p >= 1 || type === 'none') return o;
   if (type === 'pop') o.s = Math.max(0.0001, E.ob(p));
-  else if (type === 'rise') o.dy = -(1 - E.oc(p)) * (rect.h + 40);
-  else if (type === 'slide') o.dx = -(1 - E.oc(p)) * (rect.x + rect.w + 60);
-  else if (type === 'drop') o.dy = (1 - E.bounce(p)) * (H + 40);
+  else if (type === 'rise') o.dy = -(1 - E.oc(p)) * (VIS.y1 - rect.y + 40);
+  else if (type === 'slide') o.dx = -(1 - E.oc(p)) * (rect.x + rect.w - VIS.x0 + 60);
+  else if (type === 'drop') o.dy = (1 - E.bounce(p)) * (rect.y + rect.h - VIS.y0 + 40);
   else if (type === 'fade') o.a = p;
   return o;
 }
@@ -1107,10 +1116,26 @@ function updateChar(now, dt, P) {
   const st = talkState(P.tm);
   const talking = st.talking && P.ph === 'talk';
   let open = talking ? st.open : 0;
+  // hold the character perfectly still while control points are being placed or moved,
+  // or while the mouse is over it in edit mode (unless a take is actively playing)
+  const pointDrag = DRAG && (DRAG.type === 'point' || DRAG.type === 'eyeRing');
+  const still = EDIT && (ARMED || GUIDED || pointDrag || (OVERCHAR && !['talk', 'entry', 'pre'].includes(P.ph)));
+  if (still) {
+    for (const k in SP) SP[k].reset();
+    open = 0; st.i = st.b = st.u = st.a = st.q = false; st.wi = lastWi; PV.until = 0;
+  }
   // live preview while adjusting settings
-  if (PV.kind && now < PV.until) {
+  let simTalk = false, simWord = -1, simEx = false;
+  if (!still && PV.kind && now < PV.until) {
     if (PV.kind === 'wink') st.i = true; else if (PV.kind === 'bulge') st.b = true; else if (PV.kind === 'surprise') st.u = true; else if (PV.kind === 'angry') st.a = true;
-    else if (PV.kind === 'talk' && !talking) st.seed = Math.floor(t * 9 / Math.PI) * 5.13 + 0.7, open = Math.pow(Math.max(0, Math.sin(t * 9)), 1 / (1 + S.talk.snap * 5)) * (1 - S.talk.randomness * 0.5 * (0.5 + 0.5 * Math.sin(t * 2.3)));
+    else if ((PV.kind === 'talk' || PV.kind === 'punct') && !talking) {
+      // fake speech: 190 ms syllables, two per word, using the real flap / snap / randomness settings
+      const el = now - PV.start, ph = el / 190 * S.talk.flapsPerSyl, k = Math.floor(ph), x = ph - k;
+      simTalk = true; simWord = Math.floor(el / 380);
+      st.seed = k * 3.7 + 0.5;
+      open = (1 - S.talk.randomness * hash(k * 7.13, 2)) * Math.pow(Math.max(0, Math.sin(Math.PI * x)), 1 / (1 + S.talk.snap * 5));
+      if (PV.kind === 'punct') { st.q = el < 1100; simEx = simWord === 3; }
+    }
   }
   const tk = S.talk, hd = S.head, fx = S.fx;
 
@@ -1123,6 +1148,12 @@ function updateChar(now, dt, P) {
       if (tk.punct && w.ex) SP.hop.v += fx.hopPx * 0.8 * 22;
     }
     lastWi = st.wi;
+  }
+  if (simTalk && simWord !== PV.wi) {
+    PV.wi = simWord;
+    const wig = tk.wiggle === 'always' || (tk.wiggle === 'auto' && !G.mouthOn && !G.neckOn);
+    if (wig) { wigSign = -wigSign; SP.rot.v += wigSign * tk.wiggleAngle * 22; SP.sq.v += tk.wiggleSquash * 26; }
+    if (simEx && tk.punct) SP.hop.v += fx.hopPx * 0.8 * 22;
   }
   if (st.u && !prevU) { if (fx.hop) SP.hop.v += fx.hopPx * 22; sweatStart = now; SP.shock.v += 6; }
   prevU = st.u;
@@ -1137,14 +1168,14 @@ function updateChar(now, dt, P) {
   const sur = SP.sur.step(st.u ? 1 : 0, dt, kResp, 0.42);
   const shock = SP.shock.step(st.u ? 1 : 0, dt, kResp * 1.3, 0.35);
   const spark = SP.spark.step(st.i ? 1 : 0, dt, kResp, 0.35);
-  const tilt = SP.tilt.step(tk.punct && st.q && talking ? 1 : 0, dt, 90, 0.7);
+  const tilt = SP.tilt.step(tk.punct && st.q && (talking || simTalk) ? 1 : 0, dt, 90, 0.7);
   const punch = SP.punch.step(fx.punch && st.u ? 1 : 0, dt, kResp, 0.5);
   const angry = SP.ang.step(st.a ? 1 : 0, dt, kResp, 0.4), angC = clamp(angry);
   const shake = fx.angryShake ? Math.sin(t * 43) * 1.4 * angC : 0;
 
   // blink (idle + talking)
   let blink = 0;
-  if (tk.blinking && G.eyes.length) {
+  if (tk.blinking && G.eyes.length && !still) {
     if (now > nextBlink) { blinkStart = now; nextBlink = now + tk.blinkEvery * 1000 * (0.6 + 0.8 * Math.random()); }
     const x = (now - blinkStart) / 170; if (x < 1) blink = Math.sin(Math.PI * x);
   }
@@ -1155,10 +1186,10 @@ function updateChar(now, dt, P) {
   if (P.ph === 'exit' && S.scene.exitChar) { const x = P.px; ex = entryXf(S.scene.entry === 'none' ? 'fade' : S.scene.entry, 1 - x, rect); if (S.scene.entry === 'pop') ex.s = Math.max(0.0001, 1 - E.ib(x)); }
 
   // body transform
-  const breath = tk.breathing ? 1 + 0.007 * Math.sin(t * 2.3) : 1;
+  const breath = tk.breathing && !still ? 1 + 0.007 * Math.sin(t * 2.3) : 1;
   const sq = SP.sq.x + tk.bodyBounce * open * 0.03;
   // idle head sway left/right (held still while you place or drag points)
-  const idleK = SP.idle.step(EDIT && (ARMED || DRAG || OVERCHAR) ? 0 : 1, dt, 40, 1);
+  const idleK = still ? 0 : SP.idle.step(1, dt, 12, 1);
   const isp = hd.idleSpeed, idleDeg = hd.idleSway * idleK * (0.75 * Math.sin(t * 1.1 * isp) + 0.25 * Math.sin(t * 2.3 * isp + 1.3));
   let rotDeg = SP.rot.x;
   if (!G.neckOn) rotDeg += tilt * -G.fs * 3 + shake + idleDeg * 0.6;
@@ -1187,7 +1218,7 @@ function updateChar(now, dt, P) {
   U.uMouthOn.value = G.mouthOn ? 1 : 0;
   if (G.mouthOn) { U.uM1.value.set(G.m1.x, G.m1.y); U.uN.value.set(G.n.x, G.n.y); U.uHinge.value.set(G.hinge.x, G.hinge.y); }
   U.uFlap.value = flapAng; U.uLift.value.set(lift.x, lift.y); U.uOpen.value = open;
-  const sway = (talking ? hd.sway * Math.sin(t * 2.1) : 0) + idleDeg;
+  const sway = ((talking || simTalk) && !still ? hd.sway * Math.sin(t * 2.1) : 0) + idleDeg;
   const neckAng = G.neckOn ? (G.fs * (open * hd.nod + sway - tilt * 8) + shake) * Math.PI / 180 : 0;
   const neckOff = { x: 0, y: G.neckOn ? -open * hd.nod * 0.7 / s : 0 };
   U.uNeckOn.value = G.neckOn ? 1 : 0;
@@ -1274,12 +1305,19 @@ function updateChar(now, dt, P) {
    Stage fit, overlay, pointer editing
    ===================================================================== */
 let STAGE_K = 1, EDIT = true, HOVER = null, OVERCHAR = false;
+// visible area in 1920x1080 design units (wider/taller than the frame when the window isn't 16:9)
+const VIS = { x0: 0, y0: 0, x1: W, y1: H };
 function fitStage() {
-  const k = Math.min(innerWidth / W, innerHeight / H); STAGE_K = k;
-  const ox = (innerWidth - W * k) / 2, oy = (innerHeight - H * k) / 2;
+  const iw = innerWidth, ih = innerHeight;
+  const k = Math.min(iw / W, ih / H); STAGE_K = k;
+  const ox = (iw - W * k) / 2, oy = (ih - H * k) / 2;
   stageEl.style.transform = `translate(${ox}px,${oy}px) scale(${k})`;
-  renderer.setPixelRatio(Math.min(2, k * (window.devicePixelRatio || 1)));
-  renderer.setSize(W, H, false);
+  Object.assign(VIS, { x0: -ox / k, y0: -oy / k, x1: (iw - ox) / k, y1: (ih - oy) / k });
+  // the canvas covers the full window, so nothing is clipped at the frame edge
+  renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  renderer.setSize(iw, ih, false);
+  cam.left = -iw / (2 * k); cam.right = iw / (2 * k); cam.top = ih / (2 * k); cam.bottom = -ih / (2 * k);
+  cam.updateProjectionMatrix();
   drawOverlay();
 }
 function charRect() { const s = S.char.h / IMG.h; return { x: S.char.x, y: S.char.y, w: IMG.w * s, h: S.char.h, s }; }
@@ -1299,6 +1337,10 @@ function drawOverlay() {
   if (!EDIT) { ov.innerHTML = ''; return; }
   const k = STAGE_K, hs = 6 / k, fsz = 13 / k; let h = '';
   const sq = (x, y, cls) => `<rect x="${x - hs}" y="${y - hs}" width="${hs * 2}" height="${hs * 2}" class="${cls}"/>`;
+  if (VIS.x0 < -1 || VIS.y0 < -1) {
+    h += `<rect x="0" y="0" width="${W}" height="${H}" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.5" stroke-dasharray="3 7" vector-effect="non-scaling-stroke"/>`;
+    h += `<text x="${8 / k}" y="${20 / k}" font-size="${fsz * 0.9}" class="ol" opacity=".8">1920×1080 frame</text>`;
+  }
   if (IMG) {
     const r = charRect();
     h += `<defs><clipPath id="cc"><rect x="${r.x}" y="${r.y}" width="${r.w}" height="${r.h}"/></clipPath></defs>`;
@@ -1358,7 +1400,7 @@ function hitTest(X, Y) {
   return null;
 }
 let DRAG = null, ARMED = null, GUIDED = null;
-stageEl.addEventListener('pointerdown', e => {
+viewEl.addEventListener('pointerdown', e => {
   if (e.button !== 0) return;
   const { X, Y } = toStage(e);
   if (!IMG) { $('#fileImg').click(); return; }
@@ -1370,15 +1412,15 @@ stageEl.addEventListener('pointerdown', e => {
   }
   const h = hitTest(X, Y); if (!h) return;
   DRAG = { ...h, X0: X, Y0: Y, char: clone(S.char), box: clone(S.box), eyes: clone(S.eyes) };
-  stageEl.setPointerCapture(e.pointerId);
+  viewEl.setPointerCapture(e.pointerId);
   e.preventDefault();
 });
 let rafPending = false;
-stageEl.addEventListener('pointermove', e => {
+viewEl.addEventListener('pointermove', e => {
   if (!EDIT) return;
   const { X, Y } = toStage(e);
   if (!DRAG) {
-    const h = ARMED ? { cur: 'crosshair' } : hitTest(X, Y); stageEl.style.cursor = h ? h.cur : 'default';
+    const h = ARMED ? { cur: 'crosshair' } : hitTest(X, Y); viewEl.style.cursor = h ? h.cur : 'default';
     const hv = h && h.type ? (/^char/.test(h.type) ? 'char' : /^box/.test(h.type) ? 'box' : null) : null;
     if (IMG) { const r = charRect(); OVERCHAR = X >= r.x && X <= r.x + r.w && Y >= r.y && Y <= r.y + r.h; }
     if (hv !== HOVER) { HOVER = hv; drawOverlay(); }
@@ -1409,11 +1451,11 @@ stageEl.addEventListener('pointermove', e => {
     });
   }
 });
-stageEl.addEventListener('pointerup', () => { if (DRAG) { DRAG = null; saveSoon(); refreshUI(); renderPointsUI(); } });
-stageEl.addEventListener('pointerleave', () => { OVERCHAR = false; if (!DRAG && HOVER) { HOVER = null; drawOverlay(); } });
+viewEl.addEventListener('pointerup', () => { if (DRAG) { DRAG = null; saveSoon(); refreshUI(); renderPointsUI(); } });
+viewEl.addEventListener('pointerleave', () => { OVERCHAR = false; if (!DRAG && HOVER) { HOVER = null; drawOverlay(); } });
 /* mouse wheel over the character resizes it around the cursor */
 let wheelUI = 0;
-stageEl.addEventListener('wheel', e => {
+viewEl.addEventListener('wheel', e => {
   if (!EDIT || !IMG) return;
   const { X, Y } = toStage(e), r = charRect();
   if (X < r.x || X > r.x + r.w || Y < r.y || Y > r.y + r.h) return;
@@ -1519,7 +1561,8 @@ const SECTIONS = [
   { title: 'Control points · this pose', open: true, custom: buildPointsUI },
   {
     title: 'Talking motion', items: [
-      NOTE('The head splits along the mouth line and the top half moves with every syllable. <b>Random</b> picks, per syllable, a pivot at either end of the mouth or a straight lift of the whole top, each with random strength. With no points placed, the whole character wiggles on every word. Settings marked (pose) are saved per pose.'),
+      NOTE('The head splits along the mouth line and the top half moves with every syllable. <b>Random</b> picks, per syllable, a pivot at either end of the mouth or a straight lift of the whole top, each with random strength. With no points placed, the whole character wiggles on every word. Changing a setting plays a short talking preview. Settings marked (pose) are saved per pose.'),
+      BTNS([['▶ Talk', () => preview('talk', 2500)], ['▶ ? then !', () => preview('punct', 2400)], ['▶ Blink', () => preview('blink', 400)]]),
       SEL('head.hinge', 'Top-of-head motion (pose)', [['random', 'Random: either end + lift'], ['auto', 'Fixed hinge: back of head'], ['start', 'Fixed hinge: mouth start'], ['end', 'Fixed hinge: mouth end'], ['center', 'Straight lift only']]),
       R('head.maxAngle', 'Max flap angle (pose)', 0, 70, 0.5, '°'),
       R('head.lift', 'Max lift (pose)', 0, 150, 1, 'px'),
@@ -1670,7 +1713,10 @@ const PV_MAP = [
   [/^fx\.(wide|shock|hop|sweat|punch|linesColor)/, 'surprise'],
   [/^(brows\.|fx\.angry)/, 'angry'],
   [/^head\.idle/, null],
-  [/^(head\.|talk\.(flapsPerSyl|snap|randomness))/, 'talk'],
+  [/^talk\.punct$/, 'punct'],
+  [/^talk\.blink/, 'blink'],
+  [/^talk\.breathing$/, null],
+  [/^(head\.|talk\.)/, 'talk'],
   [/^fx\.(response|release)$/, 'last'],
 ];
 function changed(k) {
@@ -1680,7 +1726,7 @@ function changed(k) {
   if (/^(style|text|box)\./.test(k) || /^script\.(wpm|pipeMs)$/.test(k)) rebuildTextSoon();
   if (/^script\.(wpm|pipeMs)$/.test(k)) renderTakes();
   if (/^(char|eyes|pts|talk|head|brows|border)\./.test(k)) drawOverlay();
-  for (const [re, kind] of PV_MAP) if (re.test(k)) { if (kind) preview(kind, 1300); break; }
+  for (const [re, kind] of PV_MAP) if (re.test(k)) { if (kind) preview(kind, kind === 'talk' ? 2000 : kind === 'punct' ? 2200 : 1300); break; }
   for (const c of CTLS) if (c.it.show) c.row.style.display = c.it.show() ? '' : 'none';
 }
 function buildPanel() {
@@ -1833,7 +1879,7 @@ function toggleFullscreen() { if (document.fullscreenElement) document.exitFulls
 function setEdit(on) {
   EDIT = on; document.body.classList.toggle('edit', on);
   document.body.classList.toggle('rec', !on && S.scene.hideCursor);
-  if (!on) { ARMED = null; GUIDED = null; hideToast(); stageEl.style.cursor = ''; }
+  if (!on) { ARMED = null; GUIDED = null; hideToast(); viewEl.style.cursor = ''; }
   drawOverlay();
 }
 addEventListener('keydown', e => {

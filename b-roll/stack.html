@@ -1,0 +1,911 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Stack Slam</title>
+<style>
+:root{
+  --bg:#000;
+  --radius:16px;
+  --shadow:0 18px 50px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.35);
+  --hs:1;
+  --ui-bg:rgba(20,20,25,.97);
+  --ui-fg:#ececf1;
+  --ui-mute:#9d9daa;
+  --ui-line:rgba(255,255,255,.09);
+  --ui-field:#26262e;
+  --accent:#4cc2ff;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--bg)}
+body.nocursor,body.nocursor *{cursor:none!important}
+
+/* ---------- Stage (fixed 1920x1080, scaled to fit, never cropped) ---------- */
+#viewport{position:fixed;inset:0;background:var(--bg);overflow:hidden}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:var(--bg)}
+#shake{position:absolute;inset:0;will-change:transform}
+#group{position:absolute;inset:0;transform-origin:50% 50%;will-change:transform}
+#viewport{touch-action:none}
+#viewport.panning,#viewport.panning *{cursor:grabbing!important}
+.card{position:absolute;left:0;top:0;transform-origin:50% 50%;will-change:transform,opacity;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);visibility:hidden}
+.card img{display:block;width:100%;height:100%;pointer-events:none;user-select:none;-webkit-user-drag:none}
+.badge{display:none;position:absolute;left:calc(10px*var(--hs));top:calc(10px*var(--hs));min-width:calc(34px*var(--hs));padding:calc(3px*var(--hs)) calc(9px*var(--hs));border-radius:calc(20px*var(--hs));background:rgba(0,0,0,.75);color:#fff;font:600 calc(20px*var(--hs))/1.2 system-ui,sans-serif;text-align:center}
+body.editing .badge{display:block}
+body.editing .card{cursor:pointer;outline:calc(1.5px*var(--hs)) solid rgba(255,255,255,.35);outline-offset:-1px}
+
+#sel{position:absolute;left:0;top:0;transform-origin:50% 50%;outline:calc(3px*var(--hs)) dashed var(--accent);z-index:100000;display:none;cursor:move;touch-action:none}
+body.editing #sel.show{display:block}
+#sel .h{position:absolute;width:calc(24px*var(--hs));height:calc(24px*var(--hs));background:#fff;border:calc(4px*var(--hs)) solid var(--accent);border-radius:50%}
+#sel .h-scale{right:calc(-12px*var(--hs));bottom:calc(-12px*var(--hs));cursor:nwse-resize}
+#sel .h-rot{left:50%;top:calc(-62px*var(--hs));margin-left:calc(-12px*var(--hs));cursor:grab}
+#sel .stalk{position:absolute;left:50%;top:calc(-40px*var(--hs));width:calc(3px*var(--hs));margin-left:calc(-1.5px*var(--hs));height:calc(40px*var(--hs));background:var(--accent)}
+
+/* ---------- Settings sidebar ---------- */
+#panel{position:fixed;top:0;right:0;bottom:0;width:380px;z-index:50;background:var(--ui-bg);color:var(--ui-fg);font:13px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow-y:auto;border-left:1px solid var(--ui-line);box-shadow:-12px 0 40px rgba(0,0,0,.45);overscroll-behavior:contain}
+#panel.hidden{display:none}
+#panel header{padding:14px 16px 12px;border-bottom:1px solid var(--ui-line);position:sticky;top:0;background:#16161b;z-index:3}
+#panel h1{font-size:15px;margin:0 0 8px;font-weight:650;letter-spacing:.01em}
+.keys{display:flex;flex-wrap:wrap;gap:6px 12px;color:var(--ui-mute);font-size:12px}
+kbd{display:inline-block;min-width:20px;text-align:center;padding:1px 6px;border-radius:4px;background:#2c2c35;border:1px solid rgba(255,255,255,.15);border-bottom-width:2px;color:var(--ui-fg);font:600 11px/1.5 ui-monospace,Menlo,monospace;margin-right:4px}
+#panel section{padding:12px 16px 14px;border-bottom:1px solid var(--ui-line)}
+#panel h2{font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:var(--ui-mute);margin:0 0 10px;font-weight:650}
+.row{display:grid;grid-template-columns:122px 1fr 58px;align-items:center;gap:8px;margin:7px 0}
+.row.two{grid-template-columns:122px 1fr}
+.row output{text-align:right;font-variant-numeric:tabular-nums;color:var(--ui-mute);font-size:12px}
+.row>span{color:#cfcfd8}
+input[type=range]{width:100%;accent-color:var(--accent);margin:0}
+select,input[type=number],button{background:var(--ui-field);color:var(--ui-fg);border:1px solid rgba(255,255,255,.14);border-radius:6px;padding:5px 8px;font:inherit}
+select{width:100%}
+input[type=number]{width:100%}
+button{cursor:pointer;white-space:nowrap}
+button:hover{background:#31313b}
+button.primary{background:#16435c;border-color:#2b7bab}
+button.primary:hover{background:#1c5373}
+button.on{border-color:var(--accent);color:var(--accent)}
+button.danger:hover{background:#4a1f24;border-color:#a33}
+.check{display:flex;align-items:center;gap:8px;margin:7px 0;color:#cfcfd8;cursor:pointer}
+.check input{accent-color:var(--accent);margin:0}
+.btns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.note{color:var(--ui-mute);font-size:12px;margin:8px 0 0}
+.seg{display:flex;gap:6px}
+.seg label{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px;border:1px solid rgba(255,255,255,.14);border-radius:6px;background:var(--ui-field);cursor:pointer}
+.seg input{display:none}
+.seg label:has(input:checked){border-color:var(--accent);color:var(--accent)}
+.swatch{width:14px;height:14px;border-radius:3px;border:1px solid rgba(255,255,255,.3)}
+.mix{display:flex;flex-wrap:wrap;gap:4px 14px;margin:4px 0 4px 2px}
+.mix .check{margin:2px 0}
+.bez{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0}
+#list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:360px;overflow-y:auto}
+#list:empty{display:none}
+#list li{user-select:none;-webkit-user-select:none;display:grid;grid-template-columns:22px 54px 1fr auto auto auto;align-items:center;gap:7px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.04);border:1px solid transparent;cursor:pointer}
+#list li:hover{background:rgba(255,255,255,.07)}
+#list li.sel{border-color:var(--accent)}
+#list .move{display:flex;gap:2px}
+#list .move button{padding:3px 6px;line-height:1}
+#list .move button:disabled{opacity:.3;cursor:default;background:var(--ui-field)}
+#list .num{color:var(--ui-mute);font-variant-numeric:tabular-nums;text-align:right;font-size:12px}
+#list img{width:54px;height:32px;object-fit:cover;border-radius:3px;background:#111;display:block}
+#list select{padding:3px 4px;font-size:12px}
+#list button{padding:3px 7px;font-size:12px}
+#preview{width:100%;height:96px;display:block;background:#101014;border-radius:6px;margin-top:8px}
+#stats{color:var(--ui-mute);font-size:12px;margin-top:6px;font-variant-numeric:tabular-nums}
+.hide{display:none!important}
+
+#dropOverlay{position:fixed;inset:12px;border:3px dashed var(--accent);border-radius:16px;background:rgba(76,194,255,.08);display:none;align-items:center;justify-content:center;color:#fff;font:600 28px system-ui,sans-serif;z-index:60;pointer-events:none}
+#dropOverlay.show{display:flex}
+</style>
+</head>
+<body>
+<div id="viewport">
+  <div id="stage">
+    <div id="shake">
+      <div id="group">
+        <div id="sel"><div class="stalk"></div><div class="h h-rot" data-h="rot"></div><div class="h h-scale" data-h="scale"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="dropOverlay">Drop images to add them</div>
+
+<aside id="panel">
+  <header>
+    <h1>Stack Slam</h1>
+    <div class="keys">
+      <span><kbd>S</kbd>settings</span><span><kbd>R</kbd>restart</span><span><kbd>F</kbd>fullscreen</span><span><kbd>E</kbd>edit layout</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>Images</h2>
+    <input type="file" id="file" accept="image/*" multiple hidden>
+    <ol id="list"></ol>
+    <div class="btns">
+      <button id="pick" class="primary">Add images…</button>
+      <button id="bEdit">Edit layout</button>
+      <button id="bAuto" title="New random arrangement for unpinned cards">Auto-layout</button>
+      <button id="bShuffle">Shuffle order</button>
+      <button id="bUnpin">Unpin all</button>
+      <button id="bClear" class="danger">Clear all</button>
+    </div>
+    <p class="note">You can also drop images anywhere on the window or paste them with Ctrl/⌘+V. Top of the list enters first; use ▲ ▼ to reorder. Moving or resizing a card in Edit layout pins it, and Auto-layout keeps pinned cards where they are.</p>
+    <p class="note" id="editTips">In Edit layout: drag to move · corner handle or wheel to resize · top handle or Shift+wheel to rotate (Shift while dragging snaps 15°) · arrow keys nudge · Esc exits.</p>
+  </section>
+
+  <section>
+    <h2>Timing</h2>
+    <label class="row"><span>Total length</span><input type="range" data-k="total" min="1" max="60" step="0.5"><output data-o="total"></output></label>
+    <label class="row"><span>Pre-roll on R</span><input type="range" data-k="preDelay" min="0" max="3000" step="50"><output data-o="preDelay"></output></label>
+    <label class="row two"><span>Pacing curve</span><select data-k="curve" id="curveSel"></select></label>
+    <label class="row" id="powerRow"><span>Exponent</span><input type="range" data-k="power" min="1" max="8" step="0.1"><output data-o="power"></output></label>
+    <div id="bezRow">
+      <div class="bez">
+        <input type="number" data-k="bx1" min="0" max="1" step="0.01" title="x1">
+        <input type="number" data-k="by1" min="0" max="1" step="0.01" title="y1">
+        <input type="number" data-k="bx2" min="0" max="1" step="0.01" title="x2">
+        <input type="number" data-k="by2" min="0" max="1" step="0.01" title="y2">
+      </div>
+      <p class="note" style="margin:0">cubic-bezier(x1, y1, x2, y2), values 0–1. Curve shows how many cards have landed over time.</p>
+    </div>
+    <label class="row"><span>Humanize</span><input type="range" data-k="jitter" min="0" max="60" step="1"><output data-o="jitter"></output></label>
+    <canvas id="preview"></canvas>
+    <div id="stats"></div>
+  </section>
+
+  <section>
+    <h2>Entrances</h2>
+    <label class="row two"><span>Style</span>
+      <select data-k="style">
+        <option value="mixed">Mixed (random per card)</option>
+        <option value="slam">Slam</option>
+        <option value="pop">Pop</option>
+        <option value="drop">Drop with tilt</option>
+        <option value="slide">Slide in</option>
+      </select>
+    </label>
+    <div class="mix" id="mixRow">
+      <label class="check"><input type="checkbox" data-k="mixSlam">Slam</label>
+      <label class="check"><input type="checkbox" data-k="mixPop">Pop</label>
+      <label class="check"><input type="checkbox" data-k="mixDrop">Drop</label>
+      <label class="check"><input type="checkbox" data-k="mixSlide">Slide</label>
+    </div>
+    <label class="row"><span>Entrance speed</span><input type="range" data-k="dur" min="120" max="900" step="10"><output data-o="dur"></output></label>
+    <label class="check"><input type="checkbox" data-k="adaptDur">Faster entrances as the pace picks up</label>
+    <label class="row"><span>Screen shake</span><input type="range" data-k="shake" min="0" max="1.5" step="0.05"><output data-o="shake"></output></label>
+    <div class="btns"><button id="bReroll" title="New random tilts, directions and style mix">Re-roll variations</button></div>
+  </section>
+
+  <section>
+    <h2>Sound</h2>
+    <label class="check"><input type="checkbox" data-k="sound">Bam on every card</label>
+    <label class="row two"><span>Sound</span><select data-k="soundPreset" id="soundSel"></select></label>
+    <label class="row"><span>Min spacing</span><input type="range" data-k="minSoundGap" min="0" max="300" step="10"><output data-o="minSoundGap"></output></label>
+    <label class="row"><span>Volume</span><input type="range" data-k="volume" min="0" max="1.5" step="0.05"><output data-o="volume"></output></label>
+    <label class="row"><span>Pitch variation</span><input type="range" data-k="pitchVar" min="0" max="0.3" step="0.01"><output data-o="pitchVar"></output></label>
+    <label class="row"><span>Sync offset</span><input type="range" data-k="soundOffset" min="-150" max="150" step="5"><output data-o="soundOffset"></output></label>
+    <div class="btns"><button id="bTest">Test sound</button></div>
+    <p class="note">Changing the sound plays a preview. Min spacing skips hits that land closer together than this, so the fast finale doesn't turn into a buzz.</p>
+  </section>
+
+  <section>
+    <h2>Look</h2>
+    <div class="row two"><span>Background</span>
+      <div class="seg">
+        <label><input type="radio" name="bg" data-k="bg" value="black"><span class="swatch" style="background:#000"></span>Black</label>
+        <label><input type="radio" name="bg" data-k="bg" value="green"><span class="swatch" style="background:#00ff00"></span>Green</label>
+      </div>
+    </div>
+    <label class="row"><span>Card size</span><input type="range" data-k="size" min="4" max="40" step="1"><output data-o="size"></output></label>
+    <label class="check"><input type="checkbox" data-k="autoSize">Shrink cards as more are added (card size is the max)</label>
+    <label class="row"><span>Size variation</span><input type="range" data-k="sizeVar" min="0" max="50" step="1"><output data-o="sizeVar"></output></label>
+    <label class="row"><span>Max tilt</span><input type="range" data-k="tilt" min="0" max="20" step="0.5"><output data-o="tilt"></output></label>
+    <label class="row"><span>Edge margin</span><input type="range" data-k="margin" min="0" max="200" step="5"><output data-o="margin"></output></label>
+    <label class="row"><span>Corner radius</span><input type="range" data-k="radius" min="0" max="40" step="1"><output data-o="radius"></output></label>
+    <label class="check"><input type="checkbox" data-k="shadow">Drop shadow</label>
+    <p class="note">Size, tilt and margin re-arrange unpinned cards. For green-screen keying, shadows and motion blur leave soft edges; turn the shadow off if your keyer struggles.</p>
+  </section>
+
+  <section>
+    <h2>Frame</h2>
+    <label class="row"><span>Scale</span><input type="range" data-k="gs" min="0.15" max="2" step="0.01"><output data-o="gs"></output></label>
+    <div class="btns">
+      <button id="fLeft">Fit left half</button><button id="fCenter">Fit center</button><button id="fRight">Fit right half</button><button id="fReset">Reset</button>
+    </div>
+    <label class="check"><input type="checkbox" data-k="lockFrame">Lock frame (ignore swipes while recording)</label>
+    <p class="note">Drag or swipe on the canvas to move the whole stack; in Edit layout, drag empty space. Scroll up or down to zoom in or out around the cursor; pinch works too.</p>
+  </section>
+
+  <section>
+    <h2>Recording</h2>
+    <label class="check"><input type="checkbox" data-k="autoHidePanel">Hide this sidebar when R is pressed</label>
+    <label class="check"><input type="checkbox" data-k="hideCursor">Hide the cursor when it's idle</label>
+    <p class="note">Canvas is 1920×1080 and always scales to fit the window without cropping. In fullscreen on a 1080p display it maps 1:1.</p>
+  </section>
+</aside>
+
+<script>
+(() => {
+'use strict';
+const W = 1920, H = 1080;
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+
+/* ===================== Settings ===================== */
+const DEFAULTS = {
+  bg:'black', total:8, preDelay:500, curve:'quadIn', power:2.5, bx1:0.55, by1:0, bx2:0.9, by2:0.35, jitter:15,
+  style:'mixed', mixSlam:true, mixPop:true, mixDrop:true, mixSlide:true, dur:320, adaptDur:true, shake:0.5,
+  sound:true, soundPreset:'thud', minSoundGap:90, volume:0.8, pitchVar:0.12, soundOffset:0,
+  size:16, autoSize:true, sizeVar:20, tilt:4, margin:40, radius:16, shadow:true,
+  autoHidePanel:true, hideCursor:true, seed:1, layoutSeed:1, gx:0, gy:0, gs:1, lockFrame:false
+};
+let S = {...DEFAULTS};
+try { Object.assign(S, JSON.parse(localStorage.getItem('stackslam.settings') || '{}')); } catch(e) {}
+const saveSettings = () => { try { localStorage.setItem('stackslam.settings', JSON.stringify(S)); } catch(e) {} };
+
+/* ===================== Random helpers ===================== */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function hashStr(s){let h=2166136261>>>0;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+const rng = (...k) => mulberry32(hashStr(k.join('|')));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+
+/* ===================== Pacing curves ===================== */
+function bezierY(x){
+  const x1=clamp(+S.bx1||0,0,1), y1=clamp(+S.by1||0,0,1), x2=clamp(+S.bx2||0,0,1), y2=clamp(+S.by2||0,0,1);
+  const bx=t=>3*(1-t)*(1-t)*t*x1+3*(1-t)*t*t*x2+t*t*t;
+  const by=t=>3*(1-t)*(1-t)*t*y1+3*(1-t)*t*t*y2+t*t*t;
+  let lo=0,hi=1; for(let i=0;i<32;i++){const m=(lo+hi)/2; if(bx(m)<x) lo=m; else hi=m;}
+  return by((lo+hi)/2);
+}
+const E2 = Math.pow(2,-10);
+const CURVES = {
+  linear:  {label:'Linear — steady, no build', f:x=>x},
+  sineIn:  {label:'Sine in — gentle build', f:x=>1-Math.cos(x*Math.PI/2)},
+  quadIn:  {label:'Quad in — classic build', f:x=>x*x},
+  cubicIn: {label:'Cubic in — slow start, strong finish', f:x=>x*x*x},
+  quartIn: {label:'Quart in — long tease, then flurry', f:x=>x**4},
+  quintIn: {label:'Quint in — very late flurry', f:x=>x**5},
+  expoIn:  {label:'Expo in — explodes at the end', f:x=>x<=0?0:(Math.pow(2,10*x-10)-E2)/(1-E2)},
+  circIn:  {label:'Circ in — sudden avalanche', f:x=>1-Math.sqrt(Math.max(0,1-x*x))},
+  power:   {label:'Power — adjustable exponent', f:x=>Math.pow(x,S.power)},
+  bezier:  {label:'Custom cubic-bezier', f:bezierY}
+};
+const curveF = () => (CURVES[S.curve] || CURVES.quadIn).f;
+function ginv(g,u){ if(u<=0) return 0; if(u>=1) return 1; let lo=0,hi=1; for(let i=0;i<40;i++){const m=(lo+hi)/2; if(g(m)<u) lo=m; else hi=m;} return (lo+hi)/2; }
+
+function computeTimes(N){
+  const T = S.total*1000, g = curveF(), t = [];
+  for(let i=0;i<N;i++) t.push(T*ginv(g, N<=1?0:i/(N-1)));
+  const base = t.slice(), r = rng('jit', S.seed);
+  for(let i=1;i<N-1;i++){ const gap=Math.min(base[i]-base[i-1], base[i+1]-base[i]); t[i]=base[i]+(r()-0.5)*(S.jitter/100)*gap; }
+  return t;
+}
+
+/* ===================== Entrance styles ===================== */
+const IMPACT = {slam:0.6, pop:0.15, drop:0.62, slide:0.4};
+const SHAKE  = {slam:1, drop:0.7, pop:0.3, slide:0.45};
+const STYLES = {
+  slam(p,e){
+    const I=IMPACT.slam;
+    if(p<I){ const q=p/I, k=q*q; return {dx:0,dy:0,rot:e.p.r0*(1-k),s:2.3-1.3*k,op:Math.min(1,q*2.5),blur:(1-k)*10}; }
+    const q=(p-I)/(1-I); return {dx:0,dy:0,rot:0,s:1-0.035*Math.sin(Math.PI*q),op:1,blur:0};
+  },
+  pop(p,e){
+    const s=1-0.85*Math.exp(-5.5*p)*Math.cos(10*p);
+    return {dx:0,dy:0,rot:e.p.r0*Math.exp(-5*p)*Math.cos(9*p),s:Math.max(0.01,s),op:Math.min(1,p*7),blur:0};
+  },
+  drop(p,e){
+    const I=IMPACT.drop;
+    if(p<I){ const q=p/I, k=q*q; return {dx:0,dy:-e.p.D*(1-k),rot:e.p.r0*(1-k),s:1.08-0.08*k,op:Math.min(1,q*4),blur:(1-k)*3}; }
+    const q=(p-I)/(1-I), b=Math.sin(Math.PI*q)*(1-q);
+    return {dx:0,dy:-16*b,rot:e.p.r0*0.06*b,s:1,op:1,blur:0};
+  },
+  slide(p,e){
+    const c1=1.5, c3=c1+1, u=p-1, f=1+c3*u*u*u+c1*u*u, k=1-f;
+    return {dx:e.p.sx*k,dy:e.p.sy*k,rot:e.p.r0*k,s:1,op:1,blur:Math.min(8,Math.abs(k)*12)};
+  }
+};
+function resolveStyle(c){
+  if(c.style && c.style!=='global') return c.style;
+  if(S.style!=='mixed') return S.style;
+  const pool=[S.mixSlam&&'slam',S.mixPop&&'pop',S.mixDrop&&'drop',S.mixSlide&&'slide'].filter(Boolean);
+  if(!pool.length) return 'slam';
+  return pool[Math.floor(rng('style',S.seed,c.id)()*pool.length)];
+}
+function params(c,style){
+  const r = rng('p', S.seed, c.id, style), h = cardH(c);
+  const p = {r0:(r()*2-1)*6, ang:r()*Math.PI*2, variant:Math.floor(r()*4), rate:1+(r()*2-1)*S.pitchVar, gain:0.85+r()*0.15};
+  if(style==='drop'){ p.r0=(r()<0.5?-1:1)*(10+r()*16); p.D=300+r()*160; }
+  if(style==='slide'){
+    const gs=S.gs, px=CX+S.gx+(c.x-CX)*gs, py=CY+S.gy+(c.y-CY)*gs, D=Math.hypot(c.w,h)/2*gs+60;
+    // edges of the visible window, in stage coordinates (wider than the 1920x1080 frame when letterboxed)
+    const vx0=-offX/scale, vx1=(innerWidth-offX)/scale, vy0=-offY/scale, vy1=(innerHeight-offY)/scale;
+    const d={left:px-vx0, right:vx1-px, top:py-vy0, bottom:vy1-py};
+    let edge=Object.keys(d).sort((a,b)=>d[a]-d[b])[0];
+    if(r()<0.3) edge=['left','right','top','bottom'][Math.floor(r()*4)];
+    const jit=(r()*2-1)*90;
+    p.sx = (edge==='left'?-(px-vx0+D) : edge==='right'?(vx1-px+D) : jit)/gs;
+    p.sy = (edge==='top'?-(py-vy0+D) : edge==='bottom'?(vy1-py+D) : jit)/gs;
+    p.r0=(r()*2-1)*8;
+  }
+  return p;
+}
+function buildSchedule(){
+  const N=cards.length, t=computeTimes(N);
+  const out = cards.map((c,i)=>{
+    const gapN = i<N-1 ? t[i+1]-t[i] : (N>1 ? t[i]-t[i-1] : S.dur);
+    const dur = S.adaptDur ? Math.max(110, Math.min(S.dur, gapN*1.8)) : S.dur;
+    const style = resolveStyle(c);
+    return {c, i, dur, style, p:params(c,style), imp:t[i], start:t[i]-IMPACT[style]*dur, amp:S.shake*26*SHAKE[style]};
+  });
+  const off = out.length ? Math.min(...out.map(e=>e.start)) : 0;
+  out.forEach(e=>{ e.start-=off; e.imp-=off; });
+  return out;
+}
+
+/* ===================== Audio (synthesized bam) ===================== */
+let actx=null, master=null, liveSources=[];
+const SOUNDS = {
+  thud:  {label:'Soft thud',            level:0.85},
+  paper: {label:'Paper slap',           level:0.6},
+  tick:  {label:'Light tick',           level:0.4},
+  boom:  {label:'Deep boom',            level:0.9},
+  bam:   {label:'Punchy bam (original)',level:0.95}
+};
+const soundCache = {};
+function getSounds(name){
+  if(!SOUNDS[name]) name='thud';
+  if(!soundCache[name]) soundCache[name]=Promise.all([0,1,2,3].map(v=>renderSound(name,v))).catch(e=>{ console.warn('sound synth failed',e); return []; });
+  return soundCache[name];
+}
+getSounds(S.soundPreset);
+async function renderSound(name, v){
+  const sr=44100, len=Math.floor(sr*(name==='boom'?1.3:0.7)), oc=new OfflineAudioContext(2,len,sr), r=mulberry32(1000+v*7+name.length*131);
+  const out=oc.createGain(); out.connect(oc.destination);
+  const noise=oc.createBuffer(2,Math.floor(sr*0.6),sr);
+  for(let ch=0;ch<2;ch++){ const d=noise.getChannelData(ch); for(let i=0;i<d.length;i++) d[i]=r()*2-1; }
+  const env=(g,peak,att,dec)=>{ g.gain.setValueAtTime(0.0001,0); g.gain.exponentialRampToValueAtTime(peak,att); g.gain.exponentialRampToValueAtTime(0.0005,dec); };
+  const sine=(f0,f1,glide,peak,dec,dest)=>{ const o=oc.createOscillator(); o.type='sine'; o.frequency.setValueAtTime(f0,0); o.frequency.exponentialRampToValueAtTime(f1,glide); const g=oc.createGain(); env(g,peak,0.003,dec); o.connect(g); g.connect(dest); o.start(0); o.stop(dec+0.05); };
+  const noiz=(type,f0,f1,glide,q,peak,dec,dest,offset=0)=>{ const s=oc.createBufferSource(); s.buffer=noise; const f=oc.createBiquadFilter(); f.type=type; f.frequency.setValueAtTime(f0,0); if(f1) f.frequency.exponentialRampToValueAtTime(f1,glide); f.Q.value=q; const g=oc.createGain(); env(g,peak,0.002,dec); s.connect(f); f.connect(g); g.connect(dest); s.start(0,offset); };
+  if(name==='thud'){
+    sine(92+r()*14, 46, 0.12, 1, 0.3, out);
+    noiz('lowpass', 900+r()*200, 140, 0.09, 0.7, 0.22, 0.1, out);
+  } else if(name==='paper'){
+    noiz('bandpass', 1500+r()*700, 900, 0.07, 0.9, 1, 0.1, out);
+    noiz('highpass', 3500, 0, 0, 0.5, 0.25, 0.03, out, 0.2);
+    sine(170+r()*30, 90, 0.05, 0.35, 0.07, out);
+  } else if(name==='tick'){
+    sine(1500+r()*400, 800, 0.02, 0.8, 0.045, out);
+    noiz('highpass', 4000, 0, 0, 0.5, 0.25, 0.015, out);
+  } else if(name==='boom'){
+    const sh=oc.createWaveShaper(), n=1024, c=new Float32Array(n); for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(1.6*x)/Math.tanh(1.6); } sh.curve=c; sh.connect(out);
+    sine(72+r()*10, 30, 0.5, 1, 1.1, sh);
+    noiz('lowpass', 500, 55, 0.6, 0.6, 0.45, 0.7, sh);
+  } else { // original punchy bam
+    const sh=oc.createWaveShaper(), n=2048, c=new Float32Array(n); for(let i=0;i<n;i++){ const x=i/(n-1)*2-1; c[i]=Math.tanh(2.4*x)/Math.tanh(2.4); } sh.curve=c; sh.connect(out);
+    sine(140+r()*50, 40+r()*8, 0.2, 1, 0.45, sh);
+    noiz('lowpass', 4200+r()*1500, 260, 0.26, 0.8, 0.75, 0.32, sh);
+    noiz('highpass', 2200+r()*1200, 0, 0, 0.7, 0.55, 0.045, out, 0.1);
+    noiz('bandpass', 700, 0, 0, 0.6, 0.12, 0.6, out, 0.2);
+  }
+  const buf=await oc.startRendering();
+  let peak=0; for(let ch=0;ch<buf.numberOfChannels;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<d.length;i++) peak=Math.max(peak,Math.abs(d[i])); }
+  if(peak>0){ const g=SOUNDS[name].level/peak; for(let ch=0;ch<buf.numberOfChannels;ch++){ const d=buf.getChannelData(ch); for(let i=0;i<d.length;i++) d[i]*=g; } }
+  return buf;
+}
+async function ensureAudio(){
+  if(!actx){
+    const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return false;
+    actx = new AC({latencyHint:'interactive'});
+    const comp = actx.createDynamicsCompressor();
+    comp.threshold.value=-10; comp.knee.value=6; comp.ratio.value=8; comp.attack.value=0.002; comp.release.value=0.12;
+    master = actx.createGain(); master.gain.value = S.volume;
+    master.connect(comp); comp.connect(actx.destination);
+  }
+  if(actx.state!=='running'){ try{ await actx.resume(); }catch(e){} }
+  await getSounds(S.soundPreset);
+  return actx.state==='running';
+}
+function ctxTimeAt(perfMs){
+  if(actx.getOutputTimestamp){ const ts=actx.getOutputTimestamp(); if(ts && ts.performanceTime) return ts.contextTime + (perfMs - ts.performanceTime)/1000; }
+  return actx.currentTime + (perfMs - performance.now())/1000;
+}
+async function playBam(when, p){
+  const bufs = await getSounds(S.soundPreset); if(!bufs.length) return;
+  const src = actx.createBufferSource(); src.buffer = bufs[p.variant % bufs.length];
+  src.playbackRate.value = clamp(p.rate,0.5,2);
+  const g = actx.createGain(); g.gain.value = p.gain;
+  src.connect(g); g.connect(master);
+  src.start(Math.max(actx.currentTime, when));
+  liveSources.push(src);
+  src.onended = () => { const i=liveSources.indexOf(src); if(i>=0) liveSources.splice(i,1); };
+}
+function stopSounds(){ liveSources.forEach(s=>{ try{ s.stop(); }catch(e){} }); liveSources=[]; }
+
+/* ===================== Storage (IndexedDB for images + layout) ===================== */
+const DB = {
+  db:null,
+  open(){ return new Promise(res=>{ try{ const r=indexedDB.open('stack-slam',1);
+    r.onupgradeneeded=()=>r.result.createObjectStore('cards',{keyPath:'id'});
+    r.onsuccess=()=>{ this.db=r.result; res(true); }; r.onerror=()=>res(false); }catch(e){ res(false); } }); },
+  tx(mode){ return this.db.transaction('cards',mode).objectStore('cards'); },
+  put(rec){ if(!this.db) return; try{ this.tx('readwrite').put(rec); }catch(e){} },
+  del(id){ if(!this.db) return; try{ this.tx('readwrite').delete(id); }catch(e){} },
+  clear(){ if(!this.db) return; try{ this.tx('readwrite').clear(); }catch(e){} },
+  all(){ return new Promise(res=>{ if(!this.db) return res([]); try{ const r=this.tx('readonly').getAll(); r.onsuccess=()=>res(r.result||[]); r.onerror=()=>res([]); }catch(e){ res([]); } }); }
+};
+const rec = c => ({id:c.id,name:c.name,blob:c.blob,natW:c.natW,natH:c.natH,x:c.x,y:c.y,w:c.w,rot:c.rot,pinned:c.pinned,style:c.style,order:cards.indexOf(c)});
+const saveTimers = {};
+function saveCard(c){ clearTimeout(saveTimers[c.id]); saveTimers[c.id]=setTimeout(()=>DB.put(rec(c)),250); }
+function saveAll(){ cards.forEach(c=>DB.put(rec(c))); }
+
+/* ===================== Cards & stage ===================== */
+let cards = [];
+const stage=$('#stage'), viewport=$('#viewport'), shakeEl=$('#shake'), groupEl=$('#group'), selEl=$('#sel');
+const CX=W/2, CY=H/2;
+const cardH = c => c.w * c.natH / c.natW;
+const byId = id => cards.find(c=>c.id===id);
+let scale=1, offX=0, offY=0;
+
+function fit(){
+  const vw=innerWidth, vh=innerHeight;
+  scale = Math.min(vw/W, vh/H); offX=(vw-W*scale)/2; offY=(vh-H*scale)/2;
+  stage.style.transform = `translate(${offX}px,${offY}px) scale(${scale})`;
+  applyGroup();
+}
+const toStage = e => ({x:(e.clientX-offX)/scale, y:(e.clientY-offY)/scale});
+
+function ensureEl(c){
+  if(c.el) return;
+  const el=document.createElement('div'); el.className='card'; el.dataset.id=c.id;
+  const img=document.createElement('img'); img.src=c.url; img.draggable=false; img.alt='';
+  const b=document.createElement('span'); b.className='badge';
+  el.append(img,b); c.el=el; c.badge=b;
+}
+function renderCards(){
+  const keep=new Set(cards.map(c=>c.el));
+  [...groupEl.querySelectorAll('.card')].forEach(el=>{ if(!keep.has(el)) el.remove(); });
+  cards.forEach((c,i)=>{ ensureEl(c); c.el.style.zIndex=i+1; c.badge.textContent=i+1; groupEl.insertBefore(c.el, selEl); });
+}
+function setT(c,o){
+  const h=cardH(c), st=c.el.style;
+  st.width=c.w+'px'; st.height=h+'px';
+  st.transform=`translate3d(${c.x-c.w/2+o.dx}px,${c.y-h/2+o.dy}px,0) rotate(${c.rot+o.rot}deg) scale(${o.s})`;
+  st.opacity=o.op; st.filter=o.blur>0.3?`blur(${o.blur.toFixed(1)}px)`:'none'; st.visibility='visible';
+}
+const FINAL={dx:0,dy:0,rot:0,s:1,op:1,blur:0};
+const applyFinal = c => setT(c,FINAL);
+function showFinal(){ cards.forEach(c=>{ ensureEl(c); applyFinal(c); }); shakeEl.style.transform=''; updateSel(); }
+function hideAll(){ cards.forEach(c=>{ if(c.el) c.el.style.visibility='hidden'; }); }
+
+/* ===================== Auto layout (keeps most of each card visible) ===================== */
+function layout(placeIds){
+  const CS=20, GW=W/CS, GH=H/CS, N=cards.length, m=S.margin;
+  const top=new Int16Array(GW*GH).fill(-1), area=new Float64Array(N), vis=new Float64Array(N), lost=new Int32Array(N);
+  const cellsOf=(x,y,w,h)=>[Math.max(0,Math.floor((x-w/2)/CS)),Math.min(GW-1,Math.floor((x+w/2-1)/CS)),Math.max(0,Math.floor((y-h/2)/CS)),Math.min(GH-1,Math.floor((y+h/2-1)/CS))];
+  cards.forEach((c,k)=>{
+    if(placeIds.has(c.id)){
+      const r=rng('lay',S.layoutSeed,c.id);
+      const A=effSize()/100*W*H*(1+(S.sizeVar/100)*(r()*2-1)), ar=c.natW/c.natH;
+      let w=Math.sqrt(A*ar), h=w/ar;
+      const maxW=W-2*m, maxH=H-2*m;
+      if(w>maxW){w=maxW;h=w/ar} if(h>maxH){h=maxH;w=h*ar}
+      c.w=w; c.rot=(r()*2-1)*S.tilt;
+      const xa=m+w/2, xb=W-m-w/2, ya=m+h/2, yb=H-m-h/2;
+      let best=[W/2,H/2], bestCost=Infinity;
+      for(let i=0;i<260;i++){
+        const x = xb>xa ? xa+r()*(xb-xa) : W/2, y = yb>ya ? ya+r()*(yb-ya) : H/2;
+        const [x0,x1,y0,y1]=cellsOf(x,y,w,h), touched=[];
+        for(let gy=y0;gy<=y1;gy++) for(let gx=x0;gx<=x1;gx++){ const j=top[gy*GW+gx]; if(j>=0){ if(lost[j]===0) touched.push(j); lost[j]++; } }
+        let cost=0;
+        for(const j of touched){ const a=area[j]; if(a>0){ const o=1-vis[j]/a, nw=1-(vis[j]-lost[j])/a; cost+=nw*nw-o*o; } lost[j]=0; }
+        cost += 0.03*(Math.abs(x-W/2)/(W/2)+Math.abs(y-H/2)/(H/2)) + r()*0.002;
+        if(cost<bestCost){ bestCost=cost; best=[x,y]; }
+      }
+      c.x=best[0]; c.y=best[1];
+    }
+    const [x0,x1,y0,y1]=cellsOf(c.x,c.y,c.w,cardH(c)); let cnt=0;
+    for(let gy=y0;gy<=y1;gy++) for(let gx=x0;gx<=x1;gx++){ const idx=gy*GW+gx, j=top[idx]; if(j>=0) vis[j]--; top[idx]=k; cnt++; }
+    area[k]=cnt; vis[k]=cnt;
+  });
+}
+const effSize = () => S.autoSize ? Math.min(S.size, Math.max(5, 130/Math.max(1,cards.length))) : S.size;
+const unpinnedIds = () => new Set(cards.filter(c=>!c.pinned).map(c=>c.id));
+function relayoutUnpinned(){ stopPlay(); layout(unpinnedIds()); renderCards(); showFinal(); saveAll(); }
+
+/* ===================== Adding / removing images ===================== */
+function loadImg(url){ return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>res(im); im.onerror=rej; im.src=url; }); }
+async function addFiles(fileList){
+  const IMG_EXT=/\.(png|jpe?g|gif|webp|avif|bmp|svg|ico|heic|heif)$/i;
+  const files=[...fileList].filter(f=>f && ((f.type && f.type.startsWith('image/')) || (!f.type && IMG_EXT.test(f.name||''))));
+  if(!files.length) return;
+  stopPlay();
+  const added=[];
+  for(const f of files){
+    const url=URL.createObjectURL(f);
+    try{
+      const im=await loadImg(url); try{ await im.decode(); }catch(e){}
+      added.push({id:uid(),name:f.name||'pasted image',blob:f,url,natW:im.naturalWidth||800,natH:im.naturalHeight||400,x:W/2,y:H/2,w:400,rot:0,pinned:false,style:'global'});
+    }catch(e){ URL.revokeObjectURL(url); }
+  }
+  cards.push(...added);
+  layout(S.autoSize ? unpinnedIds() : new Set(added.map(c=>c.id)));
+  renderCards(); showFinal(); renderList(); drawPreview(); saveAll();
+}
+function removeCard(id){
+  const c=byId(id); if(!c) return;
+  stopPlay(); c.el && c.el.remove(); URL.revokeObjectURL(c.url); DB.del(id);
+  cards.splice(cards.indexOf(c),1); if(selId===id) selId=null;
+  renderCards(); showFinal(); renderList(); drawPreview(); saveAll();
+}
+
+/* ===================== Playback ===================== */
+let play=null;
+function stopPlay(){
+  if(play){ cancelAnimationFrame(play.raf); play=null; }
+  stopSounds(); shakeEl.style.transform='';
+  showFinal();
+}
+async function restart(){
+  if(play) cancelAnimationFrame(play.raf);
+  play=null; stopSounds();
+  setEdit(false);
+  if(S.autoHidePanel) setPanel(false);
+  if(S.hideCursor && !panelOpen) document.body.classList.add('nocursor');
+  hideAll(); shakeEl.style.transform='';
+  const token = {};
+  restart.token = token;
+  const sched = buildSchedule();
+  let audioOk=false;
+  if(S.sound) audioOk = await ensureAudio();
+  if(restart.token!==token) return;
+  const t0 = performance.now();
+  play = {t0, sched, raf:0, token};
+  if(audioOk && S.sound){
+    const base = ctxTimeAt(t0);
+    let last=-Infinity;
+    sched.slice().sort((a,b)=>a.imp-b.imp).forEach(e=>{
+      if(e.imp-last < S.minSoundGap) return;
+      last=e.imp; playBam(base + (S.preDelay + e.imp + S.soundOffset)/1000, e.p);
+    });
+  }
+  play.lastImp = sched.length ? Math.max(...sched.map(e=>e.start+e.dur)) : 0;
+  play.raf = requestAnimationFrame(tick);
+}
+function tick(){
+  if(!play) return;
+  const t = performance.now() - play.t0 - S.preDelay;
+  for(const e of play.sched){
+    const lt = t - e.start;
+    if(lt<0){ e.c.el.style.visibility='hidden'; continue; }
+    const p = lt / e.dur;
+    if(p>=1){ if(!e.done){ applyFinal(e.c); e.done=true; } continue; }
+    setT(e.c, STYLES[e.style](p,e));
+  }
+  let sx=0, sy=0, sr=0;
+  for(const e of play.sched){
+    const dt=t-e.imp; if(dt<0 || dt>450 || !e.amp) continue;
+    const env=Math.exp(-dt/85)*e.amp, osc=Math.sin(dt/1000*2*Math.PI*24);
+    sx+=Math.cos(e.p.ang)*env*osc; sy+=Math.sin(e.p.ang)*env*osc; sr+=env*0.035*Math.sin(dt/1000*2*Math.PI*17);
+  }
+  const A=Math.max(1,S.shake*34);
+  shakeEl.style.transform = (sx||sy) ? `translate3d(${(A*Math.tanh(sx/A)).toFixed(2)}px,${(A*Math.tanh(sy/A)).toFixed(2)}px,0) rotate(${(0.8*Math.tanh(sr/0.8)).toFixed(3)}deg)` : '';
+  if(t > play.lastImp + 500){ shakeEl.style.transform=''; play.sched.forEach(e=>applyFinal(e.c)); play.raf=0; return; }
+  play.raf = requestAnimationFrame(tick);
+}
+
+/* ===================== Edit layout ===================== */
+let editing=false, selId=null, drag=null;
+function setEdit(on){
+  if(on===editing) return;
+  editing=on; document.body.classList.toggle('editing',on);
+  $('#bEdit').classList.toggle('on',on); $('#bEdit').textContent = on ? 'Done editing' : 'Edit layout';
+  if(on){ if(play){ cancelAnimationFrame(play.raf); play=null; stopSounds(); } showFinal(); document.body.classList.remove('nocursor'); }
+  updateSel();
+}
+function select(id){ selId=id; updateSel(); $$('#list li').forEach(li=>li.classList.toggle('sel', li.dataset.id===id)); }
+function updateSel(){
+  const c = selId && byId(selId);
+  selEl.classList.toggle('show', !!(editing && c));
+  if(!c) return;
+  const h=cardH(c);
+  selEl.style.width=c.w+'px'; selEl.style.height=h+'px';
+  selEl.style.transform=`translate(${c.x-c.w/2}px,${c.y-h/2}px) rotate(${c.rot}deg)`;
+}
+function touched(c){ c.pinned=true; applyFinal(c); updateSel(); saveCard(c); refreshPin(c); }
+
+/* ===================== Frame: move / resize the whole stack ===================== */
+function applyGroup(){
+  groupEl.style.transform=`translate(${S.gx}px,${S.gy}px) scale(${S.gs})`;
+  document.documentElement.style.setProperty('--hs', (1/(scale*S.gs)).toFixed(4));
+}
+const toLocal = pt => ({x:CX+(pt.x-CX-S.gx)/S.gs, y:CY+(pt.y-CY-S.gy)/S.gs});
+let frameSaveT=null;
+function updateFrameUI(){ const r=$('[data-k="gs"]'); if(r) r.value=S.gs; updateOutputs(); }
+function frameChanged(){ applyGroup(); updateFrameUI(); clearTimeout(frameSaveT); frameSaveT=setTimeout(saveSettings,250); }
+function zoomAt(pt, factor){
+  const L=toLocal(pt); S.gs=clamp(S.gs*factor,0.15,3);
+  S.gx=pt.x-CX-(L.x-CX)*S.gs; S.gy=pt.y-CY-(L.y-CY)*S.gs; frameChanged();
+}
+function fitTo(x0,x1){
+  if(!cards.length){ S.gx=0; S.gy=0; S.gs=1; frameChanged(); return; }
+  let a=Infinity,b=Infinity,c2=-Infinity,d=-Infinity;
+  cards.forEach(c=>{
+    const h=cardH(c), r=c.rot*Math.PI/180, co=Math.cos(r), si=Math.sin(r);
+    for(const [ux,uy] of [[-1,-1],[1,-1],[1,1],[-1,1]]){
+      const x=c.x+(ux*c.w/2)*co-(uy*h/2)*si, y=c.y+(ux*c.w/2)*si+(uy*h/2)*co;
+      a=Math.min(a,x); b=Math.min(b,y); c2=Math.max(c2,x); d=Math.max(d,y);
+    }
+  });
+  const m=40;
+  S.gs=clamp(Math.min((x1-x0-2*m)/(c2-a),(H-2*m)/(d-b),1),0.15,3);
+  S.gx=(x0+x1)/2-CX-((a+c2)/2-CX)*S.gs;
+  S.gy=-((b+d)/2-CY)*S.gs;
+  frameChanged();
+}
+
+const ptrs=new Map(); let gest=null;
+const centroid = pts => ({x:pts.reduce((s,p)=>s+p.x,0)/pts.length, y:pts.reduce((s,p)=>s+p.y,0)/pts.length});
+const spread = pts => pts.length>1 ? Math.hypot(pts[0].x-pts[1].x, pts[0].y-pts[1].y) : 0;
+function beginGesture(){
+  if(!ptrs.size){ gest=null; return; }
+  const pts=[...ptrs.values()];
+  gest={L:toLocal(centroid(pts)), gs0:S.gs, d0:spread(pts)};
+}
+viewport.addEventListener('pointerdown', e=>{
+  if(e.pointerType==='mouse' && e.button!==0) return;
+  const pt=toStage(e);
+  if(editing && !ptrs.size && !drag){
+    const h=e.target.closest('[data-h]'); let c=null, mode='move';
+    if(h){ c=byId(selId); mode=h.dataset.h; }
+    else if(e.target.closest('#sel')) c=byId(selId);
+    else { const el=e.target.closest('.card'); if(el){ c=byId(el.dataset.id); select(c.id); } else select(null); }
+    if(c){
+      e.preventDefault(); viewport.setPointerCapture(e.pointerId);
+      const lp=toLocal(pt);
+      drag={mode,c,sx:lp.x,sy:lp.y,x:c.x,y:c.y,w:c.w,rot:c.rot,d0:Math.max(10,Math.hypot(lp.x-c.x,lp.y-c.y)),a0:Math.atan2(lp.y-c.y,lp.x-c.x)};
+      return;
+    }
+  }
+  if(drag || S.lockFrame) return;
+  e.preventDefault(); viewport.setPointerCapture(e.pointerId);
+  ptrs.set(e.pointerId, pt); beginGesture(); viewport.classList.add('panning');
+});
+viewport.addEventListener('pointermove', e=>{
+  if(drag){
+    const lp=toLocal(toStage(e)), c=drag.c;
+    if(drag.mode==='move'){ c.x=drag.x+lp.x-drag.sx; c.y=drag.y+lp.y-drag.sy; }
+    else if(drag.mode==='scale'){ c.w=clamp(drag.w*Math.hypot(lp.x-c.x,lp.y-c.y)/drag.d0, 60, 5000); }
+    else if(drag.mode==='rot'){ let r=drag.rot+(Math.atan2(lp.y-c.y,lp.x-c.x)-drag.a0)*180/Math.PI; if(e.shiftKey) r=Math.round(r/15)*15; c.rot=((r+540)%360)-180; }
+    c.pinned=true; applyFinal(c); updateSel();
+    return;
+  }
+  if(!gest || !ptrs.has(e.pointerId)) return;
+  ptrs.set(e.pointerId, toStage(e));
+  const pts=[...ptrs.values()], m=centroid(pts);
+  if(pts.length>1 && gest.d0>0) S.gs=clamp(gest.gs0*spread(pts)/gest.d0,0.15,3);
+  S.gx=m.x-CX-(gest.L.x-CX)*S.gs; S.gy=m.y-CY-(gest.L.y-CY)*S.gs;
+  frameChanged();
+});
+const ptrEnd = e=>{
+  if(drag){ touched(drag.c); drag=null; return; }
+  if(ptrs.delete(e.pointerId)){ beginGesture(); if(!ptrs.size) viewport.classList.remove('panning'); }
+};
+viewport.addEventListener('pointerup', ptrEnd);
+viewport.addEventListener('pointercancel', ptrEnd);
+viewport.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const c = editing && selId && byId(selId);
+  if(c && !e.ctrlKey){
+    if(e.shiftKey){ const d=(e.deltaY||e.deltaX)>0?1:-1; c.rot=clamp(c.rot+d,-180,180); }
+    else c.w=clamp(c.w*Math.exp(-e.deltaY*0.0012),60,5000);
+    touched(c); return;
+  }
+  if(S.lockFrame) return;
+  // Scroll wheel / two-finger scroll zooms around the cursor; pinch (sent as Ctrl+wheel) zooms too.
+  const k = e.deltaMode===1 ? 33 : e.deltaMode===2 ? 400 : 1;
+  const dy = clamp(e.deltaY*k, -150, 150);
+  if(dy) zoomAt(toStage(e), Math.exp(-dy*(e.ctrlKey ? 0.01 : 0.0015)));
+},{passive:false});
+// Safari trackpad pinch
+let gsStart=1;
+viewport.addEventListener('gesturestart', e=>{ e.preventDefault(); gsStart=S.gs; });
+viewport.addEventListener('gesturechange', e=>{ e.preventDefault(); if(S.lockFrame) return; zoomAt(toStage(e), clamp(gsStart*e.scale,0.15,3)/S.gs); });
+viewport.addEventListener('gestureend', e=>e.preventDefault());
+
+/* ===================== Sidebar list ===================== */
+const list=$('#list');
+function renderList(){
+  list.innerHTML='';
+  cards.forEach((c,i)=>{
+    const li=document.createElement('li'); li.dataset.id=c.id; if(c.id===selId) li.classList.add('sel');
+    li.innerHTML=`<span class="num">${i+1}</span><img alt="">
+      <select data-act="style" title="Entrance style for this card">
+        <option value="global">Default</option><option value="slam">Slam</option><option value="pop">Pop</option><option value="drop">Drop</option><option value="slide">Slide</option>
+      </select>
+      <span class="move"><button data-act="up" title="Move earlier" aria-label="Move up"${i===0?' disabled':''}>▲</button><button data-act="down" title="Move later" aria-label="Move down"${i===cards.length-1?' disabled':''}>▼</button></span>
+      <button data-act="pin" title="Pinned cards keep their position on Auto-layout"></button>
+      <button data-act="del" title="Remove">✕</button>`;
+    li.querySelector('img').draggable=false; li.querySelector('img').src=c.url; li.querySelector('img').title=c.name;
+    li.querySelector('select').value=c.style||'global';
+    list.appendChild(li); refreshPin(c);
+  });
+}
+function refreshPin(c){
+  const b=list.querySelector(`li[data-id="${c.id}"] [data-act="pin"]`); if(!b) return;
+  b.textContent=c.pinned?'Pinned':'Auto'; b.classList.toggle('on',c.pinned);
+}
+list.addEventListener('click', e=>{
+  const li=e.target.closest('li'); if(!li) return; const c=byId(li.dataset.id); if(!c) return;
+  const act=e.target.closest('[data-act]')?.dataset.act;
+  if(act==='del'){ removeCard(c.id); return; }
+  if(act==='pin'){ c.pinned=!c.pinned; refreshPin(c); saveCard(c); if(!c.pinned){ layout(new Set([c.id])); renderCards(); showFinal(); saveAll(); } return; }
+  if(act==='up' || act==='down'){
+    const i=cards.indexOf(c), j=act==='up'?i-1:i+1; if(j<0 || j>=cards.length) return;
+    [cards[i],cards[j]]=[cards[j],cards[i]];
+    stopPlay(); renderCards(); showFinal(); renderList(); saveAll();
+    list.querySelector(`li[data-id="${c.id}"]`)?.scrollIntoView({block:'nearest'});
+    return;
+  }
+  if(act==='style') return;
+  select(c.id); if(!editing) setEdit(true);
+});
+list.addEventListener('change', e=>{
+  if(e.target.dataset.act!=='style') return;
+  const c=byId(e.target.closest('li').dataset.id); c.style=e.target.value; saveCard(c);
+});
+/* ===================== Timing preview ===================== */
+function drawPreview(){
+  const cv=$('#preview'), dpr=devicePixelRatio||1, cw=cv.clientWidth, ch=cv.clientHeight;
+  if(!cw) return;
+  cv.width=cw*dpr; cv.height=ch*dpr; const g=cv.getContext('2d'); g.scale(dpr,dpr); g.clearRect(0,0,cw,ch);
+  const N=cards.length||20, t=computeTimes(N), T=S.total*1000, f=curveF(), pad=8, pw=cw-pad*2, ph=ch-pad*2-14;
+  g.strokeStyle='rgba(255,255,255,.08)'; g.lineWidth=1; g.strokeRect(pad+.5,pad+.5,pw,ph);
+  g.beginPath(); for(let i=0;i<=100;i++){ const x=i/100, y=f(x); const px=pad+x*pw, py=pad+ph-y*ph; i?g.lineTo(px,py):g.moveTo(px,py); }
+  g.strokeStyle='rgba(76,194,255,.75)'; g.lineWidth=1.5; g.stroke();
+  g.fillStyle='#4cc2ff';
+  t.forEach(v=>{ const px=pad+(T?v/T:0)*pw; g.fillRect(Math.round(px)-0.5,ch-pad-11,1.5,11); });
+  g.fillStyle='rgba(255,255,255,.4)'; g.font='10px system-ui'; g.fillText('landed',pad+4,pad+12);
+  const gaps=t.slice(1).map((v,i)=>v-t[i]);
+  const fmt=ms=>ms>=1000?(ms/1000).toFixed(2)+'s':Math.round(ms)+'ms';
+  $('#stats').textContent = (cards.length?`${N} cards`:'Preview with 20 cards') + (gaps.length?` · first gap ${fmt(gaps[0])} · last gap ${fmt(gaps[gaps.length-1])}`:'') + ` · +${S.preDelay}ms pre-roll`;
+}
+
+/* ===================== UI binding ===================== */
+const FMT={total:v=>v+'s',preDelay:v=>v+'ms',power:v=>(+v).toFixed(1),jitter:v=>v+'%',dur:v=>v+'ms',shake:v=>Math.round(v*100)+'%',
+  volume:v=>Math.round(v*100)+'%',pitchVar:v=>'±'+Math.round(v*100)+'%',soundOffset:v=>(v>0?'+':'')+v+'ms',minSoundGap:v=>v?v+'ms':'off',size:v=>v+'%',sizeVar:v=>'±'+v+'%',tilt:v=>'±'+v+'°',margin:v=>v+'px',radius:v=>v+'px',gs:v=>Math.round(v*100)+'%'};
+function updateOutputs(){ $$('[data-o]').forEach(o=>{ const k=o.dataset.o; o.textContent=(FMT[k]||String)(S[k]); }); }
+function applyLook(){
+  const root=document.documentElement.style;
+  root.setProperty('--bg', S.bg==='green'?'#00ff00':'#000000');
+  root.setProperty('--radius', S.radius+'px');
+  root.setProperty('--shadow', S.shadow?'0 18px 50px rgba(0,0,0,.55),0 4px 12px rgba(0,0,0,.35)':'none');
+}
+function toggleRows(){
+  $('#powerRow').classList.toggle('hide', S.curve!=='power');
+  $('#bezRow').classList.toggle('hide', S.curve!=='bezier');
+  $('#mixRow').classList.toggle('hide', S.style!=='mixed');
+}
+let relayoutT=null;
+function onChange(k){
+  if(['bg','radius','shadow'].includes(k)) applyLook();
+  if(['size','autoSize','sizeVar','tilt','margin'].includes(k)){ clearTimeout(relayoutT); relayoutT=setTimeout(relayoutUnpinned,120); }
+  if(['curve','style'].includes(k)) toggleRows();
+  if(['curve','power','bx1','by1','bx2','by2','total','jitter','preDelay'].includes(k)) drawPreview();
+  if(k==='volume' && master) master.gain.value=S.volume;
+  if(k==='gs') applyGroup();
+  if(k==='soundPreset') previewSound();
+}
+async function previewSound(){ if(await ensureAudio()) playBam(actx.currentTime+0.02,{variant:Math.floor(Math.random()*4),rate:1+(Math.random()*2-1)*S.pitchVar,gain:1}); }
+function bindUI(){
+  const ss=$('#soundSel'); Object.entries(SOUNDS).forEach(([k,v])=>{ const o=document.createElement('option'); o.value=k; o.textContent=v.label; ss.appendChild(o); });
+  const sel=$('#curveSel'); Object.entries(CURVES).forEach(([k,v])=>{ const o=document.createElement('option'); o.value=k; o.textContent=v.label; sel.appendChild(o); });
+  $$('[data-k]').forEach(el=>{
+    const k=el.dataset.k;
+    if(el.type==='checkbox') el.checked=!!S[k];
+    else if(el.type==='radio') el.checked=S[k]===el.value;
+    else el.value=S[k];
+    const ev=(el.type==='range'||el.type==='number')?'input':'change';
+    el.addEventListener(ev,()=>{
+      let v;
+      if(el.type==='checkbox') v=el.checked;
+      else if(el.type==='radio'){ if(!el.checked) return; v=el.value; }
+      else if(el.type==='range'||el.type==='number'){ v=parseFloat(el.value); if(Number.isNaN(v)) return; }
+      else v=el.value;
+      S[k]=v; saveSettings(); updateOutputs(); onChange(k);
+    });
+  });
+  updateOutputs(); applyLook(); toggleRows();
+
+  $('#pick').onclick=()=>$('#file').click();
+  $('#file').onchange=e=>{ addFiles(e.target.files); e.target.value=''; };
+  $('#bEdit').onclick=()=>setEdit(!editing);
+  $('#bAuto').onclick=()=>{ S.layoutSeed=Math.floor(Math.random()*1e9); saveSettings(); relayoutUnpinned(); };
+  $('#bShuffle').onclick=()=>{ for(let i=cards.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [cards[i],cards[j]]=[cards[j],cards[i]]; } layout(unpinnedIds()); stopPlay(); renderCards(); showFinal(); renderList(); saveAll(); };
+  $('#bUnpin').onclick=()=>{ cards.forEach(c=>c.pinned=false); renderList(); saveAll(); };
+  $('#bClear').onclick=()=>{ if(!cards.length || !confirm('Remove all images?')) return; stopPlay(); cards.forEach(c=>{ c.el&&c.el.remove(); URL.revokeObjectURL(c.url); }); cards=[]; selId=null; DB.clear(); renderList(); updateSel(); drawPreview(); };
+  $('#fLeft').onclick=()=>fitTo(0,W/2); $('#fCenter').onclick=()=>fitTo(0,W); $('#fRight').onclick=()=>fitTo(W/2,W);
+  $('#fReset').onclick=()=>{ S.gx=0; S.gy=0; S.gs=1; frameChanged(); };
+  $('#bReroll').onclick=()=>{ S.seed=Math.floor(Math.random()*1e9); saveSettings(); drawPreview(); };
+  $('#bTest').onclick=previewSound;
+  $$('#panel button').forEach(b=>b.addEventListener('click',()=>b.blur()));
+}
+
+/* ===================== Panel and cursor ===================== */
+let panelOpen=true;
+function setPanel(on){ panelOpen=on; $('#panel').classList.toggle('hidden',!on); if(on) document.body.classList.remove('nocursor'); else pokeCursor(); if(on) drawPreview(); }
+let curT=null;
+function pokeCursor(){
+  document.body.classList.remove('nocursor'); clearTimeout(curT);
+  curT=setTimeout(()=>{ if(S.hideCursor && !panelOpen && !editing) document.body.classList.add('nocursor'); },1500);
+}
+addEventListener('mousemove', pokeCursor);
+
+/* ===================== Keyboard ===================== */
+addEventListener('keydown', e=>{
+  const t=e.target, tag=t.tagName;
+  const typing = (tag==='INPUT' && !['range','checkbox','radio','button','file'].includes(t.type)) || tag==='TEXTAREA';
+  if(typing || e.metaKey || e.ctrlKey || e.altKey) return;
+  const k=e.key.toLowerCase();
+  if(k==='s' && !e.repeat){ e.preventDefault(); setPanel(!panelOpen); }
+  else if(k==='r' && !e.repeat){ e.preventDefault(); if(document.activeElement && document.activeElement!==document.body) document.activeElement.blur(); restart(); }
+  else if(k==='f' && !e.repeat){ e.preventDefault(); if(!document.fullscreenElement) document.documentElement.requestFullscreen?.().catch(()=>{}); else document.exitFullscreen?.(); }
+  else if(k==='e' && !e.repeat){ e.preventDefault(); setEdit(!editing); }
+  else if(k==='escape' && editing){ setEdit(false); }
+  else if(editing && selId && tag!=='SELECT' && t.type!=='range' && ['arrowleft','arrowright','arrowup','arrowdown'].includes(k)){
+    e.preventDefault(); const c=byId(selId), d=e.shiftKey?10:1;
+    if(k==='arrowleft') c.x-=d; if(k==='arrowright') c.x+=d; if(k==='arrowup') c.y-=d; if(k==='arrowdown') c.y+=d;
+    touched(c);
+  }
+});
+
+/* ===================== Paste & file drop ===================== */
+addEventListener('paste', e=>{
+  const files=[...(e.clipboardData?.items||[])].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(Boolean);
+  if(files.length){ e.preventDefault(); addFiles(files); }
+});
+let dragDepth=0;
+const overlay=$('#dropOverlay');
+const showOverlay=on=>overlay.classList.toggle('show',on);
+const looksLikeFiles = e => { const t=e.dataTransfer && e.dataTransfer.types; if(!t) return true; return [...t].some(x=>x==='Files'||x==='application/x-moz-file'||x==='text/uri-list'); };
+addEventListener('dragenter', e=>{ e.preventDefault(); dragDepth++; if(looksLikeFiles(e)) showOverlay(true); });
+addEventListener('dragover', e=>{ e.preventDefault(); if(e.dataTransfer) e.dataTransfer.dropEffect='copy'; });
+addEventListener('dragleave', e=>{ dragDepth=Math.max(0,dragDepth-1); if(!dragDepth || !e.relatedTarget) { dragDepth=0; showOverlay(false); } });
+addEventListener('drop', async e=>{
+  e.preventDefault(); dragDepth=0; showOverlay(false);
+  const dt=e.dataTransfer; if(!dt) return;
+  let files=[...(dt.files||[])];
+  if(!files.length && dt.items) files=[...dt.items].filter(i=>i.kind==='file').map(i=>i.getAsFile()).filter(Boolean);
+  if(!files.length){
+    // An image dragged from another browser tab arrives as a URL, not a file
+    let url=(dt.getData('text/uri-list')||'').split('\n').find(l=>l && !l.startsWith('#'));
+    if(!url){ const m=(dt.getData('text/html')||'').match(/<img[^>]+src="([^"]+)"/i); if(m) url=m[1]; }
+    if(url){
+      try{ const b=await (await fetch(url.trim())).blob(); if(b.type.startsWith('image/')) files=[new File([b], url.split('/').pop().split('?')[0]||'image', {type:b.type})]; }
+      catch(err){ console.warn('Could not fetch dropped image (the site may block it). Save it and drop the file instead.', err); }
+    }
+  }
+  if(files.length) addFiles(files);
+});
+
+/* ===================== Boot ===================== */
+addEventListener('resize', ()=>{ fit(); drawPreview(); });
+document.addEventListener('fullscreenchange', fit);
+fit(); bindUI();
+(async()=>{
+  if(await DB.open()){
+    const recs=(await DB.all()).sort((a,b)=>(a.order??0)-(b.order??0));
+    for(const r of recs){
+      if(!r.blob) continue;
+      const url=URL.createObjectURL(r.blob);
+      cards.push({...r, url, style:r.style||'global'});
+    }
+    await Promise.all(cards.map(c=>loadImg(c.url).then(im=>im.decode?.()).catch(()=>{})));
+  }
+  renderCards(); showFinal(); renderList(); drawPreview();
+})();
+})();
+</script>
+</body>
+</html>
