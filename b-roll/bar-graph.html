@@ -29,15 +29,16 @@
   --zoom: 1;
   color-scheme: dark;
 }
-html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; }
+html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; }
 body { background: var(--bg); color: var(--fg); font-family: var(--mono); -webkit-font-smoothing: antialiased; }
 body.idle, body.idle * { cursor: none !important; }
 
-#viewport { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; touch-action: none; cursor: grab; }
+#viewport { position: fixed; inset: 0; overflow: hidden; touch-action: none; cursor: grab; }
+#stage { position: absolute; inset: 0; }
 #viewport.dragging { cursor: grabbing; }
 #artboard { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
 #gl { position: absolute; inset: 0; }
-#gl canvas { display: block; width: 1920px; height: 1080px; }
+#gl canvas { display: block; width: 100%; height: 100%; }
 
 /* per-letter animation units */
 .tw { display: inline-block; white-space: nowrap; }
@@ -51,22 +52,30 @@ body.idle, body.idle * { cursor: none !important; }
 .lab.tick { color: var(--muted); font-size: calc(16px * var(--zoom)); }
 .lab.callout { font-weight: 600; padding: 0.35em 0.65em; border-radius: 4px; transform-origin: 50% 100%; }
 .lab.callout.end { background: var(--accent); color: var(--on-accent); font-size: calc(22px * var(--zoom)); }
-.lab.callout.low { background: #15171c; color: var(--fg); border: 1px solid #3a3f4a; }
+.lab.callout.start { background: #15171c; color: var(--fg); border: 1px solid #3a3f4a; }
 .lab.callout small { font-weight: 400; opacity: 0.75; margin-left: 0.45em; font-size: 0.8em; }
 
 /* titles */
-#titles { position: absolute; left: 80px; top: 72px; width: 640px; display: grid; gap: 12px; pointer-events: none; transform-origin: 0 0; }
-.eyebrow { font-size: 17px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
-.headline { margin: 0; font-family: var(--display); font-stretch: 112%; font-weight: 800; font-size: 66px; line-height: 0.98; text-wrap: balance; }
+#titles { position: absolute; left: 80px; top: 72px; width: max-content; max-width: 1760px; display: grid; gap: 12px; pointer-events: none; transform-origin: 0 0; }
+.eyebrow { font-size: 17px; white-space: nowrap; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); }
+.headline { margin: 0; font-family: var(--display); font-stretch: 112%; font-weight: 800; font-size: 66px; line-height: 1.02; white-space: nowrap; }
 .counter { display: flex; align-items: baseline; gap: 18px; margin-top: 6px; }
 .counter .num { font-family: var(--display); font-stretch: 125%; font-weight: 900; font-size: 150px; line-height: 0.9; color: var(--accent); font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
 .counter .num .unit { font-size: 0.45em; margin-left: 0.08em; }
+.counter .num .unit.pre { font-size: 0.6em; margin: 0 0.04em 0 0; }
+.counter .num .unit.pre.code { font-size: 0.45em; margin-right: 0.22em; }
 .counter .when { font-size: 20px; color: var(--muted); }
-.delta { font-family: var(--display); font-weight: 700; font-size: 30px; text-wrap: balance; min-height: 1.2em; }
+.delta { font-family: var(--display); font-weight: 700; font-size: 30px; max-width: 900px; text-wrap: balance; min-height: 1.2em; }
 .delta .pct { color: var(--accent); display: inline-block; font-variant-numeric: tabular-nums; }
 
 /* source: deliberately prominent */
-#source { position: absolute; left: 80px; bottom: 56px; max-width: 1400px; display: flex; align-items: baseline; gap: 16px; pointer-events: none; transform-origin: 0 100%; }
+#source { position: absolute; left: 0; bottom: 0; width: max-content; max-width: 1400px; display: flex; align-items: baseline; gap: 16px; pointer-events: auto; z-index: 2; transform-origin: 0 100%; }
+
+/* in-place editing */
+.editable { pointer-events: auto; cursor: text; border-radius: 3px; }
+body:not(.panel-off):not(.idle) .editable:hover { outline: 1px dashed rgba(255, 255, 255, 0.4); outline-offset: 6px; }
+.editable.editing { outline: 2px solid var(--accent) !important; outline-offset: 6px; caret-color: var(--accent); }
+.editable.editing:focus-visible { outline: 2px solid var(--accent); }
 #source .tag { flex: none; font-weight: 600; font-size: 18px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--on-accent); background: var(--accent); padding: 4px 10px; border-radius: 3px; }
 #source .txt { font-size: 22px; line-height: 1.4; color: var(--fg); }
 #source .note { color: var(--muted); }
@@ -129,17 +138,19 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
 <body>
 
 <div id="viewport">
+ <div id="stage">
+  <div id="gl"></div>
+  <div id="labels" aria-hidden="true"></div>
   <div id="artboard">
-    <div id="gl"></div>
-    <div id="labels" aria-hidden="true"></div>
     <header id="titles">
       <div class="eyebrow" id="tEyebrow"></div>
       <h1 class="headline" id="tHeadline"></h1>
       <div class="counter" id="tCounter"><span class="num" id="num"></span><span class="when" id="when"></span></div>
       <div class="delta" id="delta"></div>
     </header>
-    <footer id="source"><span class="tag" id="srcTag">Source</span><span class="txt" id="srcText"></span></footer>
   </div>
+  <footer id="source"><span class="tag" id="srcTag">Source</span><span class="txt" id="srcText"></span></footer>
+ </div>
 </div>
 
 <aside id="panel" aria-label="Settings">
@@ -147,8 +158,10 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   <div id="sections"></div>
   <p class="hint">
     <kbd>S</kbd> settings · <kbd>R</kbd> restart · <kbd>Space</kbd> pause · <kbd>M</kbd> mute · <kbd>F</kbd> fullscreen<br>
+    Click the eyebrow, headline or source to edit it in place: <kbd>Enter</kbd> keeps it, <kbd>Esc</kbd> undoes it<br>
     While typing in a box, press <kbd>Esc</kbd> (or click the frame) before using shortcuts<br>
-    Drag: move the whole graphic · Scroll: resize it<br>
+    Drag: move the whole graphic · Scroll: resize it (the source stays fixed bottom-left)<br>
+    Scroll over the source: resize the source<br>
     <kbd>Alt</kbd>+drag / <kbd>Alt</kbd>+scroll: move / resize the chart only<br>
     <kbd>Shift</kbd>+drag or right-drag: rotate the chart
   </p>
@@ -186,18 +199,18 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     // chart inside the graphic
     cx: 0.15, cy: 0.13, csize: 0.78, yaw: -0.38, tilt: 0.2,
     // titles block
-    tx: 0, ty: 0, tscale: 1,
+    tx: 0, ty: 0, tscale: 1, eyebrowSize: 17, headSize: 66, headMax: 1100, srcScale: 1,
     // look
     bg: "black", accent: "#ffc15e", barLow: "#6e4a1c", barHigh: "#ffc15e",
-    showTitles: true, showCounter: true, showSource: true, showLine: true, showLow: true, showEnd: true, showShadows: true,
+    showTitles: true, showCounter: true, showSource: true, showLine: true, showStart: true, showEnd: true, showShadows: true,
     // sound
     sound: true, vol: 0.7, volLetters: 0.35, volEntry: 0.5, volGraph: 0.55, volChime: 0.5,
     // text
     eyebrow: "US software development job postings",
     headline: "Hiring is climbing back",
     unit: "", decimals: 1,
-    refMode: "low", deltaTpl: "{pct} since the {ref} low",
-    lowText: "Low", endText: "",
+    refPoint: "first", deltaTpl: "{pct} since {ref}",
+    startText: "Start", endText: "",
     labelEvery: 3,
     sourceTag: "Source",
     source: "Indeed Hiring Lab via FRED (series IHLIDXUSTPSOFTDEVE) · Monthly average, seasonally adjusted · Index: Feb 1, 2020 = 100",
@@ -208,9 +221,18 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     csv: DEFAULT_CSV
   };
 
+  // older versions measured change from the lowest value ("low"); carry their settings over to the generic "start" wording
+  function migrate(o) {
+    if (!o || typeof o !== "object") return o;
+    if (o.deltaTpl === "{pct} since the {ref} low") o.deltaTpl = DEFAULTS.deltaTpl;
+    if (!("refPoint" in o) && "refMode" in o) o.refPoint = o.refMode === "low" ? "first" : o.refMode;
+    if (!("showStart" in o) && "showLow" in o) o.showStart = o.showLow;
+    if (!("startText" in o) && "lowText" in o) o.startText = o.lowText === "Low" ? DEFAULTS.startText : o.lowText;
+    return o;
+  }
   var S = Object.assign({}, DEFAULTS);
   try {
-    var saved = JSON.parse(localStorage.getItem(STORE_KEY) || "null");
+    var saved = migrate(JSON.parse(localStorage.getItem(STORE_KEY) || "null"));
     if (saved && typeof saved === "object") Object.keys(DEFAULTS).forEach(function (k) { if (k in saved) S[k] = saved[k]; });
   } catch (e) {}
   var saveTimer = null;
@@ -472,12 +494,17 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   glEl.appendChild(renderer.domElement);
+  // the 1920x1080 design frame is scaled to fit the window; the 3D canvas always covers the whole window
+  var VW = 1920, VH = 1080, FIT = 1, OX = 0, OY = 0;
+  function measure() {
+    VW = Math.max(1, window.innerWidth); VH = Math.max(1, window.innerHeight);
+    FIT = Math.min(VW / ART_W, VH / ART_H);
+    OX = (VW - ART_W * FIT) / 2; OY = (VH - ART_H * FIT) / 2;
+  }
+  measure();
   function sizeRenderer() {
-    var pr = Math.min(3, (window.devicePixelRatio || 1) * Math.max(1, S.gscale));
-    renderer.setPixelRatio(pr);
-    renderer.setSize(ART_W, ART_H, false);
-    renderer.domElement.style.width = ART_W + "px";
-    renderer.domElement.style.height = ART_H + "px";
+    renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+    renderer.setSize(VW, VH, false);
   }
 
   var scene = new THREE.Scene();
@@ -536,8 +563,8 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   function mkLabel(cls) { var el = document.createElement("div"); el.className = "lab " + cls; labelsEl.appendChild(el); return el; }
 
   var bars = [], monthLabels = [], ticks = [];
-  var N = 0, SPACING = 1, X0 = 0, BAR_W = 0.64, VMIN = 0, VMAX = 1, LOW_I = 0, TUBE_R = 0.055;
-  var lowLabel = mkLabel("callout low"), endLabel = mkLabel("callout end");
+  var N = 0, SPACING = 1, X0 = 0, BAR_W = 0.64, VMIN = 0, VMAX = 1, LOW_I = 0, HIGH_I = 0, TUBE_R = 0.055;
+  var startLabel = mkLabel("callout start"), endLabel = mkLabel("callout end");
   var TX = {};   // text typers
 
   function buildBars() {
@@ -551,10 +578,10 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     TUBE_R = Math.max(0.025, Math.min(0.07, SPACING * 0.055));
     headDot.scale.setScalar(TUBE_R * 2.8);
     halo.userData.base = TUBE_R * 2.8;
-    VMIN = Infinity; VMAX = -Infinity; LOW_I = 0;
+    VMIN = Infinity; VMAX = -Infinity; LOW_I = 0; HIGH_I = 0;
     rows.forEach(function (r, i) {
       if (r.value < VMIN) { VMIN = r.value; LOW_I = i; }
-      if (r.value > VMAX) VMAX = r.value;
+      if (r.value > VMAX) { VMAX = r.value; HIGH_I = i; }
     });
     var cLow = new THREE.Color(S.barLow), cHigh = new THREE.Color(S.barHigh), cFoot = new THREE.Color(0x0d0904);
     rows.forEach(function (r, i) {
@@ -622,19 +649,74 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   }
   function fmtVal(v) { return fmtNum(v, Math.max(0, Math.min(4, Math.round(S.decimals) || 0))); }
 
+  /* value suffix: a currency ($, €, US$, R$, USD, eur…) goes in front of the number, anything else after it.
+     Text after the currency stays a suffix, so "$bn" reads "$77.1bn" and "USD m" reads "USD 77.1 m". */
+  var CUR_SYMBOLS = "$\u20ac\u00a3\u00a5\u20b9\u20a9\u20bd\u20ba\u20aa\u20ab\u0e3f\u20b1\u20a6\u20b4\u20b8\u20a1\u20b2\u20b5\u20ad\u20ae\u20bc\u20be\u00a2\u20bf";
+  var ISO = (function () {
+    var list = [];
+    try { if (Intl.supportedValuesOf) list = Intl.supportedValuesOf("currency"); } catch (e) {}
+    if (!list.length) list = "USD EUR GBP JPY CNY CHF CAD AUD NZD HKD SGD SEK NOK DKK PLN CZK HUF RON BGN TRY RUB UAH INR PKR BDT IDR MYR THB VND PHP KRW TWD ILS AED SAR QAR KWD EGP ZAR NGN KES GHS MAD BRL MXN ARS CLP COP PEN UYU".split(" ");
+    var set = {}; list.forEach(function (c) { set[c] = true; }); return set;
+  })();
+  function unitParts() {
+    var u = String(S.unit || "");
+    var t = u.replace(/^\s+/, "");
+    var m = new RegExp("^([A-Za-z]{0,3}[" + CUR_SYMBOLS + "])([\\s\\S]*)$").exec(t);
+    if (m) return { pre: m[1], post: m[2], code: false };
+    m = /^([A-Za-z]{3})(?![A-Za-z])([\s\S]*)$/.exec(t);
+    if (m && ISO[m[1].toUpperCase()]) return { pre: m[1], post: m[2], code: true };
+    return { pre: "", post: u, code: false };
+  }
+  // full value text for callouts, e.g. "$77.1bn", "USD 77.1", "77.1%", "−$5.0"
+  function fmtWithUnit(v) {
+    var u = unitParts(), num = fmtVal(Math.abs(v)), neg = v < 0 && Number(num.replace(/[^0-9.]/g, "")) !== 0;
+    return (neg ? "\u2212" : "") + (u.pre ? u.pre + (u.code ? " " : "") : "") + num + u.post;
+  }
+  // the counter's pieces: sign, small leading currency, number, small trailing suffix
+  function counterSegs(v) {
+    var u = unitParts(), num = fmtVal(Math.abs(v)), neg = v < 0 && Number(num.replace(/[^0-9.]/g, "")) !== 0;
+    var segs = [];
+    if (neg) segs.push({ text: "\u2212" });
+    if (u.pre) segs.push({ text: u.pre, wrap: "span", cls: "unit pre" + (u.code ? " code" : "") });
+    segs.push({ text: num });
+    if (u.post) segs.push({ text: u.post, wrap: "span", cls: "unit" });
+    return segs;
+  }
+
   /* ================= text + look ================= */
   var $ = function (id) { return document.getElementById(id); };
   function refIndex() {
-    if (S.refMode === "low") return LOW_I;
-    if (S.refMode === "first") return 0;
-    return -1;
+    // the bar the change line is measured from (and the start callout points at)
+    if (S.refPoint === "lowest") return LOW_I;
+    if (S.refPoint === "highest") return HIGH_I;
+    if (S.refPoint === "none") return -1;
+    return 0;
   }
   var pctSpan = null;
+  function startIndex() { var r = refIndex(); return r >= 0 ? r : 0; }
+  // the eyebrow and headline always stay on one line; if one is wider than the max width, its font shrinks to fit
+  function fitLine(el, base) {
+    var size = Math.max(8, Number(base) || 16);
+    el.style.fontSize = size + "px";
+    var w = el.scrollWidth, max = Math.max(100, Number(S.headMax) || 1100);
+    if (w > max) { size = Math.max(8, Math.floor(size * max / w)); el.style.fontSize = size + "px"; return size; }
+    return 0;
+  }
+  function fitHeadline() {
+    var e = fitLine($("tEyebrow"), S.eyebrowSize), h = fitLine($("tHeadline"), S.headSize);
+    var st = $("headStatus"); if (!st) return;
+    var msg = [];
+    if (e) msg.push("eyebrow to " + e + "px");
+    if (h) msg.push("headline to " + h + "px");
+    st.textContent = msg.length ? "Shrunk " + msg.join(" and ") + " to stay on one line within " + S.headMax + "px." : "Eyebrow and headline each stay on one line.";
+    st.className = msg.length ? "status warn" : "status";
+  }
   function applyText() {
     var eb = $("tEyebrow"), hl = $("tHeadline");
     eb.textContent = ""; hl.textContent = "";
     TX.eyebrow = new Typer(eb, [{ text: S.eyebrow }], TY.eyebrow); eb.hidden = !S.eyebrow;
     TX.headline = new Typer(hl, [{ text: S.headline }], TY.headline); hl.hidden = !S.headline;
+    fitHeadline();
     $("titles").hidden = !S.showTitles;
     $("tCounter").hidden = !S.showCounter;
     $("source").hidden = !S.showSource;
@@ -655,11 +737,11 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     });
     TX.delta = new Typer(dl, segs, TY.delta);
     // callouts
-    var lr = rows[LOW_I], er = rows[N - 1];
-    lowLabel.textContent = "";
-    TX.low = new Typer(lowLabel, [{ text: ((S.lowText ? S.lowText + " " : "") + fmtVal(lr.value)).trim() }, { text: lr.short, wrap: "small" }], TY.callout);
+    var lr = rows[startIndex()], er = rows[N - 1];
+    startLabel.textContent = "";
+    TX.start = new Typer(startLabel, [{ text: ((S.startText ? S.startText + " " : "") + fmtWithUnit(lr.value)).trim() }, { text: lr.short, wrap: "small" }], TY.callout);
     endLabel.textContent = "";
-    TX.end = new Typer(endLabel, [{ text: ((S.endText ? S.endText + " " : "") + fmtVal(er.value) + (S.unit || "")).trim() }, { text: er.short, wrap: "small" }], TY.callout);
+    TX.end = new Typer(endLabel, [{ text: ((S.endText ? S.endText + " " : "") + fmtWithUnit(er.value)).trim() }, { text: er.short, wrap: "small" }], TY.callout);
     numMode = null; whenMode = null; lastIdx = -1;
   }
   function applyLook() {
@@ -680,13 +762,20 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     scene.traverse(function (o) { if (o.material) o.material.needsUpdate = true; });
   }
   function applyLayout() {
-    $("artboard").style.transform = "translate(" + S.gx + "px," + S.gy + "px) scale(" + S.gscale + ")";
+    var sc = FIT * S.gscale, L = OX + FIT * S.gx, T = OY + FIT * S.gy, aw = ART_W * sc, ah = ART_H * sc;
+    $("artboard").style.transform = "translate(" + L.toFixed(2) + "px," + T.toFixed(2) + "px) scale(" + sc.toFixed(5) + ")";
     $("titles").style.transform = "translate(" + S.tx + "px," + S.ty + "px) scale(" + S.tscale + ")";
+    $("source").style.transform = "translate(" + (80 * FIT).toFixed(2) + "px," + (-56 * FIT).toFixed(2) + "px) scale(" + (FIT * (Number(S.srcScale) || 1)).toFixed(5) + ")";
+    // a bigger source wraps onto more lines instead of running off the right edge
+    $("source").style.maxWidth = Math.min(1400, (VW / FIT - 160) / (Number(S.srcScale) || 1)).toFixed(0) + "px";
+    // the camera frames the (moved/scaled) artboard, but renders the full window so nothing is ever cut off
+    camera.aspect = ART_W / ART_H;
     camera.zoom = S.csize;
-    camera.setViewOffset(ART_W, ART_H, -S.cx * ART_W, -S.cy * ART_H, ART_W, ART_H);
+    camera.setViewOffset(aw, ah, -L - S.cx * aw, -T - S.cy * ah, VW, VH);
     camera.updateProjectionMatrix();
-    document.documentElement.style.setProperty("--zoom", Math.max(0.5, Math.min(2, S.csize / 0.78)).toFixed(3));
+    document.documentElement.style.setProperty("--zoom", (Math.max(0.5, Math.min(2, S.csize / 0.78)) * sc).toFixed(4));
   }
+  window.addEventListener("resize", function () { measure(); sizeRenderer(); applyLayout(); });
   var prScaleTimer = null;
   function scheduleRendererResize() { clearTimeout(prScaleTimer); prScaleTimer = setTimeout(sizeRenderer, 150); }
 
@@ -712,7 +801,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
       B: B, ST: ST, INTRO: INTRO, riseEnd: riseEnd, rise: rise,
       total: riseEnd + Math.max(0, S.hold) + EXIT,
       tEyebrow: B, tHead: B + 0.18, tChart: B + 0.3, tGrid: B + 0.55, tCounter: B + 0.7, tMonth: B + 0.85, tSource: B + 0.95,
-      tLow: INTRO + LOW_I * ST + GROW, tEnd: INTRO + (N - 1) * ST + GROW * 0.85
+      tStart: INTRO + startIndex() * ST + GROW, tEnd: INTRO + (N - 1) * ST + GROW * 0.85
     };
   }
   var tt = 0, prevTT = -1e-6, playing = true, clock = 0;
@@ -722,7 +811,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   var tmp = new THREE.Vector3();
   function place(el, x, y, z, ax, ay, extra) {
     tmp.set(x, y, z).applyMatrix4(chart.matrixWorld).project(camera);
-    var sx = (tmp.x + 1) / 2 * ART_W, sy = (1 - tmp.y) / 2 * ART_H;
+    var sx = (tmp.x + 1) / 2 * VW, sy = (1 - tmp.y) / 2 * VH;
     el.style.transform = "translate(" + sx.toFixed(1) + "px," + sy.toFixed(1) + "px) translate(" + ax + "%," + ay + "%)" + (extra || "");
     el.style.visibility = tmp.z < 1 ? "visible" : "hidden";
   }
@@ -759,7 +848,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     // exit + blank lead-in
     var exitP = S.loop && tt > TL.total - EXIT ? clamp01((tt - (TL.total - EXIT)) / EXIT) : 0;
     var drop = 1 - easeInOut(exitP);
-    $("artboard").style.opacity = tt < TL.B ? 0 : drop.toFixed(3);
+    $("stage").style.opacity = tt < TL.B ? 0 : drop.toFixed(3);
 
     // stage: floor, wall, edges
     var chartIn = easeOut(clamp01((tt - TL.tChart) / 0.7));
@@ -853,11 +942,11 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
       typer.t0 = t0 + 0.04;
       return show ? typer.update(tt) : 0;
     }
-    var lowShow = S.showLow && LOW_I !== N - 1;
-    var lcp = clamp01((tt - TL.tLow) / 0.35);
-    place(lowLabel, X0 + LOW_I * SPACING, bars[LOW_I].h + 1.0, 0, -50, -100, " scale(" + (0.82 + 0.18 * easeOutBack(lcp)).toFixed(3) + ")");
-    letters += callout(lowLabel, TX.low, lowShow, TL.tLow);
-    if (lowShow && crossed(TL.tLow)) Sound.pop();
+    var si = startIndex(), startShow = S.showStart && si !== N - 1;
+    var lcp = clamp01((tt - TL.tStart) / 0.35);
+    place(startLabel, X0 + si * SPACING, bars[si].h + 1.0, 0, -50, -100, " scale(" + (0.82 + 0.18 * easeOutBack(lcp)).toFixed(3) + ")");
+    letters += callout(startLabel, TX.start, startShow, TL.tStart);
+    if (startShow && crossed(TL.tStart)) Sound.pop();
     var ecp = clamp01((tt - TL.tEnd) / 0.35);
     place(endLabel, X0 + (N - 1) * SPACING, bars[N - 1].h + 0.75, 0, -50, -100, " scale(" + (0.82 + 0.18 * easeOutBack(ecp)).toFixed(3) + ")");
     letters += callout(endLabel, TX.end, S.showEnd, TL.tEnd);
@@ -879,9 +968,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     if (!entryDone) {
       if (numMode !== "typer") {
         numEl.textContent = "";
-        var segs = [{ text: fmtVal(rows[0].value) }];
-        if (S.unit) segs.push({ text: S.unit, wrap: "span", cls: "unit" });
-        numTyper = new Typer(numEl, segs, TY.num);
+        numTyper = new Typer(numEl, counterSegs(rows[0].value), TY.num);
         whenEl.textContent = "";
         whenTyper = new Typer(whenEl, [{ text: rows[0].long }], TY.when);
         numMode = "typer"; lastNum = null; lastIdx = 0;
@@ -891,7 +978,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
       shownVal = rows[0].value;
     } else {
       numMode = "plain";
-      numText(fmtVal(shownVal));
+      numText(shownVal);
       if (idx !== lastIdx) { whenEl.textContent = rows[idx].long; lastIdx = idx; }
     }
 
@@ -922,12 +1009,16 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     renderer.render(scene, camera);
     requestAnimationFrame(frame);
   }
-  function numText(t) {
-    var full = t + "|" + S.unit;
+  function numText(v) {
+    var segs = counterSegs(v);
+    var full = JSON.stringify(segs);
     if (full === lastNum) return;
     lastNum = full;
-    numEl.textContent = t;
-    if (S.unit) { var u = document.createElement("span"); u.className = "unit"; u.textContent = S.unit; numEl.appendChild(u); }
+    numEl.textContent = "";
+    segs.forEach(function (sg) {
+      if (!sg.wrap) { numEl.appendChild(document.createTextNode(sg.text)); return; }
+      var sp = document.createElement(sg.wrap); sp.className = sg.cls; sp.textContent = sg.text; numEl.appendChild(sp);
+    });
   }
 
   /* ================= settings panel ================= */
@@ -981,13 +1072,18 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
       { key: "tilt", type: "range", label: "Tilt", min: 0, max: 1.2, step: 0.01, fmt: deg },
       { type: "checks", items: [
         { key: "showLine", label: "Trend line" }, { key: "showShadows", label: "Shadows", kind: "look" },
-        { key: "showLow", label: "Low callout" }, { key: "showEnd", label: "End callout" }
+        { key: "showStart", label: "Start callout" }, { key: "showEnd", label: "End callout" }
       ] }
     ] },
     { title: "Titles block", items: [
       { key: "tx", type: "range", label: "Move X", min: -400, max: 1600, step: 1, fmt: px, kind: "layout" },
       { key: "ty", type: "range", label: "Move Y", min: -200, max: 900, step: 1, fmt: px, kind: "layout" },
       { key: "tscale", type: "range", label: "Scale", min: 0.3, max: 2, step: 0.01, fmt: pctF, kind: "layout" },
+      { key: "eyebrowSize", type: "range", label: "Eyebrow size", min: 10, max: 60, step: 1, fmt: px, kind: "head" },
+      { key: "headSize", type: "range", label: "Headline size", min: 24, max: 160, step: 1, fmt: px, kind: "head" },
+      { key: "headMax", type: "range", label: "Max line width", min: 300, max: 1760, step: 10, fmt: px, kind: "head" },
+      { type: "status", id: "headStatus" },
+      { key: "srcScale", type: "range", label: "Source size", min: 0.4, max: 2.5, step: 0.01, fmt: pctF, kind: "layout" },
       { type: "checks", items: [
         { key: "showTitles", label: "Titles", kind: "text" }, { key: "showCounter", label: "Counter", kind: "text" },
         { key: "showSource", label: "Source", kind: "text" }, { key: "axisNote", label: "Axis note", kind: "text" }
@@ -1002,11 +1098,11 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     { title: "Labels", items: [
       { key: "eyebrow", type: "text", label: "Eyebrow", kind: "text" },
       { key: "headline", type: "text", label: "Headline", kind: "text" },
-      { key: "deltaTpl", type: "text", label: "Change line — {pct} = change, {ref} = reference label", kind: "text" },
-      { key: "refMode", type: "select", label: "Change vs", options: [["low", "Lowest value"], ["first", "First value"], ["none", "Hide change line"]], kind: "text" },
-      { key: "unit", type: "text", label: "Value suffix (e.g. %, k)", kind: "text" },
+      { key: "deltaTpl", type: "text", label: "Change line \u2014 {pct} = change, {ref} = the start point\u2019s date or label", kind: "text" },
+      { key: "refPoint", type: "select", label: "Start point", options: [["first", "First value"], ["lowest", "Lowest value"], ["highest", "Highest value"], ["none", "None (hide change line)"]], kind: "start" },
+      { key: "unit", type: "text", label: "Value unit (e.g. %, k, $, \u20ac, USD) \u2014 currencies go in front", kind: "text" },
       { key: "decimals", type: "number", label: "Decimals", min: 0, max: 4, step: 1, kind: "text" },
-      { key: "lowText", type: "text", label: "Low callout prefix", kind: "text" },
+      { key: "startText", type: "text", label: "Start callout prefix", kind: "text" },
       { key: "endText", type: "text", label: "End callout prefix", kind: "text" },
       { key: "labelEvery", type: "number", label: "Label every N bars", min: 1, max: 100, step: 1, kind: "months" },
       { key: "sourceTag", type: "text", label: "Source tag", kind: "text" },
@@ -1145,6 +1241,8 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
       case "look": applyLook(); break;
       case "bars": clearTimeout(dataTimer); dataTimer = setTimeout(function () { buildBars(); applyLook(); }, 120); break;
       case "text": applyText(); break;
+      case "head": fitHeadline(); break;
+      case "start": applyText(); deltaT0 = null; break;
       case "months": buildMonthLabels(); break;
       case "axis": buildTicks(); applyText(); break;
       case "data": clearTimeout(dataTimer); dataTimer = setTimeout(function () { setData(S.csv, false); }, 350); break;
@@ -1221,7 +1319,7 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     var r = new FileReader();
     r.onload = function () {
       try {
-        var obj = JSON.parse(String(r.result));
+        var obj = migrate(JSON.parse(String(r.result)));
         Object.keys(DEFAULTS).forEach(function (k) { if (k in obj) S[k] = obj[k]; });
         save(); setData(S.csv, false); buildTicks(); applyLayout(); sizeRenderer(); applyLook(); applyText(); Sound.levels(); syncPanel();
         $("presetStatus").textContent = "Loaded " + f.name + ".";
@@ -1229,6 +1327,48 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
     };
     r.readAsText(f);
     e.target.value = "";
+  });
+
+  /* ================= in-place text editing =================
+     Click the eyebrow, headline, source tag or source text to type straight into it.
+     Enter or clicking elsewhere keeps the change, Esc undoes it. */
+  var EDITABLE = { tEyebrow: "eyebrow", tHeadline: "headline", srcTag: "sourceTag", srcText: "source" };
+  var editing = null;
+  function startEdit(el, x, y) {
+    if (editing || !EDITABLE[el.id]) return;
+    var key = EDITABLE[el.id];
+    editing = { el: el, key: key, orig: S[key] };
+    el.textContent = S[key];
+    try { el.contentEditable = "plaintext-only"; } catch (err) { el.contentEditable = "true"; }
+    if (el.contentEditable !== "plaintext-only") el.contentEditable = "true";
+    el.spellcheck = false;
+    el.classList.add("editing");
+    el.focus({ preventScroll: true });
+    var sel = window.getSelection(), r = document.caretRangeFromPoint ? document.caretRangeFromPoint(x, y) : null;
+    if (!r || !el.contains(r.startContainer)) { r = document.createRange(); r.selectNodeContents(el); r.collapse(false); }
+    sel.removeAllRanges(); sel.addRange(r);
+  }
+  function editText(el) { return String(el.textContent || "").replace(/\s*\n\s*/g, " "); }
+  function finishEdit(commit) {
+    if (!editing) return;
+    var e = editing; editing = null;
+    S[e.key] = commit ? editText(e.el).trim() : e.orig;
+    e.el.removeAttribute("contenteditable");
+    e.el.classList.remove("editing");
+    if (document.activeElement === e.el) e.el.blur();
+    save(); applyText(); syncPanel();
+  }
+  Object.keys(EDITABLE).forEach(function (id) {
+    var el = $(id);
+    el.classList.add("editable");
+    el.title = "Click to edit";
+    el.addEventListener("input", function () {
+      if (!editing || editing.el !== el) return;
+      S[editing.key] = editText(el);
+      if (id === "tEyebrow" || id === "tHeadline") fitHeadline();
+      syncPanel(); save();
+    });
+    el.addEventListener("blur", function () { if (editing && editing.el === el) finishEdit(true); });
   });
 
   /* ================= keyboard + pointer ================= */
@@ -1246,6 +1386,11 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   window.addEventListener("pointerdown", function () { Sound.unlock(); }, true);
   window.addEventListener("keydown", function (e) {
     Sound.unlock();
+    if (editing) {
+      if (e.key === "Escape") { e.preventDefault(); finishEdit(false); }
+      else if (e.key === "Enter") { e.preventDefault(); finishEdit(true); }
+      return;
+    }
     if (e.key === "Escape" && document.activeElement && document.activeElement !== document.body) { document.activeElement.blur(); return; }
     if (typing(e.target) || e.metaKey || e.ctrlKey) return;
     var k = e.key.toLowerCase();
@@ -1266,42 +1411,54 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   var vp = $("viewport"), drag = null;
   vp.addEventListener("contextmenu", function (e) { e.preventDefault(); });
   vp.addEventListener("pointerdown", function (e) {
+    if (editing && editing.el.contains(e.target)) return;   // let the caret move inside the text being edited
     if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur();
     vp.setPointerCapture(e.pointerId);
-    drag = { x: e.clientX, y: e.clientY, mode: (e.button === 2 || e.shiftKey) ? "rotate" : e.altKey ? "chart" : "graphic" };
+    var ed = e.button === 0 && !e.shiftKey && !e.altKey && e.target.closest ? e.target.closest(".editable") : null;
+    drag = { x: e.clientX, y: e.clientY, moved: 0, edit: ed, mode: (e.button === 2 || e.shiftKey) ? "rotate" : e.altKey ? "chart" : "graphic" };
     vp.classList.add("dragging");
     e.preventDefault();
   });
   vp.addEventListener("pointermove", function (e) {
     if (!drag) return;
     var dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+    drag.moved += Math.abs(dx) + Math.abs(dy);
+    if (drag.edit && drag.moved < 5) return;   // could still be a click to edit
+    drag.edit = null;
     drag.x = e.clientX; drag.y = e.clientY;
     if (drag.mode === "rotate") {
       S.yaw = Math.min(1.4, Math.max(-1.4, S.yaw - dx * 0.005));
       S.tilt = Math.min(1.2, Math.max(0, S.tilt + dy * 0.004));
     } else if (drag.mode === "chart") {
-      S.cx = Math.min(0.8, Math.max(-0.8, S.cx + dx / (ART_W * S.gscale)));
-      S.cy = Math.min(0.8, Math.max(-0.8, S.cy + dy / (ART_H * S.gscale)));
+      S.cx = Math.min(0.8, Math.max(-0.8, S.cx + dx / (ART_W * FIT * S.gscale)));
+      S.cy = Math.min(0.8, Math.max(-0.8, S.cy + dy / (ART_H * FIT * S.gscale)));
       applyLayout();
     } else {
-      S.gx = Math.round(Math.min(1920, Math.max(-1920, S.gx + dx)));
-      S.gy = Math.round(Math.min(1080, Math.max(-1080, S.gy + dy)));
+      S.gx = Math.round(Math.min(1920, Math.max(-1920, S.gx + dx / FIT)));
+      S.gy = Math.round(Math.min(1080, Math.max(-1080, S.gy + dy / FIT)));
       applyLayout();
     }
     syncPanel(); save();
   });
-  function endDrag() { drag = null; vp.classList.remove("dragging"); }
+  function endDrag(e) {
+    var d = drag; drag = null; vp.classList.remove("dragging");
+    if (d && d.edit && e && e.type === "pointerup") startEdit(d.edit, e.clientX, e.clientY);
+  }
   vp.addEventListener("pointerup", endDrag);
   vp.addEventListener("pointercancel", endDrag);
   vp.addEventListener("wheel", function (e) {
     e.preventDefault();
     var f = Math.exp(-e.deltaY * 0.0012);
-    if (e.altKey) {
+    if (e.target.closest && e.target.closest("#source")) {
+      // scrolling over the source resizes only the source; it stays pinned bottom-left
+      S.srcScale = +Math.min(2.5, Math.max(0.4, (Number(S.srcScale) || 1) * f)).toFixed(3);
+    } else if (e.altKey) {
       S.csize = Math.min(3, Math.max(0.2, S.csize * f));
     } else {
       var ns = Math.min(2.5, Math.max(0.2, S.gscale * f));
-      S.gx = Math.round(e.clientX - (e.clientX - S.gx) * (ns / S.gscale));
-      S.gy = Math.round(e.clientY - (e.clientY - S.gy) * (ns / S.gscale));
+      var px0 = (e.clientX - OX) / FIT, py0 = (e.clientY - OY) / FIT;
+      S.gx = Math.round(px0 - (px0 - S.gx) * (ns / S.gscale));
+      S.gy = Math.round(py0 - (py0 - S.gy) * (ns / S.gscale));
       S.gscale = ns;
       scheduleRendererResize();
     }
@@ -1319,8 +1476,8 @@ kbd { font-family: var(--mono); color: var(--fg); border: 1px solid var(--panel-
   syncPanel();
   $("dataStatus").textContent = rows.length + " rows loaded: " + rows[0].long + " to " + rows[rows.length - 1].long + ".";
   shownVal = rows[0].value;
-  $("artboard").style.opacity = 0;
-  function start() { prev = performance.now(); restart(); requestAnimationFrame(frame); }
+  $("stage").style.opacity = 0;
+  function start() { fitHeadline(); prev = performance.now(); restart(); requestAnimationFrame(frame); }
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(start, start); else start();
 })();
 </script>

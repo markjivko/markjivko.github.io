@@ -1,0 +1,3179 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="color-scheme" content="dark" />
+        <title>AI Training Data</title>
+        <meta
+            name="description"
+            content="Every event and ongoing flow behind the AI training-data model, Jun 2018 – Oct 2026, with its evidence level and source link." />
+        <style>
+            :root {
+                --page: #0d0d0d;
+                --surface: #1a1a19;
+                --sunk: #141413;
+                --ink: #f0efec;
+                --ink2: #c3c2b7;
+                --muted: #898781;
+                --grid: #2c2c2a;
+                --axis: #383835;
+                --border: #2c2c2a;
+                --exp: #d95926;
+                --scurve: #199e70;
+                --link: #6da7ec;
+                --focus: #3987e5;
+                --ev-hypothesis: #184f95;
+                --ev-assumption: #256abf;
+                --ev-alleged: #3987e5;
+                --ev-reported: #6da7ec;
+                --ev-confirmed: #9ec5f4;
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                -webkit-text-size-adjust: 100%;
+                color-scheme: dark;
+            }
+            body {
+                margin: 0;
+                background: var(--page);
+                color: var(--ink);
+                font:
+                    15px/1.55 system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    "Helvetica Neue",
+                    sans-serif;
+                font-variant-numeric: tabular-nums;
+            }
+            a {
+                color: var(--link);
+                text-underline-offset: 2px;
+            }
+            .wrap {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 0 16px;
+            }
+            h1 {
+                font-size: clamp(30px, 5.2vw, 52px);
+                line-height: 1.05;
+                margin: 40px 0 24px;
+                letter-spacing: -0.02em;
+                font-weight: 750;
+            }
+            h1 .e {
+                color: var(--exp);
+            }
+            h1 .s {
+                color: var(--scurve);
+            }
+            h2 {
+                font-size: 22px;
+                line-height: 1.2;
+                margin: 0 0 6px;
+                letter-spacing: -0.01em;
+            }
+            .sub {
+                color: var(--ink2);
+                margin: 0 0 16px;
+                max-width: 800px;
+            }
+            .card {
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 20px;
+                margin: 0 0 40px;
+            }
+            .chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                border: 1px solid var(--border);
+                background: var(--surface);
+                color: var(--ink);
+                border-radius: 999px;
+                padding: 4px 10px;
+                font: inherit;
+                font-size: 13px;
+                cursor: pointer;
+            }
+            .chip[aria-pressed="false"] {
+                color: var(--muted);
+                background: transparent;
+                text-decoration: line-through;
+                text-decoration-color: var(--axis);
+            }
+            .chip[aria-pressed="false"] .sw {
+                opacity: 0.3;
+            }
+            .sw {
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+                display: inline-block;
+                flex: none;
+            }
+            .btn {
+                border: 1px solid var(--border);
+                background: var(--surface);
+                color: var(--ink);
+                border-radius: 9px;
+                padding: 6px 12px;
+                font: inherit;
+                font-size: 13px;
+                cursor: pointer;
+            }
+            .btn:hover {
+                border-color: var(--axis);
+            }
+            button:focus-visible,
+            input:focus-visible,
+            select:focus-visible,
+            a:focus-visible,
+            [tabindex]:focus-visible {
+                outline: 2px solid var(--focus);
+                outline-offset: 2px;
+            }
+            select,
+            input[type="search"] {
+                font: inherit;
+                font-size: 13.5px;
+                color: var(--ink);
+                background: var(--surface);
+                border: 1px solid var(--border);
+                border-radius: 9px;
+                padding: 6px 9px;
+                max-width: 100%;
+            }
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 5px;
+                font-size: 12px;
+                font-weight: 600;
+                border: 1px solid var(--border);
+                border-radius: 999px;
+                padding: 1px 8px 1px 6px;
+                white-space: nowrap;
+                background: var(--surface);
+                color: var(--ink);
+            }
+            .badge i {
+                font-style: normal;
+                width: 16px;
+                height: 16px;
+                border-radius: 50%;
+                display: inline-grid;
+                place-items: center;
+                font-size: 10px;
+                font-weight: 800;
+                color: #0b0b0b;
+            }
+            .badge.lvl-hypothesis i,
+            .badge.lvl-assumption i {
+                color: #fff;
+            }
+            .evbars {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr);
+                gap: 12px;
+                margin: 6px 0 16px;
+            }
+            .evbar .bl {
+                font-size: 13px;
+                color: var(--ink2);
+                margin-bottom: 4px;
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+            }
+            .evbar .bar {
+                display: flex;
+                height: 26px;
+                border-radius: 6px;
+                overflow: hidden;
+                gap: 2px;
+            }
+            .evbar .bar div {
+                min-width: 2px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 11.5px;
+                font-weight: 650;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            .evdefs {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+                gap: 10px;
+                margin: 0 0 18px;
+            }
+            .evdefs div {
+                font-size: 13px;
+                color: var(--ink2);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 9px 10px;
+                background: var(--sunk);
+            }
+            .evdefs .badge {
+                margin-bottom: 4px;
+            }
+            .filters {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 10px;
+                align-items: center;
+                padding: 12px;
+                background: var(--sunk);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                margin: 0 0 10px;
+            }
+            .filters input[type="search"] {
+                flex: 1;
+                min-width: 200px;
+            }
+            .rescount {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                gap: 10px;
+                flex-wrap: wrap;
+                margin: 6px 0 8px;
+                font-size: 13.5px;
+                color: var(--ink2);
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+            }
+            .src-table th {
+                text-align: left;
+                font-size: 12px;
+                font-weight: 650;
+                color: var(--ink2);
+                border-bottom: 1px solid var(--axis);
+                padding: 8px;
+                white-space: nowrap;
+                position: sticky;
+                top: 0;
+                background: var(--surface);
+                z-index: 1;
+            }
+            .src-table th.r {
+                text-align: right;
+            }
+            .src-table th button {
+                all: unset;
+                cursor: pointer;
+            }
+            .src-table th button:focus-visible {
+                outline: 2px solid var(--focus);
+            }
+            .src-table td {
+                border-bottom: 1px solid var(--grid);
+                padding: 9px 8px;
+                vertical-align: top;
+                font-size: 13.5px;
+            }
+            .src-table td.r {
+                text-align: right;
+                white-space: nowrap;
+            }
+            .src-table .what {
+                font-weight: 550;
+            }
+            .src-table .st {
+                font-size: 12px;
+                color: var(--muted);
+                margin-top: 3px;
+            }
+            .src-table tr.main {
+                cursor: pointer;
+            }
+            .src-table tr.main:hover td {
+                background: var(--sunk);
+            }
+            .src-table tr.det td {
+                background: var(--sunk);
+                font-size: 13px;
+                color: var(--ink2);
+            }
+            .tscroll {
+                max-height: 760px;
+                overflow: auto;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+            }
+            @media (max-width: 720px) {
+                .src-table thead {
+                    display: none;
+                }
+                .src-table tr.main {
+                    display: grid;
+                    grid-template-columns: 1fr auto;
+                    gap: 2px 10px;
+                    padding: 10px;
+                    border-bottom: 1px solid var(--grid);
+                }
+                .src-table tr.main td {
+                    border: 0;
+                    padding: 0;
+                }
+                .src-table tr.main td.c-when {
+                    grid-column: 1/3;
+                    font-size: 12px;
+                    color: var(--muted);
+                }
+                .src-table tr.main td.c-what {
+                    grid-column: 1/3;
+                }
+                .src-table tr.det {
+                    display: block;
+                }
+                .src-table tr.det td {
+                    display: block;
+                }
+            }
+            .toast {
+                position: fixed;
+                left: 50%;
+                bottom: 24px;
+                transform: translateX(-50%);
+                background: var(--ink);
+                color: var(--page);
+                padding: 8px 14px;
+                border-radius: 9px;
+                font-size: 13.5px;
+                display: none;
+                z-index: 50;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <h1>An incomplete history of <span class="e">theft</span> for <span class="s">LLM training</span>.</h1>
+
+            <section class="card" id="sources" aria-labelledby="h-src">
+                <div class="filters" role="search">
+                    <input type="search" id="q" placeholder="Search actor, event, source…" aria-label="Search sources" />
+                    <span id="evfilter" style="display: inline-flex; gap: 6px; flex-wrap: wrap"></span>
+                    <select id="f-actor" aria-label="Actor"></select>
+                    <select id="f-group" aria-label="Data type"></select>
+                    <select id="f-kind" aria-label="Kind">
+                        <option value="">All kinds</option>
+                        <option value="event">One-off events</option>
+                        <option value="spread">Spread over months</option>
+                        <option value="flow">Ongoing flows</option>
+                        <option value="backfill">Backfills (past crawls)</option>
+                    </select>
+                </div>
+                <div class="rescount">
+                    <span id="rescount"></span
+                    ><span style="display: flex; gap: 8px; flex-wrap: wrap"
+                        ><button class="btn" id="copylinks">Copy links (date · title: url)</button
+                        ><button class="btn" id="dlsrc">Download CSV</button></span
+                    >
+                </div>
+                <div class="tscroll">
+                    <table class="src-table" id="src-table">
+                        <thead>
+                            <tr>
+                                <th><button data-sort="first">When</button></th>
+                                <th><button data-sort="actor">Who</button></th>
+                                <th>What entered</th>
+                                <th>Evidence</th>
+                                <th class="r"><button data-sort="tb">Raw TB</button></th>
+                                <th class="r"><button data-sort="utb">Useful TB</button></th>
+                                <th>Source</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+        <div class="toast" id="toast" role="status"></div>
+        <script>
+            const D = {
+                months: [
+                    "2018-06",
+                    "2018-07",
+                    "2018-08",
+                    "2018-09",
+                    "2018-10",
+                    "2018-11",
+                    "2018-12",
+                    "2019-01",
+                    "2019-02",
+                    "2019-03",
+                    "2019-04",
+                    "2019-05",
+                    "2019-06",
+                    "2019-07",
+                    "2019-08",
+                    "2019-09",
+                    "2019-10",
+                    "2019-11",
+                    "2019-12",
+                    "2020-01",
+                    "2020-02",
+                    "2020-03",
+                    "2020-04",
+                    "2020-05",
+                    "2020-06",
+                    "2020-07",
+                    "2020-08",
+                    "2020-09",
+                    "2020-10",
+                    "2020-11",
+                    "2020-12",
+                    "2021-01",
+                    "2021-02",
+                    "2021-03",
+                    "2021-04",
+                    "2021-05",
+                    "2021-06",
+                    "2021-07",
+                    "2021-08",
+                    "2021-09",
+                    "2021-10",
+                    "2021-11",
+                    "2021-12",
+                    "2022-01",
+                    "2022-02",
+                    "2022-03",
+                    "2022-04",
+                    "2022-05",
+                    "2022-06",
+                    "2022-07",
+                    "2022-08",
+                    "2022-09",
+                    "2022-10",
+                    "2022-11",
+                    "2022-12",
+                    "2023-01",
+                    "2023-02",
+                    "2023-03",
+                    "2023-04",
+                    "2023-05",
+                    "2023-06",
+                    "2023-07",
+                    "2023-08",
+                    "2023-09",
+                    "2023-10",
+                    "2023-11",
+                    "2023-12",
+                    "2024-01",
+                    "2024-02",
+                    "2024-03",
+                    "2024-04",
+                    "2024-05",
+                    "2024-06",
+                    "2024-07",
+                    "2024-08",
+                    "2024-09",
+                    "2024-10",
+                    "2024-11",
+                    "2024-12",
+                    "2025-01",
+                    "2025-02",
+                    "2025-03",
+                    "2025-04",
+                    "2025-05",
+                    "2025-06",
+                    "2025-07",
+                    "2025-08",
+                    "2025-09",
+                    "2025-10",
+                    "2025-11",
+                    "2025-12",
+                    "2026-01",
+                    "2026-02",
+                    "2026-03",
+                    "2026-04",
+                    "2026-05",
+                    "2026-06",
+                    "2026-07",
+                    "2026-08",
+                    "2026-09",
+                    "2026-10"
+                ],
+                groups: [
+                    "Web pages",
+                    "Books & papers",
+                    "Public code",
+                    "Video & audio",
+                    "Images",
+                    "Social & licensed text",
+                    "AI-assistant user data",
+                    "Machine-made data"
+                ],
+                categories: [
+                    {
+                        name: "Web crawl, new snapshots",
+                        useful: 0.002,
+                        why: "Raw HTML. FineWeb keeps ~44 TB of text from ~30,000 TB of raw crawls (~0.15%) after stripping markup, dedup and quality filters.",
+                        llm: [0, 0, 0, 0, 0.01, 0.08, 0.18, 0.28, 0.33],
+                        group: 0,
+                        pool: 0
+                    },
+                    {
+                        name: "Web crawl, backfill",
+                        useful: 0.002,
+                        why: "Same as above; older snapshots, so less LLM text.",
+                        llm: [0, 0, 0, 0, 0, 0.02, 0.05, 0.09, 0.12],
+                        group: 0,
+                        pool: 0
+                    },
+                    {
+                        name: "Curated web text",
+                        useful: 0.6,
+                        why: "Already cleaned text (WebText, The Pile, Wikipedia). Long, edited articles score high.",
+                        llm: [0, 0, 0, 0, 0, 0.03, 0.08, 0.12, 0.15],
+                        group: 0,
+                        pool: 0
+                    },
+                    {
+                        name: "Ebook files (pirated)",
+                        useful: 0.2,
+                        why: "EPUB/PDF files: text is ~1/5 of the bytes; long, edited, high-quality prose.",
+                        llm: [0, 0, 0, 0, 0, 0.01, 0.02, 0.03, 0.04],
+                        group: 1,
+                        pool: 1
+                    },
+                    {
+                        name: "Plain-text book sets",
+                        useful: 0.85,
+                        why: "Books already as text (BooksCorpus, Books3). Few duplicates.",
+                        llm: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        group: 1,
+                        pool: 1
+                    },
+                    {
+                        name: "Scanned print books",
+                        useful: 0.01,
+                        why: "Page images: ~1 MB of text per ~100 MB of scans; text itself is top quality.",
+                        llm: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+                        group: 1,
+                        pool: 1
+                    },
+                    {
+                        name: "Papers (PDF)",
+                        useful: 0.15,
+                        why: "PDF to text; dense, expert writing.",
+                        llm: [0, 0, 0, 0, 0, 0.02, 0.05, 0.07, 0.08],
+                        group: 1,
+                        pool: 0
+                    },
+                    {
+                        name: "Source code (public)",
+                        useful: 0.15,
+                        why: "Dedup + filters; large multi-file repos are kept, tiny/forked repos dropped.",
+                        llm: [0, 0, 0, 0, 0.01, 0.05, 0.12, 0.2, 0.28],
+                        group: 2,
+                        pool: 0
+                    },
+                    {
+                        name: "Licensed news & Q&A",
+                        useful: 0.4,
+                        why: "Edited news and Stack Overflow high; short Reddit comments lower.",
+                        llm: [0, 0, 0, 0, 0, 0.03, 0.08, 0.12, 0.15],
+                        group: 5,
+                        pool: 0
+                    },
+                    {
+                        name: "Social posts",
+                        useful: 0.05,
+                        why: "Short posts, spam, bots; low per-byte value.",
+                        llm: [0, 0, 0, 0, 0, 0.05, 0.12, 0.2, 0.25],
+                        group: 5,
+                        pool: 0
+                    },
+                    {
+                        name: "Images",
+                        useful: 0.1,
+                        why: "Kept after aesthetic/safety/dedup filters.",
+                        llm: [0, 0, 0, 0, 0, 0.03, 0.08, 0.12, 0.15],
+                        group: 4,
+                        pool: 2
+                    },
+                    {
+                        name: "Video",
+                        useful: 0.05,
+                        why: "Kept clips after filtering (Cosmos curated a few % of raw hours).",
+                        llm: [0, 0, 0, 0, 0, 0.01, 0.04, 0.1, 0.15],
+                        group: 3,
+                        pool: 3
+                    },
+                    {
+                        name: "Speech & music audio",
+                        useful: 0.1,
+                        why: "Audio trained on directly.",
+                        llm: [0, 0, 0, 0, 0, 0.01, 0.03, 0.08, 0.12],
+                        group: 3,
+                        pool: 4
+                    },
+                    {
+                        name: "Audio for transcripts",
+                        useful: 0.001,
+                        why: "Only the transcript is used: 1M hours = ~54 GB text vs ~58 TB audio.",
+                        llm: [0, 0, 0, 0, 0, 0.01, 0.04, 0.1, 0.15],
+                        group: 3,
+                        pool: 4
+                    },
+                    {
+                        name: "Assistant chat text",
+                        useful: 0.1,
+                        why: "~Half is model reply (no new info); human prompts are short and repetitive.",
+                        llm: [0, 0, 0, 0, 0.05, 0.1, 0.15, 0.2, 0.25],
+                        group: 6,
+                        pool: 5
+                    },
+                    {
+                        name: "Assistant uploads",
+                        useful: 0.05,
+                        why: "Files, photos, voice; heavy duplication (same PDFs, screenshots).",
+                        llm: [0, 0, 0, 0, 0, 0.1, 0.15, 0.2, 0.25],
+                        group: 6,
+                        pool: 5
+                    },
+                    {
+                        name: "Agent file reads",
+                        useful: 0.02,
+                        why: "Agents re-read the same files and dependencies; screenshots are bulky. Full private codebases are high value, which is why it is not lower.",
+                        llm: [0, 0, 0, 0, 0, 0.1, 0.15, 0.25, 0.35],
+                        group: 6,
+                        pool: 5
+                    },
+                    {
+                        name: "Computer-use traces",
+                        useful: 0.03,
+                        why: "Keystrokes and screenshots of real work.",
+                        llm: [0, 0, 0, 0, 0, 0, 0, 0, 0.1],
+                        group: 6,
+                        pool: 5
+                    },
+                    {
+                        name: "Distilled model outputs",
+                        useful: 0.6,
+                        why: "Clean, high-quality reasoning text, but 100% model-written.",
+                        llm: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        group: 7,
+                        pool: -1
+                    },
+                    {
+                        name: "Synthetic data (in-house)",
+                        useful: 0.5,
+                        why: "Generated by the lab's own models; 100% model-written.",
+                        llm: [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+                        group: 7,
+                        pool: -1
+                    }
+                ],
+                pools: [
+                    {
+                        name: "Public text & code",
+                        K0: 1200,
+                        basis: "Epoch AI: ~300T tokens of quality- and repetition-adjusted public human text (90% CI 100T–1,000T) × ~4 bytes/token. https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data"
+                    },
+                    {
+                        name: "Books",
+                        K0: 75,
+                        basis: "~130M distinct book titles ever published (Google estimate, 2010) × ~0.6 MB of text each."
+                    },
+                    { name: "Images", K0: 1000, basis: "Assumption: ~10B distinct usable images × ~0.1 MB after filtering." },
+                    {
+                        name: "Video",
+                        K0: 20000,
+                        basis: "Assumption: ~1% of YouTube's ~20B videos is distinct, filter-passing footage, × ~100 MB."
+                    },
+                    { name: "Audio", K0: 500, basis: "Assumption: ~200M distinct music tracks plus speech, after filtering." },
+                    {
+                        name: "Private user data",
+                        K0: 3000,
+                        basis: "Assumption: distinct human-written content people hand to AI tools (prompts, files, code). Least known number here."
+                    }
+                ],
+                stockGrowth: 0.04,
+                events: [
+                    {
+                        actor: "OpenAI",
+                        what: "GPT-1 trained on BooksCorpus (~7,000 unpublished books)",
+                        short: "GPT-1 BooksCorpus",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "GPT-1 paper",
+                        url: "https://cdn.openai.com/research-covers/language-unsupervised/language_understanding_paper.pdf",
+                        cat: 4,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "2,396 adult films torrented 2018–2025, ~1.5 GB each (4 TB over 86 months)",
+                        short: "Meta adult-film torrents (alleged)",
+                        status: "Alleged (Strike 3 v. Meta; Meta says personal use)",
+                        tag: "alleged",
+                        src: "Courthouse News",
+                        url: "https://www.courthousenews.com/meta-cant-dodge-porn-producers-copyright-claims-over-ai-training/",
+                        cat: 11,
+                        kind: "spread"
+                    },
+                    {
+                        actor: "Google",
+                        what: "BERT: BooksCorpus + English Wikipedia",
+                        short: "BERT: Wikipedia + BooksCorpus",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "BERT paper",
+                        url: "https://arxiv.org/abs/1810.04805",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "~117,500 books downloaded from LibGen (later 'Books1/Books2'), ~5 MB each",
+                        short: "OpenAI LibGen download",
+                        status: "Alleged",
+                        tag: "alleged",
+                        src: "Authors' filings; OpenAI deleted the sets in 2022",
+                        url: "https://www.yahoo.com/news/articles/nyc-judge-openai-must-turn-224000077.html",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "GPT-2 WebText: pages linked from Reddit",
+                        short: "GPT-2 WebText",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "GPT-2 paper",
+                        url: "https://cdn.openai.com/better-language-models/language_models_are_unsupervised_multitask_learners.pdf",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Google web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "All web-ingesting labs",
+                        what: "New Common Crawl snapshots × labs ingesting",
+                        short: "web crawls",
+                        status: "Assumption (labs × crawls)",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 0,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "OpenAI web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Codex: 54M public GitHub repos (179 GB Python kept); raw pull assumed 20 TB",
+                        short: "OpenAI GitHub pull (Codex)",
+                        status: "Confirmed source; size assumption",
+                        tag: "confirmed",
+                        src: "Codex paper",
+                        url: "https://arxiv.org/abs/2107.03374",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "EleutherAI",
+                        what: "The Pile (825 GB, includes Books3 and YouTube subtitles)",
+                        short: "The Pile released",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "The Pile paper",
+                        url: "https://arxiv.org/abs/2101.00027",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "EleutherAI",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "EleutherAI web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Microsoft + Nvidia",
+                        what: "MT-NLG trained on The Pile",
+                        short: "MT-NLG uses The Pile",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "MT-NLG paper",
+                        url: "https://arxiv.org/abs/2201.11990",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Microsoft + Nvidia (MT-NLG)",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Microsoft + Nvidia (MT-NLG) web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "The Pile incl. Books3 (early 2021)",
+                        short: "Anthropic: The Pile / Books3",
+                        status: "Confirmed (court; Proof News)",
+                        tag: "confirmed",
+                        src: "Bartz ruling; Proof News",
+                        url: "https://proofnews.org/youtube-ai-search",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Anthropic web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "BAAI / WuDao",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "BAAI / WuDao web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "~5M books from LibGen, ~5 MB each",
+                        short: "Anthropic LibGen (5M books)",
+                        status: "Confirmed (court finding)",
+                        tag: "confirmed",
+                        src: "Bartz v. Anthropic",
+                        url: "https://steampunk-explorer.com/news/anthropic-deal-approved-steampunk-authors-share-15b-settlement",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Public code pull for PaLM/AlphaCode era, assumed 20 TB raw",
+                        short: "Google code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "AlphaCode/PaLM papers",
+                        url: "https://arxiv.org/abs/2203.07814",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Public code pull, assumed 20 TB raw",
+                        short: "Anthropic code pull (hyp.)",
+                        status: "Hypothesis",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "DeepMind",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "DeepMind web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "AI21 Labs",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "AI21 Labs web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "1M+ hours of YouTube transcribed with Whisper for GPT-4, as 128 kbps audio",
+                        short: "OpenAI rips 1M hrs of YouTube",
+                        status: "Reported (NYT)",
+                        tag: "reported",
+                        src: "Engadget / NYT",
+                        url: "https://www.engadget.com/openai-and-google-reportedly-used-transcriptions-of-youtube-videos-to-train-their-ai-models-163531073.html",
+                        cat: 13,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Cohere",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Cohere web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "DALL-E 2: ~650M web images, ~0.1 MB each",
+                        short: "DALL-E 2 images",
+                        status: "Confirmed count; size assumption",
+                        tag: "confirmed",
+                        src: "DALL-E 2 paper",
+                        url: "https://arxiv.org/abs/2204.06125",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Imagen: LAION-400M, ~0.1 MB each",
+                        short: "Imagen: LAION-400M",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "Imagen paper",
+                        url: "https://arxiv.org/abs/2205.11487",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Whisper: 680,000 hours of web audio",
+                        short: "Whisper audio",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "Whisper paper",
+                        url: "https://arxiv.org/abs/2212.04356",
+                        cat: 12,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "LLaMA: Books3 section of The Pile + Wikipedia, arXiv",
+                        short: "Meta LLaMA: Books3 / Pile",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "LLaMA paper",
+                        url: "https://arxiv.org/abs/2302.13971",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Public code pull, assumed 30 TB raw",
+                        short: "Meta code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "LLaMA paper (GitHub share)",
+                        url: "https://arxiv.org/abs/2302.13971",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Meta web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "GitHub Copilot, Cursor, Codex…",
+                        what: "Other coding assistants: code context sent",
+                        short: "coding assistants' context",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "—",
+                        url: null,
+                        cat: 16,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "~2M books from Pirate Library Mirror, ~5 MB each",
+                        short: "Anthropic PiLiMi (2M books)",
+                        status: "Confirmed (court finding)",
+                        tag: "confirmed",
+                        src: "Bartz v. Anthropic",
+                        url: "https://steampunk-explorer.com/news/anthropic-deal-approved-steampunk-authors-share-15b-settlement",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Midjourney",
+                        what: "LAION-5B-scale image scrape (5.85B × 0.1 MB)",
+                        short: "Midjourney LAION-scale scrape (hyp.)",
+                        status: "Hypothesis",
+                        tag: "hypothesis",
+                        src: "LAION-5B",
+                        url: "https://laion.ai/blog/laion-5b/",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Stability AI",
+                        what: "LAION-5B for Stable Diffusion (5.85B × 0.1 MB)",
+                        short: "Stability: LAION-5B",
+                        status: "Confirmed source; size estimate",
+                        tag: "confirmed",
+                        src: "LAION-5B",
+                        url: "https://laion.ai/blog/laion-5b/",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "ChatGPT chats",
+                        short: "ChatGPT chats",
+                        status: "Confirmed default (opt-out); volume assumption",
+                        tag: "confirmed",
+                        src: "Prompts/day: OpenAI via Axios",
+                        url: "https://thedigitalelevator.com/blog/chatgpt-statistics",
+                        cat: 14,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "80.6 TB torrented from LibGen (month approximate)",
+                        short: "Meta torrents LibGen (80.6 TB)",
+                        status: "Alleged (unsealed emails)",
+                        tag: "alleged",
+                        src: "Kadrey v. Meta",
+                        url: "https://mezha.ua/en/2025/02/07/meta-downloads-terabytes-of-data-from-torrents-to-train-ai/amp/",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Shutterstock image library licence (~300M images × 1 MB)",
+                        short: "Meta–Shutterstock licence",
+                        status: "Reported deal; size assumption",
+                        tag: "reported",
+                        src: "CB Insights",
+                        url: "https://www.cbinsights.com/research/?p=169780",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Zhipu",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Zhipu web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "ByteDance",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "ByteDance web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Nvidia",
+                        what: "High-speed access to Anna's Archive (~500 TB offered), assumed fully downloaded (month approximate)",
+                        short: "Nvidia × Anna's Archive (500 TB)",
+                        status: "Alleged; full download = hypothesis",
+                        tag: "alleged",
+                        src: "Heise / complaint",
+                        url: "https://heise.de/-11148122",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google, Meta, Microsoft, xAI, DeepSeek…",
+                        what: "Other assistants' chats (Gemini, Meta AI, Copilot, Grok…)",
+                        short: "other assistants' chats",
+                        status: "Policies vary; volume assumption",
+                        tag: "assumption",
+                        src: "Gemini Keep Activity / Meta AI",
+                        url: "https://www.pcworld.com/article/2877299/google-gemini-is-getting-creepier-by-using-your-uploads-to-train-ai.html",
+                        cat: 14,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Bloomberg",
+                        what: "BloombergGPT: The Pile",
+                        short: "BloombergGPT uses The Pile",
+                        status: "Confirmed",
+                        tag: "confirmed",
+                        src: "BloombergGPT paper",
+                        url: "https://arxiv.org/abs/2303.17564",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude chats (policy then: not used for training)",
+                        short: "Claude chats (hyp.)",
+                        status: "Hypothesis (contradicts stated policy)",
+                        tag: "hypothesis",
+                        src: "Anthropic consumer terms",
+                        url: "https://www.anthropic.com/news/updates-to-our-consumer-terms",
+                        cat: 14,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude uploads (policy then: not used)",
+                        short: "Claude uploads (hyp.)",
+                        status: "Hypothesis (contradicts stated policy)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 15,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Alibaba (Qwen)",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Alibaba (Qwen) web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "TII (Falcon)",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "TII (Falcon) web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "DeepSeek",
+                        what: "Code pull for DeepSeek Coder, assumed 40 TB",
+                        short: "DeepSeek code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "—",
+                        url: null,
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Mistral",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Mistral web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "DeepSeek",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "DeepSeek web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Labs with own AI crawlers",
+                        what: "Own AI crawlers (GPTBot, ClaudeBot, Bytespider…)",
+                        short: "own crawlers",
+                        status: "Assumption (volume)",
+                        tag: "assumption",
+                        src: "Cloudflare / OpenAI docs",
+                        url: "https://developers.openai.com/docs/gptbot",
+                        cat: 0,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Search index made available for AI training (index 'well over 100,000,000 GB')",
+                        short: "Google search index → AI (assumption)",
+                        status: "Assumption (privacy policy Jul 1 2023; Google-Extended)",
+                        tag: "assumption",
+                        src: "Google: How Search organises information",
+                        url: "https://google.com/intl/en_us/search/howsearchworks/how-search-works/organizing-information/",
+                        cat: 0,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Shutterstock licence (~300M images × 1 MB)",
+                        short: "OpenAI–Shutterstock",
+                        status: "Reported deal; size assumption",
+                        tag: "reported",
+                        src: "CB Insights",
+                        url: "https://www.cbinsights.com/research/?p=169780",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "AP text archive",
+                        short: "OpenAI–AP",
+                        status: "Reported deal; size assumption",
+                        tag: "reported",
+                        src: "CB Insights",
+                        url: "https://www.cbinsights.com/research/?p=169780",
+                        cat: 8,
+                        kind: "event"
+                    },
+                    {
+                        actor: "xAI",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "xAI web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Emu: 1.1B public Facebook/Instagram images, ~0.3 MB each",
+                        short: "Meta Emu: 1.1B user images",
+                        status: "Confirmed count; size assumption",
+                        tag: "confirmed",
+                        src: "Emu paper",
+                        url: "https://arxiv.org/abs/2309.15807",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Nvidia",
+                        what: "NeMo trained with The Pile / Books3",
+                        short: "Nvidia uses Books3 (alleged)",
+                        status: "Alleged",
+                        tag: "alleged",
+                        src: "Nazemian v. Nvidia",
+                        url: "https://mezha.ua/en/news/nvidia-accused-to-piracy-307867/",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google, Amazon, Apple",
+                        what: "Shutterstock licences, 3 × 300 TB (dates undisclosed)",
+                        short: "Shutterstock → Google/Amazon/Apple",
+                        status: "Reported deals; size and date assumption",
+                        tag: "reported",
+                        src: "CB Insights",
+                        url: "https://www.cbinsights.com/research/?p=169780",
+                        cat: 10,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Moonshot",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Moonshot web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "ChatGPT files, images, voice",
+                        short: "ChatGPT uploads",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "—",
+                        url: null,
+                        cat: 15,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Google, Meta, Microsoft, xAI…",
+                        what: "Other assistants' uploads",
+                        short: "other assistants' uploads",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "—",
+                        url: null,
+                        cat: 15,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "~30 companies, mostly China",
+                        what: "Anna's Archive SFTP access; each assumed to take ~800 TB (24,000 TB over 15 months)",
+                        short: "Anna's Archive bulk access (~30 cos.)",
+                        status: "Access claimed by Anna's Archive; volume = hypothesis",
+                        tag: "reported",
+                        src: "Wikipedia (Anna's Archive)",
+                        url: "https://en.wikipedia.org/wiki/Anna%27s_Archive",
+                        cat: 3,
+                        kind: "spread"
+                    },
+                    {
+                        actor: "01.AI",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "01.AI web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Google",
+                        what: "YouTube subset for Gemini 1.0 (assumed 10,000 TB)",
+                        short: "Google YouTube for Gemini (hyp.)",
+                        status: "Hypothesis (Google confirms YouTube use, not volume)",
+                        tag: "hypothesis",
+                        src: "Gigazine / CNBC",
+                        url: "https://gigazine.net/gsc_news/en/20250620-youtube-training",
+                        cat: 11,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Google Books scans (40M books × 100 MB)",
+                        short: "Google Books scans (hyp.)",
+                        status: "Hypothesis (unprovable)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 5,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Suno",
+                        what: "Millions of songs stream-ripped from YouTube (5M × 8 MB)",
+                        short: "Suno stream-ripping (alleged)",
+                        status: "Alleged (amended complaint)",
+                        tag: "alleged",
+                        src: "Music Business Worldwide",
+                        url: "https://www.musicbusinessworldwide.com/inspired-by-anthropics-1-5b-book-piracy-payout-record-labels-accuse-suno-of-illegally-stream-ripping-music-from-youtube",
+                        cat: 12,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Axel Springer archive",
+                        short: "OpenAI–Axel Springer",
+                        status: "Reported deal; size assumption",
+                        tag: "reported",
+                        src: "CB Insights",
+                        url: "https://www.cbinsights.com/research/?p=169780",
+                        cat: 8,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Apple",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Apple web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Amazon",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Amazon web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "MiniMax",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "MiniMax web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Frontier labs",
+                        what: "Synthetic training data generated in-house",
+                        short: "synthetic data",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Epoch AI",
+                        url: "https://epoch.ai/blog/will-we-run-out-of-data-limits-of-llm-scaling-based-on-human-generated-data",
+                        cat: 19,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Reddit full history (~3 TB text) + Stack Overflow (0.1 TB)",
+                        short: "Google–Reddit & Stack Overflow",
+                        status: "Reported deals; size assumption",
+                        tag: "reported",
+                        src: "The Decoder / Reuters",
+                        url: "https://the-decoder.com/reddit-signs-60-million-annual-training-data-deal-with-google/",
+                        cat: 8,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI, Midjourney",
+                        what: "Tumblr/WordPress.com posts, 2 × 50 TB",
+                        short: "Tumblr/WordPress → OpenAI, Midjourney",
+                        status: "Reported; size assumption",
+                        tag: "reported",
+                        src: "Wikipedia (Tumblr)",
+                        url: "https://en.wikipedia.org/wiki/Tumblr",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Sora training video (assumed 10,000 TB)",
+                        short: "OpenAI Sora video (hyp.)",
+                        status: "Hypothesis (undisclosed)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 11,
+                        kind: "event"
+                    },
+                    {
+                        actor: "BigCode",
+                        what: "The Stack v2 (67.5 TB) released; downloaded by one lab this month",
+                        short: "The Stack v2",
+                        status: "Confirmed size",
+                        tag: "confirmed",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Nvidia (Nemotron)",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Nvidia (Nemotron) web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Alibaba",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "Alibaba code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Project Panama: ~2M bought books cut and scanned, ~100 MB each (200 TB over 10 months)",
+                        short: "Anthropic Project Panama scans",
+                        status: "Confirmed (unsealed docs); size assumption",
+                        tag: "confirmed",
+                        src: "ADN / Washington Post",
+                        url: "https://www.adn.com/arts/books/2026/01/27/how-silicon-valley-built-ai-buying-scanning-and-discarding-millions-of-books/",
+                        cat: 5,
+                        kind: "spread"
+                    },
+                    {
+                        actor: "Nvidia",
+                        what: "Cosmos: 38.5M hours of mostly YouTube video, ~1 GB/hour (38,500 TB over 6 months)",
+                        short: "Nvidia Cosmos video scrape",
+                        status: "Leaked (404 Media); Cosmos paper says 20M hours",
+                        tag: "reported",
+                        src: "Notebookcheck / 404 Media",
+                        url: "https://www.notebookcheck.net/leaked-internal-comms-reveal-nvidia-scraping-lifetime-worth-of-youtube-videos-daily-to-train-video-ai-model-jensen-happy-with-the-progress.871835.0.html",
+                        cat: 11,
+                        kind: "spread"
+                    },
+                    {
+                        actor: "Reka",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Reka web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "Google",
+                        what: "Ongoing Reddit content",
+                        short: "Reddit firehose (Google)",
+                        status: "Reported deal; volume derived",
+                        tag: "reported",
+                        src: "The Decoder / Reuters",
+                        url: "https://the-decoder.com/reddit-signs-60-million-annual-training-data-deal-with-google/",
+                        cat: 8,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "81.7 TB torrented via Anna's Archive (month approximate)",
+                        short: "Meta torrents Anna's Archive (81.7 TB)",
+                        status: "Alleged (unsealed emails)",
+                        tag: "alleged",
+                        src: "Kadrey v. Meta",
+                        url: "https://mezha.ua/en/2025/02/07/meta-downloads-terabytes-of-data-from-torrents-to-train-ai/amp/",
+                        cat: 3,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Apple",
+                        what: "OpenELM trained with Books3 / The Pile",
+                        short: "Apple uses Books3 (alleged)",
+                        status: "Alleged",
+                        tag: "alleged",
+                        src: "Daily Star / Reuters",
+                        url: "https://online.thedailystar.net/node/3979806",
+                        cat: 2,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Udio",
+                        what: "Songs scraped from YouTube (5M × 8 MB)",
+                        short: "Udio YouTube scraping (alleged)",
+                        status: "Alleged",
+                        tag: "alleged",
+                        src: "Music Business Worldwide",
+                        url: "https://www.musicbusinessworldwide.com/after-stream-ripping-allegations-added-to-suno-lawsuit-labels-beef-up-complaint-against-udio-with-claims-of-illegal-scraping-from-youtube",
+                        cat: 12,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "New public FB/IG photos",
+                        short: "new Meta photos (hyp.)",
+                        status: "Hypothesis (unprovable)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 10,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Reddit (~3 TB), Stack Overflow (0.1 TB), News Corp (0.3 TB)",
+                        short: "OpenAI–Reddit, Stack Overflow, News Corp",
+                        status: "Reported deals; size assumption",
+                        tag: "reported",
+                        src: "Gigazine / WSJ",
+                        url: "https://gigazine.net/gsc_news/en/20240523-openai-news-corp-partnership",
+                        cat: 8,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Apple",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "Apple code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Runway",
+                        what: "Thousands of YouTube videos (~100k × 50 MB)",
+                        short: "Runway YouTube scrape (leak)",
+                        status: "Leaked (404 Media)",
+                        tag: "reported",
+                        src: "Engadget",
+                        url: "https://www.engadget.com/ai/ai-video-startup-runway-reportedly-trained-on-thousands-of-youtube-videos-without-permission-182314160.html",
+                        cat: 11,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Video-model labs",
+                        what: "Films/TV torrented from public trackers (e.g. The Pirate Bay): 5 labs × 2,000 TB (10,000 TB over 12 months)",
+                        short: "Pirate Bay film/TV torrents (hyp.)",
+                        status: "Hypothesis (unprovable, no evidence)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 11,
+                        kind: "spread"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Ongoing Reddit content",
+                        short: "Reddit firehose (OpenAI)",
+                        status: "Reported deal; volume derived",
+                        tag: "reported",
+                        src: "Shacknews / Reuters",
+                        url: "https://shacknews.com/article/139914/openai-reddit-chatgpt-deal",
+                        cat: 8,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "xAI",
+                        what: "All public X posts so far (~500 TB text)",
+                        short: "X posts → Grok (backlog)",
+                        status: "Confirmed setting; size assumption",
+                        tag: "confirmed",
+                        src: "TechCrunch",
+                        url: "https://techcrunch.com/2024/07/26/privacy-watchdog-says-its-surprised-by-elon-musk-opting-user-data-into-grok-ai-training/",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Mistral",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "Mistral code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "xAI",
+                        what: "New X posts",
+                        short: "new X posts",
+                        status: "Confirmed setting; volume assumption",
+                        tag: "confirmed",
+                        src: "TechCrunch",
+                        url: "https://techcrunch.com/2024/07/26/privacy-watchdog-says-its-surprised-by-elon-musk-opting-user-data-into-grok-ai-training/",
+                        cat: 9,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Public FB/IG post text since 2007 (~50 TB)",
+                        short: "Meta: public posts since 2007",
+                        status: "Admitted (Australia); global size assumption",
+                        tag: "reported",
+                        src: "Gigazine / ABC",
+                        url: "https://gigazine.net/gsc_news/en/20240912-meta-ai-facebook-scraping/",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Microsoft / LinkedIn",
+                        what: "Member profiles and posts (~20 TB), opted in by default outside Europe",
+                        short: "LinkedIn backlog",
+                        status: "Confirmed setting; size assumption",
+                        tag: "confirmed",
+                        src: "Tuta",
+                        url: "https://tuta.com/blog/linkedin-ai-user-data.html",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "xAI",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "xAI code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "DeepSeek (accused)",
+                        what: "OpenAI API outputs harvested (~1 TB)",
+                        short: "DeepSeek distils OpenAI (alleged)",
+                        status: "Alleged; size assumption",
+                        tag: "alleged",
+                        src: "TechCrunch",
+                        url: "https://techcrunch.com/2025/01/29/microsoft-probing-whether-deepseek-improperly-used-openais-api/",
+                        cat: 18,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Microsoft / LinkedIn",
+                        what: "New LinkedIn content",
+                        short: "new LinkedIn posts",
+                        status: "Confirmed setting; volume assumption",
+                        tag: "confirmed",
+                        src: "Tuta",
+                        url: "https://tuta.com/blog/linkedin-ai-user-data.html",
+                        cat: 9,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Ray-Ban/Oakley glasses footage sent to Meta AI",
+                        short: "smart-glasses footage",
+                        status: "Reported (Svenska Dagbladet); volume assumption",
+                        tag: "reported",
+                        src: "PetaPixel",
+                        url: "https://petapixel.com/2026/03/09/meta",
+                        cat: 11,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude Desktop/Code file reads (policy then: not used)",
+                        short: "Claude agent reads (hyp.)",
+                        status: "Hypothesis (contradicts stated policy)",
+                        tag: "hypothesis",
+                        src: "—",
+                        url: null,
+                        cat: 16,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Moonshot",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "Moonshot code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Xiaomi",
+                        what: "Backfill: past Common Crawl snapshots when the lab starts",
+                        short: "Xiaomi web backfill",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "Common Crawl blog",
+                        url: "https://commoncrawl.org/blog/october-2025-crawl-archive-now-available",
+                        cat: 1,
+                        kind: "backfill"
+                    },
+                    {
+                        actor: "MiniMax",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "MiniMax code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "EU adults' public posts and Meta AI chats (~10 TB)",
+                        short: "Meta: EU public posts",
+                        status: "Confirmed policy; size assumption",
+                        tag: "confirmed",
+                        src: "WAM",
+                        url: "https://www.wam.ae/en/article/bjvvxr0-meta-use-user-content-for-training",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Google",
+                        what: "YouTube for Veo 3: 1% of 20B videos × 100 MB",
+                        short: "Google YouTube for Veo 3",
+                        status: "Confirmed use (CNBC); 1% = assumption",
+                        tag: "confirmed",
+                        src: "Gigazine / CNBC",
+                        url: "https://gigazine.net/gsc_news/en/20250620-youtube-training",
+                        cat: 11,
+                        kind: "event"
+                    },
+                    {
+                        actor: "ByteDance",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "ByteDance code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude chats (trained unless user opts out, from Aug 28 2025)",
+                        short: "Claude chats",
+                        status: "Confirmed policy; volume assumption",
+                        tag: "confirmed",
+                        src: "Anthropic consumer terms",
+                        url: "https://www.anthropic.com/news/updates-to-our-consumer-terms",
+                        cat: 14,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude uploads in opted-in chats",
+                        short: "Claude uploads",
+                        status: "Policy allows; volume assumption",
+                        tag: "policy",
+                        src: "Anthropic consumer terms",
+                        url: "https://www.anthropic.com/news/updates-to-our-consumer-terms",
+                        cat: 15,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Anthropic",
+                        what: "Claude Desktop/Code files read in opted-in sessions",
+                        short: "Claude agent reads",
+                        status: "Policy allows; volume assumption",
+                        tag: "policy",
+                        src: "Anthropic consumer terms",
+                        url: "https://www.anthropic.com/news/updates-to-our-consumer-terms",
+                        cat: 16,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Microsoft / LinkedIn",
+                        what: "EU/UK/CH/CA/HK member data since 2003 (~10 TB)",
+                        short: "LinkedIn Europe switch-on",
+                        status: "Confirmed policy; size assumption",
+                        tag: "confirmed",
+                        src: "TechRadar",
+                        url: "https://www.techradar.com/pro/linkedin-set-to-start-to-train-its-ai-on-member-profiles",
+                        cat: 9,
+                        kind: "event"
+                    },
+                    {
+                        actor: "OpenAI",
+                        what: "Contractors upload real files from past jobs (~1 TB)",
+                        short: "OpenAI contractors' work files",
+                        status: "Reported (Wired); size assumption",
+                        tag: "reported",
+                        src: "TechCrunch",
+                        url: "https://techcrunch.com/?p=3081712",
+                        cat: 15,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Zhipu",
+                        what: "Public code pull the size of The Stack v2 (67.5 TB)",
+                        short: "Zhipu code pull",
+                        status: "Assumption",
+                        tag: "assumption",
+                        src: "The Stack v2",
+                        url: "https://arxiv.org/abs/2402.19173",
+                        cat: 7,
+                        kind: "event"
+                    },
+                    {
+                        actor: "DeepSeek, Moonshot, MiniMax (accused)",
+                        what: "16M Claude exchanges × 20 KB",
+                        short: "Distillation of Claude (16M exchanges)",
+                        status: "Alleged by Anthropic",
+                        tag: "alleged",
+                        src: "Anthropic",
+                        url: "https://anthropic.com/news/detecting-and-preventing-distillation-attacks",
+                        cat: 18,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Xiaomi (accused)",
+                        what: "0.4M Claude exchanges × 20 KB",
+                        short: "Xiaomi distillation",
+                        status: "Alleged by Anthropic",
+                        tag: "alleged",
+                        src: "ProPakistani",
+                        url: "https://propakistani.pk/?p=1079915",
+                        cat: 18,
+                        kind: "event"
+                    },
+                    {
+                        actor: "Meta",
+                        what: "Employee keystrokes, clicks, screenshots (Model Capability Initiative)",
+                        short: "Meta employee tracking",
+                        status: "Confirmed (internal memo); volume assumption",
+                        tag: "confirmed",
+                        src: "OECD AI incidents",
+                        url: "https://oecd.ai/en/incidents/2026-04-21-58f0",
+                        cat: 17,
+                        kind: "flow"
+                    },
+                    {
+                        actor: "Alibaba, Moonshot, DeepSeek, Zhipu (accused)",
+                        what: "~190M Claude exchanges × 20 KB (4 TB over 3 months)",
+                        short: "Distillation of Claude (190M exchanges)",
+                        status: "Alleged by Anthropic",
+                        tag: "alleged",
+                        src: "ProPakistani / Anthropic report",
+                        url: "https://propakistani.pk/?p=1079915",
+                        cat: 18,
+                        kind: "spread"
+                    }
+                ],
+                inflow: [
+                    [0, 0, 0.005],
+                    [0, 1, 0.0419],
+                    [1, 1, 0.0419],
+                    [2, 1, 0.0419],
+                    [3, 1, 0.0419],
+                    [4, 2, 0.02],
+                    [4, 1, 0.0419],
+                    [5, 1, 0.0419],
+                    [6, 3, 0.59],
+                    [6, 1, 0.0419],
+                    [7, 1, 0.0419],
+                    [8, 4, 0.04],
+                    [8, 1, 0.0419],
+                    [9, 1, 0.0419],
+                    [10, 1, 0.0419],
+                    [10, 5, 10608],
+                    [10, 6, 260],
+                    [11, 1, 0.0419],
+                    [11, 6, 260],
+                    [12, 1, 0.0419],
+                    [12, 6, 260],
+                    [13, 1, 0.0419],
+                    [13, 6, 260],
+                    [14, 1, 0.0419],
+                    [14, 6, 260],
+                    [15, 1, 0.0419],
+                    [15, 6, 260],
+                    [16, 1, 0.0419],
+                    [16, 7, 10608],
+                    [16, 6, 520],
+                    [17, 1, 0.0419],
+                    [17, 6, 520],
+                    [18, 1, 0.0419],
+                    [18, 6, 520],
+                    [19, 1, 0.0419],
+                    [19, 6, 480],
+                    [20, 1, 0.0419],
+                    [20, 6, 480],
+                    [21, 1, 0.0419],
+                    [21, 6, 480],
+                    [22, 1, 0.0419],
+                    [22, 6, 480],
+                    [23, 8, 20],
+                    [23, 1, 0.0419],
+                    [23, 6, 480],
+                    [24, 1, 0.0419],
+                    [24, 6, 480],
+                    [25, 9, 0.825],
+                    [25, 1, 0.0419],
+                    [25, 10, 9792],
+                    [25, 6, 720],
+                    [26, 1, 0.0419],
+                    [26, 6, 720],
+                    [27, 1, 0.0419],
+                    [27, 6, 720],
+                    [28, 1, 0.0419],
+                    [28, 6, 720],
+                    [29, 1, 0.0419],
+                    [29, 6, 720],
+                    [30, 1, 0.0419],
+                    [30, 6, 720],
+                    [31, 11, 0.825],
+                    [31, 1, 0.0419],
+                    [31, 12, 10404],
+                    [31, 6, 1020],
+                    [32, 1, 0.0419],
+                    [32, 6, 1020],
+                    [33, 13, 0.825],
+                    [33, 1, 0.0419],
+                    [33, 14, 10404],
+                    [33, 15, 10404],
+                    [33, 6, 1530],
+                    [34, 1, 0.0419],
+                    [34, 6, 1530],
+                    [35, 1, 0.0419],
+                    [35, 6, 1530],
+                    [36, 16, 25],
+                    [36, 17, 20],
+                    [36, 18, 20],
+                    [36, 1, 0.0419],
+                    [36, 19, 10404],
+                    [36, 20, 10404],
+                    [36, 6, 2040],
+                    [37, 1, 0.0419],
+                    [37, 6, 2040],
+                    [38, 1, 0.0419],
+                    [38, 6, 2040],
+                    [39, 1, 0.0419],
+                    [39, 6, 2040],
+                    [40, 1, 0.0419],
+                    [40, 6, 2040],
+                    [41, 21, 58],
+                    [41, 1, 0.0419],
+                    [41, 6, 2040],
+                    [42, 1, 0.0419],
+                    [42, 6, 2040],
+                    [43, 1, 0.0419],
+                    [43, 22, 9302.4],
+                    [43, 6, 2052],
+                    [44, 1, 0.0419],
+                    [44, 6, 2052],
+                    [45, 1, 0.0419],
+                    [45, 6, 2052],
+                    [46, 23, 65],
+                    [46, 1, 0.0419],
+                    [46, 6, 2052],
+                    [47, 24, 40],
+                    [47, 1, 0.0419],
+                    [47, 6, 2052],
+                    [48, 25, 39],
+                    [48, 26, 0.825],
+                    [48, 27, 30],
+                    [48, 1, 0.0419],
+                    [48, 28, 9302.4],
+                    [48, 6, 2280],
+                    [48, 29, 120],
+                    [49, 30, 10],
+                    [49, 31, 585],
+                    [49, 1, 0.0419],
+                    [49, 6, 2280],
+                    [49, 29, 138.06],
+                    [50, 32, 585],
+                    [50, 1, 0.0419],
+                    [50, 6, 2280],
+                    [50, 29, 156.72],
+                    [51, 1, 0.0419],
+                    [51, 6, 2280],
+                    [51, 29, 175.41],
+                    [52, 1, 0.0419],
+                    [52, 6, 2280],
+                    [52, 29, 193.47],
+                    [53, 1, 0.0419],
+                    [53, 6, 2280],
+                    [53, 29, 212.13],
+                    [54, 1, 0.0419],
+                    [54, 6, 2280],
+                    [54, 33, 3.648],
+                    [54, 29, 230.19],
+                    [55, 34, 80.6],
+                    [55, 35, 300],
+                    [55, 1, 0.0419],
+                    [55, 36, 8976],
+                    [55, 37, 8976],
+                    [55, 6, 2640],
+                    [55, 33, 12.16],
+                    [55, 29, 248.88],
+                    [56, 38, 500],
+                    [56, 1, 0.0419],
+                    [56, 6, 2640],
+                    [56, 33, 15.5459],
+                    [56, 39, 1.5546],
+                    [56, 29, 267.54],
+                    [57, 40, 0.825],
+                    [57, 1, 0.0419],
+                    [57, 6, 2640],
+                    [57, 33, 18.6041],
+                    [57, 39, 2.119],
+                    [57, 41, 0.5175],
+                    [57, 42, 4.025],
+                    [57, 29, 284.4],
+                    [58, 1, 0.0419],
+                    [58, 43, 8976],
+                    [58, 6, 2860],
+                    [58, 33, 21.9899],
+                    [58, 39, 2.8411],
+                    [58, 41, 0.9258],
+                    [58, 42, 7.2007],
+                    [58, 29, 303.06],
+                    [59, 1, 0.0419],
+                    [59, 44, 8976],
+                    [59, 6, 3080],
+                    [59, 33, 25.2666],
+                    [59, 39, 3.6409],
+                    [59, 41, 1.3211],
+                    [59, 42, 10.275],
+                    [59, 29, 321.12],
+                    [60, 45, 40],
+                    [60, 1, 0.0419],
+                    [60, 46, 8976],
+                    [60, 47, 8976],
+                    [60, 6, 3520],
+                    [60, 48, 440],
+                    [60, 33, 28.6524],
+                    [60, 39, 4.5672],
+                    [60, 41, 1.7294],
+                    [60, 42, 13.4507],
+                    [60, 29, 339.81],
+                    [61, 49, 100000],
+                    [61, 50, 300],
+                    [61, 51, 0.05],
+                    [61, 1, 0.0419],
+                    [61, 52, 8976],
+                    [61, 6, 3740],
+                    [61, 48, 440],
+                    [61, 33, 31.9291],
+                    [61, 39, 5.5652],
+                    [61, 41, 2.1245],
+                    [61, 42, 16.5242],
+                    [61, 29, 357.87],
+                    [62, 1, 0.0419],
+                    [62, 6, 3740],
+                    [62, 48, 880],
+                    [62, 33, 35.315],
+                    [62, 39, 6.6957],
+                    [62, 41, 2.533],
+                    [62, 42, 19.7008],
+                    [62, 29, 376.53],
+                    [63, 53, 330],
+                    [63, 54, 0.825],
+                    [63, 1, 0.0419],
+                    [63, 6, 3740],
+                    [63, 48, 1320],
+                    [63, 33, 38.7008],
+                    [63, 39, 7.9337],
+                    [63, 41, 2.9413],
+                    [63, 42, 22.8765],
+                    [63, 29, 395.19],
+                    [64, 55, 900],
+                    [64, 1, 0.0419],
+                    [64, 56, 8976],
+                    [64, 6, 3960],
+                    [64, 48, 1320],
+                    [64, 33, 41.9775],
+                    [64, 57, 314.8312],
+                    [64, 39, 9.2267],
+                    [64, 58, 69.1999],
+                    [64, 41, 3.3364],
+                    [64, 42, 25.95],
+                    [64, 29, 413.28],
+                    [65, 59, 1600],
+                    [65, 1, 0.0419],
+                    [65, 60, 8976],
+                    [65, 6, 4180],
+                    [65, 48, 1320],
+                    [65, 33, 45.3634],
+                    [65, 57, 340.2252],
+                    [65, 39, 10.6649],
+                    [65, 58, 79.9869],
+                    [65, 41, 3.7448],
+                    [65, 42, 29.1265],
+                    [65, 29, 431.94],
+                    [66, 61, 10000],
+                    [66, 62, 4000],
+                    [66, 63, 40],
+                    [66, 64, 0.1],
+                    [66, 59, 1600],
+                    [66, 1, 0.0419],
+                    [66, 6, 4180],
+                    [66, 48, 1760],
+                    [66, 33, 48.64],
+                    [66, 57, 364.8],
+                    [66, 39, 12.16],
+                    [66, 58, 91.2],
+                    [66, 41, 4.14],
+                    [66, 42, 32.2],
+                    [66, 29, 450],
+                    [67, 59, 1600],
+                    [67, 1, 0.0419],
+                    [67, 65, 14361.6],
+                    [67, 66, 14361.6],
+                    [67, 67, 14361.6],
+                    [67, 6, 7744],
+                    [67, 48, 1760],
+                    [67, 33, 54.8197],
+                    [67, 57, 411.1476],
+                    [67, 39, 14.4011],
+                    [67, 58, 108.0085],
+                    [67, 41, 5.5533],
+                    [67, 42, 43.1923],
+                    [67, 29, 538.92],
+                    [67, 68, 13.2],
+                    [68, 69, 3.1],
+                    [68, 70, 100],
+                    [68, 71, 10000],
+                    [68, 72, 67.5],
+                    [68, 59, 1600],
+                    [68, 1, 0.0419],
+                    [68, 73, 14361.6],
+                    [68, 6, 8096],
+                    [68, 48, 1760],
+                    [68, 33, 60.9993],
+                    [68, 57, 457.495],
+                    [68, 39, 16.7992],
+                    [68, 58, 125.9941],
+                    [68, 41, 6.9666],
+                    [68, 42, 54.1846],
+                    [68, 29, 627.87],
+                    [68, 68, 13.2],
+                    [69, 74, 67.5],
+                    [69, 75, 20],
+                    [69, 76, 6416.6667],
+                    [69, 59, 1600],
+                    [69, 1, 0.0419],
+                    [69, 77, 14361.6],
+                    [69, 6, 8448],
+                    [69, 48, 1760],
+                    [69, 33, 66.7803],
+                    [69, 57, 500.8524],
+                    [69, 39, 19.186],
+                    [69, 58, 143.8949],
+                    [69, 41, 8.2886],
+                    [69, 42, 64.4668],
+                    [69, 29, 711.06],
+                    [69, 68, 16.5],
+                    [69, 78, 0.11],
+                    [70, 79, 81.7],
+                    [70, 80, 0.825],
+                    [70, 81, 40],
+                    [70, 75, 20],
+                    [70, 76, 6416.6667],
+                    [70, 59, 1600],
+                    [70, 1, 0.0419],
+                    [70, 6, 8448],
+                    [70, 48, 1760],
+                    [70, 33, 72.96],
+                    [70, 57, 547.2],
+                    [70, 39, 21.888],
+                    [70, 58, 164.16],
+                    [70, 41, 9.7019],
+                    [70, 42, 75.4591],
+                    [70, 29, 800.01],
+                    [70, 68, 16.5],
+                    [70, 78, 0.11],
+                    [70, 82, 90],
+                    [71, 83, 3.4],
+                    [71, 84, 67.5],
+                    [71, 75, 20],
+                    [71, 76, 6416.6667],
+                    [71, 59, 1600],
+                    [71, 1, 0.0419],
+                    [71, 6, 8448],
+                    [71, 48, 1760],
+                    [71, 33, 78.9403],
+                    [71, 57, 592.0524],
+                    [71, 39, 24.6531],
+                    [71, 58, 184.898],
+                    [71, 41, 11.0695],
+                    [71, 42, 86.0964],
+                    [71, 29, 886.08],
+                    [71, 68, 16.5],
+                    [71, 78, 0.11],
+                    [71, 82, 90],
+                    [72, 85, 5],
+                    [72, 75, 20],
+                    [72, 76, 6416.6667],
+                    [72, 59, 1600],
+                    [72, 86, 833.3333],
+                    [72, 1, 0.0419],
+                    [72, 6, 8448],
+                    [72, 48, 2640],
+                    [72, 33, 85.12],
+                    [72, 57, 638.4],
+                    [72, 39, 27.664],
+                    [72, 58, 207.48],
+                    [72, 41, 12.4828],
+                    [72, 42, 97.0886],
+                    [72, 29, 975],
+                    [72, 68, 19.8],
+                    [72, 78, 0.11],
+                    [72, 87, 0.11],
+                    [72, 82, 90],
+                    [73, 88, 500],
+                    [73, 89, 67.5],
+                    [73, 75, 20],
+                    [73, 76, 6416.6667],
+                    [73, 59, 1600],
+                    [73, 86, 833.3333],
+                    [73, 1, 0.0419],
+                    [73, 6, 8448],
+                    [73, 48, 3080],
+                    [73, 33, 91.1003],
+                    [73, 57, 683.2524],
+                    [73, 39, 30.7281],
+                    [73, 58, 230.461],
+                    [73, 41, 13.8505],
+                    [73, 42, 107.7259],
+                    [73, 29, 1061.07],
+                    [73, 68, 19.8],
+                    [73, 78, 0.11],
+                    [73, 87, 0.11],
+                    [73, 82, 90],
+                    [74, 75, 20],
+                    [74, 76, 6416.6667],
+                    [74, 59, 1600],
+                    [74, 86, 833.3333],
+                    [74, 1, 0.0419],
+                    [74, 6, 8448],
+                    [74, 48, 3080],
+                    [74, 33, 97.28],
+                    [74, 57, 729.6],
+                    [74, 39, 34.048],
+                    [74, 58, 255.36],
+                    [74, 41, 15.2638],
+                    [74, 42, 118.7182],
+                    [74, 29, 1149.99],
+                    [74, 68, 23.1],
+                    [74, 78, 0.11],
+                    [74, 87, 0.11],
+                    [74, 90, 4.5],
+                    [74, 82, 90],
+                    [75, 91, 50],
+                    [75, 92, 20],
+                    [75, 93, 67.5],
+                    [75, 75, 20],
+                    [75, 59, 1600],
+                    [75, 86, 833.3333],
+                    [75, 1, 0.0419],
+                    [75, 6, 8448],
+                    [75, 48, 3080],
+                    [75, 33, 103.4597],
+                    [75, 57, 775.9476],
+                    [75, 39, 37.5248],
+                    [75, 58, 281.4362],
+                    [75, 41, 16.6771],
+                    [75, 42, 129.7105],
+                    [75, 29, 1238.94],
+                    [75, 68, 23.1],
+                    [75, 78, 0.11],
+                    [75, 87, 0.11],
+                    [75, 90, 4.5],
+                    [75, 82, 90],
+                    [76, 94, 1],
+                    [76, 75, 20],
+                    [76, 59, 1600],
+                    [76, 86, 833.3333],
+                    [76, 1, 0.0419],
+                    [76, 6, 8448],
+                    [76, 48, 3080],
+                    [76, 33, 109.44],
+                    [76, 57, 820.8],
+                    [76, 39, 41.04],
+                    [76, 58, 307.8],
+                    [76, 41, 18.0447],
+                    [76, 42, 140.3477],
+                    [76, 29, 1325.01],
+                    [76, 68, 23.1],
+                    [76, 78, 0.11],
+                    [76, 87, 0.11],
+                    [76, 90, 4.5],
+                    [76, 95, 0.5],
+                    [76, 82, 90],
+                    [76, 96, 50],
+                    [77, 75, 20],
+                    [77, 59, 1600],
+                    [77, 86, 833.3333],
+                    [77, 1, 0.0419],
+                    [77, 6, 8448],
+                    [77, 48, 3080],
+                    [77, 33, 115.6197],
+                    [77, 57, 867.1476],
+                    [77, 39, 44.8257],
+                    [77, 58, 336.1931],
+                    [77, 41, 19.458],
+                    [77, 42, 151.34],
+                    [77, 29, 1413.93],
+                    [77, 68, 26.4],
+                    [77, 78, 0.11],
+                    [77, 87, 0.11],
+                    [77, 90, 4.5],
+                    [77, 95, 0.5],
+                    [77, 82, 90],
+                    [77, 96, 50],
+                    [78, 75, 20],
+                    [78, 59, 1600],
+                    [78, 86, 833.3333],
+                    [78, 1, 0.0419],
+                    [78, 6, 8448],
+                    [78, 48, 3080],
+                    [78, 33, 121.6],
+                    [78, 57, 912],
+                    [78, 39, 48.64],
+                    [78, 58, 364.8],
+                    [78, 41, 21.1245],
+                    [78, 42, 164.3013],
+                    [78, 97, 295.7423],
+                    [78, 29, 1500],
+                    [78, 68, 26.4],
+                    [78, 78, 0.11],
+                    [78, 87, 0.11],
+                    [78, 90, 4.5],
+                    [78, 95, 0.5],
+                    [78, 82, 90],
+                    [78, 96, 50],
+                    [79, 98, 67.5],
+                    [79, 59, 1600],
+                    [79, 86, 833.3333],
+                    [79, 1, 0.0419],
+                    [79, 99, 17258.4],
+                    [79, 6, 10575],
+                    [79, 48, 3290],
+                    [79, 33, 148.2717],
+                    [79, 57, 1112.0377],
+                    [79, 39, 61.8293],
+                    [79, 58, 463.7197],
+                    [79, 41, 22.8465],
+                    [79, 42, 177.6949],
+                    [79, 97, 516.5591],
+                    [79, 29, 1754.79],
+                    [79, 68, 26.4],
+                    [79, 78, 0.11],
+                    [79, 87, 0.11],
+                    [79, 90, 4.5],
+                    [79, 95, 0.5],
+                    [79, 82, 90],
+                    [79, 96, 50],
+                    [80, 86, 833.3333],
+                    [80, 1, 0.0419],
+                    [80, 6, 10575],
+                    [80, 48, 3290],
+                    [80, 33, 174.9434],
+                    [80, 57, 1312.0754],
+                    [80, 39, 75.9254],
+                    [80, 58, 569.4407],
+                    [80, 41, 24.5685],
+                    [80, 42, 191.0885],
+                    [80, 97, 767.0292],
+                    [80, 29, 2009.58],
+                    [80, 68, 29.7],
+                    [80, 78, 0.11],
+                    [80, 87, 0.11],
+                    [80, 90, 4.5],
+                    [80, 95, 0.5],
+                    [80, 82, 90],
+                    [80, 96, 50],
+                    [81, 86, 833.3333],
+                    [81, 1, 0.0419],
+                    [81, 6, 10575],
+                    [81, 48, 3290],
+                    [81, 33, 199.034],
+                    [81, 57, 1492.7548],
+                    [81, 39, 89.426],
+                    [81, 58, 670.6947],
+                    [81, 41, 26.1239],
+                    [81, 42, 203.186],
+                    [81, 97, 1020.4002],
+                    [81, 29, 2239.74],
+                    [81, 68, 29.7],
+                    [81, 78, 0.11],
+                    [81, 87, 0.11],
+                    [81, 90, 4.5],
+                    [81, 95, 0.5],
+                    [81, 82, 90],
+                    [81, 96, 50],
+                    [82, 100, 67.5],
+                    [82, 86, 833.3333],
+                    [82, 1, 0.0419],
+                    [82, 6, 10575],
+                    [82, 48, 3290],
+                    [82, 33, 225.7057],
+                    [82, 57, 1692.7925],
+                    [82, 39, 105.2466],
+                    [82, 58, 789.3491],
+                    [82, 41, 27.846],
+                    [82, 42, 216.5796],
+                    [82, 97, 1327.4165],
+                    [82, 29, 2494.53],
+                    [82, 68, 29.7],
+                    [82, 78, 0.11],
+                    [82, 87, 0.11],
+                    [82, 90, 4.5],
+                    [82, 95, 0.5],
+                    [82, 82, 90],
+                    [82, 96, 50],
+                    [83, 101, 10],
+                    [83, 86, 833.3333],
+                    [83, 1, 0.0419],
+                    [83, 6, 10575],
+                    [83, 48, 3290],
+                    [83, 33, 251.517],
+                    [83, 57, 1886.3773],
+                    [83, 39, 121.4072],
+                    [83, 58, 910.5543],
+                    [83, 41, 29.5124],
+                    [83, 42, 229.5409],
+                    [83, 97, 1652.6946],
+                    [83, 29, 2741.1],
+                    [83, 68, 33],
+                    [83, 78, 0.11],
+                    [83, 87, 0.11],
+                    [83, 90, 4.5],
+                    [83, 95, 0.5],
+                    [83, 82, 90],
+                    [83, 96, 50],
+                    [84, 102, 20000],
+                    [84, 1, 0.0419],
+                    [84, 6, 10575],
+                    [84, 48, 3290],
+                    [84, 33, 278.1887],
+                    [84, 57, 2086.415],
+                    [84, 39, 139.0109],
+                    [84, 58, 1042.5816],
+                    [84, 41, 31.2344],
+                    [84, 42, 242.9345],
+                    [84, 97, 1939.3462],
+                    [84, 29, 2995.89],
+                    [84, 68, 33],
+                    [84, 78, 0.11],
+                    [84, 87, 0.11],
+                    [84, 90, 4.5],
+                    [84, 95, 0.5],
+                    [84, 82, 90],
+                    [84, 96, 50],
+                    [85, 1, 0.0419],
+                    [85, 6, 10575],
+                    [85, 48, 3290],
+                    [85, 33, 304],
+                    [85, 57, 2280],
+                    [85, 39, 156.9248],
+                    [85, 58, 1176.936],
+                    [85, 41, 32.901],
+                    [85, 42, 255.8966],
+                    [85, 97, 2236.2806],
+                    [85, 29, 3242.46],
+                    [85, 68, 33],
+                    [85, 78, 0.11],
+                    [85, 87, 0.11],
+                    [85, 90, 4.5],
+                    [85, 95, 0.5],
+                    [85, 82, 90],
+                    [85, 96, 50],
+                    [86, 103, 67.5],
+                    [86, 6, 10575],
+                    [86, 48, 3290],
+                    [86, 33, 309.774],
+                    [86, 57, 2323.305],
+                    [86, 39, 165.1715],
+                    [86, 58, 1238.7862],
+                    [86, 41, 34.623],
+                    [86, 42, 269.2902],
+                    [86, 97, 2564.1814],
+                    [86, 29, 3497.25],
+                    [86, 68, 36.3],
+                    [86, 78, 0.11],
+                    [86, 87, 0.11],
+                    [86, 90, 4.5],
+                    [86, 95, 0.5],
+                    [86, 82, 90],
+                    [86, 96, 50],
+                    [87, 6, 10575],
+                    [87, 48, 3290],
+                    [87, 33, 315.548],
+                    [87, 57, 2366.6101],
+                    [87, 39, 173.583],
+                    [87, 58, 1301.8722],
+                    [87, 104, 36.345],
+                    [87, 105, 282.683],
+                    [87, 106, 2913.0483],
+                    [87, 29, 3752.04],
+                    [87, 68, 36.3],
+                    [87, 78, 0.11],
+                    [87, 87, 0.11],
+                    [87, 90, 4.5],
+                    [87, 95, 0.5],
+                    [87, 82, 90],
+                    [87, 96, 50],
+                    [88, 6, 10575],
+                    [88, 48, 3290],
+                    [88, 33, 321.1358],
+                    [88, 57, 2408.5181],
+                    [88, 39, 181.9555],
+                    [88, 58, 1364.6664],
+                    [88, 104, 38.0115],
+                    [88, 105, 295.6451],
+                    [88, 106, 3270.1305],
+                    [88, 29, 3998.64],
+                    [88, 68, 36.3],
+                    [88, 78, 0.11],
+                    [88, 87, 0.11],
+                    [88, 90, 4.5],
+                    [88, 95, 0.5],
+                    [88, 82, 90],
+                    [88, 96, 50],
+                    [89, 107, 10],
+                    [89, 6, 10575],
+                    [89, 48, 3290],
+                    [89, 33, 326.9098],
+                    [89, 57, 2451.8232],
+                    [89, 39, 190.7845],
+                    [89, 58, 1430.884],
+                    [89, 104, 39.7335],
+                    [89, 105, 309.0387],
+                    [89, 106, 3660.2543],
+                    [89, 29, 4253.43],
+                    [89, 68, 39.6],
+                    [89, 78, 0.11],
+                    [89, 87, 0.11],
+                    [89, 90, 4.5],
+                    [89, 95, 0.5],
+                    [89, 82, 90],
+                    [89, 96, 50],
+                    [90, 6, 10575],
+                    [90, 48, 3290],
+                    [90, 33, 332.4975],
+                    [90, 57, 2493.7313],
+                    [90, 39, 199.4985],
+                    [90, 58, 1496.2388],
+                    [90, 104, 41.4],
+                    [90, 105, 322],
+                    [90, 106, 4057.2],
+                    [90, 29, 4500],
+                    [90, 68, 39.6],
+                    [90, 78, 0.11],
+                    [90, 87, 0.11],
+                    [90, 90, 4.5],
+                    [90, 95, 0.5],
+                    [90, 82, 90],
+                    [90, 96, 50],
+                    [91, 108, 1],
+                    [91, 109, 67.5],
+                    [91, 6, 7900],
+                    [91, 48, 2765],
+                    [91, 33, 338.2715],
+                    [91, 57, 2537.0363],
+                    [91, 39, 206.4133],
+                    [91, 58, 1548.0996],
+                    [91, 104, 48.4517],
+                    [91, 105, 376.8463],
+                    [91, 106, 4887.3191],
+                    [91, 29, 4652.97],
+                    [91, 68, 39.6],
+                    [91, 78, 0.11],
+                    [91, 87, 0.11],
+                    [91, 90, 4.5],
+                    [91, 95, 0.5],
+                    [91, 82, 90],
+                    [91, 96, 50],
+                    [92, 110, 0.32],
+                    [92, 6, 7900],
+                    [92, 48, 2765],
+                    [92, 33, 344.0455],
+                    [92, 57, 2580.3414],
+                    [92, 39, 213.4458],
+                    [92, 58, 1600.8438],
+                    [92, 104, 55.5033],
+                    [92, 105, 431.6925],
+                    [92, 106, 5757.9148],
+                    [92, 29, 4805.91],
+                    [92, 68, 39.6],
+                    [92, 78, 0.11],
+                    [92, 87, 0.11],
+                    [92, 90, 4.5],
+                    [92, 95, 0.5],
+                    [92, 82, 90],
+                    [92, 96, 50],
+                    [93, 6, 7900],
+                    [93, 48, 2765],
+                    [93, 33, 349.2607],
+                    [93, 57, 2619.4556],
+                    [93, 39, 219.8946],
+                    [93, 58, 1649.2093],
+                    [93, 104, 61.8725],
+                    [93, 105, 481.2306],
+                    [93, 106, 6574.5726],
+                    [93, 29, 4944.09],
+                    [93, 68, 42.9],
+                    [93, 78, 0.11],
+                    [93, 87, 0.11],
+                    [93, 90, 4.5],
+                    [93, 95, 0.5],
+                    [93, 82, 90],
+                    [93, 96, 50],
+                    [94, 111, 0.008],
+                    [94, 6, 7900],
+                    [94, 48, 2765],
+                    [94, 33, 355.0348],
+                    [94, 57, 2662.7607],
+                    [94, 39, 227.1512],
+                    [94, 58, 1703.6343],
+                    [94, 104, 68.9242],
+                    [94, 105, 536.0769],
+                    [94, 106, 7521.6946],
+                    [94, 29, 5097.03],
+                    [94, 68, 42.9],
+                    [94, 78, 0.11],
+                    [94, 87, 0.11],
+                    [94, 90, 4.5],
+                    [94, 95, 0.5],
+                    [94, 82, 90],
+                    [94, 96, 50],
+                    [94, 112, 73],
+                    [95, 113, 1.2667],
+                    [95, 6, 7900],
+                    [95, 48, 2765],
+                    [95, 33, 360.6225],
+                    [95, 57, 2704.6687],
+                    [95, 39, 234.2964],
+                    [95, 58, 1757.2233],
+                    [95, 104, 75.7483],
+                    [95, 105, 589.1537],
+                    [95, 106, 8478.5115],
+                    [95, 29, 5245.08],
+                    [95, 68, 42.9],
+                    [95, 78, 0.11],
+                    [95, 87, 0.11],
+                    [95, 90, 4.5],
+                    [95, 95, 0.5],
+                    [95, 82, 90],
+                    [95, 96, 50],
+                    [95, 112, 73],
+                    [96, 113, 1.2667],
+                    [96, 6, 7900],
+                    [96, 48, 2765],
+                    [96, 33, 366.3965],
+                    [96, 57, 2747.9737],
+                    [96, 39, 241.785],
+                    [96, 58, 1813.3879],
+                    [96, 104, 82.8],
+                    [96, 105, 644],
+                    [96, 106, 9499.644],
+                    [96, 29, 5398.02],
+                    [96, 68, 42.9],
+                    [96, 78, 0.11],
+                    [96, 87, 0.11],
+                    [96, 90, 4.5],
+                    [96, 95, 0.5],
+                    [96, 82, 90],
+                    [96, 96, 50],
+                    [96, 112, 73],
+                    [97, 113, 1.2667],
+                    [97, 6, 7900],
+                    [97, 48, 2765],
+                    [97, 33, 371.9842],
+                    [97, 57, 2789.8819],
+                    [97, 39, 249.1179],
+                    [97, 58, 1868.3839],
+                    [97, 104, 87.8901],
+                    [97, 105, 683.5899],
+                    [97, 106, 10329.727],
+                    [97, 29, 5546.04],
+                    [97, 68, 42.9],
+                    [97, 78, 0.11],
+                    [97, 87, 0.11],
+                    [97, 90, 4.5],
+                    [97, 95, 0.5],
+                    [97, 82, 90],
+                    [97, 96, 50],
+                    [97, 112, 73],
+                    [98, 6, 7900],
+                    [98, 48, 2765],
+                    [98, 33, 377.7583],
+                    [98, 57, 2833.1869],
+                    [98, 39, 256.8378],
+                    [98, 58, 1926.2838],
+                    [98, 104, 93.15],
+                    [98, 105, 724.5],
+                    [98, 106, 11215.26],
+                    [98, 29, 5699.01],
+                    [98, 68, 46.2],
+                    [98, 78, 0.11],
+                    [98, 87, 0.11],
+                    [98, 90, 4.5],
+                    [98, 95, 0.5],
+                    [98, 82, 90],
+                    [98, 96, 50],
+                    [98, 112, 73],
+                    [99, 6, 7900],
+                    [99, 48, 2765],
+                    [99, 33, 383.5322],
+                    [99, 57, 2876.4919],
+                    [99, 39, 264.6756],
+                    [99, 58, 1985.067],
+                    [99, 104, 98.4099],
+                    [99, 105, 765.4101],
+                    [99, 106, 12130.9847],
+                    [99, 29, 5851.98],
+                    [99, 68, 46.2],
+                    [99, 78, 0.11],
+                    [99, 87, 0.11],
+                    [99, 90, 4.5],
+                    [99, 95, 0.5],
+                    [99, 82, 90],
+                    [99, 96, 50],
+                    [99, 112, 73],
+                    [100, 6, 7900],
+                    [100, 48, 2765],
+                    [100, 33, 389.12],
+                    [100, 57, 2918.4],
+                    [100, 39, 272.384],
+                    [100, 58, 2042.88],
+                    [100, 104, 103.5],
+                    [100, 105, 805],
+                    [100, 106, 13041],
+                    [100, 29, 6000],
+                    [100, 68, 46.2],
+                    [100, 78, 0.11],
+                    [100, 87, 0.11],
+                    [100, 90, 4.5],
+                    [100, 95, 0.5],
+                    [100, 82, 90],
+                    [100, 96, 50],
+                    [100, 112, 73]
+                ]
+            };
+            const $ = s => document.querySelector(s),
+                $$ = s => [...document.querySelectorAll(s)];
+            const MN = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                LAST = 100;
+            const ym = i => [2018 + Math.floor((5 + i) / 12), (5 + i) % 12];
+            const mlabel = i => {
+                const [y, m] = ym(i);
+                return MN[m] + " " + y;
+            };
+            const mkey = i => {
+                const [y, m] = ym(i);
+                return y + "-" + String(m + 1).padStart(2, "0");
+            };
+            const esc = s =>
+                String(s ?? "").replace(
+                    /[&<>"']/g,
+                    c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]
+                );
+            function fmtTB(v) {
+                if (v >= 1e6) return (v / 1e6).toFixed(1) + "M TB";
+                if (v >= 100) return Math.round(v).toLocaleString("en-US") + " TB";
+                if (v >= 10) return v.toFixed(0) + " TB";
+                if (v >= 1) return v.toFixed(1) + " TB";
+                if (v > 0) return v.toPrecision(2) + " TB";
+                return "0 TB";
+            }
+            const pct = (v, d = 0) => (v * 100).toFixed(d) + "%";
+            const clean = s => {
+                s = s.replace(/\s*\((hyp\.|alleged|assumption|leak)\)\s*$/i, "").trim();
+                return s[0].toUpperCase() + s.slice(1);
+            };
+            const host = u => {
+                try {
+                    return new URL(u).hostname.replace(/^www\./, "");
+                } catch (e) {
+                    return "";
+                }
+            };
+            function toast(t) {
+                const n = $("#toast");
+                n.textContent = t;
+                n.style.display = "block";
+                clearTimeout(toast.h);
+                toast.h = setTimeout(() => (n.style.display = "none"), 2200);
+            }
+
+            const LV = [
+                {
+                    k: "confirmed",
+                    name: "Confirmed",
+                    g: "✓",
+                    def: "Stated by the lab itself, in a paper or model card, or established in a court record."
+                },
+                {
+                    k: "reported",
+                    name: "Reported",
+                    g: "R",
+                    def: "Credible press reporting, leaks or admissions, or a published policy that allows it. Usually not denied."
+                },
+                {
+                    k: "alleged",
+                    name: "Alleged",
+                    g: "!",
+                    def: "Claimed in a lawsuit or complaint. Disputed by the company; not proven."
+                },
+                {
+                    k: "assumption",
+                    name: "Assumption",
+                    g: "≈",
+                    def: "A modelled flow (labs × crawl snapshots, users × prompts…). The activity is documented; the volume is this model's estimate."
+                },
+                {
+                    k: "hypothesis",
+                    name: "Hypothesis",
+                    g: "?",
+                    def: "Not shown, and sometimes contradicting stated policy. Included only because this is a theoretical upper bound."
+                }
+            ];
+            const LVI = Object.fromEntries(LV.map((l, i) => [l.k, i]));
+            const badge = k => {
+                const l = LV[LVI[k]];
+                return `<span class="badge lvl-${k}"><i style="background:var(--ev-${k})">${l.g}</i>${l.name}</span>`;
+            };
+            const GROUPS = D.groups;
+
+            D.events.forEach((e, i) => {
+                e.id = i;
+                e.lv = e.tag === "policy" ? "reported" : e.tag;
+                e.first = 999;
+                e.last = -1;
+                e.tb = 0;
+                e.utb = 0;
+                e.n = new Set();
+                e.group = D.categories[e.cat].group;
+                e.title = clean(e.short);
+            });
+            for (const [mi, ei, tb] of D.inflow) {
+                const e = D.events[ei],
+                    c = D.categories[e.cat];
+                e.first = Math.min(e.first, mi);
+                e.last = Math.max(e.last, mi);
+                e.tb += tb;
+                e.utb += tb * c.useful;
+                e.n.add(mi);
+            }
+            const whenTxt = e =>
+                e.first === e.last ? mlabel(e.first) : mlabel(e.first) + " – " + (e.last === LAST ? "ongoing" : mlabel(e.last));
+
+            const S = {
+                q: "",
+                evf: new Set(LV.map(l => l.k)),
+                actor: "",
+                group: "",
+                kind: "",
+                sort: "first",
+                dir: 1,
+                open: new Set()
+            };
+            function initFilters() {
+                $("#evfilter").innerHTML = LV.map(
+                    l =>
+                        `<button class="chip" data-evf="${l.k}" aria-pressed="true"><span class="sw" style="background:var(--ev-${l.k})"></span>${l.name}</button>`
+                ).join("");
+                $$("[data-evf]").forEach(
+                    b =>
+                        (b.onclick = () => {
+                            const k = b.dataset.evf;
+                            S.evf.has(k) ? S.evf.delete(k) : S.evf.add(k);
+                            b.setAttribute("aria-pressed", S.evf.has(k));
+                            render();
+                        })
+                );
+                const actors = [...new Set(D.events.map(e => e.actor))].sort((a, b) => a.localeCompare(b));
+                $("#f-actor").innerHTML =
+                    `<option value="">All actors (${actors.length})</option>` +
+                    actors.map(a => `<option>${esc(a)}</option>`).join("");
+                $("#f-group").innerHTML =
+                    `<option value="">All data types</option>` +
+                    GROUPS.map((g, k) => `<option value="${k}">${esc(g)}</option>`).join("");
+                $("#q").oninput = e => {
+                    S.q = e.target.value.toLowerCase();
+                    render();
+                };
+                $("#f-actor").onchange = e => {
+                    S.actor = e.target.value;
+                    render();
+                };
+                $("#f-group").onchange = e => {
+                    S.group = e.target.value;
+                    render();
+                };
+                $("#f-kind").onchange = e => {
+                    S.kind = e.target.value;
+                    render();
+                };
+                $$("[data-sort]").forEach(
+                    b =>
+                        (b.onclick = () => {
+                            const k = b.dataset.sort;
+                            if (S.sort === k) S.dir *= -1;
+                            else {
+                                S.sort = k;
+                                S.dir = k === "tb" || k === "utb" ? -1 : 1;
+                            }
+                            render();
+                        })
+                );
+                $("#copylinks").onclick = copyLinks;
+                $("#dlsrc").onclick = dlSources;
+            }
+            function filtered() {
+                const q = S.q;
+                const L = D.events.filter(
+                    e =>
+                        S.evf.has(e.lv) &&
+                        (!S.actor || e.actor === S.actor) &&
+                        (S.group === "" || e.group === +S.group) &&
+                        (!S.kind || e.kind === S.kind) &&
+                        (!q ||
+                            (
+                                e.actor +
+                                " " +
+                                e.what +
+                                " " +
+                                e.short +
+                                " " +
+                                e.src +
+                                " " +
+                                e.status +
+                                " " +
+                                e.url +
+                                " " +
+                                D.categories[e.cat].name
+                            )
+                                .toLowerCase()
+                                .includes(q))
+                );
+                const k = S.sort;
+                return L.sort(
+                    (a, b) => (k === "actor" ? a.actor.localeCompare(b.actor) : a[k] - b[k]) * S.dir || a.first - b.first
+                );
+            }
+            function render() {
+                const L = filtered(),
+                    tb = $("#src-table tbody");
+                $$("[data-sort]").forEach(
+                    b =>
+                        (b.textContent =
+                            b.textContent.replace(/ [▲▼]$/, "") + (b.dataset.sort === S.sort ? (S.dir > 0 ? " ▲" : " ▼") : ""))
+                );
+                const links = new Set(L.filter(e => e.url).map(e => e.url)).size;
+                $("#rescount").textContent =
+                    `${L.length} of ${D.events.length} rows · ${links} distinct links · ${fmtTB(L.reduce((a, e) => a + e.tb, 0))} raw`;
+                tb.innerHTML = L.map(e => {
+                    const c = D.categories[e.cat];
+                    const kind =
+                        e.kind === "event"
+                            ? "one-off"
+                            : e.kind === "spread"
+                              ? "spread over months"
+                              : e.kind === "flow"
+                                ? "ongoing flow"
+                                : "backfill";
+                    const main = `<tr class="main" data-id="${e.id}" tabindex="0" aria-expanded="${S.open.has(e.id)}">
+      <td class="c-when" style="white-space:nowrap">${whenTxt(e)}</td><td>${esc(e.actor)}</td>
+      <td class="c-what"><div class="what">${esc(e.what)}</div><div class="st">${esc(c.name)} · ${kind}</div></td>
+      <td>${badge(e.lv)}<div class="st">${esc(e.status)}</div></td><td class="r">${fmtTB(e.tb)}</td><td class="r">${fmtTB(e.utb)}</td>
+      <td>${e.url ? `<a href="${esc(e.url)}" target="_blank" rel="noopener" onclick="event.stopPropagation()">${esc(e.src)}</a><div class="st">${esc(host(e.url))}</div>` : `<span class="st">${esc(e.src || "no link")}</span>`}</td></tr>`;
+                    const det = S.open.has(e.id)
+                        ? `<tr class="det"><td colspan="7"><b>${esc(c.name)}</b>: ${pct(c.useful, c.useful < 0.01 ? 1 : 0)} counted as useful. ${esc(c.why)}<br>
+      Machine-written share in this category: ${pct(c.llm[0])} (2018) → ${pct(c.llm[8])} (2026) · pool: ${c.pool >= 0 ? esc(D.pools[c.pool].name) : "machine-made, no ceiling"} · active ${e.n.size} month${e.n.size > 1 ? "s" : ""}</td></tr>`
+                        : "";
+                    return main + det;
+                }).join("");
+                tb.querySelectorAll("tr.main").forEach(r => {
+                    const f = () => {
+                        const id = +r.dataset.id;
+                        S.open.has(id) ? S.open.delete(id) : S.open.add(id);
+                        render();
+                    };
+                    r.onclick = f;
+                    r.onkeydown = ev => {
+                        if (ev.key === "Enter" || ev.key === " ") {
+                            ev.preventDefault();
+                            f();
+                        }
+                    };
+                });
+            }
+            async function copyLinks() {
+                const seen = new Set(),
+                    out = [];
+                for (const e of filtered()
+                    .slice()
+                    .sort((a, b) => a.first - b.first)) {
+                    if (!e.url || seen.has(e.url)) continue;
+                    seen.add(e.url);
+                    out.push(`${mkey(e.first)} ${e.actor}, ${e.title} (${e.src}): ${e.url}`);
+                }
+                const txt = out.join("\n");
+                try {
+                    await navigator.clipboard.writeText(txt);
+                } catch (err) {
+                    const t = document.createElement("textarea");
+                    t.value = txt;
+                    document.body.appendChild(t);
+                    t.select();
+                    document.execCommand("copy");
+                    t.remove();
+                }
+                toast(`Copied ${out.length} links`);
+            }
+            function dlSources() {
+                const rows = [
+                    [
+                        "First month",
+                        "Last month",
+                        "Actor",
+                        "What entered",
+                        "Evidence",
+                        "Status",
+                        "Category",
+                        "Raw TB",
+                        "Useful TB",
+                        "Source",
+                        "URL"
+                    ],
+                    ...filtered().map(e => [
+                        mkey(e.first),
+                        mkey(e.last),
+                        e.actor,
+                        e.what,
+                        LV[LVI[e.lv]].name,
+                        e.status,
+                        D.categories[e.cat].name,
+                        e.tb.toFixed(3),
+                        e.utb.toFixed(3),
+                        e.src,
+                        e.url
+                    ])
+                ];
+                const csv = rows
+                    .map(r =>
+                        r
+                            .map(v => {
+                                v = String(v ?? "");
+                                return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v;
+                            })
+                            .join(",")
+                    )
+                    .join("\n");
+                const a = document.createElement("a");
+                a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+                a.download = "ai_training_data_sources.csv";
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+            }
+            initFilters();
+            render();
+        </script>
+    </body>
+</html>

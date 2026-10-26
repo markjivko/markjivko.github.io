@@ -177,6 +177,22 @@ button.danger:hover{background:#4a1f24;border-color:#a33}
   </section>
 
   <section>
+    <h2>Idle wiggle</h2>
+    <label class="row two"><span>Motion</span>
+      <select data-k="wigStyle">
+        <option value="float">Float (drift + tilt)</option>
+        <option value="tilt">Tilt</option>
+        <option value="drift">Drift</option>
+        <option value="breathe">Breathe (scale)</option>
+        <option value="jitter">Jitter (nervous)</option>
+      </select>
+    </label>
+    <label class="row"><span>Strength</span><input type="range" data-k="wigAmt" min="0" max="100" step="1"><output data-o="wigAmt"></output></label>
+    <label class="row"><span>Speed</span><input type="range" data-k="wigSpeed" min="0.1" max="4" step="0.05"><output data-o="wigSpeed"></output></label>
+    <p class="note">Each card eases into its own loop right after it lands and keeps going forever. Strength 0 turns it off. Paused in Edit layout so cards stay put while you arrange them.</p>
+  </section>
+
+  <section>
     <h2>Sound</h2>
     <label class="check"><input type="checkbox" data-k="sound">Bam on every card</label>
     <label class="row two"><span>Sound</span><select data-k="soundPreset" id="soundSel"></select></label>
@@ -234,7 +250,7 @@ const $$ = s => [...document.querySelectorAll(s)];
 /* ===================== Settings ===================== */
 const DEFAULTS = {
   bg:'black', total:8, preDelay:500, curve:'quadIn', power:2.5, bx1:0.55, by1:0, bx2:0.9, by2:0.35, jitter:15,
-  style:'mixed', mixSlam:true, mixPop:true, mixDrop:true, mixSlide:true, dur:320, adaptDur:true, shake:0.5,
+  style:'mixed', mixSlam:true, mixPop:true, mixDrop:true, mixSlide:true, dur:320, adaptDur:true, shake:0.5, wigAmt:30, wigSpeed:1, wigStyle:'float',
   sound:true, soundPreset:'thud', minSoundGap:90, volume:0.8, pitchVar:0.12, soundOffset:0,
   size:16, autoSize:true, sizeVar:20, tilt:4, margin:40, radius:16, shadow:true,
   autoHidePanel:true, hideCursor:true, seed:1, layoutSeed:1, gx:0, gy:0, gs:1, lockFrame:false
@@ -476,7 +492,7 @@ function setT(c,o){
 }
 const FINAL={dx:0,dy:0,rot:0,s:1,op:1,blur:0};
 const applyFinal = c => setT(c,FINAL);
-function showFinal(){ cards.forEach(c=>{ ensureEl(c); applyFinal(c); }); shakeEl.style.transform=''; updateSel(); }
+function showFinal(){ cards.forEach(c=>{ ensureEl(c); applyFinal(c); }); shakeEl.style.transform=''; updateSel(); idleK=0; idleStatic=false; }
 function hideAll(){ cards.forEach(c=>{ if(c.el) c.el.style.visibility='hidden'; }); }
 
 /* ===================== Auto layout (keeps most of each card visible) ===================== */
@@ -540,6 +556,38 @@ function removeCard(id){
   renderCards(); showFinal(); renderList(); drawPreview(); saveAll();
 }
 
+/* ===================== Idle wiggle ===================== */
+const WIG = { // weights: drift x/y, tilt, scale, frequency multiplier
+  float:  {d:1,   r:1,    s:0.3, f:1},
+  tilt:   {d:0.1, r:1.4,  s:0,   f:1},
+  drift:  {d:1.3, r:0.15, s:0,   f:1},
+  breathe:{d:0.2, r:0.2,  s:1.2, f:0.8},
+  jitter: {d:0.45,r:0.5,  s:0.2, f:5}
+};
+let wigClock=0, idleK=0, lastFrame=performance.now(), idleStatic=false;
+const smooth = k => k*k*(3-2*k);
+function wobble(c, k){
+  if(!k || !S.wigAmt) return FINAL;
+  if(!c._w){ const r=rng('wig',c.id); c._w={p:Array.from({length:8},()=>r()*Math.PI*2), f:Array.from({length:8},()=>0.8+r()*0.4)}; }
+  const w=c._w, st=WIG[S.wigStyle]||WIG.float, A=S.wigAmt/100*k, T=wigClock*2*Math.PI*st.f;
+  const n=(i)=> (Math.sin(T*0.31*w.f[i]+w.p[i]) + 0.55*Math.sin(T*0.73*w.f[i+1]+w.p[i+1]))/1.55;
+  return {dx:A*12*st.d*n(0), dy:A*12*st.d*n(2), rot:A*3*st.r*n(4), s:1+A*0.025*st.s*n(6), op:1, blur:0};
+}
+function frame(now){
+  const dt=Math.min(0.1, Math.max(0,(now-lastFrame)/1000)); lastFrame=now;
+  wigClock += dt*S.wigSpeed;
+  if(play){ tick(); }
+  else if(!editing && cards.length){
+    if(S.wigAmt){
+      idleStatic=false;
+      idleK=Math.min(1, idleK+dt/0.6); const k=smooth(idleK);
+      for(const c of cards) if(c.el && c.el.style.visibility==='visible') setT(c, wobble(c,k));
+    } else if(!idleStatic){ cards.forEach(c=>{ if(c.el && c.el.style.visibility==='visible') applyFinal(c); }); idleStatic=true; }
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
 /* ===================== Playback ===================== */
 let play=null;
 function stopPlay(){
@@ -571,7 +619,6 @@ async function restart(){
     });
   }
   play.lastImp = sched.length ? Math.max(...sched.map(e=>e.start+e.dur)) : 0;
-  play.raf = requestAnimationFrame(tick);
 }
 function tick(){
   if(!play) return;
@@ -580,7 +627,7 @@ function tick(){
     const lt = t - e.start;
     if(lt<0){ e.c.el.style.visibility='hidden'; continue; }
     const p = lt / e.dur;
-    if(p>=1){ if(!e.done){ applyFinal(e.c); e.done=true; } continue; }
+    if(p>=1){ setT(e.c, wobble(e.c, smooth(clamp((lt-e.dur)/450,0,1)))); continue; }
     setT(e.c, STYLES[e.style](p,e));
   }
   let sx=0, sy=0, sr=0;
@@ -591,8 +638,7 @@ function tick(){
   }
   const A=Math.max(1,S.shake*34);
   shakeEl.style.transform = (sx||sy) ? `translate3d(${(A*Math.tanh(sx/A)).toFixed(2)}px,${(A*Math.tanh(sy/A)).toFixed(2)}px,0) rotate(${(0.8*Math.tanh(sr/0.8)).toFixed(3)}deg)` : '';
-  if(t > play.lastImp + 500){ shakeEl.style.transform=''; play.sched.forEach(e=>applyFinal(e.c)); play.raf=0; return; }
-  play.raf = requestAnimationFrame(tick);
+  if(t > play.lastImp + 500){ shakeEl.style.transform=''; play=null; idleK=1; return; }
 }
 
 /* ===================== Edit layout ===================== */
@@ -600,6 +646,7 @@ let editing=false, selId=null, drag=null;
 function setEdit(on){
   if(on===editing) return;
   editing=on; document.body.classList.toggle('editing',on);
+  if(!on){ idleK=0; idleStatic=false; }
   $('#bEdit').classList.toggle('on',on); $('#bEdit').textContent = on ? 'Done editing' : 'Edit layout';
   if(on){ if(play){ cancelAnimationFrame(play.raf); play=null; stopSounds(); } showFinal(); document.body.classList.remove('nocursor'); }
   updateSel();
@@ -774,7 +821,7 @@ function drawPreview(){
 
 /* ===================== UI binding ===================== */
 const FMT={total:v=>v+'s',preDelay:v=>v+'ms',power:v=>(+v).toFixed(1),jitter:v=>v+'%',dur:v=>v+'ms',shake:v=>Math.round(v*100)+'%',
-  volume:v=>Math.round(v*100)+'%',pitchVar:v=>'±'+Math.round(v*100)+'%',soundOffset:v=>(v>0?'+':'')+v+'ms',minSoundGap:v=>v?v+'ms':'off',size:v=>v+'%',sizeVar:v=>'±'+v+'%',tilt:v=>'±'+v+'°',margin:v=>v+'px',radius:v=>v+'px',gs:v=>Math.round(v*100)+'%'};
+  volume:v=>Math.round(v*100)+'%',pitchVar:v=>'±'+Math.round(v*100)+'%',soundOffset:v=>(v>0?'+':'')+v+'ms',minSoundGap:v=>v?v+'ms':'off',wigAmt:v=>v?v+'%':'off',wigSpeed:v=>(+v).toFixed(2).replace(/\.?0+$/,'')+'×',size:v=>v+'%',sizeVar:v=>'±'+v+'%',tilt:v=>'±'+v+'°',margin:v=>v+'px',radius:v=>v+'px',gs:v=>Math.round(v*100)+'%'};
 function updateOutputs(){ $$('[data-o]').forEach(o=>{ const k=o.dataset.o; o.textContent=(FMT[k]||String)(S[k]); }); }
 function applyLook(){
   const root=document.documentElement.style;
