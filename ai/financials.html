@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI Financials</title>
+<style>
+  :root {
+    --bg: #faf9f6;
+    --card: #ffffff;
+    --ink: #1c1b19;
+    --muted: #6b6760;
+    --line: #e6e2da;
+    --accent: #c2410c;
+    --primary: #166534;
+    --primary-bg: #dcfce7;
+    --counter: #7c2d12;
+    --counter-bg: #ffedd5;
+    --pay: #57534e;
+    --pay-bg: #e7e5e4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151412;
+      --card: #1e1d1a;
+      --ink: #ecebe7;
+      --muted: #a29e96;
+      --line: #34322d;
+      --accent: #fb923c;
+      --primary: #86efac;
+      --primary-bg: #14532d;
+      --counter: #fed7aa;
+      --counter-bg: #7c2d12;
+      --pay: #d6d3d1;
+      --pay-bg: #44403c;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 48px 20px 80px; }
+  header h1 { font-size: 2.2rem; line-height: 1.15; margin: 0 0 8px; letter-spacing: -0.02em; }
+  header p { color: var(--muted); margin: 0 0 6px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0 8px; font-size: 0.85rem; color: var(--muted); align-items: center; }
+  nav.toc { margin: 28px 0 36px; padding: 16px 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); }
+  nav.toc ol { margin: 0; padding-left: 22px; columns: 2; column-gap: 32px; }
+  nav.toc li { margin: 3px 0; break-inside: avoid; }
+  nav.toc a { color: var(--ink); text-decoration: none; }
+  nav.toc a:hover { color: var(--accent); }
+  @media (max-width: 600px) { nav.toc ol { columns: 1; } }
+  section.item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 22px 24px 18px;
+    margin: 0 0 22px;
+    scroll-margin-top: 16px;
+  }
+  .item h2 { margin: 0 0 6px; font-size: 1.3rem; display: flex; gap: 12px; align-items: baseline; }
+  .num { color: var(--accent); font-variant-numeric: tabular-nums; font-weight: 700; }
+  .summary { margin: 0 0 14px; }
+  ul.sources { list-style: none; margin: 0; padding: 0; }
+  ul.sources li { padding: 10px 0; border-top: 1px solid var(--line); }
+  ul.sources a { color: var(--ink); font-weight: 600; text-decoration-color: var(--line); text-underline-offset: 3px; }
+  ul.sources a:hover { color: var(--accent); text-decoration-color: var(--accent); }
+  .meta { color: var(--muted); font-size: 0.88rem; }
+  .why { display: block; font-size: 0.92rem; margin-top: 2px; }
+  .tag { display: inline-block; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; padding: 2px 7px; border-radius: 999px; margin-left: 6px; vertical-align: 1px; }
+  .t-primary { color: var(--primary); background: var(--primary-bg); }
+  .t-counter { color: var(--counter); background: var(--counter-bg); }
+  .t-pay { color: var(--pay); background: var(--pay-bg); }
+  footer { color: var(--muted); font-size: 0.85rem; margin-top: 40px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>The Math Doesn't Math</h1>
+  <p>Nine places where the economics of the AI boom don't add up, each with sources you can check yourself.</p>
+  <p>Links last checked November 9, 2026.</p>
+  <div class="legend">
+    <span><span class="tag t-primary">Primary</span> original data, filing or study</span>
+    <span><span class="tag t-counter">Counterpoint</span> the other side</span>
+    <span><span class="tag t-pay">Paywall</span> may require a subscription</span>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Contents">
+  <ol>
+    <li><a href="#i1">Google cannibalized search</a></li>
+    <li><a href="#i2">Cheaper tokens, pricier tasks</a></li>
+    <li><a href="#i3">95% free riders</a></li>
+    <li><a href="#i4">$1.4T on $13B</a></li>
+    <li><a href="#i5">The revenue gap</a></li>
+    <li><a href="#i6">Circular money</a></li>
+    <li><a href="#i7">Even Google went cash-negative</a></li>
+    <li><a href="#i8">Oracle: one notch above junk</a></li>
+    <li><a href="#i9">Your power bill subsidizes it</a></li>
+  </ol>
+</nav>
+
+<section class="item" id="i1">
+  <h2><span class="num">1</span> Google cannibalized search</h2>
+  <p class="summary">AI Overviews nearly halve clicks on regular results, which hurts organic links and ads alike. And each AI answer costs Google several times more to produce than the cheap keyword lookup its business was built on.</p>
+  <ul class="sources">
+    <li><a href="https://www.pewresearch.org/short-reads/2025/07/22/google-users-are-less-likely-to-click-on-links-when-an-ai-summary-appears-in-the-results/">Google users are less likely to click on links when an AI summary appears</a><span class="tag t-primary">Primary</span>
+      <div class="meta">Pew Research Center · Jul 2025</div>
+      <span class="why">The core data: 8% of visits with an AI summary led to a click on a regular result, versus 15% without one, and only 1% clicked a link inside the summary.</span></li>
+    <li><a href="https://www.reuters.com/technology/tech-giants-ai-like-bing-bard-poses-billion-dollar-search-problem-2023-02-22/">For tech giants, AI like Bing and Bard poses billion-dollar search problem</a>
+      <div class="meta">Reuters · Feb 2023</div>
+      <span class="why">Alphabet's chairman estimates an LLM exchange costs about 10x a standard keyword search.</span></li>
+    <li><a href="https://www.theregister.com/2025/07/22/google_ai_overviews_suppress_search/">Google AI Overviews are killing the web: Pew study</a>
+      <div class="meta">The Register · Jul 2025</div>
+      <span class="why">Readable write-up of the Pew findings and what they mean for publishers.</span></li>
+    <li><a href="https://www.seroundtable.com/pew-google-ai-overviews-39808.html">Pew: Google AI Overviews lead to fewer clicks</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">Search Engine Roundtable · Jul 2025</div>
+      <span class="why">Includes the study's charts and Google's objections to its methodology.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i2">
+  <h2><span class="num">2</span> Cheaper tokens, pricier tasks</h2>
+  <p class="summary">The price per token keeps falling, but newer models use far more tokens per task. OpenAI's inference costs quadrupled in 2025, it loses money on its $200 plan, and the startups building on these models pay more for AI than they earn.</p>
+  <ul class="sources">
+    <li><a href="https://arxiv.org/html/2511.23455">Research paper on frontier model price trends</a><span class="tag t-primary">Primary</span>
+      <div class="meta">arXiv 2511.23455 · Nov 2025</div>
+      <span class="why">The price for a fixed level of performance falls 5–10x a year, while the cost of running frontier models rises 3–18x a year.</span></li>
+    <li><a href="https://www.business-standard.com/world-news/openai-expects-600-bn-in-compute-spending-through-2030-ahead-of-ipo-126022100286_1.html">OpenAI expects $600 bn in compute spending through 2030 ahead of IPO</a>
+      <div class="meta">Business Standard / Reuters, citing The Information · 2026</div>
+      <span class="why">Inference costs rose fourfold in 2025, and adjusted gross margin fell from 40% to 33%.</span></li>
+    <li><a href="https://techcrunch.com/2025/01/05/openai-is-losing-money-on-its-pricey-chatgpt-pro-plan-ceo-sam-altman-says/">OpenAI is losing money on its pricey ChatGPT Pro plan, CEO Sam Altman says</a>
+      <div class="meta">TechCrunch · Jan 2025</div>
+      <span class="why">Even at $200 a month, heavy users cost more to serve than they pay.</span></li>
+    <li><a href="https://www.saastr.com/have-ai-gross-margins-really-turned-the-corner/">Have AI gross margins really turned the corner?</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">SaaStr</div>
+      <span class="why">Cursor's estimated −30% gross margin, alongside evidence that the AI labs' own margins are improving.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i3">
+  <h2><span class="num">3</span> 95% free riders</h2>
+  <p class="summary">ChatGPT has hundreds of millions of weekly users, but only about 1 in 20 pay for it. The rest cost money to serve, so the business plan depends on ads and commerce that don't exist at scale yet.</p>
+  <ul class="sources">
+    <li><a href="https://www.theregister.com/2025/10/15/openais_chatgpt_popular_few_pay/">OpenAI's ChatGPT is so popular that almost no one will pay for it</a>
+      <div class="meta">The Register · Oct 2025</div>
+      <span class="why">The 5% figure, attributed to a senior OpenAI executive via the FT, plus Menlo Ventures' estimate that only 3% of generative AI users pay.</span></li>
+    <li><a href="https://9to5mac.com/2026/02/27/chatgpt-approaching-1-billion-weekly-active-users/">ChatGPT user base surges 350% in 18 months as it nears 1 billion weekly active users</a><span class="tag t-primary">Primary</span>
+      <div class="meta">9to5Mac, quoting OpenAI · Feb 2026</div>
+      <span class="why">OpenAI's own update: 900M weekly users and more than 50M consumer subscribers, still just over 5%.</span></li>
+    <li><a href="https://www.thestar.com.my/tech/tech-news/2025/11/26/openai-projects-220-million-paying-chatgpt-users-by-2030-the-information-reports">OpenAI projects 220 million paying ChatGPT users by 2030</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">Reuters via The Star, citing The Information · Nov 2025</div>
+      <span class="why">OpenAI's plan to lift paid conversion to about 8.5% by 2030.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i4">
+  <h2><span class="num">4</span> $1.4T on $13B</h2>
+  <p class="summary">OpenAI has signed about $1.4 trillion in compute commitments while bringing in about $13 billion of revenue in 2025. The commitments are roughly 100 times its yearly revenue.</p>
+  <ul class="sources">
+    <li><a href="https://techcrunch.com/2025/11/06/sam-altman-says-openai-has-20b-arr-and-about-1-4-trillion-in-data-center-commitments/">Sam Altman says OpenAI has $20B ARR and about $1.4 trillion in data center commitments</a><span class="tag t-primary">Primary</span>
+      <div class="meta">TechCrunch, quoting Altman's post · Nov 2025</div>
+      <span class="why">Altman's own numbers, in his own words.</span></li>
+    <li><a href="https://www.datacenterdynamics.com/en/news/sam-altman-openai-isnt-seeking-a-government-bailout-has-14tn-in-data-center-commitments-may-launch-an-ai-cloud-service/">OpenAI isn't seeking a government bailout, has $1.4tn in data center commitments</a>
+      <div class="meta">DatacenterDynamics · Nov 2025</div>
+      <span class="why">The backstory: the CFO's "federal backstop" remark, and who the commitments are with.</span></li>
+    <li><a href="https://www.theregister.com/2025/10/29/microsoft_earnings_q1_26_openai_loss/">Microsoft just revealed that OpenAI lost more than $11.5B last quarter</a>
+      <div class="meta">The Register · Oct 2025</div>
+      <span class="why">Working backward from Microsoft's SEC filing to OpenAI's quarterly loss.</span></li>
+    <li><a href="https://www.business-standard.com/world-news/openai-expects-600-bn-in-compute-spending-through-2030-ahead-of-ipo-126022100286_1.html">OpenAI expects $600 bn in compute spending through 2030</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">Business Standard / Reuters · 2026</div>
+      <span class="why">The more recent, smaller $600B target, and $13B of 2025 revenue that beat its own projection.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i5">
+  <h2><span class="num">5</span> The revenue gap</h2>
+  <p class="summary">Several analyses estimate how much revenue AI needs to justify the buildout, and all of them land far above what the industry earns today.</p>
+  <ul class="sources">
+    <li><a href="https://www.bloomberg.com/news/articles/2025-09-23/an-800-billion-revenue-shortfall-threatens-ai-future-bain-says">An $800 Billion Revenue Shortfall Threatens AI Future, Bain Says</a><span class="tag t-pay">Paywall</span>
+      <div class="meta">Bloomberg · Sep 2025</div>
+      <span class="why">Bain: about $2T a year needed by 2030, with an expected $800B shortfall.</span></li>
+    <li><a href="https://www.tomshardware.com/tech-industry/bain-says-compute-demand-is-outpacing-capital">Bain says compute demand is outpacing capital</a>
+      <div class="meta">Tom's Hardware · Sep 2025</div>
+      <span class="why">Free-to-read summary of the Bain report, including the 200 GW power estimate.</span></li>
+    <li><a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/usd650-billion-in-annual-revenue-required-to-deliver-10-percent-return-on-ai-buildout-investment-j-p-morgan-claims-equivalent-to-usd35-payment-from-every-iphone-user-or-usd180-from-every-netflix-subscriber-in-perpetuity">$650 billion in annual revenue required to deliver 10% return on AI buildout</a>
+      <div class="meta">Tom's Hardware on J.P. Morgan · Nov 2025</div>
+      <span class="why">The $34.72 a month per iPhone user comparison.</span></li>
+    <li><a href="https://www.fortune.com/2025/12/03/ibm-ceo-no-way-hyperscalers-google-amazon-turn-profit-data-center-spending">IBM CEO warns there's 'no way' hyperscalers will turn a profit at this rate of spending</a>
+      <div class="meta">Fortune · Dec 2025</div>
+      <span class="why">Arvind Krishna's back-of-the-envelope math: $8T of capex needs about $800B of profit a year just to cover interest.</span></li>
+    <li><a href="https://www.aol.com/articles/jpmorgan-says-michael-burry-dead-161646229.html">JPMorgan says Michael Burry is dead wrong about AI</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">24/7 Wall St. via AOL · Nov 2025</div>
+      <span class="why">The bull reading of the same J.P. Morgan numbers: about 0.58% of global GDP, which it argues is achievable.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i6">
+  <h2><span class="num">6</span> Circular money</h2>
+  <p class="summary">Chipmakers invest in AI labs, and the labs spend that money on the same chipmakers' hardware, often through cloud providers that are also tied into the deals. Revenue moves around the circle, but little new money enters from outside it.</p>
+  <ul class="sources">
+    <li><a href="https://www.bloomberg.com/news/features/2025-10-07/openai-s-nvidia-amd-deals-boost-1-trillion-ai-boom-with-circular-deals">OpenAI, Nvidia Fuel $1 Trillion AI Market With Web of Circular Deals</a><span class="tag t-pay">Paywall</span>
+      <div class="meta">Bloomberg · Oct 2025</div>
+      <span class="why">The definitive map of who is paying whom.</span></li>
+    <li><a href="https://www.theregister.com/2025/11/04/the_circular_economy_of_ai/">AI's trillion dollar deal wheel bubbling around Nvidia, OpenAI</a>
+      <div class="meta">The Register · Nov 2025</div>
+      <span class="why">Free walkthrough of the Nvidia, Oracle, CoreWeave, AMD and Microsoft deals.</span></li>
+    <li><a href="https://www.business-standard.com/amp/companies/news/nvidia-openai-deal-sparks-concerns-over-circular-financing-in-ai-boom-125092401589_1.html">Nvidia-OpenAI deal sparks concerns over circular financing in AI boom</a>
+      <div class="meta">Bloomberg via Business Standard · Sep 2025</div>
+      <span class="why">Analyst reaction at announcement, including Bernstein's Stacy Rasgon.</span></li>
+    <li><a href="https://www.tomshardware.com/tech-industry/softbank-exits-nvidia-with-5-83-billion-sale">SoftBank offloads entire $5.83 billion stake in Nvidia to fund OpenAI</a>
+      <div class="meta">Tom's Hardware · Nov 2025</div>
+      <span class="why">The loop from another angle: SoftBank sold Nvidia shares to fund OpenAI, which buys Nvidia hardware.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i7">
+  <h2><span class="num">7</span> Even Google went cash-negative</h2>
+  <p class="summary">Alphabet ran one of the most profitable businesses in history. AI capex has pushed its free cash flow below zero for the first time since its 2004 IPO, and it is now selling stock and bonds to pay for the buildout.</p>
+  <ul class="sources">
+    <li><a href="https://www.semafor.com/article/07/23/2026/alphabets-free-cash-flow-turns-negative">Alphabet's free cash flow turns negative</a>
+      <div class="meta">Semafor · Jul 2026</div>
+      <span class="why">The Q2 2026 milestone, zero buybacks, and the 7% stock drop.</span></li>
+    <li><a href="https://www.sec.gov/Archives/edgar/data/0001652044/000119312526251733/d160205dfwp.htm">Alphabet announces proposed $80 billion equity capital raise</a><span class="tag t-primary">Primary</span>
+      <div class="meta">SEC filing (Form FWP) · Jun 2026</div>
+      <span class="why">Alphabet's own filing announcing an $80B equity raise to fund AI compute.</span></li>
+    <li><a href="https://www.fool.com/investing/2026/11/03/alphabets-free-cash-flow-just-turned-negative/">Alphabet's free cash flow just turned negative</a>
+      <div class="meta">The Motley Fool · Nov 2026</div>
+      <span class="why">Q3 2026 was negative again, by about $9.1B, though trailing 12-month free cash flow is still positive.</span></li>
+    <li><a href="https://finance.yahoo.com/markets/stocks/articles/alphabet-free-cash-flow-just-080334746.html">Alphabet's free cash flow just went negative. Here's what the debt behind it says.</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">Yahoo Finance · 2026</div>
+      <span class="why">Debt grew from about $16B to about $100B, but cloud backlog may pay it back.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i8">
+  <h2><span class="num">8</span> Oracle: one notch above junk</h2>
+  <p class="summary">Oracle borrowed heavily to build data centers, mostly for a single customer that is itself losing money. Its credit rating is now one step above junk, and the cost of insuring its debt is at a record.</p>
+  <ul class="sources">
+    <li><a href="https://thenextweb.com/news/oracle-sp-downgrade-ai-spending-junk-risk">Oracle is one notch above junk after S&amp;P downgrade</a>
+      <div class="meta">The Next Web · Jul 2026</div>
+      <span class="why">BBB-, nearly $24B of cash burn, and about half of its $638B backlog tied to OpenAI.</span></li>
+    <li><a href="https://www.computing.co.uk/news/2026/ai/oracle-under-pressure-after-ratings-downgrade-over-ai-expansion">Oracle under pressure after ratings downgrade over AI expansion</a>
+      <div class="meta">Computing.co.uk · Jul 2026</div>
+      <span class="why">Over $55B of capex, a negative outlook from Moody's, and about 21,000 jobs eliminated.</span></li>
+    <li><a href="https://www.marketbeat.com/articles/oracle-is-one-step-from-junkcan-it-afford-the-ai-boom/">Oracle is one step from junk. Can it afford the AI boom?</a>
+      <div class="meta">MarketBeat · Jul 2026</div>
+      <span class="why">S&amp;P's projected $42B deficit for fiscal 2027, and how Oracle compares with Microsoft, Alphabet and Amazon.</span></li>
+    <li><a href="https://www.fool.com/investing/2026/04/10/oracles-credit-risk-is-at-an-all-time-high/">Oracle's credit risk is at an all-time high</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">The Motley Fool · Apr 2026</div>
+      <span class="why">The credit-default-swap record, plus the bull case that the backlog turns into cash.</span></li>
+  </ul>
+</section>
+
+<section class="item" id="i9">
+  <h2><span class="num">9</span> Your power bill subsidizes it</h2>
+  <p class="summary">Data centers are driving up wholesale electricity prices, and utilities pass those costs on to the households and businesses nearby. Part of the cost of the AI buildout ends up on ordinary power bills.</p>
+  <ul class="sources">
+    <li><a href="https://www.bloomberg.com/graphics/2025-ai-data-centers-electricity-prices/">AI Data Centers Are Sending Power Bills Soaring</a><span class="tag t-primary">Primary</span><span class="tag t-pay">Paywall</span>
+      <div class="meta">Bloomberg News analysis · Sep 2025</div>
+      <span class="why">Analysis of prices at 25,000 grid locations: wholesale electricity up as much as 267% in five years near data centers.</span></li>
+    <li><a href="https://www.tomshardware.com/tech-industry/data-center-boom-sends-some-wholesale-electricity-prices-soaring-up-to-267-percent-in-five-years-says-report-as-global-rollout-of-ai-factories-continues-apace">Data center boom sends some wholesale electricity prices soaring up to 267%</a>
+      <div class="meta">Tom's Hardware · Oct 2025</div>
+      <span class="why">Free-to-read summary of the Bloomberg analysis.</span></li>
+    <li><a href="https://www.semafor.com/article/10/01/2025/ai-data-centers-drive-surge-in-us-electricity-costs">AI data centers drive surge in US electricity costs</a>
+      <div class="meta">Semafor · Oct 2025</div>
+      <span class="why">Short version with a city-by-city chart.</span></li>
+    <li><a href="https://gigafact.org/fact-briefs/can-data-centers-lead-to-higher-energy-prices/">Can data centers lead to higher energy prices?</a><span class="tag t-counter">Counterpoint</span>
+      <div class="meta">Gigafact · Nov 2025</div>
+      <span class="why">Fact brief that also points to a Washington Post analysis arguing other factors drive most of the price increases.</span></li>
+  </ul>
+</section>
+
+<footer>
+  Figures are as reported by each source at publication. Some are estimates or come from unnamed sources, so check the original before quoting.
+</footer>
+
+</div>
+</body>
+</html>
