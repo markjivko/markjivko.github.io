@@ -90,6 +90,9 @@
     <div class="dz" data-side="L"><div class="side">Left</div><div class="name empty">Drop or click</div><div class="kind"></div><button class="x" data-clear="L">Clear</button></div>
     <div class="dz" data-side="R"><div class="side">Right</div><div class="name empty">Drop or click</div><div class="kind"></div><button class="x" data-clear="R">Clear</button></div>
   </div>
+  <div class="row two" style="margin-top:10px"><label>Attach to bar</label>
+    <select data-k="attach"><option value="none">None (media stays put)</option><option value="right">Right media slides with bar</option>
+      <option value="left">Left media slides with bar</option><option value="both">Both slide with bar</option></select></div>
   <div class="btns"><button id="swap">Swap sides</button><button id="resync">Resync videos</button></div>
   <div id="msg"></div>
 
@@ -181,7 +184,7 @@ import * as THREE from 'three';
 const KEY = 'broll-compare.v1';
 const DEF = {
   labelL: 'Before', labelR: 'After', showLabels: true, labelSize: 64, lsL: 1, lsR: 1,
-  labelPos: 'below', gapOut: 2.2, gapIn: 2.2, labelAlign: 'edges', font: 'Inter Tight', labelColor: '#ffffff', outline: 0.6,
+  attach: 'none', labelPos: 'below', gapOut: 2.2, gapIn: 2.2, labelAlign: 'edges', font: 'Inter Tight', labelColor: '#ffffff', outline: 0.6,
   upper: true, fadeLabels: true,
   angle: 0, thick: 0, barColor: '#ffffff', handle: 'hover', dragAnywhere: true, split: 0.5,
   bg: 'black', areaW: 100, scale: 82, offX: 0, offY: 0, radius: 12, tiltY: 0, tiltX: 0, parallax: 4, float: 0.5,
@@ -247,7 +250,7 @@ const U = {
   uL: { value: blank }, uR: { value: blank }, uHasL: { value: 0 }, uHasR: { value: 0 },
   uAspL: { value: 16 / 9 }, uAspR: { value: 16 / 9 }, uSize: { value: new THREE.Vector2(1600, 900) },
   uSplit: { value: 800 }, uAngle: { value: 0 }, uThick: { value: 0 }, uHover: { value: 0 }, uHandle: { value: 0 },
-  uRadius: { value: 12 }, uOpacity: { value: 1 }, uSheen: { value: -1 }, uEmpty: { value: 1 },
+  uRadius: { value: 12 }, uOpacity: { value: 1 }, uSheen: { value: -1 }, uEmpty: { value: 1 }, uOffL: { value: 0 }, uOffR: { value: 0 },
   uBar: { value: new THREE.Color('#ffffff') },
 };
 const cardMat = new THREE.ShaderMaterial({
@@ -257,7 +260,7 @@ const cardMat = new THREE.ShaderMaterial({
     void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
   fragmentShader: /* glsl */`
     uniform sampler2D uL; uniform sampler2D uR;
-    uniform float uHasL, uHasR, uAspL, uAspR, uSplit, uAngle, uThick, uHover, uHandle, uRadius, uOpacity, uSheen, uEmpty;
+    uniform float uHasL, uHasR, uAspL, uAspR, uSplit, uAngle, uThick, uHover, uHandle, uRadius, uOpacity, uSheen, uEmpty, uOffL, uOffR;
     uniform vec2 uSize; uniform vec3 uBar;
     varying vec2 vUv;
     vec2 coverUV(vec2 uv, float ta){
@@ -280,8 +283,9 @@ const cardMat = new THREE.ShaderMaterial({
       float along = dot(p - c, u);
       float aa = max(fwidth(d), 1e-4);
 
-      vec4 cl = uHasL > 0.5 ? texture2D(uL, coverUV(vUv, uAspL)) : vec4(0.0);
-      vec4 cr = uHasR > 0.5 ? texture2D(uR, coverUV(vUv, uAspR)) : vec4(0.0);
+      vec2 uvL = vec2(vUv.x - uOffL, vUv.y), uvR = vec2(vUv.x - uOffR, vUv.y);   // shifted when attached to the bar
+      vec4 cl = (uHasL > 0.5 && uvL.x >= 0.0 && uvL.x <= 1.0) ? texture2D(uL, coverUV(uvL, uAspL)) : vec4(0.0);
+      vec4 cr = (uHasR > 0.5 && uvR.x >= 0.0 && uvR.x <= 1.0) ? texture2D(uR, coverUV(uvR, uAspR)) : vec4(0.0);
       if (uEmpty > 0.5) { cl = vec4(vec3(0.035), 1.0); cr = vec4(vec3(0.08), 1.0); }
       cl.rgb *= cl.a; cr.rgb *= cr.a;
       vec4 col = mix(cl, cr, smoothstep(-0.5 * aa, 0.5 * aa, d));
@@ -628,6 +632,10 @@ function frame(now) {
 
   U.uSize.value.set(W, H);
   U.uSplit.value = barX * W;
+  // attached media: keep its inner edge glued to the bar (accounting for the bar's slant so no gap opens)
+  const slant = (H / 2) * Math.tan(Math.abs(S.angle) * D2R) / W;
+  U.uOffR.value = (S.attach === 'right' || S.attach === 'both') ? Math.max(0, barX - slant) : 0;
+  U.uOffL.value = (S.attach === 'left' || S.attach === 'both') ? Math.min(0, barX + slant - 1) : 0;
   U.uAngle.value = S.angle * D2R;
   U.uThick.value = S.thick;
   U.uHover.value = hover;
