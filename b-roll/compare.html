@@ -122,7 +122,7 @@
   <div class="row two"><label>Color</label><input type="color" data-k="barColor"></div>
   <div class="row two"><label>Grab handle</label>
     <select data-k="handle"><option value="hover">On hover</option><option value="always">Always</option><option value="never">Never</option></select></div>
-  <div class="row two"><label>Drag anywhere</label><input type="checkbox" data-k="dragAnywhere"></div>
+  <div class="row two"><label>Drag anywhere on card</label><input type="checkbox" data-k="dragAnywhere"></div>
 
   <h2>Scene</h2>
   <div class="row two"><label>Background</label>
@@ -167,6 +167,7 @@
     <kbd>R</kbd><span>Restart (500 ms of green first)</span>
     <kbd>F</kbd><span>Toggle fullscreen</span>
     <kbd>Drag</kbd><span>Move the divider bar</span>
+    <kbd>Click off the card</kbd><span>Re-center the bar (R also does)</span>
     <kbd>Scroll up/down</kbd><span>Zoom the scene in/out (or pinch)</span>
     <kbd>Swipe left/right</kbd><span>Move the scene sideways</span>
     <kbd>Right-drag</kbd><span>Move the scene freely</span>
@@ -524,6 +525,9 @@ function signedDist(lp) {  // + = right side of the bar (in card px)
   const a = S.angle * D2R;
   return (lp.x - barX * L.W) * Math.cos(a) - (lp.y - L.H / 2) * Math.sin(a);
 }
+function nearBar(lp) {
+  return lp.y > -24 && lp.y < L.H + 24 && Math.abs(signedDist(lp)) < S.thick / 2 + 16;
+}
 function splitFromPointer(lp) {
   const a = S.angle * D2R;
   return clamp((lp.x - (lp.y - L.H / 2) * Math.tan(a)) / L.W, 0, 1);
@@ -553,7 +557,9 @@ function autoPattern(t) {           // t in cycles; returns {x, y} in [-1, 1]
   }
 }
 let restartTimer = 0;
+function recenterBar() { S.split = 0.5; sweepCancelled = true; save(); }
 function restartSequence() {
+  S.split = 0.5; save();                                          // R always starts with the bar centered
   clearTimeout(restartTimer);
   phase = 'blank'; root.visible = false; pauseAll();
   restartTimer = setTimeout(() => {
@@ -624,8 +630,7 @@ function frame(now) {
     const lp = projectToCard(ptr.x, ptr.y);
     if (lp) {
       if (dragging) { S.split = splitFromPointer(lp); save(); }
-      const inY = lp.y > -24 && lp.y < H + 24;
-      hovering = inY && Math.abs(signedDist(lp)) < S.thick / 2 + 16;
+      hovering = nearBar(lp);
     }
   }
   hover = damp(hover, (hovering || dragging) ? 1 : 0, 14, dt);
@@ -706,7 +711,12 @@ canvas.addEventListener('pointerdown', e => {
   }
   if (e.button === 2 || e.button === 1) { panDrag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
   if (e.button !== 0 || phase === 'blank') return;
-  if (!S.dragAnywhere && !hovering) return;
+  const lp = projectToCard(e.clientX, e.clientY);
+  const onCard = !!lp && lp.x >= 0 && lp.x <= L.W && lp.y >= 0 && lp.y <= L.H;
+  const nb = !!lp && nearBar(lp);                                 // fresh check, not last frame's
+  if (!onCard && !nb) { recenterBar(); return; }                  // click outside the card: re-center the bar
+  if (!S.dragAnywhere && !nb) return;
+  if (S.dragAnywhere) { S.split = splitFromPointer(lp); save(); } // click on the card jumps the bar there
   dragging = true; sweepCancelled = true;
   canvas.setPointerCapture(e.pointerId);
 });
