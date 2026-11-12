@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Compare · B-roll prop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@800&family=Archivo+Black&family=Bebas+Neue&family=Space+Grotesk:wght@700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+<style>
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; background: #000000; }
+  html.bg-green, html.bg-green body { background: #00ff00; }
+  body { cursor: none; font-family: Inter, system-ui, sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; }
+  #gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+
+  #dot { position: fixed; left: 0; top: 0; width: 8px; height: 8px; border-radius: 50%; background: #fff;
+         box-shadow: 0 0 0 1px rgba(0,0,0,.55); pointer-events: none; z-index: 60; opacity: 0;
+         transition: opacity .15s, width .15s, height .15s; will-change: transform; }
+
+  #guide { position: fixed; top: 0; bottom: 0; left: 0; pointer-events: none; z-index: 5; display: none;
+           border-right: 2px dashed rgba(255,255,255,.45); }
+  html.bg-green #guide { border-right-color: rgba(0,0,0,.45); }
+  #guideShade { position: fixed; top: 0; bottom: 0; right: 0; pointer-events: none; z-index: 5; display: none;
+           background: repeating-linear-gradient(45deg, rgba(255,255,255,.06) 0 10px, transparent 10px 20px); }
+  html.bg-green #guideShade { background: repeating-linear-gradient(45deg, rgba(0,0,0,.07) 0 10px, transparent 10px 20px); }
+  body.panel-open #guide, body.panel-open #guideShade { display: block; }
+
+  #dropHint { position: fixed; left: 50%; top: 24px; transform: translateX(-50%); z-index: 70; display: none;
+              background: #111; color: #fff; font: 600 14px Inter, sans-serif; padding: 10px 18px; border-radius: 999px; pointer-events: none; }
+
+  /* ---------- settings panel ---------- */
+  #panel { position: absolute; top: 12px; right: 12px; bottom: 12px; width: 344px; z-index: 50; box-sizing: border-box;
+           background: rgba(17,17,19,.96); color: #e9e9ec; border-radius: 14px; overflow-y: auto; overscroll-behavior: contain;
+           cursor: auto; user-select: auto; -webkit-user-select: auto; touch-action: auto;
+           font-size: 12.5px; line-height: 1.35; padding: 14px 16px 18px;
+           box-shadow: 0 12px 40px rgba(0,0,0,.45); transform: translateX(calc(100% + 30px)); transition: transform .25s ease; }
+  #panel.open { transform: none; }
+  #panel * { cursor: auto; }
+  #panel button, #panel select, #panel input[type=range], #panel input[type=checkbox], #panel input[type=color], #panel .dz { cursor: pointer; }
+  #panel h1 { font-size: 14px; font-weight: 600; margin: 0 0 2px; letter-spacing: .2px; }
+  #panel .sub { color: #8d8d96; margin-bottom: 10px; }
+  #panel h2 { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1.2px; color: #8d8d96; font-weight: 600;
+              margin: 16px 0 8px; padding-top: 12px; border-top: 1px solid #2a2a2f; }
+  .row { display: grid; grid-template-columns: 96px 1fr 48px; align-items: center; gap: 8px; margin: 6px 0; }
+  .row.two { grid-template-columns: 96px 1fr; }
+  .row label { color: #b9b9c2; }
+  .row.resettable > label, .row.resettable > .v { cursor: pointer !important; user-select: none; -webkit-user-select: none; }
+  .row.resettable > label:hover, .row.resettable > .v:hover { color: #fff; text-decoration: underline dotted #6a6a75; text-underline-offset: 3px; }
+  .row .v { text-align: right; color: #fff; font-variant-numeric: tabular-nums; font-size: 11.5px; }
+  #panel input[type=text], #panel select { width: 100%; box-sizing: border-box; background: #1f1f24; color: #fff; border: 1px solid #34343b;
+              border-radius: 7px; padding: 6px 8px; font: inherit; outline: none; }
+  #panel input[type=text]:focus, #panel select:focus { border-color: #6d6df0; }
+  #panel input[type=range] { width: 100%; accent-color: #8a8af5; margin: 0; }
+  #panel input[type=color] { width: 100%; height: 26px; border: 1px solid #34343b; border-radius: 7px; background: #1f1f24; padding: 2px; }
+  #panel input[type=checkbox] { accent-color: #8a8af5; width: 15px; height: 15px; margin: 0; }
+  .btns { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+  #panel button { background: #26262c; color: #eee; border: 1px solid #3a3a42; border-radius: 7px; padding: 6px 10px; font: inherit; }
+  #panel button:hover { background: #303038; }
+  .dzwrap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .dz { border: 1.5px dashed #45454e; border-radius: 10px; padding: 9px; min-height: 72px; display: flex; flex-direction: column;
+        justify-content: space-between; gap: 6px; transition: border-color .15s, background .15s; }
+  .dz.over { border-color: #8a8af5; background: rgba(138,138,245,.08); }
+  .dz .side { font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #8d8d96; font-weight: 600; }
+  .dz .name { color: #fff; word-break: break-all; font-size: 11.5px; }
+  .dz .name.empty { color: #777; }
+  .dz .kind { color: #8a8af5; font-size: 10.5px; }
+  .dz .x { align-self: flex-start; padding: 2px 7px !important; font-size: 11px !important; }
+  .keys { display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; color: #b9b9c2; }
+  .keys kbd { font: 600 10.5px Inter, sans-serif; background: #26262c; border: 1px solid #3a3a42; border-bottom-width: 2px;
+              border-radius: 5px; padding: 1px 6px; color: #fff; white-space: nowrap; justify-self: start; }
+  #msg { color: #ff8f8f; min-height: 0; margin-top: 6px; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="guide"></div><div id="guideShade"></div>
+<div id="dot"></div>
+<div id="dropHint">Drop on left</div>
+<input id="file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,video/*" hidden>
+
+<aside id="panel" aria-label="Settings">
+  <h1>Compare prop</h1>
+  <div class="sub">S toggles this panel · R restarts · F fullscreen</div>
+
+  <h2>Media</h2>
+  <div class="dzwrap">
+    <div class="dz" data-side="L"><div class="side">Left</div><div class="name empty">Drop or click</div><div class="kind"></div><button class="x" data-clear="L">Clear</button></div>
+    <div class="dz" data-side="R"><div class="side">Right</div><div class="name empty">Drop or click</div><div class="kind"></div><button class="x" data-clear="R">Clear</button></div>
+  </div>
+  <div class="btns"><button id="swap">Swap sides</button><button id="resync">Resync videos</button></div>
+  <div id="msg"></div>
+
+  <h2>Labels</h2>
+  <div class="row two"><label>Left text</label><input type="text" data-k="labelL"></div>
+  <div class="row two"><label>Right text</label><input type="text" data-k="labelR"></div>
+  <div class="row two"><label>Show labels</label><input type="checkbox" data-k="showLabels"></div>
+  <div class="row"><label>Size</label><input type="range" min="12" max="260" step="1" data-k="labelSize"><span class="v" data-u=""></span></div>
+  <div class="row"><label>Left scale</label><input type="range" min="0.3" max="3" step="0.05" data-k="lsL"><span class="v" data-u="×"></span></div>
+  <div class="row"><label>Right scale</label><input type="range" min="0.3" max="3" step="0.05" data-k="lsR"><span class="v" data-u="×"></span></div>
+  <div class="row two"><label>Position</label>
+    <select data-k="labelPos"><option value="below">Below card</option><option value="above">Above card</option><option value="inBottom">Inside, bottom</option><option value="inTop">Inside, top</option></select></div>
+  <div class="row"><label>Spacing out</label><input type="range" min="0" max="15" step="0.1" data-k="gapOut"><span class="v" data-u="%"></span></div>
+  <div class="row"><label>Spacing in</label><input type="range" min="0" max="15" step="0.1" data-k="gapIn"><span class="v" data-u="%"></span></div>
+  <div class="row two"><label>Alignment</label>
+    <select data-k="labelAlign"><option value="edges">Card edges</option><option value="halves">Centered on halves</option></select></div>
+  <div class="row two"><label>Font</label>
+    <select data-k="font"><option>Inter Tight</option><option>Archivo Black</option><option>Bebas Neue</option><option>Space Grotesk</option><option>System</option></select></div>
+  <div class="row two"><label>Color</label><input type="color" data-k="labelColor"></div>
+  <div class="row"><label>Outline</label><input type="range" min="0" max="1" step="0.05" data-k="outline"><span class="v" data-u=""></span></div>
+  <div class="row two"><label>Uppercase</label><input type="checkbox" data-k="upper"></div>
+  <div class="row two"><label>Fade with bar</label><input type="checkbox" data-k="fadeLabels"></div>
+
+  <h2>Divider bar</h2>
+  <div class="row"><label>Angle</label><input type="range" min="-15" max="15" step="0.5" data-k="angle"><span class="v" data-u="°"></span></div>
+  <div class="row"><label>Thickness</label><input type="range" min="0" max="25" step="0.5" data-k="thick"><span class="v" data-u="px"></span></div>
+  <div class="row two"><label>Color</label><input type="color" data-k="barColor"></div>
+  <div class="row two"><label>Grab handle</label>
+    <select data-k="handle"><option value="hover">On hover</option><option value="always">Always</option><option value="never">Never</option></select></div>
+  <div class="row two"><label>Drag anywhere</label><input type="checkbox" data-k="dragAnywhere"></div>
+
+  <h2>Scene</h2>
+  <div class="row two"><label>Background</label>
+    <select data-k="bg"><option value="black">Black (#000000)</option><option value="green">Green screen (#00FF00)</option></select></div>
+  <div class="row"><label>Canvas width</label><input type="range" min="30" max="100" step="1" data-k="areaW"><span class="v" data-u="%"></span></div>
+  <div class="row"><label>Scene size</label><input type="range" min="15" max="100" step="1" data-k="scale"><span class="v" data-u="%"></span></div>
+  <div class="row"><label>Corner radius</label><input type="range" min="0" max="60" step="1" data-k="radius"><span class="v" data-u="px"></span></div>
+  <div class="row"><label>Tilt (turn)</label><input type="range" min="-30" max="30" step="0.5" data-k="tiltY"><span class="v" data-u="°"></span></div>
+  <div class="row"><label>Tilt (lean)</label><input type="range" min="-20" max="20" step="0.5" data-k="tiltX"><span class="v" data-u="°"></span></div>
+  <div class="row"><label>Parallax</label><input type="range" min="0" max="45" step="0.5" data-k="parallax"><span class="v" data-u="°"></span></div>
+  <div class="row"><label>Float</label><input type="range" min="0" max="1" step="0.05" data-k="float"><span class="v" data-u=""></span></div>
+  <div class="btns"><button id="resetView">Reset position and size</button></div>
+
+  <h2>Idle motion</h2>
+  <div class="row two"><label>Simulated parallax</label><input type="checkbox" data-k="autoPar"></div>
+  <div class="row two"><label>Pattern</label>
+    <select data-k="autoMode">
+      <option value="circle">Circular</option><option value="figure8">Figure eight</option><option value="lissajous">Lissajous drift</option>
+      <option value="zigzag">Zig-zag</option><option value="leftright">Left-right</option><option value="updown">Up-down</option>
+      <option value="random">Random wander</option>
+    </select></div>
+  <div class="row"><label>Speed</label><input type="range" min="0.1" max="4" step="0.05" data-k="autoSpeed"><span class="v" data-u="×"></span></div>
+  <div class="row"><label>Amplitude</label><input type="range" min="0" max="45" step="0.5" data-k="autoAmp"><span class="v" data-u="°"></span></div>
+  <div class="row"><label>Idle after</label><input type="range" min="0" max="10" step="0.5" data-k="autoIdle"><span class="v" data-u="s"></span></div>
+  <div class="sub" style="margin:2px 0 0">Runs whenever the mouse is outside the window (or over this panel). “Idle after” also starts it when the mouse sits still that long; 0 turns that off.</div>
+
+  <h2>Intro (R)</h2>
+  <div class="row"><label>Flip duration</label><input type="range" min="0.3" max="3" step="0.1" data-k="introDur"><span class="v" data-u="s"></span></div>
+  <div class="row two"><label>Bar sweep</label>
+    <select data-k="sweep"><option value="right">From right edge</option><option value="left">From left edge</option><option value="none">None</option></select></div>
+  <div class="row"><label>Sweep time</label><input type="range" min="0.3" max="4" step="0.1" data-k="sweepDur"><span class="v" data-u="s"></span></div>
+  <div class="row two"><label>Light sheen</label><input type="checkbox" data-k="sheen"></div>
+  <div class="btns"><button id="restartBtn">Restart now</button></div>
+
+  <h2>Cursor</h2>
+  <div class="row two"><label>Show dot</label><input type="checkbox" data-k="showDot"></div>
+  <div class="row"><label>Dot size</label><input type="range" min="3" max="20" step="1" data-k="dotSize"><span class="v" data-u="px"></span></div>
+
+  <h2>Controls</h2>
+  <div class="keys">
+    <kbd>S</kbd><span>Toggle settings</span>
+    <kbd>R</kbd><span>Restart (500 ms of green first)</span>
+    <kbd>F</kbd><span>Toggle fullscreen</span>
+    <kbd>Drag</kbd><span>Move the divider bar</span>
+    <kbd>Scroll up/down</kbd><span>Zoom the scene in/out (or pinch)</span>
+    <kbd>Swipe left/right</kbd><span>Move the scene sideways</span>
+    <kbd>Right-drag</kbd><span>Move the scene freely</span>
+    <kbd>Alt + scroll</kbd><span>Resize both labels</span>
+    <kbd>Alt+Shift + scroll</kbd><span>Resize the label on the hovered side</span>
+    <kbd>Drop file</kbd><span>Onto either side of the bar</span>
+  </div>
+  <div class="btns" style="margin-top:14px"><button id="resetAll">Reset all settings</button></div>
+</aside>
+
+<script type="module">
+import * as THREE from 'three';
+
+/* ================= settings ================= */
+const KEY = 'broll-compare.v1';
+const DEF = {
+  labelL: 'Before', labelR: 'After', showLabels: true, labelSize: 64, lsL: 1, lsR: 1,
+  labelPos: 'below', gapOut: 2.2, gapIn: 2.2, labelAlign: 'edges', font: 'Inter Tight', labelColor: '#ffffff', outline: 0.6,
+  upper: true, fadeLabels: true,
+  angle: 0, thick: 0, barColor: '#ffffff', handle: 'hover', dragAnywhere: true, split: 0.5,
+  bg: 'black', areaW: 100, scale: 82, offX: 0, offY: 0, radius: 12, tiltY: 0, tiltX: 0, parallax: 4, float: 0.5,
+  autoPar: true, autoMode: 'circle', autoSpeed: 1, autoAmp: 6, autoIdle: 0,
+  introDur: 1.4, sweep: 'right', sweepDur: 1.2, sheen: true,
+  showDot: true, dotSize: 8,
+};
+let S = { ...DEF };
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch {}
+let saveT = 0;
+const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch {} }, 200); };
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const D2R = Math.PI / 180;
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+const easeOutBack = t => { const c1 = 1.15, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
+const easeInOutCubic = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
+
+/* ================= media storage (IndexedDB) ================= */
+const idb = (() => {
+  let p;
+  const db = () => p || (p = new Promise((res, rej) => {
+    const r = indexedDB.open('broll-compare', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('media');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  }));
+  const tx = async (mode, fn) => { const d = await db(); return new Promise((res, rej) => {
+    const t = d.transaction('media', mode); const req = fn(t.objectStore('media'));
+    t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error);
+  }); };
+  return { get: k => tx('readonly', s => s.get(k)), set: (k, v) => tx('readwrite', s => s.put(v, k)), del: k => tx('readwrite', s => s.delete(k)) };
+})();
+
+/* ================= three.js setup ================= */
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
+function applyBg() {
+  const green = S.bg === 'green';
+  renderer.setClearColor(green ? 0x00ff00 : 0x000000, 1);
+  document.documentElement.classList.toggle('bg-green', green);
+}
+applyBg();
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+const maxAniso = renderer.capabilities.getMaxAnisotropy();
+
+const scene = new THREE.Scene();
+const FOV = 30;
+const camera = new THREE.PerspectiveCamera(FOV, 1, 1, 10000);
+let VW = innerWidth, VH = innerHeight;
+function resize() {
+  VW = innerWidth; VH = innerHeight;
+  renderer.setSize(VW, VH, false);
+  camera.aspect = VW / VH;
+  const z = (VH / 2) / Math.tan(FOV * D2R / 2);   // 1 world unit == 1 CSS px at z = 0
+  camera.position.set(0, 0, z); camera.near = 1; camera.far = z * 6;
+  camera.updateProjectionMatrix();
+  updateGuide();
+}
+
+const blank = new THREE.DataTexture(new Uint8Array([0, 0, 0, 0]), 1, 1); blank.needsUpdate = true;
+const U = {
+  uL: { value: blank }, uR: { value: blank }, uHasL: { value: 0 }, uHasR: { value: 0 },
+  uAspL: { value: 16 / 9 }, uAspR: { value: 16 / 9 }, uSize: { value: new THREE.Vector2(1600, 900) },
+  uSplit: { value: 800 }, uAngle: { value: 0 }, uThick: { value: 0 }, uHover: { value: 0 }, uHandle: { value: 0 },
+  uRadius: { value: 12 }, uOpacity: { value: 1 }, uSheen: { value: -1 }, uEmpty: { value: 1 },
+  uBar: { value: new THREE.Color('#ffffff') },
+};
+const cardMat = new THREE.ShaderMaterial({
+  uniforms: U, transparent: true, depthWrite: false, depthTest: false, side: THREE.DoubleSide,
+  vertexShader: /* glsl */`
+    varying vec2 vUv;
+    void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`,
+  fragmentShader: /* glsl */`
+    uniform sampler2D uL; uniform sampler2D uR;
+    uniform float uHasL, uHasR, uAspL, uAspR, uSplit, uAngle, uThick, uHover, uHandle, uRadius, uOpacity, uSheen, uEmpty;
+    uniform vec2 uSize; uniform vec3 uBar;
+    varying vec2 vUv;
+    vec2 coverUV(vec2 uv, float ta){
+      float fa = uSize.x / uSize.y;
+      if (ta > fa) uv.x = (uv.x - 0.5) * (fa / ta) + 0.5; else uv.y = (uv.y - 0.5) * (ta / fa) + 0.5;
+      return uv;
+    }
+    float sdBox(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
+    vec4 over(vec4 top, vec4 bot){ return top + bot * (1.0 - top.a); }
+    void main(){
+      vec2 p = vUv * uSize; vec2 hs = uSize * 0.5;
+      float sd = sdBox(p - hs, hs, min(uRadius, min(hs.x, hs.y)));
+      float aM = max(fwidth(sd), 1e-4);
+      float mask = 1.0 - smoothstep(-aM * 0.5, aM * 0.5, sd);
+
+      vec2 c = vec2(uSplit, hs.y);
+      vec2 n = vec2(cos(uAngle), -sin(uAngle));
+      vec2 u = vec2(sin(uAngle),  cos(uAngle));
+      float d = dot(p - c, n);
+      float along = dot(p - c, u);
+      float aa = max(fwidth(d), 1e-4);
+
+      vec4 cl = uHasL > 0.5 ? texture2D(uL, coverUV(vUv, uAspL)) : vec4(0.0);
+      vec4 cr = uHasR > 0.5 ? texture2D(uR, coverUV(vUv, uAspR)) : vec4(0.0);
+      if (uEmpty > 0.5) { cl = vec4(vec3(0.035), 1.0); cr = vec4(vec3(0.08), 1.0); }
+      cl.rgb *= cl.a; cr.rgb *= cr.a;
+      vec4 col = mix(cl, cr, smoothstep(-0.5 * aa, 0.5 * aa, d));
+
+      if (uSheen > -0.9) {
+        float x = vUv.x + (vUv.y - 0.5) * 0.35;
+        float s = exp(-pow((x - uSheen) / 0.07, 2.0)) * 0.32;
+        col.rgb += vec3(s) * col.a;
+      }
+
+      float w = max(uThick, 2.0 * uHover);
+      float hr = w * 0.5 + 4.0;
+      float halo = (1.0 - smoothstep(hr - aa, hr + aa, abs(d))) * 0.28 * uHover;
+      col = over(vec4(uBar * halo, halo), col);
+      if (w > 0.001) {
+        float bw = (1.0 - smoothstep(w * 0.5 - aa * 0.5, w * 0.5 + aa * 0.5, abs(d))) * clamp(w, 0.0, 1.0);
+        col = over(vec4(uBar * bw, bw), col);
+      }
+      if (uHandle > 0.001) {
+        float hw = max(8.0, w * 0.5 + 6.0), hh = 30.0;
+        float hd = sdBox(vec2(d, along), vec2(hw, hh), hw);
+        float ha = (1.0 - smoothstep(-aa, aa, hd)) * uHandle;
+        col = over(vec4(uBar * ha, ha), col);
+        float g = 0.0;
+        for (int i = -1; i <= 1; i++) {
+          float gd = sdBox(vec2(d, along - float(i) * 7.0), vec2(hw * 0.45, 1.0), 1.0);
+          g = max(g, 1.0 - smoothstep(-aa, aa, gd));
+        }
+        col.rgb = mix(col.rgb, vec3(0.02) * col.a, g * uHandle * 0.85);
+      }
+      col *= mask * uOpacity;
+      if (col.a < 0.002) discard;
+      gl_FragColor = vec4(col.rgb / col.a, col.a);
+      #include <colorspace_fragment>
+    }`,
+});
+
+const root = new THREE.Group(); scene.add(root);
+const card = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), cardMat); card.renderOrder = 1; root.add(card);
+
+/* ---------- labels (canvas textures on planes, tilt with the card) ---------- */
+const FONTS = {
+  'Inter Tight': ['"Inter Tight", system-ui, sans-serif', 800], 'Archivo Black': ['"Archivo Black", system-ui, sans-serif', 400],
+  'Bebas Neue': ['"Bebas Neue", Impact, sans-serif', 400], 'Space Grotesk': ['"Space Grotesk", system-ui, sans-serif', 700], 'System': ['system-ui, -apple-system, "Segoe UI", Roboto, sans-serif', 800],
+};
+function makeLabel() {
+  const mat = new THREE.MeshBasicMaterial({ transparent: true, depthWrite: false, depthTest: false, toneMapped: false, side: THREE.DoubleSide });
+  const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat); mesh.renderOrder = 2; mesh.visible = false;
+  root.add(mesh);
+  return { mesh, key: '', w: 0, h: 0, tex: null };
+}
+const labels = { L: makeLabel(), R: makeLabel() };
+function buildLabel(lbl, text, fontPx) {
+  const [fam, wt] = FONTS[S.font] || FONTS['Inter Tight'];
+  const dpr = Math.min(devicePixelRatio || 1, 2);
+  const px = Math.max(6, Math.round(fontPx * dpr));
+  const t = S.upper ? String(text).toUpperCase() : String(text);
+  const key = [t, px, S.font, S.labelColor, S.outline, S.upper].join('|');
+  if (key === lbl.key) return;
+  lbl.key = key;
+  if (!t.trim()) { lbl.w = lbl.h = 0; lbl.mesh.visible = false; return; }
+  const cv = document.createElement('canvas'); const ctx = cv.getContext('2d');
+  const font = `${wt} ${px}px ${fam}`;
+  const ls = (S.upper ? 0.04 : 0.01) * px;
+  ctx.font = font; ctx.letterSpacing = ls + 'px';
+  const ow = px * 0.09 * S.outline;
+  const m = ctx.measureText(t);
+  cv.width = Math.ceil(m.width + ow * 2 + px * 0.12);
+  cv.height = Math.ceil(px * 1.28 + ow * 2);
+  ctx.font = font; ctx.letterSpacing = ls + 'px';
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'left';
+  const x = ow + px * 0.06, y = cv.height / 2 + px * 0.04;
+  if (ow > 0) { ctx.lineJoin = 'round'; ctx.lineWidth = ow * 2; ctx.strokeStyle = '#0b0b0d'; ctx.strokeText(t, x, y); }
+  ctx.fillStyle = S.labelColor; ctx.fillText(t, x, y);
+  const tex = new THREE.CanvasTexture(cv);
+  tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = maxAniso;
+  if (lbl.tex) lbl.tex.dispose();
+  lbl.tex = tex; lbl.mesh.material.map = tex; lbl.mesh.material.needsUpdate = true;
+  lbl.w = cv.width / dpr; lbl.h = cv.height / dpr;
+}
+function rebuildLabelsSoon() { labels.L.key = labels.R.key = ''; }
+document.fonts && document.fonts.ready.then(rebuildLabelsSoon);
+function loadFont() {
+  const [fam, wt] = FONTS[S.font] || FONTS['Inter Tight'];
+  if (document.fonts) document.fonts.load(`${wt} 64px ${fam}`).then(rebuildLabelsSoon).catch(() => {});
+}
+loadFont();
+
+/* ================= media ================= */
+const media = { L: null, R: null };
+const SIDES = ['L', 'R'];
+
+function kindOf(blob, name = '') {
+  const t = (blob.type || '').toLowerCase(), n = name.toLowerCase();
+  if (t.startsWith('video/') || /\.(mp4|webm|mov|m4v|ogv|mkv)$/.test(n)) return 'video';
+  if (t === 'image/gif' || n.endsWith('.gif')) return 'gif';
+  if (t.startsWith('image/') || /\.(png|jpe?g|webp|avif|bmp)$/.test(n)) return 'image';
+  return null;
+}
+function disposeMedia(m) {
+  if (!m) return;
+  if (m.kind === 'video') { m.el.pause(); m.el.removeAttribute('src'); m.el.load(); }
+  if (m.gif) m.gif.frames.forEach(f => f.close && f.close());
+  if (m.url) URL.revokeObjectURL(m.url);
+  if (m.tex) m.tex.dispose();
+}
+async function decodeGif(blob) {
+  if (!('ImageDecoder' in window)) return null;
+  try {
+    const dec = new ImageDecoder({ data: await blob.arrayBuffer(), type: 'image/gif' });
+    await dec.tracks.ready; await dec.completed;
+    const n = dec.tracks.selectedTrack.frameCount;
+    if (n < 2) { dec.close(); return null; }
+    const frames = [], durs = [];
+    for (let i = 0; i < n; i++) {
+      const { image } = await dec.decode({ frameIndex: i });
+      durs.push(Math.max(20, (image.duration || 100000) / 1000));
+      frames.push(await createImageBitmap(image)); image.close();
+    }
+    dec.close();
+    const cv = document.createElement('canvas'); cv.width = frames[0].width; cv.height = frames[0].height;
+    const ends = []; let acc = 0; durs.forEach(d => ends.push(acc += d));
+    return { frames, ends, total: acc, cv, ctx: cv.getContext('2d'), idx: -1, t0: performance.now() };
+  } catch (e) { console.warn('GIF decode failed, using first frame', e); return null; }
+}
+async function loadSide(side, blob, name) {
+  const kind = kindOf(blob, name);
+  if (!kind) throw new Error(`Unsupported file: ${name || blob.type}`);
+  const m = { kind, name, url: URL.createObjectURL(blob) };
+  if (kind === 'video') {
+    const v = document.createElement('video');
+    v.muted = true; v.defaultMuted = true; v.playsInline = true; v.loop = false; v.preload = 'auto'; v.crossOrigin = 'anonymous';
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', '');
+    v.src = m.url;
+    await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error('Could not decode video: ' + name)); });
+    v.addEventListener('ended', onVideoEnded);
+    m.el = v; m.aspect = v.videoWidth / v.videoHeight || 16 / 9;
+    m.tex = new THREE.VideoTexture(v);
+  } else {
+    if (kind === 'gif') m.gif = await decodeGif(blob);
+    if (m.gif) {
+      m.kind = 'gif'; m.aspect = m.gif.cv.width / m.gif.cv.height;
+      m.tex = new THREE.CanvasTexture(m.gif.cv); m.tex.generateMipmaps = false; m.tex.minFilter = THREE.LinearFilter;
+      drawGif(m.gif, performance.now(), m.tex);
+    } else {
+      m.kind = 'image';
+      const img = new Image(); img.src = m.url; await img.decode();
+      m.el = img; m.aspect = img.naturalWidth / img.naturalHeight || 16 / 9;
+      m.tex = new THREE.Texture(img); m.tex.needsUpdate = true;
+    }
+  }
+  m.tex.colorSpace = THREE.SRGBColorSpace; m.tex.anisotropy = maxAniso;
+  disposeMedia(media[side]);
+  media[side] = m;
+  applyMediaUniforms();
+  return m;
+}
+function clearSide(side) { disposeMedia(media[side]); media[side] = null; applyMediaUniforms(); }
+function applyMediaUniforms() {
+  for (const s of SIDES) {
+    const m = media[s];
+    U['u' + s].value = m ? m.tex : blank;
+    U['uHas' + s].value = m ? 1 : 0;
+    U['uAsp' + s].value = m ? m.aspect : 16 / 9;
+  }
+  U.uEmpty.value = (!media.L && !media.R) ? 1 : 0;
+  updateDropZones();
+}
+function drawGif(g, now, tex) {
+  const t = (now - g.t0) % g.total;
+  let i = 0; while (i < g.ends.length - 1 && t >= g.ends[i]) i++;
+  if (i !== g.idx) { g.idx = i; g.ctx.clearRect(0, 0, g.cv.width, g.cv.height); g.ctx.drawImage(g.frames[i], 0, 0); tex.needsUpdate = true; }
+}
+
+/* ---------- video sync: start together, restart both when the shortest ends ---------- */
+let lastRestart = 0, restarting = false;
+const videos = () => SIDES.map(s => media[s]).filter(m => m && m.kind === 'video').map(m => m.el);
+function waitReady(v) {
+  return new Promise(res => {
+    let done = false;
+    const fin = () => { if (done) return; done = true; v.removeEventListener('seeked', chk); v.removeEventListener('canplay', chk); clearTimeout(to); res(); };
+    const chk = () => { if (!v.seeking && v.readyState >= 3) fin(); };
+    v.addEventListener('seeked', chk); v.addEventListener('canplay', chk);
+    const to = setTimeout(fin, 2000); chk();
+  });
+}
+function pauseAll() { videos().forEach(v => { v.pause(); try { v.currentTime = 0; } catch {} }); }
+async function syncRestart() {
+  if (restarting) return; restarting = true; lastRestart = performance.now();
+  const vs = videos();
+  vs.forEach(v => { v.pause(); try { v.currentTime = 0; } catch {} });
+  await Promise.all(vs.map(waitReady));
+  vs.forEach(v => { const p = v.play(); if (p) p.catch(() => {}); });
+  const now = performance.now();
+  SIDES.forEach(s => { const m = media[s]; if (m && m.gif) { m.gif.t0 = now; m.gif.idx = -1; } });
+  lastRestart = now; restarting = false;
+}
+function onVideoEnded() { if (performance.now() - lastRestart < 300) return; syncRestart(); }
+
+/* ================= layout (never crops) ================= */
+function labelExtent() {
+  if (!S.showLabels || !(S.labelPos === 'below' || S.labelPos === 'above')) return 0;
+  return (S.labelSize / 1000) * 1.3 * Math.max(S.lsL, S.lsR) + S.gapOut / 100;   // as a fraction of card width
+}
+function layout() {
+  const aw = VW * S.areaW / 100, ah = VH;
+  const k = labelExtent();
+  const fitW = Math.min(aw, ah / (9 / 16 + k)) * 0.98;
+  const W = fitW * S.scale / 100, H = W * 9 / 16;
+  const ext = W * k;
+  const above = S.labelPos === 'above' ? ext : 0, below = S.labelPos === 'below' ? ext : 0;
+  let cx = aw / 2 + S.offX * aw, cy = ah / 2 + S.offY * ah;
+  cx = W >= VW ? VW / 2 : clamp(cx, W / 2, VW - W / 2);
+  const minY = H / 2 + above, maxY = VH - H / 2 - below;
+  cy = minY > maxY ? (minY + maxY) / 2 : clamp(cy, minY, maxY);
+  S.offX = (cx - aw / 2) / aw; S.offY = (cy - ah / 2) / ah;
+  return { W, H, cx, cy, aw, wx: cx - VW / 2, wy: VH / 2 - cy };
+}
+let L = null;
+
+/* ================= pointer projection onto the card plane ================= */
+const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane = new THREE.Plane(), hit = new THREE.Vector3(), nrm = new THREE.Vector3(), wp = new THREE.Vector3();
+function projectToCard(sx, sy) {
+  if (!L) return null;
+  card.updateMatrixWorld(true);
+  ndc.set(sx / VW * 2 - 1, -(sy / VH) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  nrm.set(0, 0, 1).transformDirection(card.matrixWorld);
+  card.getWorldPosition(wp);
+  plane.setFromNormalAndCoplanarPoint(nrm, wp);
+  if (!ray.ray.intersectPlane(plane, hit)) return null;
+  card.worldToLocal(hit);
+  return { x: (hit.x + 0.5) * L.W, y: (hit.y + 0.5) * L.H };
+}
+function signedDist(lp) {  // + = right side of the bar (in card px)
+  const a = S.angle * D2R;
+  return (lp.x - barX * L.W) * Math.cos(a) - (lp.y - L.H / 2) * Math.sin(a);
+}
+function splitFromPointer(lp) {
+  const a = S.angle * D2R;
+  return clamp((lp.x - (lp.y - L.H / 2) * Math.tan(a)) / L.W, 0, 1);
+}
+
+/* ================= state ================= */
+let phase = 'blank', phaseT0 = 0, sweepCancelled = false;
+let barX = S.split;       // smoothed current split (fraction)
+let hover = 0, hovering = false, dragging = false;
+const ptr = { x: VW / 2, y: VH / 2, inside: false, overUI: false };
+const par = { x: 0, y: 0 };      // current parallax offset, in degrees
+let autoW = 0, autoT = 0, lastMove = 0;
+const hash = n => { const x = Math.sin(n * 127.1 + 311.7) * 43758.5453; return (x - Math.floor(x)) * 2 - 1; };
+const noise1 = (t, seed) => { const i = Math.floor(t), f = t - i, u = f * f * (3 - 2 * f); return hash(i + seed) * (1 - u) + hash(i + 1 + seed) * u; };
+const tri = t => 1 - 4 * Math.abs(((t % 1) + 1) % 1 - 0.5);   // triangle wave in [-1, 1]
+function autoPattern(t) {           // t in cycles; returns {x, y} in [-1, 1]
+  const w = t * Math.PI * 2;
+  switch (S.autoMode) {
+    case 'figure8':   return { x: Math.sin(w), y: Math.sin(2 * w) * 0.8 };
+    case 'lissajous': return { x: Math.sin(w), y: Math.sin(1.5 * w + Math.PI / 4) * 0.85 };
+    case 'zigzag':    return { x: tri(t * 0.5), y: tri(t * 3) * 0.6 };
+    case 'leftright': return { x: Math.sin(w), y: 0 };
+    case 'updown':    return { x: 0, y: Math.sin(w) };
+    case 'random':    return { x: clamp((noise1(t * 1.6, 0) + noise1(t * 3.3, 50) * 0.35) / 1.1, -1, 1),
+                               y: clamp((noise1(t * 1.6, 100) + noise1(t * 3.3, 150) * 0.35) / 1.1, -1, 1) };
+    default:          return { x: Math.cos(w), y: Math.sin(w) };
+  }
+}
+let restartTimer = 0;
+function restartSequence() {
+  clearTimeout(restartTimer);
+  phase = 'blank'; root.visible = false; pauseAll();
+  restartTimer = setTimeout(() => {
+    phase = 'intro'; phaseT0 = performance.now(); sweepCancelled = false;
+    barX = S.sweep === 'right' ? 1 : S.sweep === 'left' ? 0 : S.split;
+    syncRestart();
+  }, 500);
+}
+
+/* ================= render loop ================= */
+let last = performance.now();
+const dotEl = document.getElementById('dot');
+function frame(now) {
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  L = layout();
+  const W = L.W, H = L.H, time = now / 1000;
+
+  // parallax toward the cursor, or simulated parallax when there's no mouse to follow
+  const mouseLive = ptr.inside && !ptr.overUI;
+  const stillTooLong = S.autoIdle > 0 && !dragging && !panDrag && (now - lastMove) > S.autoIdle * 1000;
+  const idle = S.autoPar && (!mouseLive || stillTooLong);
+  autoW = damp(autoW, idle ? 1 : 0, 1.6, dt);
+  if (!idle && autoW < 0.002) autoW = 0;
+  autoT += dt * 0.12 * S.autoSpeed * (0.25 + 0.75 * autoW);     // ~8 s per cycle at 1×
+  const ap = autoPattern(autoT);
+  const mx = mouseLive ? (ptr.x / VW * 2 - 1) * S.parallax : 0, my = mouseLive ? (ptr.y / VH * 2 - 1) * S.parallax : 0;
+  const tx = mx * (1 - autoW) + ap.x * S.autoAmp * autoW, ty = my * (1 - autoW) + ap.y * S.autoAmp * autoW;
+  par.x = damp(par.x, tx, 4, dt); par.y = damp(par.y, ty, 4, dt);
+
+  let rx = S.tiltX * D2R + par.y * D2R;
+  let ry = S.tiltY * D2R + par.x * D2R;
+  let px = L.wx, py = L.wy, pz = 0, op = 1, lop = 1, lslide = 0, sheen = -1;
+  py += Math.sin(time * 0.9) * H * 0.008 * S.float;
+  ry += Math.sin(time * 0.45) * 1.0 * D2R * S.float;
+  rx += Math.cos(time * 0.6) * 0.6 * D2R * S.float;
+
+  if (phase === 'intro') {
+    const t = (now - phaseT0) / 1000, D = S.introDur;
+    const f = clamp(t / D, 0, 1), eb = easeOutBack(f), ec = easeOutCubic(f);
+    rx += (1 - eb) * -82 * D2R;
+    py += (1 - ec) * -0.32 * VH;
+    pz += (1 - ec) * -500;
+    op = clamp(f * 3.5, 0, 1);
+    const lf = easeOutCubic(clamp((t - D * 0.55) / 0.55, 0, 1));
+    lop = lf; lslide = (1 - lf) * -0.03 * W;
+    if (S.sweep !== 'none' && !sweepCancelled) {
+      const from = S.sweep === 'right' ? 1 : 0;
+      const sf = easeInOutCubic(clamp((t - D * 0.6) / S.sweepDur, 0, 1));
+      barX = from + (S.split - from) * sf;
+    }
+    if (S.sheen) { const sh = (t - D * 0.7) / 1.1; if (sh >= 0 && sh <= 1) sheen = -0.3 + sh * 1.6; }
+    const end = Math.max(D * 0.55 + 0.6, (S.sweep !== 'none' ? D * 0.6 + S.sweepDur : D), S.sheen ? D * 0.7 + 1.1 : 0);
+    if (t > end) phase = 'idle';
+  }
+  const introSweeping = phase === 'intro' && S.sweep !== 'none' && !sweepCancelled;
+  if (!introSweeping) barX = damp(barX, S.split, dragging ? 22 : 12, dt);
+
+  root.visible = phase !== 'blank';
+  root.position.set(px, py, pz);
+  root.rotation.set(rx, ry, 0);
+  card.scale.set(W, H, 1);
+  root.updateMatrixWorld(true);
+
+  // hover / drag
+  hovering = false;
+  if (phase !== 'blank' && ptr.inside && !ptr.overUI) {
+    const lp = projectToCard(ptr.x, ptr.y);
+    if (lp) {
+      if (dragging) { S.split = splitFromPointer(lp); save(); }
+      const inY = lp.y > -24 && lp.y < H + 24;
+      hovering = inY && Math.abs(signedDist(lp)) < S.thick / 2 + 16;
+    }
+  }
+  hover = damp(hover, (hovering || dragging) ? 1 : 0, 14, dt);
+
+  U.uSize.value.set(W, H);
+  U.uSplit.value = barX * W;
+  U.uAngle.value = S.angle * D2R;
+  U.uThick.value = S.thick;
+  U.uHover.value = hover;
+  U.uHandle.value = S.handle === 'always' ? 1 : S.handle === 'never' ? 0 : hover;
+  U.uRadius.value = S.radius;
+  U.uOpacity.value = op;
+  U.uSheen.value = sheen;
+  U.uBar.value.set(S.barColor);
+
+  // labels
+  const gapOut = W * S.gapOut / 100, gapIn = W * S.gapIn / 100;   // spacing as % of card width
+  for (const s of SIDES) {
+    const lbl = labels[s];
+    const fontPx = S.labelSize * (W / 1000) * (s === 'L' ? S.lsL : S.lsR);
+    buildLabel(lbl, s === 'L' ? S.labelL : S.labelR, fontPx);
+    if (!lbl.w || !S.showLabels) { lbl.mesh.visible = false; continue; }
+    lbl.mesh.visible = true;
+    lbl.mesh.scale.set(lbl.w, lbl.h, 1);
+    const sign = s === 'L' ? -1 : 1;
+    const inside = S.labelPos === 'inBottom' || S.labelPos === 'inTop';
+    let x = S.labelAlign === 'halves' ? sign * W / 4 : sign * (W / 2 - lbl.w / 2 - (inside ? gapIn : 0));
+    let y;
+    if (S.labelPos === 'below') y = -H / 2 - gapOut - lbl.h / 2;
+    else if (S.labelPos === 'above') y = H / 2 + gapOut + lbl.h / 2;
+    else if (S.labelPos === 'inBottom') y = -H / 2 + gapIn + lbl.h / 2;
+    else y = H / 2 - gapIn - lbl.h / 2;
+    lbl.mesh.position.set(x, y + lslide, 1);
+    let fade = 1;
+    if (S.fadeLabels) fade = s === 'L' ? clamp((barX - 0.03) / 0.15, 0, 1) : clamp((0.97 - barX) / 0.15, 0, 1);
+    lbl.mesh.material.opacity = lop * op * fade;
+  }
+
+  // animated GIFs
+  for (const s of SIDES) { const m = media[s]; if (m && m.gif) drawGif(m.gif, now, m.tex); }
+
+  // cursor dot
+  const showDot = S.showDot && ptr.inside && !ptr.overUI && phase !== 'blank';
+  const ds = S.dotSize * (dragging ? 0.8 : 1 + hover * 0.6);
+  dotEl.style.opacity = showDot ? 1 : 0;
+  dotEl.style.width = dotEl.style.height = ds + 'px';
+  dotEl.style.transform = `translate(${ptr.x - ds / 2}px, ${ptr.y - ds / 2}px)`;
+
+  renderer.render(scene, camera);
+}
+
+/* ================= input ================= */
+const panel = document.getElementById('panel');
+const isUI = el => !!(el && el.closest && el.closest('#panel'));
+const touches = new Map();
+let panDrag = null;
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+let gesture = null;
+
+addEventListener('pointermove', e => {
+  if (panDrag) { panBy(e.clientX - panDrag.x, e.clientY - panDrag.y); panDrag = { x: e.clientX, y: e.clientY }; }
+  if (Math.abs(e.clientX - ptr.x) + Math.abs(e.clientY - ptr.y) > 1 || !ptr.inside) lastMove = performance.now();
+  ptr.x = e.clientX; ptr.y = e.clientY; ptr.inside = true; ptr.overUI = isUI(e.target) && !dragging;
+  if (e.pointerType === 'touch' && touches.has(e.pointerId)) { touches.set(e.pointerId, { x: e.clientX, y: e.clientY }); if (gesture) updateGesture(); }
+}, { passive: true });
+document.addEventListener('pointerleave', () => { ptr.inside = false; });
+document.documentElement.addEventListener('mouseleave', () => { ptr.inside = false; });
+
+canvas.addEventListener('pointerdown', e => {
+  ptr.x = e.clientX; ptr.y = e.clientY; ptr.inside = true; ptr.overUI = false; lastMove = performance.now();
+  if (e.pointerType === 'touch') {
+    touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+    if (touches.size === 2) { dragging = false; startGesture(); return; }
+  }
+  if (e.button === 2 || e.button === 1) { panDrag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); e.preventDefault(); return; }
+  if (e.button !== 0 || phase === 'blank') return;
+  if (!S.dragAnywhere && !hovering) return;
+  dragging = true; sweepCancelled = true;
+  canvas.setPointerCapture(e.pointerId);
+});
+const endPointer = e => {
+  if (e.pointerType === 'touch') { touches.delete(e.pointerId); if (touches.size < 2) gesture = null; }
+  dragging = false; panDrag = null;
+  if (e.pointerType === 'touch') ptr.inside = false;
+};
+canvas.addEventListener('pointerup', endPointer);
+canvas.addEventListener('pointercancel', endPointer);
+
+function midDist() {
+  const [a, b] = [...touches.values()];
+  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) };
+}
+function startGesture() { gesture = midDist(); }
+function updateGesture() {
+  if (touches.size < 2) return;
+  const g = midDist();
+  panBy(g.x - gesture.x, g.y - gesture.y);
+  if (gesture.d > 0) zoomAt(g.x, g.y, g.d / gesture.d);
+  gesture = g;
+}
+
+function panBy(dx, dy) {
+  const aw = VW * S.areaW / 100;
+  S.offX += dx / aw; S.offY += dy / VH;
+  L = layout(); save();
+}
+function zoomAt(sx, sy, factor) {
+  const cur = layout();
+  const s1 = S.scale, s2 = clamp(s1 * factor, 15, 100);
+  if (s2 === s1) return;
+  const cx = sx + (cur.cx - sx) * (s2 / s1), cy = sy + (cur.cy - sy) * (s2 / s1);
+  S.scale = s2;
+  S.offX = (cx - cur.aw / 2) / cur.aw; S.offY = (cy - VH / 2) / VH;
+  L = layout(); syncUI('scale'); save();
+}
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  lastMove = performance.now();
+  const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? VH : 1;
+  let dx = e.deltaX * unit, dy = e.deltaY * unit;
+  if (e.altKey) {
+    const d = dy || dx;
+    const f = Math.exp(-d * 0.0025);
+    if (e.shiftKey) {
+      const lp = projectToCard(e.clientX, e.clientY);
+      const side = lp ? (signedDist(lp) < 0 ? 'L' : 'R') : (e.clientX < (L ? L.cx : VW / 2) ? 'L' : 'R');
+      const k = side === 'L' ? 'lsL' : 'lsR';
+      S[k] = clamp(+(S[k] * f).toFixed(3), 0.3, 3); syncUI(k);
+    } else {
+      S.labelSize = clamp(Math.round(S.labelSize * f * 10) / 10, 12, 260); syncUI('labelSize');
+    }
+    save(); return;
+  }
+  if (e.ctrlKey || e.metaKey) { zoomAt(e.clientX, e.clientY, Math.exp(-dy * 0.01)); return; }   // pinch
+  if (e.shiftKey) return;                                                                          // Shift+scroll: ignored
+  if (Math.abs(dx) > Math.abs(dy)) { panBy(-dx, 0); return; }                                      // horizontal swipe: move left/right
+  zoomAt(e.clientX, e.clientY, Math.exp(-dy * 0.0015));                                           // scroll up/down: zoom
+}, { passive: false });
+// stop browser zoom on Ctrl+wheel anywhere
+addEventListener('wheel', e => { if (e.ctrlKey) e.preventDefault(); }, { passive: false });
+// Safari trackpad pinch
+let gscale = 1;
+addEventListener('gesturestart', e => { e.preventDefault(); gscale = 1; });
+addEventListener('gesturechange', e => { e.preventDefault(); zoomAt(e.clientX || VW / 2, e.clientY || VH / 2, e.scale / gscale); gscale = e.scale; });
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) (document.documentElement.requestFullscreen?.() || Promise.resolve()).catch(() => {});
+  else document.exitFullscreen?.();
+}
+function togglePanel(force) {
+  const open = force ?? !panel.classList.contains('open');
+  panel.classList.toggle('open', open);
+  document.body.classList.toggle('panel-open', open);
+  if (!open && document.activeElement && isUI(document.activeElement)) document.activeElement.blur();
+}
+addEventListener('keydown', e => {
+  const t = e.target;
+  if (t && (t.tagName === 'INPUT' && t.type === 'text' || t.tagName === 'TEXTAREA')) {
+    if (e.key === 'Escape') t.blur();
+    return;
+  }
+  if (e.ctrlKey || e.metaKey || e.altKey || e.repeat) return;
+  if (e.code === 'KeyS') { togglePanel(); e.preventDefault(); }
+  else if (e.code === 'KeyR') { restartSequence(); e.preventDefault(); }
+  else if (e.code === 'KeyF') { toggleFullscreen(); e.preventDefault(); }
+});
+addEventListener('keyup', e => { if (e.key === 'Alt') e.preventDefault(); });
+
+/* ---------- drag & drop files ---------- */
+const dropHint = document.getElementById('dropHint');
+function sideAt(x, y) {
+  const lp = projectToCard(x, y);
+  if (lp) return signedDist(lp) < 0 ? 'L' : 'R';
+  return x < (L ? L.cx : VW / 2) ? 'L' : 'R';
+}
+addEventListener('dragover', e => {
+  e.preventDefault();
+  if (isUI(e.target)) { dropHint.style.display = 'none'; return; }
+  dropHint.textContent = sideAt(e.clientX, e.clientY) === 'L' ? 'Drop on left' : 'Drop on right';
+  dropHint.style.display = 'block';
+});
+addEventListener('dragleave', e => { if (!e.relatedTarget) dropHint.style.display = 'none'; });
+addEventListener('drop', e => {
+  e.preventDefault(); dropHint.style.display = 'none';
+  if (isUI(e.target)) return;
+  const f = e.dataTransfer?.files?.[0]; if (f) setMedia(sideAt(e.clientX, e.clientY), f);
+});
+
+const msg = document.getElementById('msg');
+async function setMedia(side, file) {
+  msg.textContent = '';
+  try {
+    await loadSide(side, file, file.name);
+    try { await idb.set(side, { blob: file, name: file.name, type: file.type }); } catch (e) { msg.textContent = 'Loaded, but the browser would not save it for refresh.'; }
+    syncRestart();
+  } catch (e) { msg.textContent = e.message || String(e); }
+}
+
+/* ---------- panel: drop zones ---------- */
+const fileInput = document.getElementById('file');
+let pickSide = 'L';
+function updateDropZones() {
+  document.querySelectorAll('.dz').forEach(dz => {
+    const m = media[dz.dataset.side];
+    const nm = dz.querySelector('.name');
+    nm.textContent = m ? m.name : 'Drop or click'; nm.classList.toggle('empty', !m);
+    dz.querySelector('.kind').textContent = m ? ({ video: 'Video', image: 'Image', gif: 'Animated GIF' })[m.kind] : '';
+    dz.querySelector('.x').style.visibility = m ? 'visible' : 'hidden';
+  });
+}
+document.querySelectorAll('.dz').forEach(dz => {
+  dz.addEventListener('click', e => { if (e.target.closest('.x')) return; pickSide = dz.dataset.side; fileInput.click(); });
+  dz.addEventListener('dragover', e => { e.preventDefault(); e.stopPropagation(); dz.classList.add('over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('over'));
+  dz.addEventListener('drop', e => { e.preventDefault(); e.stopPropagation(); dz.classList.remove('over'); const f = e.dataTransfer?.files?.[0]; if (f) setMedia(dz.dataset.side, f); });
+});
+fileInput.addEventListener('change', () => { const f = fileInput.files[0]; if (f) setMedia(pickSide, f); fileInput.value = ''; });
+document.querySelectorAll('[data-clear]').forEach(b => b.addEventListener('click', async e => {
+  e.stopPropagation(); const s = b.dataset.clear; clearSide(s); try { await idb.del(s); } catch {} syncRestart();
+}));
+document.getElementById('swap').addEventListener('click', async () => {
+  [media.L, media.R] = [media.R, media.L];
+  [S.labelL, S.labelR] = [S.labelR, S.labelL]; [S.lsL, S.lsR] = [S.lsR, S.lsL];
+  applyMediaUniforms(); ['labelL', 'labelR', 'lsL', 'lsR'].forEach(syncUI); save();
+  try { const [a, b] = await Promise.all([idb.get('L'), idb.get('R')]);
+    await (b ? idb.set('L', b) : idb.del('L')); await (a ? idb.set('R', a) : idb.del('R')); } catch {}
+  syncRestart();
+});
+document.getElementById('resync').addEventListener('click', () => syncRestart());
+document.getElementById('restartBtn').addEventListener('click', () => restartSequence());
+document.getElementById('resetView').addEventListener('click', () => {
+  S.scale = DEF.scale; S.offX = 0; S.offY = 0; syncUI('scale'); save();
+});
+document.getElementById('resetAll').addEventListener('click', () => {
+  const keep = { labelL: S.labelL, labelR: S.labelR };
+  S = { ...DEF, ...keep }; barX = S.split; syncAllUI(); applyBg(); loadFont(); rebuildLabelsSoon(); updateGuide(); save();
+});
+
+/* ---------- panel: generic bindings ---------- */
+function fmt(el, v) {
+  const u = el.dataset.u ?? '';
+  const n = typeof v === 'number' ? (Math.abs(v) >= 10 || Number.isInteger(v) ? Math.round(v * 10) / 10 : v.toFixed(2)) : v;
+  return n + u;
+}
+function setInput(el, v) {
+  if (el.type === 'checkbox') el.checked = !!v; else el.value = v;
+  const out = el.nextElementSibling;
+  if (out && out.classList.contains('v')) out.textContent = fmt(out, typeof v === 'number' ? v : +v);
+}
+function readInput(el) {
+  if (el.type === 'checkbox') return el.checked;
+  if (el.type === 'range' || el.type === 'number') return parseFloat(el.value);
+  return el.value;
+}
+function syncUI(k) { panel.querySelectorAll(`[data-k="${k}"]`).forEach(el => setInput(el, S[k])); }
+function syncAllUI() { panel.querySelectorAll('[data-k]').forEach(el => setInput(el, S[el.dataset.k])); }
+panel.querySelectorAll('[data-k]').forEach(el => {
+  el.addEventListener('input', () => {
+    const k = el.dataset.k; S[k] = readInput(el); setInput(el, S[k]);
+    if (k === 'font') loadFont();
+    if (k === 'areaW') updateGuide();
+    if (k === 'bg') applyBg();
+    save();
+  });
+});
+syncAllUI();
+
+// double-click a slider's label or value to reset it to its default
+panel.querySelectorAll('.row input[type=range][data-k]').forEach(el => {
+  const row = el.closest('.row'), k = el.dataset.k;
+  row.classList.add('resettable');
+  [row.querySelector('label'), row.querySelector('.v')].forEach(t => {
+    if (!t) return;
+    t.title = `Double-click to reset (${fmt(row.querySelector('.v') || t, DEF[k])})`;
+    t.addEventListener('dblclick', e => {
+      e.preventDefault(); window.getSelection()?.removeAllRanges();
+      S[k] = DEF[k]; syncUI(k);
+      if (k === 'areaW') updateGuide();
+      save();
+    });
+  });
+});
+
+const guide = document.getElementById('guide'), shade = document.getElementById('guideShade');
+function updateGuide() {
+  const w = VW * S.areaW / 100;
+  guide.style.width = w + 'px'; shade.style.left = w + 'px';
+  guide.style.borderRightStyle = S.areaW >= 100 ? 'none' : 'dashed';
+}
+
+/* ================= boot ================= */
+addEventListener('resize', resize);
+const pinScroll = () => { if (scrollX || scrollY) scrollTo(0, 0); if (document.body.scrollTop) document.body.scrollTop = 0; };
+addEventListener('scroll', pinScroll, { passive: true }); document.body.addEventListener('scroll', pinScroll, { passive: true });
+resize();
+requestAnimationFrame(frame);
+(async () => {
+  for (const s of SIDES) {
+    try { const rec = await idb.get(s); if (rec && rec.blob) await loadSide(s, rec.blob, rec.name); }
+    catch (e) { console.warn('Could not restore', s, e); }
+  }
+  updateDropZones();
+  if (!media.L && !media.R) togglePanel(true);
+  restartSequence();
+})();
+</script>
+</body>
+</html>

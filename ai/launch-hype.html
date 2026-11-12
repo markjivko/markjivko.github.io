@@ -1,0 +1,984 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Launch Hype vs. Reality: Anthropic's Last Six Model Launches</title>
+        <style>
+            :root {
+                --bg: #f6f4ef;
+                --card: #ffffff;
+                --ink: #1c1b19;
+                --muted: #5f5b53;
+                --line: #dedad0;
+                --claim: #b4530a;
+                --claim-bg: #fdf3e6;
+                --real: #1d5f8a;
+                --real-bg: #eaf3f9;
+                --link: #0b57a4;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --bg: #151514;
+                    --card: #1f1f1d;
+                    --ink: #ecebe6;
+                    --muted: #a5a199;
+                    --line: #36352f;
+                    --claim: #f0a554;
+                    --claim-bg: #2c2216;
+                    --real: #7fbde6;
+                    --real-bg: #17252f;
+                    --link: #8ec5ff;
+                }
+            }
+            * {
+                box-sizing: border-box;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--ink);
+                font:
+                    17px/1.55 Georgia,
+                    "Times New Roman",
+                    serif;
+            }
+            .wrap {
+                max-width: 1040px;
+                margin: 0 auto;
+                padding: 48px 24px 80px;
+            }
+            h1,
+            h2,
+            h3,
+            .label,
+            nav,
+            .meta,
+            .src,
+            table,
+            footer {
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+            }
+            h1 {
+                font-size: 2.5rem;
+                line-height: 1.1;
+                margin: 0 0 12px;
+                letter-spacing: -0.02em;
+            }
+            .dek {
+                font-size: 1.2rem;
+                color: var(--muted);
+                max-width: 46em;
+                margin: 0 0 8px;
+            }
+            .meta {
+                font-size: 0.85rem;
+                color: var(--muted);
+                margin-bottom: 28px;
+            }
+            a {
+                color: var(--link);
+                text-underline-offset: 2px;
+            }
+            nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 0 0 40px;
+            }
+            nav a {
+                font-size: 0.85rem;
+                text-decoration: none;
+                padding: 6px 12px;
+                border: 1px solid var(--line);
+                border-radius: 999px;
+                background: var(--card);
+            }
+            h2 {
+                font-size: 1.5rem;
+                margin: 48px 0 14px;
+                letter-spacing: -0.01em;
+            }
+            .patterns {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+                gap: 14px;
+            }
+            .patterns div {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                padding: 16px 18px;
+            }
+            .patterns strong {
+                font-family: system-ui, sans-serif;
+                display: block;
+                margin-bottom: 4px;
+            }
+            .patterns p {
+                margin: 0;
+                font-size: 0.95rem;
+            }
+            .model {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 12px;
+                padding: 22px;
+                margin: 22px 0;
+            }
+            .model h3 {
+                margin: 0;
+                font-size: 1.35rem;
+            }
+            .model .date {
+                font-family: system-ui, sans-serif;
+                font-size: 0.85rem;
+                color: var(--muted);
+                margin: 2px 0 16px;
+            }
+            .cols {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+            @media (max-width: 760px) {
+                .cols {
+                    grid-template-columns: 1fr;
+                }
+                h1 {
+                    font-size: 2rem;
+                }
+            }
+            .col {
+                border-radius: 8px;
+                padding: 14px 16px 6px;
+            }
+            .col.claim {
+                background: var(--claim-bg);
+            }
+            .col.real {
+                background: var(--real-bg);
+            }
+            .label {
+                font-size: 0.75rem;
+                font-weight: 700;
+                letter-spacing: 0.08em;
+                text-transform: uppercase;
+                margin-bottom: 8px;
+            }
+            .claim .label {
+                color: var(--claim);
+            }
+            .real .label {
+                color: var(--real);
+            }
+            ol {
+                margin: 0;
+                padding-left: 1.2em;
+            }
+            li {
+                margin-bottom: 12px;
+                font-size: 0.97rem;
+            }
+            .src {
+                display: block;
+                font-size: 0.8rem;
+                margin-top: 3px;
+                color: var(--muted);
+            }
+            .verdict {
+                font-size: 0.95rem;
+                color: var(--muted);
+                margin: 14px 2px 14px;
+            }
+            .verdict b {
+                color: var(--ink);
+                font-family: system-ui, sans-serif;
+            }
+            .note {
+                border-left: 4px solid var(--line);
+                padding: 4px 0 4px 16px;
+                margin: 12px 0;
+                font-size: 0.97rem;
+            }
+            .sources {
+                columns: 2;
+                column-gap: 32px;
+                font-size: 0.88rem;
+            }
+            @media (max-width: 760px) {
+                .sources {
+                    columns: 1;
+                }
+            }
+            .sources section {
+                break-inside: avoid;
+                margin-bottom: 18px;
+            }
+            .sources h3 {
+                font-size: 0.95rem;
+                margin: 0 0 6px;
+            }
+            .sources ul {
+                margin: 0;
+                padding-left: 1.1em;
+            }
+            .sources li {
+                margin-bottom: 4px;
+                font-size: 0.88rem;
+                word-break: break-word;
+            }
+            footer {
+                margin-top: 48px;
+                padding-top: 16px;
+                border-top: 1px solid var(--line);
+                font-size: 0.82rem;
+                color: var(--muted);
+            }
+            .prompt {
+                background: var(--card);
+                border: 1px solid var(--line);
+                border-radius: 10px;
+                margin: 20px 0 24px;
+                font-family:
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    Roboto,
+                    sans-serif;
+            }
+            .prompt summary {
+                cursor: pointer;
+                padding: 10px 14px;
+                font-size: 0.88rem;
+                font-weight: 600;
+                color: var(--muted);
+            }
+            .prompt[open] summary {
+                color: var(--ink);
+                border-bottom: 1px solid var(--line);
+            }
+            .prompt pre {
+                margin: 0;
+                padding: 14px 16px;
+                max-height: 60vh;
+                overflow: auto;
+                white-space: pre-wrap;
+                overflow-wrap: anywhere;
+                font:
+                    0.82rem/1.55 ui-monospace,
+                    SFMono-Regular,
+                    Menlo,
+                    Consolas,
+                    monospace;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrap">
+            <header>
+                <h1>Launch Hype vs. Reality</h1>
+                <p class="dek">
+                    What Anthropic claimed at each of its last six model launches, and what independent testers, reviewers and
+                    users found once the launch post wore off.
+                </p>
+            </header>
+
+            <details class="prompt">
+                <summary>Prompt used for <a href="https://youtube.com/@markjivko">comparison between Fable 5.2 and Opus 5.5</a>.</summary>
+<pre>
+Generate a single-page HTML app to use as a B-roll prop for a video recorded at full-screen resolution (1920 x 1080). The canvas must fill the entire viewport. Allow me to reposition and resize it using swipe and scroll gestures. Never crop the canvas, regardless of the browser window dimensions. Use Three.js from a CDN to achieve the best visual effects. Add an absolutely positioned settings sidebar that can be toggled with the `S` key. The `R` key must restart the animation after a 500 ms delay. The `F` key must toggle full-screen mode.
+
+Use the numeric keys to switch between scenes:
+
+## 1. Near-flagship for less (Sonnet 5) - 20 June 2026
+
+- **Claim:** Close to Opus 4.8 performance at a lower price. ([Bleepo](https://www.bleepo.co/article/claude-sonnet-5-useless-flop-backlash-benchmarks))
+- **Reality:** The measured cost per task was about $2.29, roughly 15% higher than Opus 4.8. The new tokenizer also generated about 30% more tokens for the same text. ([Spectrum AI Lab](https://spectrumailab.com/blog/claude-sonnet-5-review-2026))
+- **3D scene:** A balance scale has a small box labelled "mid-tier" on one pan and a large box labelled "flagship" on the other. The camera circles the scale as small, token-shaped weights rain onto the pan holding the smaller box until it sinks below the pan holding the flagship box.
+
+## 2. World's most advanced, for three weeks (Fable 5.1) - 1 September 2026
+
+- **Claim:** Anthropic billed the pair as the most advanced models in the world for coding and knowledge work. ([Latent Space](https://latent.space/p/ainews-claude-fablemythos-51-new/))
+- **Reality:** Opus 5.5 took first place on the Artificial Analysis index 21 days later, scoring 58 against Fable 5.1's 53. ([NYU Shanghai RITS](https://rits.shanghai.nyu.edu/ai/claude-opus-5-5-takes-the-top-spot-on-artificial-analysis-at-58/))
+- **3D scene:** A golden trophy stands on a podium under a single spotlight. A wall calendar behind it rapidly flips through its pages. On the 21st flip, a second, slightly taller trophy slides into view on a cheaper-looking podium, and the spotlight swings over to it.
+
+## 3. Cheaper workloads, bigger bills (Fable 5.1)
+
+- **Claim:** A 75% reduction in cache-read prices, with typical workloads reported to be about 25% cheaper. ([Latent Space](https://latent.space/p/ainews-claude-fablemythos-51-new/))
+- **Reality:** Output token usage rose by about 1.7x in Artificial Analysis's measurement, pushing the cost per task up by roughly 20%. ([Latent Space](https://latent.space/p/ainews-claude-fablemythos-51-new/))
+- **3D scene:** A receipt printer sits on a desk and prints a short slip stamped "SAVINGS". It keeps printing. The paper spools across the desk, over the edge and across the floor as the camera pulls back and rises to reveal the room filling with receipt tape.
+
+## 4. The vanishing lead (Opus 5.5) - 22 September 2026
+
+- **Claim:** A Terminal-Bench 4.0 score of 66.4% put it well ahead of GPT-6 Astra's 57.9%. ([Analytics Insight](https://www.analyticsinsight.net/news/claude-opus-55-challenges-gpt-6-astra-with-lower-costs-higher-scores))
+- **Reality:** Artificial Analysis's rerun produced a score of 59.6%, level with Astra. ([Kingy AI](https://kingy.ai/blog/claude-opus-5-5-specs-benchmarks-pricing-comparison/))
+- **3D scene:** Two glass columns fill with glowing liquid on a dark studio floor. The orange column surges far above the blue one. The camera orbits 180 degrees, the lighting shifts from warm to neutral white, and the orange liquid level drains until both columns are at the same height.
+
+## 5. The 30% discount that cost 50% more (Sonnet 5.5) - 28 September 2026
+
+- **Claim:** Up to 30% lower cost per task than Sonnet 5. ([Kingy AI](https://kingy.ai/blog/claude-sonnet-5-5-specs-benchmarks-pricing/))
+- **Reality:** At maximum effort, the cost was about $7.60 per task in Artificial Analysis's test - roughly 50% higher than Sonnet 5 and more than Opus 5.5's $5.98. ([GlobalGPT](https://www.glbgpt.com/hub/claude-sonnet-5-5-review/), [SmartScope](https://smartscope.blog/en/blog/claude-sonnet-5-5-review-testing-smarter-than-2026/))
+- **3D scene:** A "30% OFF" price tag swings from a string in front of a sleek vending machine. The camera moves past the tag towards the machine's display, where the digits roll upwards like those on a fuel pump. Coins pour in from the viewer's side of the frame and into the slot.
+
+## 6. The seven-point haircut (Sonnet 5.5)
+
+- **Claim:** A score of 70.6% on Terminal-Bench 4.0, beating its own flagship sibling. ([Apidog](https://apidog.com/blog/claude-sonnet-5-5-benchmarks/))
+- **Reality:** The independent run scored 63.6%. Sonnet 5.5 retained its lead over Opus, but the score was lower. ([Apidog](https://apidog.com/blog/claude-sonnet-5-5-benchmarks/))
+- **3D scene:** A high-jump bar is set at "70.6" in an empty stadium. A stylised figure clears it in slow motion. Cut to a second, identical stadium in flat daylight, where an official quietly lowers the bar to "63.6" and the same jump is replayed.
+
+## 7. The ten-cent model with a cliff (Haiku 5.5) - 7 October 2026
+
+- **Claim:** $0.10 / $0.50 per million tokens, 90% cheaper than Haiku 4.5. ([Saidul Badhon](https://saidulbadhon.com/blogs/claude-haiku-5-5-review))
+- **Reality:** Every rate increases fivefold once a prompt exceeds 100k tokens. ([eesel.ai](https://www.eesel.ai/blog/claude-haiku-5-5-review))
+- **3D scene:** A tiny paper boat glides along a calm, shallow channel marked by a small "10¢" buoy. A depth marker reading "100k" passes by. The channel floor then drops away into a waterfall. The camera tilts down to follow the boat over the edge as the buoy flips to "x5".
+
+## 8. Beats its rival on every test (Haiku 5.5)
+
+- **Claim:** Ahead of GPT-6 Luna on every test that both models ran. ([Saidul Badhon](https://saidulbadhon.com/blogs/claude-haiku-5-5-review))
+- **Reality:** It scored 35% on AutomationBench-AA, compared with 53-60% for Luna and other rivals. At maximum effort, it also used about three times as many output tokens as Luna. ([Van Data Team](https://vandatateam.com/blog/claude-haiku-5-5))
+- **3D scene:** A row of identical scoreboards lights up green, one by one, as the camera dollies sideways. The camera continues past the edge of the stage set into an unlit backstage area. There, one more scoreboard glows red, and a fuel gauge beside it drains three times faster than its neighbour.
+
+## 9. An operating system from an empty folder (Fable 5.2) - 9 November 2026
+
+- **Claim:** More than 1,000 subagents worked for eight days to produce a prototype operating system that boots, alongside lower token prices. ([AlphaSignal](https://alphasignal.ai/news/anthropic-s-claude-fable-5-2-builds-a-working-os-from-an-empty-folder))
+- **Reality:** One tester's showcase projects incurred an estimated $14,710 in API costs and still shipped with bugs and awkward animations. ([Decrypt](https://decrypt.co/382897/anthropic-claude-fable-5-2-and-mythos-5-2-impressive-and-expensive))
+- **3D scene:** An empty manila folder opens on a desk, and a miniature city of server towers grows out of it, surrounded by a swarm of a thousand tiny worker drones. The camera cranes upwards to reveal a taxi meter mounted above the city, spinning past $14,000, while a few towers flicker and glitch.
+
+---
+
+Before implementation, ask me a question in an interactive prompt. Present visual options for the B-roll app and wait for my selection before implementing it. The final application must be delivered as a standalone HTML file that I can download to my device.
+</pre>
+            </details>
+
+            <nav aria-label="Jump to model">
+                <a href="#fable52">Fable 5.2</a>
+                <a href="#haiku55">Haiku 5.5</a>
+                <a href="#sonnet55">Sonnet 5.5</a>
+                <a href="#opus55">Opus 5.5</a>
+                <a href="#fable51">Fable 5.1</a>
+                <a href="#sonnet5">Sonnet 5</a>
+                <a href="#caveats">Caveats</a>
+                <a href="#sources">All sources</a>
+            </nav>
+
+            <!-- FABLE 5.2 -->
+            <article class="model" id="fable52">
+                <h3>Claude Fable 5.2 / Mythos 5.2</h3>
+                <p class="date">Launched 9 November 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                Built a prototype operating system that boots, from an empty folder, by coordinating more than
+                                1,000 subagents over 8 days.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://alphasignal.ai/news/anthropic-s-claude-fable-5-2-builds-a-working-os-from-an-empty-folder"
+                                        >AlphaSignal</a
+                                    >
+                                    ·
+                                    <a
+                                        href="https://dev.to/systemdesignsimple/claude-fable-52-and-mythos-52-an-honest-review-for-working-engineers-28k6"
+                                        >DEV Community</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                1,000 Fable 5.2 agents formalized Fermat's Last Theorem in 30 hours; Opus 5.5 got about a quarter
+                                of the way.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://alphasignal.ai/news/anthropic-s-claude-fable-5-2-builds-a-working-os-from-an-empty-folder"
+                                        >AlphaSignal</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Up to 30% faster generation and 20% lower API prices than Fable 5.1.
+                                <span class="src"
+                                    >Source: <a href="https://gptunnel.ru/en/blog/claude-fable-5-2">GPTunneL</a> ·
+                                    <a href="https://www.cnbc.com/2026/11/09/anthropic-claude-fable-5-2-mythos-5-2.html"
+                                        >CNBC launch coverage</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                The showcase builds are expensive. One early tester's projects reached an estimated $14,710 in API
+                                costs, and still had bugs, awkward animations and untested features.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://decrypt.co/382897/anthropic-claude-fable-5-2-and-mythos-5-2-impressive-and-expensive"
+                                        >Decrypt</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                The proof result covers one theorem under one scaffold, so it shows performance in that setup, not
+                                general mathematical reliability.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://alphasignal.ai/news/anthropic-s-claude-fable-5-2-builds-a-working-os-from-an-empty-folder"
+                                        >AlphaSignal</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Every's Dan Shipper called it "spiky": the best tool for a narrow set of long, ambitious tasks,
+                                but too slow, costly and token-hungry for routine work, and not at the frontier for writing.
+                                Hacker News commenters called it lackluster and noted the pre-IPO timing; users reported hitting
+                                usage limits within minutes.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://finance.biggo.com/news/838cc0139ecae2b0"
+                                        >BigGo Finance on Shipper's review</a
+                                    >
+                                    · <a href="https://news.ycombinator.com/item?id=50429068">Hacker News</a> ·
+                                    <a href="https://gptunnel.ru/en/blog/claude-fable-5-2">GPTunneL</a></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <!-- HAIKU 5.5 -->
+            <article class="model" id="haiku55">
+                <h3>Claude Haiku 5.5</h3>
+                <p class="date">Launched 7 October 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                $0.10 input / $0.50 output per million tokens: 90% cheaper than Haiku 4.5.
+                                <span class="src"
+                                    >Source: <a href="https://www.anthropic.com/claude-haiku-5-5">Anthropic launch page</a> ·
+                                    <a href="https://saidulbadhon.com/blogs/claude-haiku-5-5-review"
+                                        >Saidul Badhon review</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Beats GPT-6 Luna on every test both models were run on.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://saidulbadhon.com/blogs/claude-haiku-5-5-review"
+                                        >Saidul Badhon review</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Terminal-Bench 4.0 jumps from 0% (Haiku 4.5) to 39.2%.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://saidulbadhon.com/blogs/claude-haiku-5-5-review"
+                                        >Saidul Badhon review</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                The bargain price only applies to short prompts. Past 100k prompt tokens, every rate goes up 5x.
+                                <span class="src"
+                                    >Source: <a href="https://www.eesel.ai/blog/claude-haiku-5-5-review">eesel.ai review</a></span
+                                >
+                            </li>
+                            <li>
+                                At max effort it used about 162,000 output tokens per task, roughly three times GPT-6 Luna. It
+                                also scored 35% on AutomationBench-AA against 53–60% for rivals.
+                                <span class="src"
+                                    >Source: <a href="https://vandatateam.com/blog/claude-haiku-5-5">Van Data Team</a> (citing
+                                    Artificial Analysis)</span
+                                >
+                            </li>
+                            <li>
+                                Anthropic's own system card says it over-refused more than any other model tested. Artificial
+                                Analysis measured a 40% hallucination rate on its knowledge test.
+                                <span class="src"
+                                    >Source: <a href="https://aiwiz.uk/blog/claude-haiku-5-5/">AIWiz</a> ·
+                                    <a href="https://aitoolsreview.co.uk/insights/claude-haiku-5-5">AIToolsReview</a></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SONNET 5.5 -->
+            <article class="model" id="sonnet55">
+                <h3>Claude Sonnet 5.5</h3>
+                <p class="date">Launched 28 September 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                More than 30% faster than Sonnet 5 and up to 30% cheaper per task.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://kingy.ai/blog/claude-sonnet-5-5-specs-benchmarks-pricing/">Kingy AI</a></span
+                                >
+                            </li>
+                            <li>
+                                70.6% on Terminal-Bench 4.0: ahead of the flagship Opus 5.5 (66.4%) and seven times Sonnet 5's
+                                score.
+                                <span class="src"
+                                    >Source: <a href="https://apidog.com/blog/claude-sonnet-5-5-benchmarks/">Apidog</a></span
+                                >
+                            </li>
+                            <li>
+                                "A sharp eye for design."
+                                <span class="src"
+                                    >Source: <a href="https://finance.biggo.com/news/8491cd4c43421988">BigGo Finance</a> (quoting
+                                    Anthropic)</span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                The 30% saving comes from using fewer tokens on some work, not a price cut. At max effort,
+                                Artificial Analysis measured about $7.60 per task: roughly 50% above Sonnet 5, and more than Opus
+                                5.5's $5.98.
+                                <span class="src"
+                                    >Source: <a href="https://www.glbgpt.com/hub/claude-sonnet-5-5-review/">GlobalGPT</a> ·
+                                    <a href="https://smartscope.blog/en/blog/claude-sonnet-5-5-review-testing-smarter-than-2026/"
+                                        >SmartScope</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                The independent Terminal-Bench rerun scored 63.6%, not 70.6% (the lead over Opus did hold). Opus
+                                5.5 still wins seven of the eight launch tests.
+                                <span class="src"
+                                    >Source: <a href="https://apidog.com/blog/claude-sonnet-5-5-benchmarks/">Apidog</a> ·
+                                    <a href="https://emergent.sh/learn/claude-sonnet-5-5-benchmarks">Emergent</a></span
+                                >
+                            </li>
+                            <li>
+                                Theo Browne highlighted a record 271,920 tokens per task on Cursor's benchmark. The system card
+                                concedes the model is slightly more likely than Sonnet 5 to state a wrong answer, and that max
+                                effort scores lower than the setting below it on one coding test.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://finance.biggo.com/news/8491cd4c43421988">BigGo Finance on Theo Browne</a> ·
+                                    <a href="https://computingforgeeks.com/claude-sonnet-5-5-released-features-benchmarks/"
+                                        >ComputingForGeeks</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <!-- OPUS 5.5 -->
+            <article class="model" id="opus55">
+                <h3>Claude Opus 5.5</h3>
+                <p class="date">Launched 22 September 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                66.4% on Terminal-Bench 4.0 against GPT-6 Astra's 57.9%.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://www.analyticsinsight.net/news/claude-opus-55-challenges-gpt-6-astra-with-lower-costs-higher-scores"
+                                        >Analytics Insight</a
+                                    >
+                                    · <a href="https://emergent.sh/learn/claude-opus-5-5-benchmarks">Emergent</a></span
+                                >
+                            </li>
+                            <li>
+                                Beats Astra on FrontierCode at roughly 20% of the cost per task, and matches it on Terminal-Bench
+                                at about 40% of the cost.
+                                <span class="src"
+                                    >Source: <a href="https://cellcog.ai/blog/claude-opus-5-5-release-date/">CellCog</a></span
+                                >
+                            </li>
+                            <li>
+                                Generates output more than 30% faster than Opus 5.
+                                <span class="src"
+                                    >Source: <a href="https://cellcog.ai/blog/claude-opus-5-5-release-date/">CellCog</a></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                Artificial Analysis's own run scored 59.6%, level with Astra rather than 8.5 points ahead.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://kingy.ai/blog/claude-opus-5-5-specs-benchmarks-pricing-comparison/"
+                                        >Kingy AI</a
+                                    >
+                                    ·
+                                    <a
+                                        href="https://rits.shanghai.nyu.edu/ai/claude-opus-5-5-takes-the-top-spot-on-artificial-analysis-at-58/"
+                                        >NYU Shanghai RITS</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Efficiency depends on the effort setting: at max, about 119K output tokens per task, roughly 4x
+                                Astra. Astra also leads on AutomationBench and Terminal-Bench-Science.
+                                <span class="src">Source: <a href="https://kingy.ai/?p=931456">Kingy AI summary</a></span>
+                            </li>
+                            <li>
+                                About a week in, major user threads said the model had got worse, and tracked sentiment slid from
+                                the low 70s to the mid 50s. <em>Counterpoint:</em> daily benchmark trackers found no confirmed
+                                regression. What is documented is that most cybersecurity tasks get rerouted to the older Opus
+                                4.8.
+                                <span class="src"
+                                    >Source: <a href="https://admix.software/blog/claude-opus-5-5-nerf-reports">Admix</a> ·
+                                    <a href="https://i10x.ai/news/claude-opus-5-5-nerf-complaints-data">i10x</a> ·
+                                    <a href="https://zoogom.com/en/posts/claude-opus-5-5-nerf-rumor-fact-check-2026/"
+                                        >Zoogom fact-check</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <!-- FABLE 5.1 -->
+            <article class="model" id="fable51">
+                <h3>Claude Fable 5.1 / Mythos 5.1</h3>
+                <p class="date">Launched 1 September 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                "The world's most advanced models for coding and knowledge work."
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://latent.space/p/ainews-claude-fablemythos-51-new/">Latent Space AINews</a>
+                                    (quoting Anthropic)</span
+                                >
+                            </li>
+                            <li>
+                                Terminal-Bench-Science more than doubles, from 24.7% to 52.6%.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://latent.space/p/ainews-claude-fablemythos-51-new/"
+                                        >Latent Space AINews</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Cache-read prices cut 75%, typical workloads about 25% cheaper, and about 60% fewer false-positive
+                                cyber refusals.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://latent.space/p/ainews-claude-fablemythos-51-new/"
+                                        >Latent Space AINews</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                The crown lasted three weeks. Opus 5.5 then took first place on the Artificial Analysis index at
+                                58, with Fable 5.1 at 53, for a lower price.
+                                <span class="src"
+                                    >Source:
+                                    <a
+                                        href="https://rits.shanghai.nyu.edu/ai/claude-opus-5-5-takes-the-top-spot-on-artificial-analysis-at-58/"
+                                        >NYU Shanghai RITS</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Artificial Analysis measured about 1.7x more output tokens, so cost per task rose roughly 20%
+                                despite the cache discount.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://latent.space/p/ainews-claude-fablemythos-51-new/"
+                                        >Latent Space AINews</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Testers still hit false-positive safeguard blocks. Zvi Mowshowitz's read of the system card found
+                                the multi-turn bioweapons safe-response rate on the API fell from 94% to 73%.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://latent.space/p/ainews-claude-fablemythos-51-new/">Latent Space AINews</a> ·
+                                    <a
+                                        href="https://www.lesswrong.com/posts/m7SZLkkxoeus3eFP8/claude-fable-5-1-and-mythos-5-1-the-system-card"
+                                        >LessWrong / Zvi Mowshowitz</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <!-- SONNET 5 -->
+            <article class="model" id="sonnet5">
+                <h3>Claude Sonnet 5</h3>
+                <p class="date">Launched 30 June 2026</p>
+                <div class="cols">
+                    <div class="col claim">
+                        <div class="label">Claimed at launch</div>
+                        <ol>
+                            <li>
+                                Near Opus 4.8 performance at a lower price.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://www.bleepo.co/article/claude-sonnet-5-useless-flop-backlash-benchmarks"
+                                        >Bleepo</a
+                                    ></span
+                                >
+                            </li>
+                            <li>
+                                Narrowly beat Opus 4.8 on the GDPval-AA knowledge-work test, 1,618 to 1,615 Elo.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://spectrumailab.com/blog/claude-sonnet-5-review-2026">Spectrum AI Lab</a></span
+                                >
+                            </li>
+                            <li>
+                                Anthropic's most agentic Sonnet, at $2 / $10 per million tokens.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://spectrumailab.com/blog/claude-sonnet-5-review-2026">Spectrum AI Lab</a></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                    <div class="col real">
+                        <div class="label">What set in</div>
+                        <ol>
+                            <li>
+                                Artificial Analysis measured about $2.29 per task, roughly 15% more than Opus 4.8. Simon Willison
+                                found the new tokenizer produced about 30% more tokens for the same text.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://spectrumailab.com/blog/claude-sonnet-5-review-2026">Spectrum AI Lab</a></span
+                                >
+                            </li>
+                            <li>
+                                On coding it trailed: 63.2% on SWE-bench Pro against 69.2% for Opus 4.8, and CodeRabbit measured
+                                lower bug-detection recall than Sonnet 4.6.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://spectrumailab.com/blog/claude-sonnet-5-review-2026">Spectrum AI Lab</a></span
+                                >
+                            </li>
+                            <li>
+                                Fans labelled it a "useless flop" within hours. Users reported a more argumentative model with
+                                more refusals, and Sonnet 4.6 was removed from the model picker.
+                                <span class="src"
+                                    >Source:
+                                    <a href="https://www.bleepo.co/article/claude-sonnet-5-useless-flop-backlash-benchmarks"
+                                        >Bleepo</a
+                                    >
+                                    ·
+                                    <a
+                                        href="https://windowsreport.com/claude-sonnet-5-users-report-refusals-pushback-and-memory-issues/"
+                                        >Windows Report</a
+                                    >
+                                    ·
+                                    <a href="https://joseparreogarcia.substack.com/p/sonnet-5-is-only-good-at-one-thing"
+                                        >Jose Parreño Garcia</a
+                                    ></span
+                                >
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </article>
+
+            <h2 id="sources">All sources</h2>
+            <div class="sources">
+                <section>
+                    <h3>Launch dates and official pages</h3>
+                    <ul>
+                        <li>
+                            <a href="https://platform.claude.com/docs/en/release-notes/overview">Claude Platform release notes</a>
+                        </li>
+                        <li><a href="https://en.wikipedia.org/wiki/Claude_(AI)">Wikipedia: Claude (AI)</a></li>
+                        <li><a href="https://www.anthropic.com/claude-haiku-5-5">Anthropic: Claude Haiku 5.5</a></li>
+                        <li><a href="https://www.anthropic.com/claude/mythos">Anthropic: Claude Mythos</a></li>
+                        <li>
+                            <a href="https://www.cnbc.com/2026/11/09/anthropic-claude-fable-5-2-mythos-5-2.html"
+                                >CNBC: Fable 5.2 launch</a
+                            >
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Fable 5.2 / Mythos 5.2</h3>
+                    <ul>
+                        <li>
+                            <a
+                                href="https://alphasignal.ai/news/anthropic-s-claude-fable-5-2-builds-a-working-os-from-an-empty-folder"
+                                >AlphaSignal: builds a working OS</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://decrypt.co/382897/anthropic-claude-fable-5-2-and-mythos-5-2-impressive-and-expensive"
+                                >Decrypt: impressive and expensive</a
+                            >
+                        </li>
+                        <li><a href="https://finance.biggo.com/news/838cc0139ecae2b0">BigGo Finance: Dan Shipper's review</a></li>
+                        <li>
+                            <a
+                                href="https://dev.to/systemdesignsimple/claude-fable-52-and-mythos-52-an-honest-review-for-working-engineers-28k6"
+                                >DEV Community: review for engineers</a
+                            >
+                        </li>
+                        <li><a href="https://gptunnel.ru/en/blog/claude-fable-5-2">GPTunneL: review and reactions</a></li>
+                        <li><a href="https://news.ycombinator.com/item?id=50429068">Hacker News thread</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Haiku 5.5</h3>
+                    <ul>
+                        <li><a href="https://www.eesel.ai/blog/claude-haiku-5-5-review">eesel.ai: the 100k catch</a></li>
+                        <li><a href="https://saidulbadhon.com/blogs/claude-haiku-5-5-review">Saidul Badhon: review</a></li>
+                        <li><a href="https://vandatateam.com/blog/claude-haiku-5-5">Van Data Team: real cost</a></li>
+                        <li><a href="https://aiwiz.uk/blog/claude-haiku-5-5/">AIWiz: explained</a></li>
+                        <li><a href="https://aitoolsreview.co.uk/insights/claude-haiku-5-5">AIToolsReview: review</a></li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Sonnet 5.5</h3>
+                    <ul>
+                        <li><a href="https://apidog.com/blog/claude-sonnet-5-5-benchmarks/">Apidog: benchmarks</a></li>
+                        <li>
+                            <a href="https://emergent.sh/learn/claude-sonnet-5-5-benchmarks">Emergent: scores and real costs</a>
+                        </li>
+                        <li>
+                            <a href="https://kingy.ai/blog/claude-sonnet-5-5-specs-benchmarks-pricing/"
+                                >Kingy AI: cost per task</a
+                            >
+                        </li>
+                        <li><a href="https://www.glbgpt.com/hub/claude-sonnet-5-5-review/">GlobalGPT: review</a></li>
+                        <li>
+                            <a href="https://smartscope.blog/en/blog/claude-sonnet-5-5-review-testing-smarter-than-2026/"
+                                >SmartScope: testing the claims</a
+                            >
+                        </li>
+                        <li><a href="https://finance.biggo.com/news/8491cd4c43421988">BigGo Finance: Theo Browne's take</a></li>
+                        <li>
+                            <a href="https://computingforgeeks.com/claude-sonnet-5-5-released-features-benchmarks/"
+                                >ComputingForGeeks: tested</a
+                            >
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Opus 5.5</h3>
+                    <ul>
+                        <li><a href="https://emergent.sh/learn/claude-opus-5-5-benchmarks">Emergent: benchmarks</a></li>
+                        <li>
+                            <a
+                                href="https://www.analyticsinsight.net/news/claude-opus-55-challenges-gpt-6-astra-with-lower-costs-higher-scores"
+                                >Analytics Insight: launch</a
+                            >
+                        </li>
+                        <li><a href="https://cellcog.ai/blog/claude-opus-5-5-release-date/">CellCog: price, specs, leaks</a></li>
+                        <li>
+                            <a href="https://kingy.ai/blog/claude-opus-5-5-specs-benchmarks-pricing-comparison/"
+                                >Kingy AI: specs and benchmarks</a
+                            >
+                        </li>
+                        <li>
+                            <a
+                                href="https://rits.shanghai.nyu.edu/ai/claude-opus-5-5-takes-the-top-spot-on-artificial-analysis-at-58/"
+                                >NYU Shanghai RITS: Artificial Analysis result</a
+                            >
+                        </li>
+                        <li><a href="https://admix.software/blog/claude-opus-5-5-nerf-reports">Admix: nerf reports</a></li>
+                        <li>
+                            <a href="https://i10x.ai/news/claude-opus-5-5-nerf-complaints-data"
+                                >i10x: complaints vs tracker data</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://zoogom.com/en/posts/claude-opus-5-5-nerf-rumor-fact-check-2026/"
+                                >Zoogom: nerf fact-check</a
+                            >
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Fable 5.1 / Mythos 5.1</h3>
+                    <ul>
+                        <li><a href="https://latent.space/p/ainews-claude-fablemythos-51-new/">Latent Space AINews</a></li>
+                        <li>
+                            <a
+                                href="https://www.lesswrong.com/posts/m7SZLkkxoeus3eFP8/claude-fable-5-1-and-mythos-5-1-the-system-card"
+                                >LessWrong / Zvi Mowshowitz: the system card</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://www.siliconrepublic.com/machines/anthropic-launches-claude-fable-5-1-and-mythos-5-1"
+                                >Silicon Republic: launch</a
+                            >
+                        </li>
+                    </ul>
+                </section>
+                <section>
+                    <h3>Sonnet 5</h3>
+                    <ul>
+                        <li><a href="https://spectrumailab.com/blog/claude-sonnet-5-review-2026">Spectrum AI Lab: review</a></li>
+                        <li>
+                            <a href="https://www.bleepo.co/article/claude-sonnet-5-useless-flop-backlash-benchmarks"
+                                >Bleepo: the backlash</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://windowsreport.com/claude-sonnet-5-users-report-refusals-pushback-and-memory-issues/"
+                                >Windows Report: user complaints</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://joseparreogarcia.substack.com/p/sonnet-5-is-only-good-at-one-thing"
+                                >Jose Parreño Garcia: press release vs backlash</a
+                            >
+                        </li>
+                    </ul>
+                </section>
+            </div>
+
+            <footer>
+                Compiled 12 November 2026 from public reporting and independent benchmark write-ups.
+            </footer>
+        </div>
+    </body>
+</html>
