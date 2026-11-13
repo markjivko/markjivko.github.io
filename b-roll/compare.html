@@ -14,7 +14,10 @@
   html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; overscroll-behavior: none; background: #000000; }
   html.bg-green, html.bg-green body { background: #00ff00; }
   body { cursor: none; font-family: Inter, system-ui, sans-serif; touch-action: none; user-select: none; -webkit-user-select: none; }
-  #gl { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
+  #vidHolder { position: fixed; left: 0; top: 0; width: 2px; height: 2px; overflow: hidden; opacity: 0.01; pointer-events: none; z-index: 0; }
+  #vidHolder video { width: 2px; height: 2px; display: block; }
+  #gl { z-index: 1;
+        position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; }
 
   #dot { position: fixed; left: 0; top: 0; width: 8px; height: 8px; border-radius: 50%; background: #fff;
          box-shadow: 0 0 0 1px rgba(0,0,0,.55); pointer-events: none; z-index: 60; opacity: 0;
@@ -75,6 +78,7 @@
 </style>
 </head>
 <body>
+<div id="vidHolder" aria-hidden="true"></div>
 <canvas id="gl"></canvas>
 <div id="guide"></div><div id="guideShade"></div>
 <div id="dot"></div>
@@ -285,9 +289,9 @@ const cardMat = new THREE.ShaderMaterial({
       float aa = max(fwidth(d), 1e-4);
 
       vec2 uvL = vec2(vUv.x - uOffL, vUv.y), uvR = vec2(vUv.x - uOffR, vUv.y);   // shifted when attached to the bar
-      vec4 cl = (uHasL > 0.5 && uvL.x >= 0.0 && uvL.x <= 1.0) ? texture2D(uL, coverUV(uvL, uAspL)) : vec4(0.0);
-      vec4 cr = (uHasR > 0.5 && uvR.x >= 0.0 && uvR.x <= 1.0) ? texture2D(uR, coverUV(uvR, uAspR)) : vec4(0.0);
-      if (uEmpty > 0.5) { cl = vec4(vec3(0.035), 1.0); cr = vec4(vec3(0.08), 1.0); }
+      vec4 cl = (uHasL > 0.5 && uvL.x >= 0.0 && uvL.x <= 1.0) ? texture2D(uL, coverUV(uvL, uAspL), -0.5) : vec4(0.0);
+      vec4 cr = (uHasR > 0.5 && uvR.x >= 0.0 && uvR.x <= 1.0) ? texture2D(uR, coverUV(uvR, uAspR), -0.5) : vec4(0.0);
+      if (uEmpty > 0.5) { cl = vec4(vec3(0.20), 1.0); cr = vec4(vec3(0.30), 1.0); }
       cl.rgb *= cl.a; cr.rgb *= cr.a;
       vec4 col = mix(cl, cr, smoothstep(-0.5 * aa, 0.5 * aa, d));
 
@@ -320,7 +324,6 @@ const cardMat = new THREE.ShaderMaterial({
       col *= mask * uOpacity;
       if (col.a < 0.002) discard;
       gl_FragColor = vec4(col.rgb / col.a, col.a);
-      #include <colorspace_fragment>
     }`,
 });
 
@@ -388,7 +391,7 @@ function kindOf(blob, name = '') {
 }
 function disposeMedia(m) {
   if (!m) return;
-  if (m.kind === 'video') { m.el.pause(); m.el.removeAttribute('src'); m.el.load(); }
+  if (m.kind === 'video') { m.el.pause(); m.el.removeAttribute('src'); m.el.load(); m.el.remove(); }
   if (m.gif) m.gif.frames.forEach(f => f.close && f.close());
   if (m.url) URL.revokeObjectURL(m.url);
   if (m.tex) m.tex.dispose();
@@ -424,12 +427,20 @@ async function loadSide(side, blob, name) {
     await new Promise((res, rej) => { v.onloadeddata = res; v.onerror = () => rej(new Error('Could not decode video: ' + name)); });
     v.addEventListener('ended', onVideoEnded);
     m.el = v; m.aspect = v.videoWidth / v.videoHeight || 16 / 9;
-    m.tex = new THREE.VideoTexture(v);
+    document.getElementById('vidHolder').appendChild(v);
+    // Frames are copied into a 2D canvas only when a real decoded frame is ready; the GPU texture is made
+    // from that canvas. So the card always holds the last good frame and can never show an empty/black one.
+    m.cv = document.createElement('canvas'); m.cv.width = v.videoWidth; m.cv.height = v.videoHeight;
+    m.ctx = m.cv.getContext('2d', { alpha: false });
+    m.ctx.drawImage(v, 0, 0, m.cv.width, m.cv.height);
+    m.tex = new THREE.CanvasTexture(m.cv);
+    m.dirty = false; m.rvfc = 'requestVideoFrameCallback' in v;
+    if (m.rvfc) { const cb = () => { m.dirty = true; v.requestVideoFrameCallback(cb); }; v.requestVideoFrameCallback(cb); }
   } else {
     if (kind === 'gif') m.gif = await decodeGif(blob);
     if (m.gif) {
       m.kind = 'gif'; m.aspect = m.gif.cv.width / m.gif.cv.height;
-      m.tex = new THREE.CanvasTexture(m.gif.cv); m.tex.generateMipmaps = false; m.tex.minFilter = THREE.LinearFilter;
+      m.tex = new THREE.CanvasTexture(m.gif.cv);
       drawGif(m.gif, performance.now(), m.tex);
     } else {
       m.kind = 'image';
@@ -438,7 +449,11 @@ async function loadSide(side, blob, name) {
       m.tex = new THREE.Texture(img); m.tex.needsUpdate = true;
     }
   }
-  m.tex.colorSpace = THREE.SRGBColorSpace; m.tex.anisotropy = maxAniso;
+  // Sample the raw display-encoded pixels and output them untouched (no linear/sRGB round trip, which
+  // washed videos out and caused banding in dark tones). Mipmaps + anisotropy stop shimmer when downscaled.
+  m.tex.colorSpace = THREE.NoColorSpace; m.tex.anisotropy = maxAniso;
+  m.tex.generateMipmaps = true; m.tex.minFilter = THREE.LinearMipmapLinearFilter; m.tex.magFilter = THREE.LinearFilter;
+  m.tex.needsUpdate = true;
   disposeMedia(media[side]);
   media[side] = m;
   applyMediaUniforms();
@@ -454,6 +469,12 @@ function applyMediaUniforms() {
   }
   U.uEmpty.value = (!media.L && !media.R) ? 1 : 0;
   updateDropZones();
+}
+function pumpVideo(m) {
+  const v = m.el;
+  // Never upload while seeking or before a real frame exists: some GPUs get an empty (black) frame then.
+  if (v.seeking || v.readyState < 2) return;
+  if (m.dirty || (!m.rvfc && !v.paused)) { m.ctx.drawImage(v, 0, 0, m.cv.width, m.cv.height); m.tex.needsUpdate = true; m.dirty = false; }
 }
 function drawGif(g, now, tex) {
   const t = (now - g.t0) % g.total;
@@ -477,12 +498,16 @@ function pauseAll() { videos().forEach(v => { v.pause(); try { v.currentTime = 0
 async function syncRestart() {
   if (restarting) return; restarting = true; lastRestart = performance.now();
   const vs = videos();
-  vs.forEach(v => { v.pause(); try { v.currentTime = 0; } catch {} });
+  vs.forEach(v => { v.pause(); if (v.currentTime !== 0) { try { v.currentTime = 0; } catch {} } });
   await Promise.all(vs.map(waitReady));
-  vs.forEach(v => { const p = v.play(); if (p) p.catch(() => {}); });
+  playAllFromStart();
+  restarting = false;
+}
+function playAllFromStart() {
+  videos().forEach(v => { const p = v.play(); if (p) p.catch(() => {}); });
   const now = performance.now();
   SIDES.forEach(s => { const m = media[s]; if (m && m.gif) { m.gif.t0 = now; m.gif.idx = -1; } });
-  lastRestart = now; restarting = false;
+  lastRestart = now;
 }
 function onVideoEnded() { if (performance.now() - lastRestart < 300) return; syncRestart(); }
 
@@ -558,15 +583,22 @@ function autoPattern(t) {           // t in cycles; returns {x, y} in [-1, 1]
 }
 let restartTimer = 0;
 function recenterBar() { S.split = 0.5; sweepCancelled = true; save(); }
+let restartId = 0;
 function restartSequence() {
   S.split = 0.5; save();                                          // R always starts with the bar centered
   clearTimeout(restartTimer);
-  phase = 'blank'; root.visible = false; pauseAll();
-  restartTimer = setTimeout(() => {
+  const id = ++restartId;
+  phase = 'blank'; root.visible = false;
+  pauseAll();                                                     // seek to 0 now, while the screen is blank
+  const ready = Promise.all(videos().map(waitReady));
+  const blankTime = new Promise(res => { restartTimer = setTimeout(res, 500); });
+  Promise.all([ready, blankTime]).then(() => {
+    if (id !== restartId) return;                                 // a newer R press took over
     phase = 'intro'; phaseT0 = performance.now(); sweepCancelled = false;
     barX = S.sweep === 'right' ? 1 : S.sweep === 'left' ? 0 : S.split;
-    syncRestart();
-  }, 500);
+    lastRestart = performance.now();
+    playAllFromStart();                                           // already at frame 0: no second seek
+  });
 }
 
 /* ================= render loop ================= */
@@ -648,7 +680,7 @@ function frame(now) {
   U.uRadius.value = S.radius;
   U.uOpacity.value = op;
   U.uSheen.value = sheen;
-  U.uBar.value.set(S.barColor);
+  U.uBar.value.setStyle(S.barColor, THREE.NoColorSpace);   // keep the picked hex exactly
 
   // labels
   const gapOut = W * S.gapOut / 100, gapIn = W * S.gapIn / 100;   // spacing as % of card width
@@ -674,7 +706,7 @@ function frame(now) {
   }
 
   // animated GIFs
-  for (const s of SIDES) { const m = media[s]; if (m && m.gif) drawGif(m.gif, now, m.tex); }
+  for (const s of SIDES) { const m = media[s]; if (m && m.gif) drawGif(m.gif, now, m.tex); if (m && m.kind === 'video') pumpVideo(m); }
 
   // cursor dot
   const showDot = S.showDot && ptr.inside && !ptr.overUI && phase !== 'blank';
