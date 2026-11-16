@@ -153,12 +153,8 @@
   <div class="row"><label>Idle after</label><input type="range" min="0" max="10" step="0.5" data-k="autoIdle"><span class="v" data-u="s"></span></div>
   <div class="sub" style="margin:2px 0 0">Runs whenever the mouse is outside the window (or over this panel). “Idle after” also starts it when the mouse sits still that long; 0 turns that off.</div>
 
-  <h2>Intro (R)</h2>
-  <div class="row"><label>Flip duration</label><input type="range" min="0.3" max="3" step="0.1" data-k="introDur"><span class="v" data-u="s"></span></div>
-  <div class="row two"><label>Bar sweep</label>
-    <select data-k="sweep"><option value="right">From right edge</option><option value="left">From left edge</option><option value="none">None</option></select></div>
-  <div class="row"><label>Sweep time</label><input type="range" min="0.3" max="4" step="0.1" data-k="sweepDur"><span class="v" data-u="s"></span></div>
-  <div class="row two"><label>Light sheen</label><input type="checkbox" data-k="sheen"></div>
+  <h2>Restart (R)</h2>
+  <div class="sub" style="margin:0">Shows 500 ms of empty background, then the card appears in place with both videos starting together.</div>
   <div class="btns"><button id="restartBtn">Restart now</button></div>
 
   <h2>Cursor</h2>
@@ -168,7 +164,7 @@
   <h2>Controls</h2>
   <div class="keys">
     <kbd>S</kbd><span>Toggle settings</span>
-    <kbd>R</kbd><span>Restart (500 ms of green first)</span>
+    <kbd>R</kbd><span>Restart (500 ms of empty background first)</span>
     <kbd>F</kbd><span>Toggle fullscreen</span>
     <kbd>Drag</kbd><span>Move the divider bar</span>
     <kbd>Click off the card</kbd><span>Re-center the bar (R also does)</span>
@@ -194,7 +190,6 @@ const DEF = {
   angle: 0, thick: 0, barColor: '#ffffff', handle: 'hover', dragAnywhere: true, split: 0.5,
   bg: 'black', areaW: 100, scale: 82, offX: 0, offY: 0, radius: 12, tiltY: 0, tiltX: 0, parallax: 4, float: 0.5,
   autoPar: true, autoMode: 'circle', autoSpeed: 1, autoAmp: 6, autoIdle: 0,
-  introDur: 1.4, sweep: 'right', sweepDur: 1.2, sheen: true,
   showDot: true, dotSize: 8,
 };
 let S = { ...DEF };
@@ -204,9 +199,6 @@ const save = () => { clearTimeout(saveT); saveT = setTimeout(() => { try { local
 
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const D2R = Math.PI / 180;
-const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
-const easeOutBack = t => { const c1 = 1.15, c3 = c1 + 1; return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2); };
-const easeInOutCubic = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const damp = (a, b, k, dt) => a + (b - a) * (1 - Math.exp(-k * dt));
 
 /* ================= media storage (IndexedDB) ================= */
@@ -559,7 +551,7 @@ function splitFromPointer(lp) {
 }
 
 /* ================= state ================= */
-let phase = 'blank', phaseT0 = 0, sweepCancelled = false;
+let phase = 'blank', sweepCancelled = false;
 let barX = S.split;       // smoothed current split (fraction)
 let hover = 0, hovering = false, dragging = false;
 const ptr = { x: VW / 2, y: VH / 2, inside: false, overUI: false };
@@ -594,8 +586,7 @@ function restartSequence() {
   const blankTime = new Promise(res => { restartTimer = setTimeout(res, 500); });
   Promise.all([ready, blankTime]).then(() => {
     if (id !== restartId) return;                                 // a newer R press took over
-    phase = 'intro'; phaseT0 = performance.now(); sweepCancelled = false;
-    barX = S.sweep === 'right' ? 1 : S.sweep === 'left' ? 0 : S.split;
+    phase = 'idle'; barX = S.split;                               // no entry animation: hard cut in
     lastRestart = performance.now();
     playAllFromStart();                                           // already at frame 0: no second seek
   });
@@ -629,26 +620,7 @@ function frame(now) {
   ry += Math.sin(time * 0.45) * 1.0 * D2R * S.float;
   rx += Math.cos(time * 0.6) * 0.6 * D2R * S.float;
 
-  if (phase === 'intro') {
-    const t = (now - phaseT0) / 1000, D = S.introDur;
-    const f = clamp(t / D, 0, 1), eb = easeOutBack(f), ec = easeOutCubic(f);
-    rx += (1 - eb) * -82 * D2R;
-    py += (1 - ec) * -0.32 * VH;
-    pz += (1 - ec) * -500;
-    op = clamp(f * 3.5, 0, 1);
-    const lf = easeOutCubic(clamp((t - D * 0.55) / 0.55, 0, 1));
-    lop = lf; lslide = (1 - lf) * -0.03 * W;
-    if (S.sweep !== 'none' && !sweepCancelled) {
-      const from = S.sweep === 'right' ? 1 : 0;
-      const sf = easeInOutCubic(clamp((t - D * 0.6) / S.sweepDur, 0, 1));
-      barX = from + (S.split - from) * sf;
-    }
-    if (S.sheen) { const sh = (t - D * 0.7) / 1.1; if (sh >= 0 && sh <= 1) sheen = -0.3 + sh * 1.6; }
-    const end = Math.max(D * 0.55 + 0.6, (S.sweep !== 'none' ? D * 0.6 + S.sweepDur : D), S.sheen ? D * 0.7 + 1.1 : 0);
-    if (t > end) phase = 'idle';
-  }
-  const introSweeping = phase === 'intro' && S.sweep !== 'none' && !sweepCancelled;
-  if (!introSweeping) barX = damp(barX, S.split, dragging ? 22 : 12, dt);
+  barX = damp(barX, S.split, dragging ? 22 : 12, dt);
 
   root.visible = phase !== 'blank';
   root.position.set(px, py, pz);
