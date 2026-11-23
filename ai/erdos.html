@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Erdős unit distance problem</title>
+<style>
+  :root { --ink:#1f1e1c; --muted:#6b6963; --rule:#e3e0d8; --accent:#b4502c; --bg:#fbfaf7; --card:#f2efe8; }
+  @media (prefers-color-scheme: dark) {
+    :root { --ink:#ecebe6; --muted:#a3a19a; --rule:#3a3935; --accent:#e58a63; --bg:#1c1b19; --card:#26251f; }
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.65 Georgia, "Iowan Old Style", "Times New Roman", serif; }
+  main { max-width:680px; margin:0 auto; padding:56px 24px 72px; }
+  h1 { font-size:30px; font-weight:normal; margin:0 0 4px; letter-spacing:-0.01em; }
+  .sub { color:var(--muted); font-size:15px; margin:0 0 40px; font-family:system-ui, sans-serif; }
+  h2 { font:600 13px/1 system-ui, sans-serif; text-transform:uppercase; letter-spacing:0.08em; color:var(--muted); margin:44px 0 14px; padding-top:20px; border-top:1px solid var(--rule); }
+  p { margin:0 0 14px; }
+  em.v { font-style:italic; }
+  .eq { background:var(--card); border-radius:10px; padding:26px 20px; margin:22px 0; text-align:center; font-size:24px; line-height:1.4; }
+  .eq small { display:block; font-size:14px; color:var(--muted); margin-top:10px; font-family:system-ui, sans-serif; }
+  .big { color:var(--accent); }
+  .callout { border:2px solid var(--accent); border-radius:12px; padding:22px 20px; margin:24px 0; text-align:center; }
+  .callout .lbl { font:600 12px/1 system-ui, sans-serif; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent); margin-bottom:10px; }
+  .callout .num { font-size:30px; line-height:1.3; }
+  .callout .txt { font:14px/1.5 system-ui, sans-serif; color:var(--muted); margin-top:10px; }
+  figure { margin:22px 0; text-align:center; }
+  figcaption { font:13px/1.5 system-ui, sans-serif; color:var(--muted); margin-top:8px; }
+  table { width:100%; border-collapse:collapse; font:15px/1.5 system-ui, sans-serif; margin:16px 0 8px; }
+  th, td { text-align:left; padding:8px 6px; border-bottom:1px solid var(--rule); }
+  th { color:var(--muted); font-weight:500; }
+  .note { font:13px/1.55 system-ui, sans-serif; color:var(--muted); margin-top:28px; }
+  sup, sub { font-size:0.7em; line-height:0; }
+</style>
+</head>
+<body>
+<main>
+
+<h1>The Erdős unit distance problem</h1>
+<p class="sub">Posed in 1946 and disproved in 2026, though only for unimaginably large numbers of points</p>
+
+<h2>The problem</h2>
+<p>Put <em class="v">n</em> points anywhere on a flat plane. Some pairs of them may be exactly one unit apart. If you arrange the points as cleverly as possible, how many such pairs can you get? Call that maximum <em class="v">u</em>(<em class="v">n</em>). The question is how fast <em class="v">u</em>(<em class="v">n</em>) grows as <em class="v">n</em> gets large.</p>
+<p>A few easy facts set the range. Points spaced along a line give <em class="v">n</em> − 1 pairs, so the count is at least linear. It cannot be quadratic either. Two unit circles meet in at most two points, and that limits how tangled the "distance 1" connections can get. In 1984, Spencer, Szemerédi and Trotter proved the best known ceiling: at most a constant times <em class="v">n</em><sup>4/3</sup> pairs.</p>
+<p>Erdős's own idea for a good arrangement was a square grid, scaled carefully. In a grid, the distance between two points is √<em class="v">k</em> for some whole number <em class="v">k</em>. Some numbers can be written as a sum of two squares in many ways (65 = 1² + 8² = 4² + 7²). If you pick such a <em class="v">k</em> and rescale the grid so that √<em class="v">k</em> becomes the unit, each point gets many unit-distance neighbours at once. That gives</p>
+
+<div class="eq"><em>u</em>(<em>n</em>) ≥ <em>n</em><sup>1 + c / log log <em>n</em></sup><small>Erdős's grid: barely faster than linear, and the extra exponent slowly shrinks toward zero</small></div>
+
+<figure>
+<svg width="300" height="190" viewBox="0 0 300 190" role="img" aria-label="A square grid of points with one point's unit-distance neighbours highlighted on a circle">
+  <g fill="none" stroke="currentColor" stroke-opacity="0.12">
+    <circle cx="150" cy="95" r="67" stroke="#b4502c" stroke-opacity="0.7" stroke-width="1.2"/>
+  </g>
+  <g id="pts" fill="currentColor" fill-opacity="0.28"></g>
+  <g fill="#b4502c"></g>
+  <script>
+    (function(){
+      var g=document.getElementById('pts'), ns='http://www.w3.org/2000/svg', s=8.3, cx=150, cy=95;
+      for (var i=-17;i<=17;i++) for (var j=-11;j<=11;j++){
+        var c=document.createElementNS(ns,'circle');
+        var d2=i*i+j*j, hit=(d2===65), ctr=(i===0&&j===0);
+        c.setAttribute('cx',cx+i*s); c.setAttribute('cy',cy+j*s);
+        c.setAttribute('r', hit||ctr ? 3.2 : 1.4);
+        if (hit||ctr){ c.setAttribute('fill','#b4502c'); c.setAttribute('fill-opacity','1'); }
+        g.appendChild(c);
+      }
+    })();
+  </script>
+</svg>
+<figcaption>Grid spacing 1/√65: the centre point has 16 neighbours at distance exactly 1</figcaption>
+</figure>
+
+<p>Erdős conjectured that this was essentially the best possible: <em class="v">u</em>(<em class="v">n</em>) = <em class="v">n</em><sup>1+o(1)</sup>. That means no arrangement beats linear growth by any fixed power of <em class="v">n</em>. For eighty years nobody found a counterexample, and most people believed he was right.</p>
+
+<h2>The solution</h2>
+<p>In May 2026, an internal OpenAI reasoning model produced a proof that the conjecture is false. Mathematicians then checked and simplified it. The construction swaps the ordinary integers behind the grid for the integers of high-degree algebraic number fields. It uses infinite class field towers and the Golod–Shafarevich theorem to find fields that create many unit distances at once. Will Sawin then made the exponent explicit:</p>
+
+<div class="eq"><span class="big"><em>n</em><sup>1.014</sup></span> &nbsp;≲&nbsp; <em>u</em>(<em>n</em>) &nbsp;≲&nbsp; <em>n</em><sup>4/3</sup><small>For infinitely many <em>n</em>. The lower bound is a fixed power above 1, so Erdős's conjecture fails.</small></div>
+
+<h2>The catch</h2>
+<p>A fixed exponent of 1.014 always beats an exponent that tends to 1, but only in the limit. The grid's exponent is about 1 + ln 2 / ln ln <em class="v">n</em>. It shrinks extremely slowly, because it depends on the log of a log of <em class="v">n</em>. To find where the new construction overtakes the grid, set the two extra exponents equal:</p>
+
+<div class="eq">ln 2 / ln ln <em>n</em> = 0.014 &nbsp;⟹&nbsp; ln ln <em>n</em> ≈ 49 &nbsp;⟹&nbsp; <em>n</em> ≈ 10<sup>10<sup>21</sup></sup><small>Leading-order estimate</small></div>
+
+<p>If you compute the grid's best count exactly, instead of using only the leading term, the crossover moves slightly later:</p>
+
+<div class="callout">
+  <div class="lbl">Estimated crossover</div>
+  <div class="num"><em>n</em> ≈ 10<sup>1.3 × 10<sup>21</sup></sup></div>
+  <div class="txt">Above this many points, the new construction gives more unit-distance pairs than Erdős's grid, and it stays ahead forever.</div>
+</div>
+
+<p>This is not 10<sup>21</sup> points. It is a number whose <em>count of digits</em> is about 1.3 × 10<sup>21</sup>, which is 1.3 sextillion digits. Written out at one millimetre per digit, it would stretch about 135 light-years. For comparison, the observable universe holds roughly 10<sup>80</sup> atoms, a number with only 81 digits.</p>
+
+<table>
+  <tr><th>Number of points <em>n</em></th><th>Grid exponent</th><th>New bound</th><th>Winner</th></tr>
+  <tr><td>10<sup>10</sup></td><td>≈ 1.22</td><td>1.014</td><td>Grid</td></tr>
+  <tr><td>10<sup>80</sup></td><td>≈ 1.14</td><td>1.014</td><td>Grid</td></tr>
+  <tr><td>10<sup>10<sup>6</sup></sup></td><td>≈ 1.05</td><td>1.014</td><td>Grid</td></tr>
+  <tr><td>10<sup>10<sup>10</sup></sup></td><td>≈ 1.03</td><td>1.014</td><td>Grid</td></tr>
+  <tr><td>10<sup>1.3 × 10<sup>21</sup></sup></td><td>≈ 1.014</td><td>1.014</td><td>Crossover</td></tr>
+</table>
+
+<figure>
+<svg width="100%" viewBox="0 0 640 300" role="img" aria-label="Extra exponent above 1 versus number of points. The grid's curve falls slowly and crosses the flat 0.014 line of the new construction at about n = 10 to the 1.3 times 10 to the 21." style="font:12px system-ui, sans-serif; color:var(--ink)">
+  <rect x="522.4" y="30" width="87.6" height="210" fill="var(--accent)" fill-opacity="0.08"/>
+  <g stroke="currentColor" stroke-opacity="0.1">
+    <line x1="70" y1="228" x2="610" y2="228"/><line x1="70" y1="190.8" x2="610" y2="190.8"/>
+    <line x1="70" y1="141.6" x2="610" y2="141.6"/><line x1="70" y1="104.4" x2="610" y2="104.4"/>
+    <line x1="70" y1="67.2" x2="610" y2="67.2"/>
+  </g>
+  <line x1="70" y1="240" x2="610" y2="240" stroke="currentColor" stroke-opacity="0.45"/>
+  <line x1="70" y1="30" x2="70" y2="240" stroke="currentColor" stroke-opacity="0.45"/>
+  <g fill="currentColor" fill-opacity="0.6" text-anchor="end">
+    <text x="62" y="232">0.01</text><text x="62" y="195">0.02</text>
+    <text x="62" y="146">0.05</text><text x="62" y="108">0.10</text><text x="62" y="71">0.20</text>
+  </g>
+  <g fill="currentColor" fill-opacity="0.6" text-anchor="middle">
+    <text x="70" y="258">10<tspan dy="-5" font-size="10">10</tspan></text>
+    <text x="160" y="258">10<tspan dy="-5" font-size="10">10⁵</tspan></text>
+    <text x="250" y="258">10<tspan dy="-5" font-size="10">10⁹</tspan></text>
+    <text x="340" y="258">10<tspan dy="-5" font-size="10">10¹³</tspan></text>
+    <text x="430" y="258">10<tspan dy="-5" font-size="10">10¹⁷</tspan></text>
+    <text x="520" y="258">10<tspan dy="-5" font-size="10">10²¹</tspan></text>
+    <text x="610" y="258">10<tspan dy="-5" font-size="10">10²⁵</tspan></text>
+    <text x="340" y="284">Number of points n</text>
+  </g>
+  <text x="70" y="18" fill="currentColor" fill-opacity="0.6">Extra exponent above 1 (log scale)</text>
+  <line x1="70" y1="209.5" x2="610" y2="209.5" stroke="var(--accent)" stroke-width="2.5"/>
+  <path d="M70.0,49.9 L77.5,61.7 L85.0,72.8 L92.5,82.8 L100.0,91.5 L107.5,99.2 L115.0,105.8 L122.5,111.7 L130.0,116.9 L137.5,121.7 L145.0,125.9 L152.5,129.9 L160.0,133.5 L167.5,136.9 L175.0,140.1 L182.5,143.1 L190.0,146.0 L197.5,148.7 L205.0,151.2 L212.5,153.7 L220.0,156.0 L227.5,158.2 L235.0,160.4 L242.5,162.4 L250.0,164.4 L257.5,166.3 L265.0,168.2 L272.5,170.0 L280.0,171.7 L287.5,173.4 L295.0,175.0 L302.5,176.6 L310.0,178.1 L317.5,179.6 L325.0,181.0 L332.5,182.4 L340.0,183.8 L347.5,185.2 L355.0,186.5 L362.5,187.7 L370.0,189.0 L377.5,190.2 L385.0,191.4 L392.5,192.6 L400.0,193.7 L407.5,194.8 L415.0,195.9 L422.5,197.0 L430.0,198.0 L437.5,199.1 L445.0,200.1 L452.5,201.1 L460.0,202.0 L467.5,203.0 L475.0,203.9 L482.5,204.9 L490.0,205.8 L497.5,206.7 L505.0,207.5 L512.5,208.4 L520.0,209.2 L527.5,210.1 L535.0,210.9 L542.5,211.7 L550.0,212.5 L557.5,213.3 L565.0,214.1 L572.5,214.9 L580.0,215.6 L587.5,216.4 L595.0,217.1 L602.5,217.8 L610.0,218.5" fill="none" stroke="currentColor" stroke-opacity="0.75" stroke-width="2"/>
+  <line x1="522.4" y1="209.5" x2="522.4" y2="240" stroke="var(--accent)" stroke-dasharray="3 3"/>
+  <circle cx="522.4" cy="209.5" r="4.5" fill="var(--accent)"/>
+  <text x="150" y="100" fill="currentColor">Erdős grid: ln 2 / ln ln n</text>
+  <text x="80" y="203" fill="var(--accent)">New construction: 0.014, fixed</text>
+  <text x="602" y="52" fill="var(--accent)" text-anchor="end">New construction wins</text>
+  <text x="602" y="70" fill="currentColor" fill-opacity="0.6" text-anchor="end">beyond n ≈ 10<tspan dy="-5" font-size="10">1.3×10²¹</tspan></text>
+</svg>
+<figcaption>Each construction gives about n<sup>1 + extra</sup> pairs. The grid's extra exponent keeps shrinking; the new one doesn't. Note the axis: each tick multiplies the number of digits of n by ten thousand.</figcaption>
+</figure>
+
+<p>So the result is purely asymptotic. It proves that Erdős's intuition about how the count grows was wrong. It changes nothing about the arrangements anyone could ever draw, store or compute: at every physically meaningful scale, the humble grid still wins.</p>
+
+<p class="note"><strong>How the crossover was estimated.</strong> The grid gives about <em>n</em> · r₂(<em>k</em>) pairs, where <em>k</em> ≤ <em>n</em> is the squared unit length and r₂(<em>k</em>) counts the ways to write <em>k</em> as a sum of two squares. The best <em>k</em> is a product of many small primes of the form 4<em>m</em> + 1, with exponents chosen the way highly composite numbers are built. Prime counts come from the prime number theorem for arithmetic progressions. This model was checked against exact computer searches up to 10<sup>16</sup>; the table values for 10<sup>10</sup> and 10<sup>80</sup> come from exact searches, the rest from the model.<br><br>
+Constant factors, including the unspecified constant in Sawin's theorem, don't matter at this scale. With ln <em>n</em> ≈ 3 × 10<sup>21</sup>, even a factor of 10<sup>100</sup> shifts the crossover by a negligible amount. The exponent is what matters. 1.014 is a proven lower bound, so the construction may actually do better. An unreviewed preprint reports an exponent of about 1.0316; if it holds, the crossover drops to roughly <span style="white-space:nowrap">10<sup>2 × 10<sup>9</sup></sup></span>, which is still far beyond anything physical. The construction also only exists for special values of <em>n</em>.<br><br>
+Sources: Alon, Bloom, Gowers et al., <a href="https://arxiv.org/abs/2605.20695">Remarks on the disproof of the unit distance conjecture</a> (2026); Sawin, <a href="https://arxiv.org/abs/2605.20579">An explicit lower bound for the unit distance problem</a> (2026); <a href="https://openai.com/index/model-disproves-discrete-geometry-conjecture/">OpenAI announcement</a> (May 20, 2026).</p>
+
+</main>
+</body>
+</html>
