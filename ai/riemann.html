@@ -1,508 +1,1360 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Riemann Hypothesis (1859) Explained</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-/* VOICE everyday learning: a patient, exact explainer for non-mathematicians
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Riemann Hypothesis (1859) Explained</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&display=swap"
+            rel="stylesheet" />
+        <style>
+            /* VOICE everyday learning: a patient, exact explainer for non-mathematicians
    IDEA a journal article with working figures: each idea gets a live diagram you can poke
    PICTURE the complex plane itself, coloured by zeta, with the critical line you can click on
    COLOUR white ground, near-black ink, ultramarine for the critical line and its zeros, magenta for anything off the line
    TYPE Spectral for headings, Inter for text
    LAYOUT laptop: text beside its figure in each band; phone: title, figure, controls, text */
-:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0d0e18);--ink:light-dark(#14110f,#ecebf3);--soft:light-dark(#5b5f6b,#a4a7b8);--line:light-dark(#e3e4ea,#262838);--panel:light-dark(#f5f6fa,#151726);--acc:light-dark(#1d2bd8,#8e98ff);--hot:light-dark(#d6127e,#ff5aa8);--grid:light-dark(#eceef3,#1f2132)}
-:root[data-theme=light]{color-scheme:light}
-:root[data-theme=dark]{color-scheme:dark}
-*{box-sizing:border-box;min-width:0}
-html{scroll-padding-top:72px}
-body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 Inter,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip}
-h1,h2,h3{font-family:Spectral,Georgia,serif;font-weight:600;line-height:1.08;letter-spacing:-.02em;text-wrap:balance;margin:0 0 .5em}
-h1{font-size:clamp(34px,5vw,52px)}
-h2{font-size:clamp(26px,3.4vw,36px)}
-h3{font-size:20px;margin-top:1.2em}
-p{margin:0 0 1em;max-width:68ch}
-a{color:var(--acc)}
-.band{padding:clamp(28px,4vw,60px) max(5vw,16px);border-top:1px solid var(--line)}
-.wrap{max-width:1240px;margin:0 auto}
-.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:clamp(20px,4vw,56px);align-items:start}
-.lead{font-size:19px;color:var(--soft);max-width:60ch}
-.nav{display:flex;flex-wrap:wrap;gap:8px 18px;margin-top:22px;font-size:15px}
-.nav a{text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:2px}
-.fig{position:relative;min-height:340px;background:var(--panel);border:1px solid var(--line);border-radius:6px}
-.fig>svg,.fig>canvas{position:absolute;inset:0;width:100%;height:100%}
-.tall{min-height:560px}
-.pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
-.cap{font-size:14px;color:var(--soft);margin:8px 0 0}
-.read{font:500 15px/1.5 Inter,sans-serif;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:10px 14px;margin:12px 0;font-variant-numeric:tabular-nums}
-.read b{color:var(--acc);font-weight:600}
-.read .hot{color:var(--hot)}
-.btns{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
-button{font:500 15px Inter,sans-serif;min-height:44px;padding:0 14px;border-radius:6px;border:1px solid var(--line);background:var(--bg);color:var(--ink);cursor:pointer}
-button:hover{border-color:var(--acc)}
-button:focus-visible,input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
-.ctl{display:grid;grid-template-columns:auto minmax(0,1fr) 5.5em;gap:10px;align-items:center;margin:10px 0;font-size:15px}
-.ctl output{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
-.sin{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;margin:0 0 4px}
-.sin label{display:flex;align-items:center;gap:8px;font-size:15px;white-space:nowrap}
-.sin input{font:16px Inter,sans-serif;width:9.5em;min-height:44px;padding:0 10px;border:1px solid var(--soft);border-radius:6px;background:var(--bg);color:var(--ink);font-variant-numeric:tabular-nums}
-.sin input:invalid{border-color:var(--hot)}
-input[type=range]{width:100%;height:44px;accent-color:var(--acc);background:transparent}
-.formula{font:500 clamp(20px,2.6vw,26px)/1.4 Spectral,Georgia,serif;margin:6px 0 16px;padding:12px 16px;border-left:3px solid var(--acc);background:var(--panel);overflow-x:auto;white-space:nowrap}
-.key{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--soft);margin-top:8px}
-.key i{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:-1px;margin-right:6px}
-ul{padding-left:1.2em;max-width:68ch}
-li{margin-bottom:.5em}
-.src{font-size:14px;color:var(--soft)}
-.scroll{overflow-x:auto;max-width:100%}
-@media(max-width:600px){.pt{font-size:13px}.pt th,.pt td{padding:6px 6px}}
-.pt{border-collapse:collapse;width:100%;font-size:14.5px;font-variant-numeric:tabular-nums}
-.pt th,.pt td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
-.pt th:first-child,.pt td:first-child{text-align:left}
-.pt th{font-weight:600;font-size:13.5px;color:var(--soft);white-space:normal;vertical-align:bottom}
-.pt th .sub{font-weight:400;font-size:12.5px}
-.pt th:nth-child(5){color:var(--ink);font-size:14.5px}
-.pt td:nth-child(4){color:var(--acc);font-weight:600}
-.pt td:nth-child(5){color:var(--ink);font-weight:600}
-.pt td:nth-child(6){color:var(--hot)}
-.src li{margin-bottom:.3em}
-.fig,.fig *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
-#s1,#s3a{touch-action:none;cursor:crosshair}
-svg text{font:13px Inter,sans-serif;fill:var(--soft);paint-order:stroke;stroke:var(--panel);stroke-width:4px}
-@media(max-width:860px){.two{grid-template-columns:minmax(0,1fr)}.fig.tall{min-height:480px}}
-@media(max-width:600px){.pair{grid-template-columns:minmax(0,1fr)}.fig.tall{min-height:420px}.ctl{grid-template-columns:minmax(0,1fr) 5em}.ctl label{grid-column:1/-1}}
-@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto}}
-</style>
-</head>
-<body>
+            :root {
+                color-scheme: light dark;
+                --bg: light-dark(#ffffff, #0d0e18);
+                --ink: light-dark(#14110f, #ecebf3);
+                --soft: light-dark(#5b5f6b, #a4a7b8);
+                --line: light-dark(#e3e4ea, #262838);
+                --panel: light-dark(#f5f6fa, #151726);
+                --acc: light-dark(#1d2bd8, #8e98ff);
+                --hot: light-dark(#d6127e, #ff5aa8);
+                --grid: light-dark(#eceef3, #1f2132);
+            }
+            :root[data-theme="light"] {
+                color-scheme: light;
+            }
+            :root[data-theme="dark"] {
+                color-scheme: dark;
+            }
+            * {
+                box-sizing: border-box;
+                min-width: 0;
+            }
+            html {
+                scroll-padding-top: 72px;
+            }
+            body {
+                margin: 0;
+                background: var(--bg);
+                color: var(--ink);
+                font:
+                    16.5px/1.6 Inter,
+                    system-ui,
+                    -apple-system,
+                    "Segoe UI",
+                    sans-serif;
+                overflow-x: clip;
+            }
+            h1,
+            h2,
+            h3 {
+                font-family: Spectral, Georgia, serif;
+                font-weight: 600;
+                line-height: 1.08;
+                letter-spacing: -0.02em;
+                text-wrap: balance;
+                margin: 0 0 0.5em;
+            }
+            h1 {
+                font-size: clamp(34px, 5vw, 52px);
+            }
+            h2 {
+                font-size: clamp(26px, 3.4vw, 36px);
+            }
+            h3 {
+                font-size: 20px;
+                margin-top: 1.2em;
+            }
+            p {
+                margin: 0 0 1em;
+                max-width: 68ch;
+            }
+            a {
+                color: var(--acc);
+            }
+            .band {
+                padding: clamp(28px, 4vw, 60px) max(5vw, 16px);
+                border-top: 1px solid var(--line);
+            }
+            .wrap {
+                max-width: 1240px;
+                margin: 0 auto;
+            }
+            .two {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+                gap: clamp(20px, 4vw, 56px);
+                align-items: start;
+            }
+            .lead {
+                font-size: 19px;
+                color: var(--soft);
+                max-width: 60ch;
+            }
+            .nav {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px 18px;
+                margin-top: 22px;
+                font-size: 15px;
+            }
+            .nav a {
+                text-decoration: none;
+                border-bottom: 1px solid var(--line);
+                padding-bottom: 2px;
+            }
+            .fig {
+                position: relative;
+                min-height: 340px;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 6px;
+            }
+            .fig > svg,
+            .fig > canvas {
+                position: absolute;
+                inset: 0;
+                width: 100%;
+                height: 100%;
+            }
+            .tall {
+                min-height: 560px;
+            }
+            .pair {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+                gap: 14px;
+            }
+            .cap {
+                font-size: 14px;
+                color: var(--soft);
+                margin: 8px 0 0;
+            }
+            .read {
+                font:
+                    500 15px/1.5 Inter,
+                    sans-serif;
+                background: var(--panel);
+                border: 1px solid var(--line);
+                border-radius: 6px;
+                padding: 10px 14px;
+                margin: 12px 0;
+                font-variant-numeric: tabular-nums;
+            }
+            .read b {
+                color: var(--acc);
+                font-weight: 600;
+            }
+            .read .hot {
+                color: var(--hot);
+            }
+            .btns {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+                margin: 10px 0;
+            }
+            button {
+                font:
+                    500 15px Inter,
+                    sans-serif;
+                min-height: 44px;
+                padding: 0 14px;
+                border-radius: 6px;
+                border: 1px solid var(--line);
+                background: var(--bg);
+                color: var(--ink);
+                cursor: pointer;
+            }
+            button:hover {
+                border-color: var(--acc);
+            }
+            button:focus-visible,
+            input:focus-visible {
+                outline: 2px solid var(--acc);
+                outline-offset: 2px;
+            }
+            .ctl {
+                display: grid;
+                grid-template-columns: auto minmax(0, 1fr) 5.5em;
+                gap: 10px;
+                align-items: center;
+                margin: 10px 0;
+                font-size: 15px;
+            }
+            .ctl output {
+                text-align: right;
+                font-variant-numeric: tabular-nums;
+                white-space: nowrap;
+            }
+            .sin {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px 18px;
+                align-items: center;
+                margin: 0 0 4px;
+            }
+            .sin label {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 15px;
+                white-space: nowrap;
+            }
+            .sin input {
+                font:
+                    16px Inter,
+                    sans-serif;
+                width: 9.5em;
+                min-height: 44px;
+                padding: 0 10px;
+                border: 1px solid var(--soft);
+                border-radius: 6px;
+                background: var(--bg);
+                color: var(--ink);
+                font-variant-numeric: tabular-nums;
+            }
+            .sin input:invalid {
+                border-color: var(--hot);
+            }
+            input[type="range"] {
+                width: 100%;
+                height: 44px;
+                accent-color: var(--acc);
+                background: transparent;
+            }
+            .formula {
+                font:
+                    500 clamp(20px, 2.6vw, 26px)/1.4 Spectral,
+                    Georgia,
+                    serif;
+                margin: 6px 0 16px;
+                padding: 12px 16px;
+                border-left: 3px solid var(--acc);
+                background: var(--panel);
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            .key {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px 16px;
+                font-size: 14px;
+                color: var(--soft);
+                margin-top: 8px;
+            }
+            .key i {
+                display: inline-block;
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                vertical-align: -1px;
+                margin-right: 6px;
+            }
+            ul {
+                padding-left: 1.2em;
+                max-width: 68ch;
+            }
+            li {
+                margin-bottom: 0.5em;
+            }
+            .src {
+                font-size: 14px;
+                color: var(--soft);
+            }
+            .scroll {
+                overflow-x: auto;
+                max-width: 100%;
+            }
+            @media (max-width: 600px) {
+                .pt {
+                    font-size: 13px;
+                }
+                .pt th,
+                .pt td {
+                    padding: 6px 6px;
+                }
+            }
+            .pt {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 14.5px;
+                font-variant-numeric: tabular-nums;
+            }
+            .pt th,
+            .pt td {
+                padding: 7px 10px;
+                border-bottom: 1px solid var(--line);
+                text-align: right;
+                white-space: nowrap;
+            }
+            .pt th:first-child,
+            .pt td:first-child {
+                text-align: left;
+            }
+            .pt th {
+                font-weight: 600;
+                font-size: 13.5px;
+                color: var(--soft);
+                white-space: normal;
+                vertical-align: bottom;
+            }
+            .pt th .sub {
+                font-weight: 400;
+                font-size: 12.5px;
+            }
+            .pt th:nth-child(5) {
+                color: var(--ink);
+                font-size: 14.5px;
+            }
+            .pt td:nth-child(4) {
+                color: var(--acc);
+                font-weight: 600;
+            }
+            .pt td:nth-child(5) {
+                color: var(--ink);
+                font-weight: 600;
+            }
+            .pt td:nth-child(6) {
+                color: var(--hot);
+            }
+            .src li {
+                margin-bottom: 0.3em;
+            }
+            .fig,
+            .fig * {
+                -webkit-user-select: none;
+                user-select: none;
+                -webkit-touch-callout: none;
+            }
+            #s1,
+            #s3a {
+                touch-action: none;
+                cursor: crosshair;
+            }
+            svg text {
+                font:
+                    13px Inter,
+                    sans-serif;
+                fill: var(--soft);
+                paint-order: stroke;
+                stroke: var(--panel);
+                stroke-width: 4px;
+            }
+            @media (max-width: 860px) {
+                .two {
+                    grid-template-columns: minmax(0, 1fr);
+                }
+                .fig.tall {
+                    min-height: 480px;
+                }
+            }
+            @media (max-width: 600px) {
+                .pair {
+                    grid-template-columns: minmax(0, 1fr);
+                }
+                .fig.tall {
+                    min-height: 420px;
+                }
+                .ctl {
+                    grid-template-columns: minmax(0, 1fr) 5em;
+                }
+                .ctl label {
+                    grid-column: 1/-1;
+                }
+            }
+            @media (prefers-reduced-motion: reduce) {
+                * {
+                    scroll-behavior: auto;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <header class="band" style="border-top: 0">
+            <div class="wrap">
+                <h1>The Riemann Hypothesis (1859), from the ground up</h1>
+                <p class="lead">
+                    The hypothesis says every non-trivial zero of the zeta function has real part ½. The sections below explain
+                    each part of that statement, with interactive figures. (<a href="https://youtu.be/s1HzPQpwXDk"
+                        >YouTube video</a
+                    >)
+                </p>
+                <nav class="nav" aria-label="Sections">
+                    <a href="#plane">1. Complex numbers</a><a href="#zeta">2. The zeta function</a
+                    ><a href="#map">3. Zeros in the plane</a><a href="#half">4. Why exactly ½</a
+                    ><a href="#primes">5. What it tells us about primes</a><a href="#prize">6. Why it's worth $1 million</a>
+                </nav>
+            </div>
+        </header>
 
-<header class="band" style="border-top:0">
-  <div class="wrap">
-    <h1>The Riemann Hypothesis (1859), from the ground up</h1>
-    <p class="lead">The hypothesis says every non-trivial zero of the zeta function has real part ½. The sections below explain each part of that statement, with interactive figures.</p>
-    <nav class="nav" aria-label="Sections">
-      <a href="#plane">1. Complex numbers</a><a href="#zeta">2. The zeta function</a><a href="#map">3. Zeros in the plane</a><a href="#half">4. Why exactly ½</a><a href="#primes">5. What it tells us about primes</a><a href="#prize">6. Why it's worth $1 million</a>
-    </nav>
-  </div>
-</header>
+        <section class="band" id="plane">
+            <div class="wrap two">
+                <div>
+                    <h2>1. Complex numbers</h2>
+                    <p>
+                        The equation x² = −1 has no solution among the real numbers. The <b>imaginary unit</b> <i>i</i> is defined
+                        by <i>i</i>² = −1. Descartes coined the word "imaginary" in 1637; Euler introduced the symbol <i>i</i>.
+                    </p>
+                    <p>
+                        A <b>complex number</b> has the form <b>s = σ + t<i>i</i></b
+                        >, where σ and t are real numbers:
+                    </p>
+                    <ul>
+                        <li><b>σ = Re(s)</b> is the real part.</li>
+                        <li><b>t = Im(s)</b> is the imaginary part.</li>
+                    </ul>
+                    <p>
+                        Since a complex number is determined by two real numbers, it can be plotted as a point in the complex
+                        plane: real part on the horizontal axis, imaginary part on the vertical axis.
+                    </p>
+                    <p>
+                        The zero at ½ + 14.13<i>i</i> has real part ½ and imaginary part 14.13. "Real part ½" fixes the horizontal
+                        coordinate only; the imaginary part is unconstrained. Drag the point to read both coordinates. It snaps
+                        onto an axis when you drag close to one; hold Alt to drag freely.
+                    </p>
+                    <div class="btns">
+                        <button data-p="2,0">2</button><button data-p="-1,3">−1 + 3i</button
+                        ><button data-p="0.5,14.13">½ + 14.13i</button>
+                    </div>
+                </div>
+                <div>
+                    <div class="fig" id="f1" style="min-height: 400px">
+                        <svg id="s1" role="img" aria-label="Complex plane with a draggable point"></svg>
+                    </div>
+                    <div class="read" id="r1"></div>
+                </div>
+            </div>
+        </section>
 
-<section class="band" id="plane">
-  <div class="wrap two">
-    <div>
-      <h2>1. Complex numbers</h2>
-      <p>The equation x² = −1 has no solution among the real numbers. The <b>imaginary unit</b> <i>i</i> is defined by <i>i</i>² = −1. Descartes coined the word "imaginary" in 1637; Euler introduced the symbol <i>i</i>.</p>
-      <p>A <b>complex number</b> has the form <b>s = σ + t<i>i</i></b>, where σ and t are real numbers:</p>
-      <ul>
-        <li><b>σ = Re(s)</b> is the real part.</li>
-        <li><b>t = Im(s)</b> is the imaginary part.</li>
-      </ul>
-      <p>Since a complex number is determined by two real numbers, it can be plotted as a point in the complex plane: real part on the horizontal axis, imaginary part on the vertical axis.</p>
-      <p>The zero at ½ + 14.13<i>i</i> has real part ½ and imaginary part 14.13. "Real part ½" fixes the horizontal coordinate only; the imaginary part is unconstrained. Drag the point to read both coordinates. It snaps onto an axis when you drag close to one; hold Alt to drag freely.</p>
-      <div class="btns">
-        <button data-p="2,0">2</button><button data-p="-1,3">−1 + 3i</button><button data-p="0.5,14.13">½ + 14.13i</button>
-      </div>
-    </div>
-    <div>
-      <div class="fig" id="f1" style="min-height:400px"><svg id="s1" role="img" aria-label="Complex plane with a draggable point"></svg></div>
-      <div class="read" id="r1"></div>
-    </div>
-  </div>
-</section>
+        <section class="band" id="zeta">
+            <div class="wrap two">
+                <div>
+                    <h2>2. The zeta function</h2>
+                    <p>
+                        The Riemann zeta function assigns to each complex number s a complex value ζ(s). Where Re(s) &gt; 1 it is
+                        defined by the series:
+                    </p>
+                    <div class="formula">
+                        ζ(s) = 1 + 1/2<sup>s</sup> + 1/3<sup>s</sup> + 1/4<sup>s</sup> + 1/5<sup>s</sup> + …
+                    </div>
+                    <p>
+                        Try it with <b>s = 2</b>: 1 + ¼ + ⅑ + 1/16 + … The terms shrink fast and the total settles near 1.6449, a
+                        number Euler identified in 1734 as π²/6. Slide to add more terms.
+                    </p>
+                    <div class="ctl">
+                        <label for="nt">Terms added</label><input id="nt" type="range" min="1" max="2000" value="10" /><output
+                            id="ntv"></output>
+                    </div>
+                    <div class="read" id="r2"></div>
+                    <p>
+                        In 1737 Euler showed that, for Re(s) &gt; 1, the series equals a product with one factor for each prime.
+                        This Euler product is why the behaviour of ζ carries information about the primes.
+                    </p>
+                    <div class="formula">ζ(s) = 1/(1 − 2<sup>−s</sup>) × 1/(1 − 3<sup>−s</sup>) × 1/(1 − 5<sup>−s</sup>) × …</div>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0">Beyond the series: analytic continuation</h3>
+                    <p>
+                        The series converges only for Re(s) &gt; 1. At s = 1 it is the harmonic series 1 + ½ + ⅓ + …, which
+                        diverges; for Re(s) ≤ 1 the series does not converge.
+                    </p>
+                    <p>
+                        An analytic (complex-differentiable) function is determined everywhere by its values on any small region,
+                        so it has at most one analytic extension to a larger domain. In 1859 Riemann showed that ζ extends to
+                        every complex s except s = 1, where it has a simple pole. This extension, the analytic continuation, is
+                        what "the zeta function" means from here on, and it is what this page computes.
+                    </p>
+                    <p>
+                        A <b>zero</b> of ζ is a value of s with ζ(s) = 0. The Riemann Hypothesis is a statement about where the
+                        zeros lie.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-<section class="band" id="zeta">
-  <div class="wrap two">
-    <div>
-      <h2>2. The zeta function</h2>
-      <p>The Riemann zeta function assigns to each complex number s a complex value ζ(s). Where Re(s) &gt; 1 it is defined by the series:</p>
-      <div class="formula">ζ(s) = 1 + 1/2<sup>s</sup> + 1/3<sup>s</sup> + 1/4<sup>s</sup> + 1/5<sup>s</sup> + …</div>
-      <p>Try it with <b>s = 2</b>: 1 + ¼ + ⅑ + 1/16 + … The terms shrink fast and the total settles near 1.6449, a number Euler identified in 1734 as π²/6. Slide to add more terms.</p>
-      <div class="ctl"><label for="nt">Terms added</label><input id="nt" type="range" min="1" max="2000" value="10"><output id="ntv"></output></div>
-      <div class="read" id="r2"></div>
-      <p>In 1737 Euler showed that, for Re(s) &gt; 1, the series equals a product with one factor for each prime. This Euler product is why the behaviour of ζ carries information about the primes.</p>
-      <div class="formula">ζ(s) = 1/(1 − 2<sup>−s</sup>) × 1/(1 − 3<sup>−s</sup>) × 1/(1 − 5<sup>−s</sup>) × …</div>
-    </div>
-    <div>
-      <h3 style="margin-top:0">Beyond the series: analytic continuation</h3>
-      <p>The series converges only for Re(s) &gt; 1. At s = 1 it is the harmonic series 1 + ½ + ⅓ + …, which diverges; for Re(s) ≤ 1 the series does not converge.</p>
-      <p>An analytic (complex-differentiable) function is determined everywhere by its values on any small region, so it has at most one analytic extension to a larger domain. In 1859 Riemann showed that ζ extends to every complex s except s = 1, where it has a simple pole. This extension, the analytic continuation, is what "the zeta function" means from here on, and it is what this page computes.</p>
-      <p>A <b>zero</b> of ζ is a value of s with ζ(s) = 0. The Riemann Hypothesis is a statement about where the zeros lie.</p>
-    </div>
-  </div>
-</section>
+        <section class="band" id="map">
+            <div class="wrap">
+                <h2>3. The zeros in the complex plane</h2>
+                <div class="two" style="margin-top: 12px">
+                    <div>
+                        <div class="pair">
+                            <div>
+                                <div class="fig tall" id="f3a">
+                                    <canvas id="c3"></canvas
+                                    ><svg id="s3a" role="img" aria-label="Input plane coloured by zeta"></svg>
+                                </div>
+                                <p class="cap">
+                                    Input plane: click or drag to choose s, or type its real and imaginary parts. The horizontal
+                                    axis is stretched relative to the vertical so the strip is visible.
+                                </p>
+                            </div>
+                            <div>
+                                <div class="fig tall" id="f3b">
+                                    <svg id="s3b" role="img" aria-label="Output plane showing zeta of s"></svg>
+                                </div>
+                                <p class="cap">Output plane: the value ζ(s). The axes cross at 0.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <form class="sin" id="sin3" aria-label="Choose s">
+                            <label for="re3">Re(s)</label
+                            ><input id="re3" type="number" step="any" min="-30" max="30" inputmode="decimal" required />
+                            <label for="im3">Im(s)</label
+                            ><input id="im3" type="number" step="any" min="-500" max="500" inputmode="decimal" required />
+                            <button type="button" id="snap3">Snap to nearest zero</button>
+                        </form>
+                        <div class="read" id="r3"></div>
+                        <div class="btns">
+                            <button data-s="2,0">s = 2</button><button data-s="-2,0">−2 (trivial zero)</button
+                            ><button data-s="0.5,14.134725">Zero no. 1</button><button data-s="0.5,21.02204">Zero no. 2</button
+                            ><button data-s="0.6,14.134725">Just off the line</button>
+                        </div>
+                        <p>
+                            The colouring is a phase portrait. The hue at s shows the argument (angle) of ζ(s): red for positive
+                            real values, then yellow, green and blue as the angle increases. The brightness shows the modulus
+                            |ζ(s)|, darker for smaller values. A zero is a dark point around which every hue appears once.
+                        </p>
+                        <ul>
+                            <li>
+                                <b>Trivial zeros</b> at −2, −4, −6 and every other negative even integer. They come from the sine
+                                factor in the functional equation (section 4), are completely understood, and are not what the
+                                hypothesis is about.
+                            </li>
+                            <li>
+                                All other zeros, the <b>non-trivial zeros</b>, lie in the <b>critical strip</b> 0 &lt; Re(s) &lt;
+                                1 (shaded).
+                            </li>
+                            <li>
+                                The hypothesis: every non-trivial zero lies on the
+                                <b style="color: var(--acc)">critical line</b> Re(s) = ½.
+                            </li>
+                        </ul>
+                        <p>
+                            All the zeros in view lie on the blue line. "Just off the line" sets s = 0.6 + 14.1347<i>i</i>, the
+                            height of zero no. 1 but with real part 0.6: there ζ(s) is not 0.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<section class="band" id="map">
-  <div class="wrap">
-    <h2>3. The zeros in the complex plane</h2>
-    <div class="two" style="margin-top:12px">
-      <div>
-        <div class="pair">
-          <div><div class="fig tall" id="f3a"><canvas id="c3"></canvas><svg id="s3a" role="img" aria-label="Input plane coloured by zeta"></svg></div><p class="cap">Input plane: click or drag to choose s, or type its real and imaginary parts. The horizontal axis is stretched relative to the vertical so the strip is visible.</p></div>
-          <div><div class="fig tall" id="f3b"><svg id="s3b" role="img" aria-label="Output plane showing zeta of s"></svg></div><p class="cap">Output plane: the value ζ(s). The axes cross at 0.</p></div>
-        </div>
-      </div>
-      <div>
-        <form class="sin" id="sin3" aria-label="Choose s">
-          <label for="re3">Re(s)</label><input id="re3" type="number" step="any" min="-30" max="30" inputmode="decimal" required>
-          <label for="im3">Im(s)</label><input id="im3" type="number" step="any" min="-500" max="500" inputmode="decimal" required>
-          <button type="button" id="snap3">Snap to nearest zero</button>
-        </form>
-        <div class="read" id="r3"></div>
-        <div class="btns">
-          <button data-s="2,0">s = 2</button><button data-s="-2,0">−2 (trivial zero)</button><button data-s="0.5,14.134725">Zero no. 1</button><button data-s="0.5,21.02204">Zero no. 2</button><button data-s="0.6,14.134725">Just off the line</button>
-        </div>
-        <p>The colouring is a phase portrait. The hue at s shows the argument (angle) of ζ(s): red for positive real values, then yellow, green and blue as the angle increases. The brightness shows the modulus |ζ(s)|, darker for smaller values. A zero is a dark point around which every hue appears once.</p>
-        <ul>
-          <li><b>Trivial zeros</b> at −2, −4, −6 and every other negative even integer. They come from the sine factor in the functional equation (section 4), are completely understood, and are not what the hypothesis is about.</li>
-          <li>All other zeros, the <b>non-trivial zeros</b>, lie in the <b>critical strip</b> 0 &lt; Re(s) &lt; 1 (shaded).</li>
-          <li>The hypothesis: every non-trivial zero lies on the <b style="color:var(--acc)">critical line</b> Re(s) = ½.</li>
-        </ul>
-        <p>All the zeros in view lie on the blue line. "Just off the line" sets s = 0.6 + 14.1347<i>i</i>, the height of zero no. 1 but with real part 0.6: there ζ(s) is not 0.</p>
-      </div>
-    </div>
-  </div>
-</section>
+        <section class="band" id="half">
+            <div class="wrap">
+                <h2>4. Why exactly ½?</h2>
+                <div class="two" style="margin-top: 12px">
+                    <div>
+                        <h3 style="margin-top: 0">The functional equation</h3>
+                        <p>Riemann proved that the completed zeta function</p>
+                        <div class="formula">ξ(s) = ½ s(s − 1) π<sup>−s/2</sup> Γ(s/2) ζ(s)</div>
+                        <p>
+                            satisfies <b>ξ(s) = ξ(1 − s)</b>. The zeros of ξ are exactly the non-trivial zeros of ζ, so if ρ is a
+                            non-trivial zero, so is 1 − ρ. Because ζ is real on the real axis, its zeros are also symmetric under
+                            complex conjugation (ρ and ρ̄). Together, the non-trivial zeros are symmetric about the line Re(s) = ½.
+                        </p>
+                        <p>
+                            A zero with real part 0.7 would therefore force one with real part 0.3 at the same height. A zero
+                            coincides with its mirror image exactly when its real part is ½.
+                        </p>
+                        <p>
+                            <strong>The hypothesis states that every non-trivial zero has real part ½.</strong> Known results: no
+                            zeros lie on Re(s) = 1 (Hadamard and de la Vallée Poussin, 1896, which gave the prime number theorem);
+                            infinitely many lie on the critical line (Hardy, 1914); more than 40% do (Conrey, 1989). Whether all
+                            do is open.
+                        </p>
+                        <div class="fig" id="f4a" style="min-height: 300px">
+                            <svg id="s4a" role="img" aria-label="Critical strip with mirror symmetry"></svg>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0">The image of a vertical line</h3>
+                        <p>
+                            Fix the real part σ and let the imaginary part t run from 0 to T. The curve is the image of that
+                            vertical segment under ζ, drawn in the output plane. For σ = ½ it passes through 0 whenever t is the
+                            imaginary part of a zero. For any other σ it does not, because every zero with imaginary part below 50
+                            lies on the critical line.
+                        </p>
+                        <div class="ctl">
+                            <label for="sg">Real part σ</label
+                            ><input id="sg" type="range" min="0.2" max="0.9" step="0.01" value="0.5" /><output id="sgv"></output>
+                        </div>
+                        <div class="ctl">
+                            <label for="tt">Up to t = T</label
+                            ><input id="tt" type="range" min="1" max="50" step="0.1" value="50" /><output id="ttv"></output>
+                        </div>
+                        <div class="btns">
+                            <button id="play">Animate from t = 0</button><button id="half5">Set σ = 0.5</button>
+                        </div>
+                        <div class="fig" id="f4b" style="min-height: 380px">
+                            <svg id="s4b" role="img" aria-label="Path of zeta along a vertical line"></svg>
+                        </div>
+                        <div class="read" id="r4"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-<section class="band" id="half">
-  <div class="wrap">
-    <h2>4. Why exactly ½?</h2>
-    <div class="two" style="margin-top:12px">
-      <div>
-        <h3 style="margin-top:0">The functional equation</h3>
-        <p>Riemann proved that the completed zeta function</p>
-        <div class="formula">ξ(s) = ½ s(s − 1) π<sup>−s/2</sup> Γ(s/2) ζ(s)</div>
-        <p>satisfies <b>ξ(s) = ξ(1 − s)</b>. The zeros of ξ are exactly the non-trivial zeros of ζ, so if ρ is a non-trivial zero, so is 1 − ρ. Because ζ is real on the real axis, its zeros are also symmetric under complex conjugation (ρ and ρ̄). Together, the non-trivial zeros are symmetric about the line Re(s) = ½.</p>
-        <p>A zero with real part 0.7 would therefore force one with real part 0.3 at the same height. A zero coincides with its mirror image exactly when its real part is ½.</p>
-        <p><strong>The hypothesis states that every non-trivial zero has real part ½.</strong> Known results: no zeros lie on Re(s) = 1 (Hadamard and de la Vallée Poussin, 1896, which gave the prime number theorem); infinitely many lie on the critical line (Hardy, 1914); more than 40% do (Conrey, 1989). Whether all do is open.</p>
-        <div class="fig" id="f4a" style="min-height:300px"><svg id="s4a" role="img" aria-label="Critical strip with mirror symmetry"></svg></div>
-      </div>
-      <div>
-        <h3 style="margin-top:0">The image of a vertical line</h3>
-        <p>Fix the real part σ and let the imaginary part t run from 0 to T. The curve is the image of that vertical segment under ζ, drawn in the output plane. For σ = ½ it passes through 0 whenever t is the imaginary part of a zero. For any other σ it does not, because every zero with imaginary part below 50 lies on the critical line.</p>
-        <div class="ctl"><label for="sg">Real part σ</label><input id="sg" type="range" min="0.2" max="0.9" step="0.01" value="0.5"><output id="sgv"></output></div>
-        <div class="ctl"><label for="tt">Up to t = T</label><input id="tt" type="range" min="1" max="50" step="0.1" value="50"><output id="ttv"></output></div>
-        <div class="btns"><button id="play">Animate from t = 0</button><button id="half5">Set σ = 0.5</button></div>
-        <div class="fig" id="f4b" style="min-height:380px"><svg id="s4b" role="img" aria-label="Path of zeta along a vertical line"></svg></div>
-        <div class="read" id="r4"></div>
-      </div>
-    </div>
-  </div>
-</section>
+        <section class="band" id="primes">
+            <div class="wrap">
+                <h2>5. What it tells us about primes, and what it doesn't</h2>
+                <div class="two" style="margin-top: 12px">
+                    <div>
+                        <h3 style="margin-top: 0">What it does not do</h3>
+                        <ul>
+                            <li>
+                                <b>It does not generate primes.</b> It gives no formula for the n-th prime and no faster way to
+                                produce primes.
+                            </li>
+                            <li>
+                                <b>It does not test whether a number is prime.</b> The generalized hypothesis would make Miller's
+                                1976 primality test provably correct. But the AKS test (2002) already decides primality in
+                                polynomial time with no unproven assumption, and practical software uses fast probabilistic tests.
+                            </li>
+                            <li>
+                                <b>It does not factor numbers,</b> so it has no bearing on RSA encryption, whose security rests on
+                                factoring being hard.
+                            </li>
+                        </ul>
+                        <h3>What it does</h3>
+                        <ul>
+                            <li>
+                                <b>It says how accurately we can predict how many primes there are.</b> The prime number theorem
+                                says the number of primes up to x, π(x), is approximately the logarithmic integral li(x). The
+                                hypothesis is equivalent to the error being at most about √x ln x (von Koch, 1901). Schoenfeld
+                                (1976) made this explicit: if the hypothesis holds, |π(x) − li(x)| &lt; √x ln x / (8π) for all x ≥
+                                2657. Without it, the best proven error bounds are far weaker.
+                            </li>
+                            <li>
+                                <b>It limits the gaps between primes.</b> Assuming it, Cramér (1920) proved that for large x there
+                                is always a prime between x and x + C √x ln x, for some constant C. Without it, the best proven
+                                result is a prime between x and x + x<sup>0.525</sup> (Baker, Harman and Pintz, 2001).
+                            </li>
+                            <li>
+                                <b>It underpins other theorems.</b> Many results in number theory are proved only by assuming it;
+                                a proof makes them all unconditional.
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 style="margin-top: 0">The estimate: li(x)</h3>
+                        <p>
+                            Around 1792 Gauss observed that near a number t, roughly 1 in ln t numbers is prime. Adding up that
+                            density gives the <b>logarithmic integral</b>:
+                        </p>
+                        <div class="formula">li(x) = ∫<sub>0</sub><sup>x</sup> dt / ln t</div>
+                        <p>
+                            The prime number theorem (1896) says π(x) and li(x) agree in the long run; its proof rests on ζ having
+                            no zeros on Re(s) = 1. Riemann's exact formula goes further. li(x) is the main term, coming from the
+                            pole of ζ at s = 1, and each zero ρ adds a correction li(x<sup>ρ</sup>), whose size depends on the
+                            real part of ρ. If every real part is ½, the corrections stay of order √x ln x. That is why the
+                            hypothesis is equivalent to a statement about how far π(x) can stray from li(x).
+                        </p>
+                    </div>
+                </div>
 
-<section class="band" id="primes">
-  <div class="wrap">
-    <h2>5. What it tells us about primes, and what it doesn't</h2>
-    <div class="two" style="margin-top:12px">
-      <div>
-        <h3 style="margin-top:0">What it does not do</h3>
-        <ul>
-          <li><b>It does not generate primes.</b> It gives no formula for the n-th prime and no faster way to produce primes.</li>
-          <li><b>It does not test whether a number is prime.</b> The generalized hypothesis would make Miller's 1976 primality test provably correct. But the AKS test (2002) already decides primality in polynomial time with no unproven assumption, and practical software uses fast probabilistic tests.</li>
-          <li><b>It does not factor numbers,</b> so it has no bearing on RSA encryption, whose security rests on factoring being hard.</li>
-        </ul>
-        <h3>What it does</h3>
-        <ul>
-          <li><b>It says how accurately we can predict how many primes there are.</b> The prime number theorem says the number of primes up to x, π(x), is approximately the logarithmic integral li(x). The hypothesis is equivalent to the error being at most about √x ln x (von Koch, 1901). Schoenfeld (1976) made this explicit: if the hypothesis holds, |π(x) − li(x)| &lt; √x ln x / (8π) for all x ≥ 2657. Without it, the best proven error bounds are far weaker.</li>
-          <li><b>It limits the gaps between primes.</b> Assuming it, Cramér (1920) proved that for large x there is always a prime between x and x + C √x ln x, for some constant C. Without it, the best proven result is a prime between x and x + x<sup>0.525</sup> (Baker, Harman and Pintz, 2001).</li>
-          <li><b>It underpins other theorems.</b> Many results in number theory are proved only by assuming it; a proof makes them all unconditional.</li>
-        </ul>
-      </div>
-      <div>
-        <h3 style="margin-top:0">The estimate: li(x)</h3>
-        <p>Around 1792 Gauss observed that near a number t, roughly 1 in ln t numbers is prime. Adding up that density gives the <b>logarithmic integral</b>:</p>
-        <div class="formula">li(x) = ∫<sub>0</sub><sup>x</sup> dt / ln t</div>
-        <p>The prime number theorem (1896) says π(x) and li(x) agree in the long run; its proof rests on ζ having no zeros on Re(s) = 1. Riemann's exact formula goes further. li(x) is the main term, coming from the pole of ζ at s = 1, and each zero ρ adds a correction li(x<sup>ρ</sup>), whose size depends on the real part of ρ. If every real part is ½, the corrections stay of order √x ln x. That is why the hypothesis is equivalent to a statement about how far π(x) can stray from li(x).</p>
-      </div>
-    </div>
+                <div style="margin-top: 28px">
+                    <h3 style="margin-top: 0">The prediction, tested</h3>
+                    <p>
+                        Actual prime counts against the estimate li(x). Then two guarantees for how large the error can be: the
+                        one the hypothesis would give, √x ln x / (8π) (Schoenfeld, 1976), and the best one proven without it,
+                        0.2795 x e<sup>−√(ln x / 6.455)</sup> / (ln x)<sup>3/4</sup> (<a href="https://arxiv.org/abs/1401.2689"
+                            >Trudgian, 2016</a
+                        >).
+                    </p>
+                    <div class="scroll">
+                        <table class="pt">
+                            <thead>
+                                <tr>
+                                    <th>x</th>
+                                    <th>Primes up to x</th>
+                                    <th>Estimate li(x)</th>
+                                    <th>Actual error</th>
+                                    <th>√x ln x / (8π)<br /><span class="sub">allowed if the hypothesis holds</span></th>
+                                    <th>Trudgian bound<br /><span class="sub">proven without it</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>10⁴</td>
+                                    <td>1,229</td>
+                                    <td>1,246</td>
+                                    <td>17</td>
+                                    <td>37</td>
+                                    <td>160</td>
+                                </tr>
+                                <tr>
+                                    <td>10⁵</td>
+                                    <td>9,592</td>
+                                    <td>9,630</td>
+                                    <td>38</td>
+                                    <td>145</td>
+                                    <td>1,176</td>
+                                </tr>
+                                <tr>
+                                    <td>10⁶</td>
+                                    <td>78,498</td>
+                                    <td>78,628</td>
+                                    <td>130</td>
+                                    <td>550</td>
+                                    <td>9,031</td>
+                                </tr>
+                                <tr>
+                                    <td>10⁷</td>
+                                    <td>664,579</td>
+                                    <td>664,918</td>
+                                    <td>339</td>
+                                    <td>2,028</td>
+                                    <td>71,553</td>
+                                </tr>
+                                <tr>
+                                    <td>10⁸</td>
+                                    <td>5,761,455</td>
+                                    <td>5,762,209</td>
+                                    <td>754</td>
+                                    <td>7,329</td>
+                                    <td>580,433</td>
+                                </tr>
+                                <tr>
+                                    <td>10⁹</td>
+                                    <td>50,847,534</td>
+                                    <td>50,849,235</td>
+                                    <td>1,701</td>
+                                    <td>26,075</td>
+                                    <td>4,796,060</td>
+                                </tr>
+                                <tr>
+                                    <td>10¹⁰</td>
+                                    <td>455,052,511</td>
+                                    <td>455,055,615</td>
+                                    <td>3,104</td>
+                                    <td>91,617</td>
+                                    <td>40,223,000</td>
+                                </tr>
+                                <tr>
+                                    <td>10¹¹</td>
+                                    <td>4,118,054,813</td>
+                                    <td>4,118,066,401</td>
+                                    <td>11,588</td>
+                                    <td>318,690</td>
+                                    <td>341,503,000</td>
+                                </tr>
+                                <tr>
+                                    <td>10¹²</td>
+                                    <td>37,607,912,018</td>
+                                    <td>37,607,950,281</td>
+                                    <td>38,263</td>
+                                    <td>1,099,403</td>
+                                    <td>2,929,540,000</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p class="cap">
+                        Prime counts are the published values of π(x); li(x) and both bounds were computed with mpmath and
+                        rounded. The estimate overshoots at every x shown, but Littlewood proved in 1914 that the sign of the
+                        error changes infinitely often.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-    <div style="margin-top:28px">
-        <h3 style="margin-top:0">The prediction, tested</h3>
-        <p>Actual prime counts against the estimate li(x). Then two guarantees for how large the error can be: the one the hypothesis would give, √x ln x / (8π) (Schoenfeld, 1976), and the best one proven without it, 0.2795 x e<sup>−√(ln x / 6.455)</sup> / (ln x)<sup>3/4</sup> (<a href="https://arxiv.org/abs/1401.2689">Trudgian, 2016</a>).</p>
-        <div class="scroll"><table class="pt">
-          <thead><tr><th>x</th><th>Primes up to x</th><th>Estimate li(x)</th><th>Actual error</th><th>√x ln x / (8π)<br><span class="sub">allowed if the hypothesis holds</span></th><th>Trudgian bound<br><span class="sub">proven without it</span></th></tr></thead>
-          <tbody><tr><td>10⁴</td><td>1,229</td><td>1,246</td><td>17</td><td>37</td><td>160</td></tr><tr><td>10⁵</td><td>9,592</td><td>9,630</td><td>38</td><td>145</td><td>1,176</td></tr><tr><td>10⁶</td><td>78,498</td><td>78,628</td><td>130</td><td>550</td><td>9,031</td></tr><tr><td>10⁷</td><td>664,579</td><td>664,918</td><td>339</td><td>2,028</td><td>71,553</td></tr><tr><td>10⁸</td><td>5,761,455</td><td>5,762,209</td><td>754</td><td>7,329</td><td>580,433</td></tr><tr><td>10⁹</td><td>50,847,534</td><td>50,849,235</td><td>1,701</td><td>26,075</td><td>4,796,060</td></tr><tr><td>10¹⁰</td><td>455,052,511</td><td>455,055,615</td><td>3,104</td><td>91,617</td><td>40,223,000</td></tr><tr><td>10¹¹</td><td>4,118,054,813</td><td>4,118,066,401</td><td>11,588</td><td>318,690</td><td>341,503,000</td></tr><tr><td>10¹²</td><td>37,607,912,018</td><td>37,607,950,281</td><td>38,263</td><td>1,099,403</td><td>2,929,540,000</td></tr></tbody>
-        </table></div>
-        <p class="cap">Prime counts are the published values of π(x); li(x) and both bounds were computed with mpmath and rounded. The estimate overshoots at every x shown, but Littlewood proved in 1914 that the sign of the error changes infinitely often.</p>
-    </div>
+        <section class="band" id="prize">
+            <div class="wrap two">
+                <div>
+                    <h2>6. Why it's worth $1 million</h2>
+                    <ul>
+                        <li>
+                            <b>It was picked as one of the hardest problems in mathematics.</b> In 2000 the Clay Mathematics
+                            Institute chose seven problems for the new millennium, $1 million each. Only the Poincaré Conjecture
+                            has been solved.
+                        </li>
+                        <li>
+                            <b>It has resisted the best minds since 1859.</b> It was on Hilbert's famous 1900 list, and many
+                            consider it the most important open problem in pure mathematics.
+                        </li>
+                        <li>
+                            <b>Evidence isn't proof.</b> Computers have checked the first 10 trillion zeros; all sit on the line.
+                            An exception could still hide further up, so only a proof settles it.
+                        </li>
+                        <li>
+                            <b>A great deal rests on it.</b> Many theorems, on gaps between primes and more, are proved only by
+                            assuming it. A proof makes them all true at once.
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 style="margin-top: 0">Where the 2026 claim stands</h3>
+                    <p>
+                        On 20 November 2026, Anthropic mathematician Levent Alpöge posted a note saying that, working with Claude,
+                        he believes he has proved the hypothesis (and its generalized form). The proof exists only as 17.4 million
+                        lines of computer-checked Lean code, with no paper. Independent experts report it compiles; a final
+                        cross-check was still running. By his own account he does not yet understand all of it. Clay's rules
+                        require publication, a two-year wait and community acceptance.
+                    </p>
+                    <h3>Sources</h3>
+                    <ul class="src">
+                        <li>
+                            <a href="https://www.claymath.org/millennium/riemann-hypothesis/"
+                                >Clay Mathematics Institute: The Riemann Hypothesis</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://www.claymath.org/millennium-problems/"
+                                >Clay Mathematics Institute: Millennium Prize Problems</a
+                            >
+                        </li>
+                        <li><a href="https://en.wikipedia.org/wiki/Riemann_hypothesis">Wikipedia: Riemann hypothesis</a></li>
+                        <li><a href="https://alpo.ge/remark.pdf">Levent Alpöge: note announcing the claimed proof</a></li>
+                        <li>
+                            <a
+                                href="https://www.scientificamerican.com/article/the-ai-riemann-hypothesis-proof-is-almost-certainly-true-independent-mathematicians-attest/"
+                                >Scientific American: independent mathematicians on the claim</a
+                            >
+                        </li>
+                        <li>
+                            <a href="https://kingy.ai/blog/levent-alpoge-claude-riemann-hypothesis-proof/"
+                                >Kingy AI: archive details and Clay prize rules</a
+                            >
+                        </li>
+                    </ul>
+                    <p class="src">
+                        Every figure here is computed live in your browser: zeta by a standard series method, accurate to about 12
+                        decimal places in this range; the first 100 zeros from the mpmath library. Built with Claude, made by
+                        Anthropic, the company in the story.
+                    </p>
+                </div>
+            </div>
+        </section>
 
-  </div>
-</section>
+        <script>
+            {
+                const ZEROS = [
+                    14.134725, 21.02204, 25.010858, 30.424876, 32.935062, 37.586178, 40.918719, 43.327073, 48.005151, 49.773832,
+                    52.970321, 56.446248, 59.347044, 60.831779, 65.112544, 67.079811, 69.546402, 72.067158, 75.704691, 77.14484,
+                    79.337375, 82.910381, 84.735493, 87.425275, 88.809111, 92.491899, 94.651344, 95.870634, 98.831194, 101.317851,
+                    103.725538, 105.446623, 107.168611, 111.029536, 111.874659, 114.320221, 116.22668, 118.790783, 121.370125,
+                    122.946829, 124.256819, 127.516684, 129.578704, 131.087689, 133.497737, 134.75651, 138.116042, 139.736209,
+                    141.123707, 143.111846, 146.000982, 147.422765, 150.05352, 150.925258, 153.024694, 156.112909, 157.597592,
+                    158.849988, 161.188964, 163.03071, 165.537069, 167.18444, 169.094515, 169.911976, 173.411537, 174.754192,
+                    176.441434, 178.377408, 179.916484, 182.207078, 184.874468, 185.598784, 187.228923, 189.416159, 192.026656,
+                    193.079727, 195.265397, 196.876482, 198.01531, 201.264752, 202.493595, 204.189672, 205.394697, 207.906259,
+                    209.57651, 211.690863, 213.347919, 214.547045, 216.169539, 219.067596, 220.714919, 221.430706, 224.007,
+                    224.983325, 227.421444, 229.337413, 231.250189, 231.987235, 233.693404, 236.52423
+                ];
 
-<section class="band" id="prize">
-  <div class="wrap two">
-    <div>
-      <h2>6. Why it's worth $1 million</h2>
-      <ul>
-        <li><b>It was picked as one of the hardest problems in mathematics.</b> In 2000 the Clay Mathematics Institute chose seven problems for the new millennium, $1 million each. Only the Poincaré Conjecture has been solved.</li>
-        <li><b>It has resisted the best minds since 1859.</b> It was on Hilbert's famous 1900 list, and many consider it the most important open problem in pure mathematics.</li>
-        <li><b>Evidence isn't proof.</b> Computers have checked the first 10 trillion zeros; all sit on the line. An exception could still hide further up, so only a proof settles it.</li>
-        <li><b>A great deal rests on it.</b> Many theorems, on gaps between primes and more, are proved only by assuming it. A proof makes them all true at once.</li>
-      </ul>
-    </div>
-    <div>
-      <h3 style="margin-top:0">Where the 2026 claim stands</h3>
-      <p>On 20 November 2026, Anthropic mathematician Levent Alpöge posted a note saying that, working with Claude, he believes he has proved the hypothesis (and its generalized form). The proof exists only as 17.4 million lines of computer-checked Lean code, with no paper. Independent experts report it compiles; a final cross-check was still running. By his own account he does not yet understand all of it. Clay's rules require publication, a two-year wait and community acceptance.</p>
-      <h3>Sources</h3>
-      <ul class="src">
-        <li><a href="https://www.claymath.org/millennium/riemann-hypothesis/">Clay Mathematics Institute: The Riemann Hypothesis</a></li>
-        <li><a href="https://www.claymath.org/millennium-problems/">Clay Mathematics Institute: Millennium Prize Problems</a></li>
-        <li><a href="https://en.wikipedia.org/wiki/Riemann_hypothesis">Wikipedia: Riemann hypothesis</a></li>
-        <li><a href="https://alpo.ge/remark.pdf">Levent Alpöge: note announcing the claimed proof</a></li>
-        <li><a href="https://www.scientificamerican.com/article/the-ai-riemann-hypothesis-proof-is-almost-certainly-true-independent-mathematicians-attest/">Scientific American: independent mathematicians on the claim</a></li>
-        <li><a href="https://kingy.ai/blog/levent-alpoge-claude-riemann-hypothesis-proof/">Kingy AI: archive details and Clay prize rules</a></li>
-      </ul>
-      <p class="src">Every figure here is computed live in your browser: zeta by a standard series method, accurate to about 12 decimal places in this range; the first 100 zeros from the mpmath library. Built with Claude, made by Anthropic, the company in the story.</p>
-    </div>
-  </div>
-</section>
+                /* ---------- complex arithmetic and zeta ---------- */
+                const C = {
+                    add: (a, b) => [a[0] + b[0], a[1] + b[1]],
+                    sub: (a, b) => [a[0] - b[0], a[1] - b[1]],
+                    mul: (a, b) => [a[0] * b[0] - a[1] * b[1], a[0] * b[1] + a[1] * b[0]],
+                    div: (a, b) => {
+                        const d = b[0] * b[0] + b[1] * b[1];
+                        return [(a[0] * b[0] + a[1] * b[1]) / d, (a[1] * b[0] - a[0] * b[1]) / d];
+                    },
+                    exp: a => {
+                        const m = Math.exp(a[0]);
+                        return [m * Math.cos(a[1]), m * Math.sin(a[1])];
+                    },
+                    rpow: (x, s) => {
+                        const l = Math.log(x),
+                            m = Math.exp(s[0] * l);
+                        return [m * Math.cos(s[1] * l), m * Math.sin(s[1] * l)];
+                    },
+                    sin: a => [Math.sin(a[0]) * Math.cosh(a[1]), Math.cos(a[0]) * Math.sinh(a[1])],
+                    abs: a => Math.hypot(a[0], a[1])
+                };
+                const BW = {};
+                function borwein(n) {
+                    if (BW[n]) return BW[n];
+                    const d = [];
+                    let term = 1 / n,
+                        sum = 0;
+                    for (let i = 0; i <= n; i++) {
+                        if (i > 0) term *= (4 * (n + i - 1) * (n - i + 1)) / ((2 * i - 1) * (2 * i));
+                        sum += term;
+                        d.push(n * sum);
+                    }
+                    const w = [],
+                        logs = [];
+                    for (let k = 0; k < n; k++) {
+                        w.push(((k % 2 ? 1 : -1) * (d[k] - d[n])) / d[n]);
+                        logs.push(Math.log(k + 1));
+                    }
+                    return (BW[n] = { w, logs });
+                }
+                const LG = [
+                    0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059,
+                    12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6, 1.5056327351493116e-7
+                ];
+                function gamma(z) {
+                    if (z[0] < 0.5)
+                        return C.div([Math.PI, 0], C.mul(C.sin([Math.PI * z[0], Math.PI * z[1]]), gamma([1 - z[0], -z[1]])));
+                    const zz = [z[0] - 1, z[1]];
+                    let x = [LG[0], 0];
+                    for (let i = 1; i < 9; i++) x = C.add(x, C.div([LG[i], 0], [zz[0] + i, zz[1]]));
+                    const t = [zz[0] + 7.5, zz[1]];
+                    const lt = [Math.log(C.abs(t)), Math.atan2(t[1], t[0])];
+                    const p = C.exp(C.mul([zz[0] + 0.5, zz[1]], lt));
+                    return C.mul(C.mul([Math.sqrt(2 * Math.PI), 0], p), C.mul(C.exp([-t[0], -t[1]]), x));
+                }
+                function zetaRight(s) {
+                    const n = Math.max(24, Math.ceil(1.3 * Math.abs(s[1])) + 20);
+                    const { w, logs } = borwein(n);
+                    let re = 0,
+                        im = 0;
+                    for (let k = 0; k < n; k++) {
+                        const m = w[k] * Math.exp(-s[0] * logs[k]),
+                            a = -s[1] * logs[k];
+                        re += m * Math.cos(a);
+                        im += m * Math.sin(a);
+                    }
+                    return C.div([re, im], C.sub([1, 0], C.rpow(2, [1 - s[0], -s[1]])));
+                }
+                function zeta(s) {
+                    if (s[0] >= 0) return zetaRight(s);
+                    const one = [1 - s[0], -s[1]];
+                    let r = C.mul(C.rpow(2, s), C.rpow(Math.PI, [s[0] - 1, s[1]]));
+                    r = C.mul(r, C.sin([(Math.PI * s[0]) / 2, (Math.PI * s[1]) / 2]));
+                    r = C.mul(r, gamma(one));
+                    return C.mul(r, zetaRight(one));
+                }
 
-<script>
-{
-const ZEROS=[14.134725,21.02204,25.010858,30.424876,32.935062,37.586178,40.918719,43.327073,48.005151,49.773832,52.970321,56.446248,59.347044,60.831779,65.112544,67.079811,69.546402,72.067158,75.704691,77.14484,79.337375,82.910381,84.735493,87.425275,88.809111,92.491899,94.651344,95.870634,98.831194,101.317851,103.725538,105.446623,107.168611,111.029536,111.874659,114.320221,116.22668,118.790783,121.370125,122.946829,124.256819,127.516684,129.578704,131.087689,133.497737,134.75651,138.116042,139.736209,141.123707,143.111846,146.000982,147.422765,150.05352,150.925258,153.024694,156.112909,157.597592,158.849988,161.188964,163.03071,165.537069,167.18444,169.094515,169.911976,173.411537,174.754192,176.441434,178.377408,179.916484,182.207078,184.874468,185.598784,187.228923,189.416159,192.026656,193.079727,195.265397,196.876482,198.01531,201.264752,202.493595,204.189672,205.394697,207.906259,209.57651,211.690863,213.347919,214.547045,216.169539,219.067596,220.714919,221.430706,224.007,224.983325,227.421444,229.337413,231.250189,231.987235,233.693404,236.52423];
+                /* ---------- helpers ---------- */
+                const $ = id => document.getElementById(id);
+                const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+                const f = (v, d = 2) => {
+                    const r = Math.abs(v) < 0.5 * Math.pow(10, -d) ? 0 : v;
+                    return r.toFixed(d).replace("-", "−");
+                };
+                const cfmt = (z, d = 3) => {
+                    const im = z[1];
+                    return `${f(z[0], d)} ${im < 0 && f(im, d) != 0 ? "−" : "+"} ${f(Math.abs(im), d)}i`;
+                };
+                function sized(svg) {
+                    return [svg.clientWidth || svg.parentNode.clientWidth, svg.clientHeight || svg.parentNode.clientHeight];
+                }
+                function watch(el, fn) {
+                    const ro = new ResizeObserver(() => fn());
+                    ro.observe(el);
+                    return ro;
+                }
 
-/* ---------- complex arithmetic and zeta ---------- */
-const C={
-  add:(a,b)=>[a[0]+b[0],a[1]+b[1]],
-  sub:(a,b)=>[a[0]-b[0],a[1]-b[1]],
-  mul:(a,b)=>[a[0]*b[0]-a[1]*b[1],a[0]*b[1]+a[1]*b[0]],
-  div:(a,b)=>{const d=b[0]*b[0]+b[1]*b[1];return[(a[0]*b[0]+a[1]*b[1])/d,(a[1]*b[0]-a[0]*b[1])/d]},
-  exp:a=>{const m=Math.exp(a[0]);return[m*Math.cos(a[1]),m*Math.sin(a[1])]},
-  rpow:(x,s)=>{const l=Math.log(x),m=Math.exp(s[0]*l);return[m*Math.cos(s[1]*l),m*Math.sin(s[1]*l)]},
-  sin:a=>[Math.sin(a[0])*Math.cosh(a[1]),Math.cos(a[0])*Math.sinh(a[1])],
-  abs:a=>Math.hypot(a[0],a[1])
-};
-const BW={};
-function borwein(n){
-  if(BW[n])return BW[n];
-  const d=[];let term=1/n,sum=0;
-  for(let i=0;i<=n;i++){if(i>0)term*=4*(n+i-1)*(n-i+1)/((2*i-1)*(2*i));sum+=term;d.push(n*sum)}
-  const w=[],logs=[];
-  for(let k=0;k<n;k++){w.push((k%2?1:-1)*(d[k]-d[n])/d[n]);logs.push(Math.log(k+1))}
-  return(BW[n]={w,logs});
-}
-const LG=[0.99999999999980993,676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
-function gamma(z){
-  if(z[0]<0.5)return C.div([Math.PI,0],C.mul(C.sin([Math.PI*z[0],Math.PI*z[1]]),gamma([1-z[0],-z[1]])));
-  const zz=[z[0]-1,z[1]];let x=[LG[0],0];
-  for(let i=1;i<9;i++)x=C.add(x,C.div([LG[i],0],[zz[0]+i,zz[1]]));
-  const t=[zz[0]+7.5,zz[1]];
-  const lt=[Math.log(C.abs(t)),Math.atan2(t[1],t[0])];
-  const p=C.exp(C.mul([zz[0]+0.5,zz[1]],lt));
-  return C.mul(C.mul([Math.sqrt(2*Math.PI),0],p),C.mul(C.exp([-t[0],-t[1]]),x));
-}
-function zetaRight(s){
-  const n=Math.max(24,Math.ceil(1.3*Math.abs(s[1]))+20);
-  const {w,logs}=borwein(n);let re=0,im=0;
-  for(let k=0;k<n;k++){const m=w[k]*Math.exp(-s[0]*logs[k]),a=-s[1]*logs[k];re+=m*Math.cos(a);im+=m*Math.sin(a)}
-  return C.div([re,im],C.sub([1,0],C.rpow(2,[1-s[0],-s[1]])));
-}
-function zeta(s){
-  if(s[0]>=0)return zetaRight(s);
-  const one=[1-s[0],-s[1]];
-  let r=C.mul(C.rpow(2,s),C.rpow(Math.PI,[s[0]-1,s[1]]));
-  r=C.mul(r,C.sin([Math.PI*s[0]/2,Math.PI*s[1]/2]));
-  r=C.mul(r,gamma(one));
-  return C.mul(r,zetaRight(one));
-}
+                /* ---------- 1. complex plane primer ---------- */
+                const P1 = { s: [0.5, 2.5], snap: { re: false, im: false } };
+                const s1 = $("s1");
+                function draw1() {
+                    const [W, H] = sized(s1);
+                    const R = 4,
+                        cx = W / 2,
+                        cy = H / 2,
+                        u = Math.min(W, H) / (2 * R + 0.6);
+                    const X = x => cx + x * u,
+                        Y = y => cy - y * u;
+                    let g = "";
+                    for (let k = -R; k <= R; k++) {
+                        g += `<line x1="${X(k)}" x2="${X(k)}" y1="${Y(R)}" y2="${Y(-R)}" stroke="var(--grid)"/><line x1="${X(-R)}" x2="${X(R)}" y1="${Y(k)}" y2="${Y(k)}" stroke="var(--grid)"/>`;
+                    }
+                    const onRe = P1.s[1] === 0,
+                        onIm = P1.s[0] === 0;
+                    g += `<line x1="${X(-R)}" x2="${X(R)}" y1="${cy}" y2="${cy}" stroke="${onRe ? "var(--acc)" : "var(--soft)"}" stroke-width="${onRe ? 2.5 : 1}"/><line x1="${cx}" x2="${cx}" y1="${Y(R)}" y2="${Y(-R)}" stroke="${onIm ? "var(--hot)" : "var(--soft)"}" stroke-width="${onIm ? 2.5 : 1}"/>`;
+                    g += `<text x="${X(R) - 4}" y="${cy - 8}" text-anchor="end">real axis</text><text x="${cx + 8}" y="${Y(R) + 14}">imaginary axis</text>`;
+                    for (const k of [-3, -2, -1, 1, 2, 3]) {
+                        const n = String(k).replace("-", "−"),
+                            im = k === 1 ? "i" : k === -1 ? "−i" : n + "i";
+                        g += `<text x="${X(k)}" y="${cy + 18}" text-anchor="middle">${n}</text><text x="${cx - 8}" y="${Y(k) + 4}" text-anchor="end">${im}</text>`;
+                    }
+                    const sx = Math.max(-R, Math.min(R, P1.s[0])),
+                        sy = Math.max(-R, Math.min(R, P1.s[1]));
+                    g += `<line x1="${cx}" x2="${X(sx)}" y1="${Y(sy)}" y2="${Y(sy)}" stroke="var(--acc)" stroke-dasharray="4 4"/><line x1="${X(sx)}" x2="${X(sx)}" y1="${cy}" y2="${Y(sy)}" stroke="var(--hot)" stroke-dasharray="4 4"/>`;
+                    g += `<circle cx="${X(sx)}" cy="${Y(sy)}" r="9" fill="var(--acc)" stroke="var(--bg)" stroke-width="3" style="cursor:grab"/>`;
+                    s1.innerHTML = g;
+                    const off = P1.s[0] !== sx || P1.s[1] !== sy ? "<br>Outside the drawing; shown at its edge" : "";
+                    const kind =
+                        onRe && onIm
+                            ? "<br>s is the origin, 0"
+                            : onRe
+                              ? "<br>On the real axis: s is a real number"
+                              : onIm
+                                ? "<br>On the imaginary axis: s is purely imaginary"
+                                : "";
+                    $("r1").innerHTML =
+                        `s = <b>${cfmt(P1.s, 2)}</b><br>Re(s) = <b>${f(P1.s[0])}</b><br>Im(s) = <span class="hot">${f(P1.s[1])}</span>${kind}${off}`;
+                    s1._map = { cx, cy, u };
+                }
+                function pick1(e) {
+                    const r = s1.getBoundingClientRect(),
+                        m = s1._map,
+                        px = e.clientX - r.left,
+                        py = e.clientY - r.top;
+                    const tol = e.altKey ? 0 : e.pointerType === "touch" ? 16 : 10;
+                    let re = Math.round(((px - m.cx) / m.u) * 100) / 100,
+                        im = Math.round(((m.cy - py) / m.u) * 100) / 100;
+                    if (Math.abs(py - m.cy) <= tol) im = 0;
+                    if (Math.abs(px - m.cx) <= tol) re = 0;
+                    P1.s = [re, im];
+                    draw1();
+                }
+                s1.addEventListener("pointerdown", e => {
+                    e.preventDefault();
+                    s1.setPointerCapture(e.pointerId);
+                    pick1(e);
+                });
+                s1.addEventListener("pointermove", e => {
+                    if (e.buttons) pick1(e);
+                });
+                document.querySelectorAll("[data-p]").forEach(b =>
+                    b.addEventListener("click", () => {
+                        P1.s = b.dataset.p.split(",").map(Number);
+                        draw1();
+                    })
+                );
+                watch(s1, draw1);
 
-/* ---------- helpers ---------- */
-const $=id=>document.getElementById(id);
-const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
-const f=(v,d=2)=>{const r=Math.abs(v)<0.5*Math.pow(10,-d)?0:v;return r.toFixed(d).replace('-','−')};
-const cfmt=(z,d=3)=>{const im=z[1];return `${f(z[0],d)} ${im<0&&f(im,d)!=0?'−':'+'} ${f(Math.abs(im),d)}i`};
-function sized(svg){return[svg.clientWidth||svg.parentNode.clientWidth,svg.clientHeight||svg.parentNode.clientHeight]}
-function watch(el,fn){const ro=new ResizeObserver(()=>fn());ro.observe(el);return ro}
+                /* ---------- 2. partial sums ---------- */
+                function draw2() {
+                    const n = +$("nt").value;
+                    let s = 0;
+                    for (let k = 1; k <= n; k++) s += 1 / (k * k);
+                    $("ntv").textContent = n.toLocaleString("en-US");
+                    $("r2").innerHTML =
+                        `Sum of the first ${n.toLocaleString("en-US")} terms: <b>${s.toFixed(6)}</b><br>Limit of the series, π²/6: ${(Math.PI ** 2 / 6).toFixed(6)}<br>Remaining difference: ${(Math.PI ** 2 / 6 - s).toPrecision(2)}`;
+                }
+                $("nt").addEventListener("input", draw2);
+                draw2();
 
-/* ---------- 1. complex plane primer ---------- */
-const P1={s:[0.5,2.5],snap:{re:false,im:false}};
-const s1=$('s1');
-function draw1(){
-  const [W,H]=sized(s1);const R=4,cx=W/2,cy=H/2,u=Math.min(W,H)/(2*R+0.6);
-  const X=x=>cx+x*u,Y=y=>cy-y*u;let g='';
-  for(let k=-R;k<=R;k++){g+=`<line x1="${X(k)}" x2="${X(k)}" y1="${Y(R)}" y2="${Y(-R)}" stroke="var(--grid)"/><line x1="${X(-R)}" x2="${X(R)}" y1="${Y(k)}" y2="${Y(k)}" stroke="var(--grid)"/>`}
-  const onRe=P1.s[1]===0,onIm=P1.s[0]===0;
-  g+=`<line x1="${X(-R)}" x2="${X(R)}" y1="${cy}" y2="${cy}" stroke="${onRe?'var(--acc)':'var(--soft)'}" stroke-width="${onRe?2.5:1}"/><line x1="${cx}" x2="${cx}" y1="${Y(R)}" y2="${Y(-R)}" stroke="${onIm?'var(--hot)':'var(--soft)'}" stroke-width="${onIm?2.5:1}"/>`;
-  g+=`<text x="${X(R)-4}" y="${cy-8}" text-anchor="end">real axis</text><text x="${cx+8}" y="${Y(R)+14}">imaginary axis</text>`;
-  for(const k of [-3,-2,-1,1,2,3]){const n=String(k).replace('-','−'),im=k===1?'i':k===-1?'−i':n+'i';g+=`<text x="${X(k)}" y="${cy+18}" text-anchor="middle">${n}</text><text x="${cx-8}" y="${Y(k)+4}" text-anchor="end">${im}</text>`}
-  const sx=Math.max(-R,Math.min(R,P1.s[0])),sy=Math.max(-R,Math.min(R,P1.s[1]));
-  g+=`<line x1="${cx}" x2="${X(sx)}" y1="${Y(sy)}" y2="${Y(sy)}" stroke="var(--acc)" stroke-dasharray="4 4"/><line x1="${X(sx)}" x2="${X(sx)}" y1="${cy}" y2="${Y(sy)}" stroke="var(--hot)" stroke-dasharray="4 4"/>`;
-  g+=`<circle cx="${X(sx)}" cy="${Y(sy)}" r="9" fill="var(--acc)" stroke="var(--bg)" stroke-width="3" style="cursor:grab"/>`;
-  s1.innerHTML=g;
-  const off=(P1.s[0]!==sx||P1.s[1]!==sy)?'<br>Outside the drawing; shown at its edge':'';
-  const kind=onRe&&onIm?'<br>s is the origin, 0':onRe?'<br>On the real axis: s is a real number':onIm?'<br>On the imaginary axis: s is purely imaginary':'';
-  $('r1').innerHTML=`s = <b>${cfmt(P1.s,2)}</b><br>Re(s) = <b>${f(P1.s[0])}</b><br>Im(s) = <span class="hot">${f(P1.s[1])}</span>${kind}${off}`;
-  s1._map={cx,cy,u};
-}
-function pick1(e){
-  const r=s1.getBoundingClientRect(),m=s1._map,px=e.clientX-r.left,py=e.clientY-r.top;
-  const tol=e.altKey?0:(e.pointerType==='touch'?16:10);
-  let re=Math.round((px-m.cx)/m.u*100)/100,im=Math.round((m.cy-py)/m.u*100)/100;
-  if(Math.abs(py-m.cy)<=tol)im=0;
-  if(Math.abs(px-m.cx)<=tol)re=0;
-  P1.s=[re,im];draw1();
-}
-s1.addEventListener('pointerdown',e=>{e.preventDefault();s1.setPointerCapture(e.pointerId);pick1(e)});
-s1.addEventListener('pointermove',e=>{if(e.buttons)pick1(e)});
-document.querySelectorAll('[data-p]').forEach(b=>b.addEventListener('click',()=>{P1.s=b.dataset.p.split(',').map(Number);draw1()}));
-watch(s1,draw1);
+                /* ---------- 3. domain-coloured map ---------- */
+                const V3 = { x0: -5, x1: 3, y0: -4, y1: 52 };
+                const S3 = { s: [0.5, 14.134725] };
+                const c3 = $("c3"),
+                    s3a = $("s3a"),
+                    s3b = $("s3b");
+                function hsl2rgb(h, s, l) {
+                    const a = s * Math.min(l, 1 - l),
+                        k = n => (n + h / 30) % 12,
+                        c = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+                    return [c(0) * 255, c(8) * 255, c(4) * 255];
+                }
+                let paintJob = 0;
+                function paint3() {
+                    const W = c3.clientWidth,
+                        H = c3.clientHeight;
+                    if (!W || !H) return;
+                    const cell = 2,
+                        w = Math.ceil(W / cell),
+                        h = Math.ceil(H / cell);
+                    const off = document.createElement("canvas");
+                    off.width = w;
+                    off.height = h;
+                    const octx = off.getContext("2d"),
+                        img = octx.createImageData(w, h);
+                    const job = ++paintJob;
+                    let row = 0;
+                    c3.width = W * devicePixelRatio;
+                    c3.height = H * devicePixelRatio;
+                    const ctx = c3.getContext("2d");
+                    function chunk() {
+                        if (job !== paintJob) return;
+                        const end = Math.min(h, row + 24);
+                        for (; row < end; row++) {
+                            const t = V3.y1 - ((row + 0.5) / h) * (V3.y1 - V3.y0);
+                            for (let col = 0; col < w; col++) {
+                                const sg = V3.x0 + ((col + 0.5) / w) * (V3.x1 - V3.x0);
+                                const z = zeta([sg, t]),
+                                    m = C.abs(z);
+                                const hue = ((Math.atan2(z[1], z[0]) * 180) / Math.PI + 360) % 360;
+                                const l = isFinite(m)
+                                    ? (0.04 + 0.9 * (2 / Math.PI) * Math.atan(0.7 * Math.pow(m, 0.75))) *
+                                      (0.88 + 0.12 * (((Math.log2(m) % 1) + 1) % 1))
+                                    : 0.95;
+                                const [r, g, b] = hsl2rgb(hue, 0.85, l);
+                                const i = 4 * (row * w + col);
+                                img.data[i] = r;
+                                img.data[i + 1] = g;
+                                img.data[i + 2] = b;
+                                img.data[i + 3] = 255;
+                            }
+                        }
+                        octx.putImageData(img, 0, 0);
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.drawImage(off, 0, 0, c3.width, c3.height);
+                        if (row < h) requestAnimationFrame(chunk);
+                    }
+                    chunk();
+                }
+                function map3() {
+                    const W = s3a.clientWidth,
+                        H = s3a.clientHeight;
+                    return { W, H, X: x => ((x - V3.x0) / (V3.x1 - V3.x0)) * W, Y: y => ((V3.y1 - y) / (V3.y1 - V3.y0)) * H };
+                }
+                function draw3(fromInput) {
+                    const { W, H, X, Y } = map3();
+                    let g = "";
+                    g += `<rect x="${X(0)}" y="0" width="${X(1) - X(0)}" height="${H}" fill="white" fill-opacity=".14"/>`;
+                    g += `<line x1="${X(0)}" x2="${X(0)}" y1="0" y2="${H}" stroke="white" stroke-opacity=".7" stroke-dasharray="3 4"/><line x1="${X(1)}" x2="${X(1)}" y1="0" y2="${H}" stroke="white" stroke-opacity=".7" stroke-dasharray="3 4"/>`;
+                    g += `<line x1="${X(0.5)}" x2="${X(0.5)}" y1="0" y2="${H}" stroke="var(--acc)" stroke-width="2.5"/>`;
+                    g += `<line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="white" stroke-opacity=".8"/>`;
+                    for (const k of [-4, -2, 0, 1, 2]) {
+                        g += `<text x="${X(k)}" y="${H - 8}" text-anchor="middle" style="fill:#fff;stroke:#000;stroke-width:3px">${String(k).replace("-", "−")}</text>`;
+                    }
+                    for (const k of [10, 20, 30, 40, 50]) {
+                        g += `<text x="4" y="${Y(k) + 4}" style="fill:#fff;stroke:#000;stroke-width:3px">${k}i</text>`;
+                    }
+                    g += `<text x="${X(0.5) + 6}" y="16" style="fill:#fff;stroke:#000;stroke-width:3px">½</text>`;
+                    const sx = Math.max(V3.x0, Math.min(V3.x1, S3.s[0])),
+                        sy = Math.max(V3.y0, Math.min(V3.y1, S3.s[1]));
+                    g += `<circle cx="${X(sx)}" cy="${Y(sy)}" r="8" fill="none" stroke="#fff" stroke-width="3"/><circle cx="${X(sx)}" cy="${Y(sy)}" r="8" fill="none" stroke="#000" stroke-width="1"/>`;
+                    s3a.innerHTML = g;
+                    // output plane
+                    const [W2, H2] = sized(s3b),
+                        R = 3.2,
+                        u = Math.min(W2, H2) / (2 * R),
+                        cx = W2 / 2,
+                        cy = H2 / 2;
+                    const X2 = x => cx + x * u,
+                        Y2 = y => cy - y * u;
+                    let o = "";
+                    for (let k = -3; k <= 3; k++) {
+                        o += `<line x1="${X2(k)}" x2="${X2(k)}" y1="0" y2="${H2}" stroke="var(--grid)"/><line x1="0" x2="${W2}" y1="${Y2(k)}" y2="${Y2(k)}" stroke="var(--grid)"/>`;
+                    }
+                    o += `<line x1="0" x2="${W2}" y1="${cy}" y2="${cy}" stroke="var(--soft)"/><line x1="${cx}" x2="${cx}" y1="0" y2="${H2}" stroke="var(--soft)"/>`;
+                    o += `<text x="${cx + 6}" y="${cy - 8}">0</text><text x="${X2(1)}" y="${cy + 18}" text-anchor="middle">1</text><text x="${X2(2)}" y="${cy + 18}" text-anchor="middle">2</text><text x="${cx + 6}" y="${Y2(1) + 4}">i</text>`;
+                    const z = zeta(S3.s),
+                        m = C.abs(z),
+                        k = m > R * 0.95 ? (R * 0.95) / m : 1,
+                        zx = z[0] * k,
+                        zy = z[1] * k;
+                    const hit = m < 1e-4;
+                    o += `<line x1="${cx}" y1="${cy}" x2="${X2(zx)}" y2="${Y2(zy)}" stroke="${hit ? "var(--acc)" : "var(--hot)"}" stroke-width="2"/>`;
+                    o += `<circle cx="${X2(zx)}" cy="${Y2(zy)}" r="8" fill="${hit ? "var(--acc)" : "var(--hot)"}" stroke="var(--panel)" stroke-width="3"/>`;
+                    if (k < 1) o += `<text x="${X2(zx)}" y="${Y2(zy) - 14}" text-anchor="middle">off the edge</text>`;
+                    s3b.innerHTML = o;
+                    const triv = S3.s[1] === 0 && S3.s[0] < 0 && S3.s[0] % 2 === 0;
+                    const where = triv
+                        ? "a trivial zero (a negative even integer)"
+                        : S3.s[0] > 0 && S3.s[0] < 1
+                          ? Math.abs(S3.s[0] - 0.5) < 1e-9
+                              ? "on the critical line"
+                              : "inside the strip, off the line"
+                          : "outside the strip";
+                    const out = S3.s[0] !== sx || S3.s[1] !== sy ? "<br>Outside the map view; marked at its edge" : "";
+                    $("r3").innerHTML =
+                        `ζ(<b>${cfmt(S3.s, 3)}</b>) = ${hit ? "<b>0 (a zero)</b>" : `<span class="hot">${cfmt(z, 3)}</span>`}<br>Distance of ζ(s) from 0: ${m < 1e-4 ? "less than 0.0001" : m.toFixed(4)}<br>Location: s is ${where}${out}`;
+                    if (!fromInput) {
+                        $("re3").value = +S3.s[0].toFixed(6);
+                        $("im3").value = +S3.s[1].toFixed(6);
+                    }
+                }
+                function pick3(e) {
+                    const r = s3a.getBoundingClientRect(),
+                        { W, H } = map3();
+                    S3.s = [
+                        Math.round((V3.x0 + ((e.clientX - r.left) / W) * (V3.x1 - V3.x0)) * 100) / 100,
+                        Math.round((V3.y1 - ((e.clientY - r.top) / H) * (V3.y1 - V3.y0)) * 100) / 100
+                    ];
+                    draw3();
+                }
+                s3a.addEventListener("pointerdown", e => {
+                    e.preventDefault();
+                    s3a.setPointerCapture(e.pointerId);
+                    pick3(e);
+                });
+                s3a.addEventListener("pointermove", e => {
+                    if (e.buttons) pick3(e);
+                });
+                document.querySelectorAll("[data-s]").forEach(b =>
+                    b.addEventListener("click", () => {
+                        S3.s = b.dataset.s.split(",").map(Number);
+                        draw3();
+                    })
+                );
+                function typed3() {
+                    const re = $("re3"),
+                        im = $("im3");
+                    if (re.value === "" || im.value === "" || !re.checkValidity() || !im.checkValidity()) return;
+                    const a = +re.value,
+                        b = +im.value;
+                    if (a === 1 && b === 0) {
+                        $("r3").innerHTML = "s = 1 is the pole of ζ: the function has no value there.<br>Choose another point.";
+                        return;
+                    }
+                    S3.s = [a, b];
+                    draw3(true);
+                }
+                ["re3", "im3"].forEach(id => {
+                    $(id).addEventListener("input", typed3);
+                    $(id).addEventListener("change", () => draw3());
+                });
+                $("sin3").addEventListener("submit", e => {
+                    e.preventDefault();
+                    draw3();
+                });
+                $("snap3").addEventListener("click", () => {
+                    const t = S3.s[1],
+                        sg = t < 0 ? -1 : 1;
+                    let k = 0;
+                    for (let i = 1; i < ZEROS.length; i++)
+                        if (Math.abs(Math.abs(t) - ZEROS[i]) < Math.abs(Math.abs(t) - ZEROS[k])) k = i;
+                    S3.s = [0.5, sg * ZEROS[k]];
+                    draw3();
+                    const beyond =
+                        Math.abs(t) > ZEROS.at(-1) + 1 ? ` (the page lists zeros up to height ${ZEROS.at(-1).toFixed(1)})` : "";
+                    $("r3").innerHTML +=
+                        `<br>Moved to zero no. ${k + 1}${sg < 0 ? " (its conjugate, below the real axis)" : ""}${beyond}`;
+                });
+                watch(c3, () => {
+                    paint3();
+                    draw3();
+                });
+                watch(s3b, draw3);
 
-/* ---------- 2. partial sums ---------- */
-function draw2(){
-  const n=+$('nt').value;let s=0;for(let k=1;k<=n;k++)s+=1/(k*k);
-  $('ntv').textContent=n.toLocaleString('en-US');
-  $('r2').innerHTML=`Sum of the first ${n.toLocaleString('en-US')} terms: <b>${s.toFixed(6)}</b><br>Limit of the series, π²/6: ${(Math.PI**2/6).toFixed(6)}<br>Remaining difference: ${(Math.PI**2/6-s).toPrecision(2)}`;
-}
-$('nt').addEventListener('input',draw2);draw2();
+                /* ---------- 4a. mirror diagram ---------- */
+                const s4a = $("s4a");
+                function draw4a() {
+                    const [W, H] = sized(s4a),
+                        pad = 40,
+                        X = x => pad + ((x + 0.25) / 1.5) * (W - 2 * pad),
+                        Y = y => H - 28 - (y / 40) * (H - 56);
+                    let g = `<rect x="${X(0)}" y="10" width="${X(1) - X(0)}" height="${H - 38}" fill="var(--acc)" fill-opacity=".07"/>`;
+                    g += `<line x1="${X(0)}" x2="${X(0)}" y1="10" y2="${H - 28}" stroke="var(--soft)" stroke-dasharray="3 4"/><line x1="${X(1)}" x2="${X(1)}" y1="10" y2="${H - 28}" stroke="var(--soft)" stroke-dasharray="3 4"/>`;
+                    g += `<line x1="${X(0.5)}" x2="${X(0.5)}" y1="10" y2="${H - 28}" stroke="var(--acc)" stroke-width="2.5"/>`;
+                    g += `<text x="${X(0)}" y="${H - 10}" text-anchor="middle">0</text><text x="${X(0.5)}" y="${H - 10}" text-anchor="middle">½</text><text x="${X(1)}" y="${H - 10}" text-anchor="middle">1</text>`;
+                    for (const t of ZEROS.slice(0, 6)) {
+                        if (t < 40) g += `<circle cx="${X(0.5)}" cy="${Y(t)}" r="6" fill="var(--acc)"/>`;
+                    }
+                    const hy = Y(27.5);
+                    g += `<circle cx="${X(0.3)}" cy="${hy}" r="6" fill="none" stroke="var(--hot)" stroke-width="2.5"/><circle cx="${X(0.7)}" cy="${hy}" r="6" fill="none" stroke="var(--hot)" stroke-width="2.5"/>`;
+                    g += `<path d="M${X(0.3) + 9} ${hy} L${X(0.7) - 9} ${hy}" stroke="var(--hot)" stroke-dasharray="3 3"/>`;
+                    g += `<text x="${X(0.7) + 12}" y="${hy - 6}">a zero at Re = 0.7…</text><text x="${X(0.7) + 12}" y="${hy + 12}">…implies one at Re = 0.3</text>`;
+                    g += `<text x="${X(0.5) + 12}" y="${Y(ZEROS[0]) + 4}">known zeros: Re = ½</text>`;
+                    s4a.innerHTML = g;
+                }
+                watch(s4a, draw4a);
 
-/* ---------- 3. domain-coloured map ---------- */
-const V3={x0:-5,x1:3,y0:-4,y1:52};
-const S3={s:[0.5,14.134725]};
-const c3=$('c3'),s3a=$('s3a'),s3b=$('s3b');
-function hsl2rgb(h,s,l){const a=s*Math.min(l,1-l),k=n=>(n+h/30)%12,c=n=>l-a*Math.max(-1,Math.min(k(n)-3,9-k(n),1));return[c(0)*255,c(8)*255,c(4)*255]}
-let paintJob=0;
-function paint3(){
-  const W=c3.clientWidth,H=c3.clientHeight;if(!W||!H)return;
-  const cell=2,w=Math.ceil(W/cell),h=Math.ceil(H/cell);
-  const off=document.createElement('canvas');off.width=w;off.height=h;
-  const octx=off.getContext('2d'),img=octx.createImageData(w,h);
-  const job=++paintJob;let row=0;
-  c3.width=W*devicePixelRatio;c3.height=H*devicePixelRatio;
-  const ctx=c3.getContext('2d');
-  function chunk(){
-    if(job!==paintJob)return;
-    const end=Math.min(h,row+24);
-    for(;row<end;row++){
-      const t=V3.y1-(row+0.5)/h*(V3.y1-V3.y0);
-      for(let col=0;col<w;col++){
-        const sg=V3.x0+(col+0.5)/w*(V3.x1-V3.x0);
-        const z=zeta([sg,t]),m=C.abs(z);
-        const hue=((Math.atan2(z[1],z[0])*180/Math.PI)+360)%360;
-        const l=isFinite(m)?(0.04+0.9*(2/Math.PI)*Math.atan(0.7*Math.pow(m,0.75)))*(0.88+0.12*(((Math.log2(m)%1)+1)%1)):0.95;
-        const [r,g,b]=hsl2rgb(hue,0.85,l);const i=4*(row*w+col);
-        img.data[i]=r;img.data[i+1]=g;img.data[i+2]=b;img.data[i+3]=255;
-      }
-    }
-    octx.putImageData(img,0,0);ctx.imageSmoothingEnabled=true;ctx.drawImage(off,0,0,c3.width,c3.height);
-    if(row<h)requestAnimationFrame(chunk);
-  }
-  chunk();
-}
-function map3(){const W=s3a.clientWidth,H=s3a.clientHeight;return{W,H,X:x=>(x-V3.x0)/(V3.x1-V3.x0)*W,Y:y=>(V3.y1-y)/(V3.y1-V3.y0)*H}}
-function draw3(fromInput){
-  const {W,H,X,Y}=map3();let g='';
-  g+=`<rect x="${X(0)}" y="0" width="${X(1)-X(0)}" height="${H}" fill="white" fill-opacity=".14"/>`;
-  g+=`<line x1="${X(0)}" x2="${X(0)}" y1="0" y2="${H}" stroke="white" stroke-opacity=".7" stroke-dasharray="3 4"/><line x1="${X(1)}" x2="${X(1)}" y1="0" y2="${H}" stroke="white" stroke-opacity=".7" stroke-dasharray="3 4"/>`;
-  g+=`<line x1="${X(0.5)}" x2="${X(0.5)}" y1="0" y2="${H}" stroke="var(--acc)" stroke-width="2.5"/>`;
-  g+=`<line x1="0" x2="${W}" y1="${Y(0)}" y2="${Y(0)}" stroke="white" stroke-opacity=".8"/>`;
-  for(const k of [-4,-2,0,1,2]){g+=`<text x="${X(k)}" y="${H-8}" text-anchor="middle" style="fill:#fff;stroke:#000;stroke-width:3px">${String(k).replace('-','−')}</text>`}
-  for(const k of [10,20,30,40,50]){g+=`<text x="4" y="${Y(k)+4}" style="fill:#fff;stroke:#000;stroke-width:3px">${k}i</text>`}
-  g+=`<text x="${X(0.5)+6}" y="16" style="fill:#fff;stroke:#000;stroke-width:3px">½</text>`;
-  const sx=Math.max(V3.x0,Math.min(V3.x1,S3.s[0])),sy=Math.max(V3.y0,Math.min(V3.y1,S3.s[1]));
-  g+=`<circle cx="${X(sx)}" cy="${Y(sy)}" r="8" fill="none" stroke="#fff" stroke-width="3"/><circle cx="${X(sx)}" cy="${Y(sy)}" r="8" fill="none" stroke="#000" stroke-width="1"/>`;
-  s3a.innerHTML=g;
-  // output plane
-  const [W2,H2]=sized(s3b),R=3.2,u=Math.min(W2,H2)/(2*R),cx=W2/2,cy=H2/2;
-  const X2=x=>cx+x*u,Y2=y=>cy-y*u;let o='';
-  for(let k=-3;k<=3;k++){o+=`<line x1="${X2(k)}" x2="${X2(k)}" y1="0" y2="${H2}" stroke="var(--grid)"/><line x1="0" x2="${W2}" y1="${Y2(k)}" y2="${Y2(k)}" stroke="var(--grid)"/>`}
-  o+=`<line x1="0" x2="${W2}" y1="${cy}" y2="${cy}" stroke="var(--soft)"/><line x1="${cx}" x2="${cx}" y1="0" y2="${H2}" stroke="var(--soft)"/>`;
-  o+=`<text x="${cx+6}" y="${cy-8}">0</text><text x="${X2(1)}" y="${cy+18}" text-anchor="middle">1</text><text x="${X2(2)}" y="${cy+18}" text-anchor="middle">2</text><text x="${cx+6}" y="${Y2(1)+4}">i</text>`;
-  const z=zeta(S3.s),m=C.abs(z),k=m>R*0.95?R*0.95/m:1,zx=z[0]*k,zy=z[1]*k;
-  const hit=m<1e-4;
-  o+=`<line x1="${cx}" y1="${cy}" x2="${X2(zx)}" y2="${Y2(zy)}" stroke="${hit?'var(--acc)':'var(--hot)'}" stroke-width="2"/>`;
-  o+=`<circle cx="${X2(zx)}" cy="${Y2(zy)}" r="8" fill="${hit?'var(--acc)':'var(--hot)'}" stroke="var(--panel)" stroke-width="3"/>`;
-  if(k<1)o+=`<text x="${X2(zx)}" y="${Y2(zy)-14}" text-anchor="middle">off the edge</text>`;
-  s3b.innerHTML=o;
-  const triv=S3.s[1]===0&&S3.s[0]<0&&S3.s[0]%2===0;
-  const where=triv?'a trivial zero (a negative even integer)':S3.s[0]>0&&S3.s[0]<1?(Math.abs(S3.s[0]-0.5)<1e-9?'on the critical line':'inside the strip, off the line'):'outside the strip';
-  const out=(S3.s[0]!==sx||S3.s[1]!==sy)?'<br>Outside the map view; marked at its edge':'';
-  $('r3').innerHTML=`ζ(<b>${cfmt(S3.s,3)}</b>) = ${hit?'<b>0 (a zero)</b>':`<span class="hot">${cfmt(z,3)}</span>`}<br>Distance of ζ(s) from 0: ${m<1e-4?'less than 0.0001':m.toFixed(4)}<br>Location: s is ${where}${out}`;
-  if(!fromInput){$('re3').value=+S3.s[0].toFixed(6);$('im3').value=+S3.s[1].toFixed(6)}
-}
-function pick3(e){const r=s3a.getBoundingClientRect(),{W,H}=map3();S3.s=[Math.round((V3.x0+(e.clientX-r.left)/W*(V3.x1-V3.x0))*100)/100,Math.round((V3.y1-(e.clientY-r.top)/H*(V3.y1-V3.y0))*100)/100];draw3()}
-s3a.addEventListener('pointerdown',e=>{e.preventDefault();s3a.setPointerCapture(e.pointerId);pick3(e)});
-s3a.addEventListener('pointermove',e=>{if(e.buttons)pick3(e)});
-document.querySelectorAll('[data-s]').forEach(b=>b.addEventListener('click',()=>{S3.s=b.dataset.s.split(',').map(Number);draw3()}));
-function typed3(){
-  const re=$('re3'),im=$('im3');
-  if(re.value===''||im.value===''||!re.checkValidity()||!im.checkValidity())return;
-  const a=+re.value,b=+im.value;
-  if(a===1&&b===0){$('r3').innerHTML='s = 1 is the pole of ζ: the function has no value there.<br>Choose another point.';return}
-  S3.s=[a,b];draw3(true);
-}
-['re3','im3'].forEach(id=>{$(id).addEventListener('input',typed3);$(id).addEventListener('change',()=>draw3())});
-$('sin3').addEventListener('submit',e=>{e.preventDefault();draw3()});
-$('snap3').addEventListener('click',()=>{
-  const t=S3.s[1],sg=t<0?-1:1;let k=0;
-  for(let i=1;i<ZEROS.length;i++)if(Math.abs(Math.abs(t)-ZEROS[i])<Math.abs(Math.abs(t)-ZEROS[k]))k=i;
-  S3.s=[0.5,sg*ZEROS[k]];draw3();
-  const beyond=Math.abs(t)>ZEROS.at(-1)+1?` (the page lists zeros up to height ${ZEROS.at(-1).toFixed(1)})`:'';
-  $('r3').innerHTML+=`<br>Moved to zero no. ${k+1}${sg<0?' (its conjugate, below the real axis)':''}${beyond}`;
-});
-watch(c3,()=>{paint3();draw3()});watch(s3b,draw3);
-
-/* ---------- 4a. mirror diagram ---------- */
-const s4a=$('s4a');
-function draw4a(){
-  const [W,H]=sized(s4a),pad=40,X=x=>pad+(x+0.25)/1.5*(W-2*pad),Y=y=>H-28-(y/40)*(H-56);
-  let g=`<rect x="${X(0)}" y="10" width="${X(1)-X(0)}" height="${H-38}" fill="var(--acc)" fill-opacity=".07"/>`;
-  g+=`<line x1="${X(0)}" x2="${X(0)}" y1="10" y2="${H-28}" stroke="var(--soft)" stroke-dasharray="3 4"/><line x1="${X(1)}" x2="${X(1)}" y1="10" y2="${H-28}" stroke="var(--soft)" stroke-dasharray="3 4"/>`;
-  g+=`<line x1="${X(0.5)}" x2="${X(0.5)}" y1="10" y2="${H-28}" stroke="var(--acc)" stroke-width="2.5"/>`;
-  g+=`<text x="${X(0)}" y="${H-10}" text-anchor="middle">0</text><text x="${X(0.5)}" y="${H-10}" text-anchor="middle">½</text><text x="${X(1)}" y="${H-10}" text-anchor="middle">1</text>`;
-  for(const t of ZEROS.slice(0,6)){if(t<40)g+=`<circle cx="${X(0.5)}" cy="${Y(t)}" r="6" fill="var(--acc)"/>`}
-  const hy=Y(27.5);
-  g+=`<circle cx="${X(0.3)}" cy="${hy}" r="6" fill="none" stroke="var(--hot)" stroke-width="2.5"/><circle cx="${X(0.7)}" cy="${hy}" r="6" fill="none" stroke="var(--hot)" stroke-width="2.5"/>`;
-  g+=`<path d="M${X(0.3)+9} ${hy} L${X(0.7)-9} ${hy}" stroke="var(--hot)" stroke-dasharray="3 3"/>`;
-  g+=`<text x="${X(0.7)+12}" y="${hy-6}">a zero at Re = 0.7…</text><text x="${X(0.7)+12}" y="${hy+12}">…implies one at Re = 0.3</text>`;
-  g+=`<text x="${X(0.5)+12}" y="${Y(ZEROS[0])+4}">known zeros: Re = ½</text>`;
-  s4a.innerHTML=g;
-}
-watch(s4a,draw4a);
-
-/* ---------- 4b. walk ---------- */
-const s4b=$('s4b');let playT=null;
-function refine(sg,a,b){ // golden-section search for min |zeta| on [a,b]
-  const gr=(Math.sqrt(5)-1)/2;let c=b-gr*(b-a),d=a+gr*(b-a),fc=C.abs(zeta([sg,c])),fd=C.abs(zeta([sg,d]));
-  for(let i=0;i<40;i++){if(fc<fd){b=d;d=c;fd=fc;c=b-gr*(b-a);fc=C.abs(zeta([sg,c]))}else{a=c;c=d;fc=fd;d=a+gr*(b-a);fd=C.abs(zeta([sg,d]))}}
-  return Math.min(fc,fd);
-}
-function draw4b(){
-  const sg=+$('sg').value,T=+$('tt').value;$('sgv').textContent=sg.toFixed(2);$('ttv').textContent=T.toFixed(1);
-  const dt=0.01,pts=[];for(let t=0;t<=T+1e-9;t+=dt){pts.push([t,zeta([sg,t])])}
-  const [W,H]=sized(s4b),xr=[-2.5,5],yr=[-3.5,3.5],u=Math.min(W/(xr[1]-xr[0]),H/(yr[1]-yr[0]));
-  const ox=(W-u*(xr[1]-xr[0]))/2,oy=(H-u*(yr[1]-yr[0]))/2,X=x=>ox+(x-xr[0])*u,Y=y=>oy+(yr[1]-y)*u;
-  let g='';for(let k=-2;k<=5;k++)g+=`<line x1="${X(k)}" x2="${X(k)}" y1="${Y(yr[1])}" y2="${Y(yr[0])}" stroke="var(--grid)"/>`;
-  for(let k=-3;k<=3;k++)g+=`<line x1="${X(xr[0])}" x2="${X(xr[1])}" y1="${Y(k)}" y2="${Y(k)}" stroke="var(--grid)"/>`;
-  g+=`<line x1="${X(xr[0])}" x2="${X(xr[1])}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--soft)"/><line x1="${X(0)}" x2="${X(0)}" y1="${Y(yr[1])}" y2="${Y(yr[0])}" stroke="var(--soft)"/>`;
-  const cl=v=>Math.max(-9,Math.min(9,v));
-  const d=pts.map((p,i)=>(i?'L':'M')+X(cl(p[1][0])).toFixed(1)+' '+Y(cl(p[1][1])).toFixed(1)).join('');
-  const onLine=Math.abs(sg-0.5)<1e-9;
-  g=`<defs><clipPath id="cp4"><rect x="${X(xr[0])}" y="${Y(yr[1])}" width="${(xr[1]-xr[0])*u}" height="${(yr[1]-yr[0])*u}"/></clipPath></defs>`+g;
-  g+=`<path d="${d}" fill="none" stroke="${onLine?'var(--acc)':'var(--hot)'}" stroke-width="1.6" clip-path="url(#cp4)"/>`;
-  g+=`<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="${X(0)+8}" y="${Y(0)-8}">0</text>`;
-  const last=pts.at(-1)[1];g+=`<circle cx="${X(cl(last[0]))}" cy="${Y(cl(last[1]))}" r="5" fill="${onLine?'var(--acc)':'var(--hot)'}"/>`;
-  // closest approaches
-  let hits=0,best=Infinity,near=0;
-  for(let i=1;i<pts.length-1;i++){const a=C.abs(pts[i-1][1]),b=C.abs(pts[i][1]),c=C.abs(pts[i+1][1]);if(b<=a&&b<=c&&b<0.4){near++;const m=refine(sg,pts[i-1][0],pts[i+1][0]);best=Math.min(best,m);if(m<1e-6)hits++}}
-  s4b.innerHTML=g;
-  const zc=ZEROS.filter(z=>z<=T).length;
-  $('r4').innerHTML=onLine
-    ?`Zeros with imaginary part up to ${T.toFixed(1)}: <b>${zc}</b><br>Times the curve passes through the origin: <b>${hits}</b><br>Closest approach to the origin: ${best<1e-6?'less than 0.000001':best.toFixed(4)}`
-    :`Times the curve comes near the origin: ${near}<br>Times it passes through the origin: <span class="hot">${hits}</span><br>Closest approach to the origin: <span class="hot">${isFinite(best)?best.toFixed(4):'none in this range'}</span>`;
-}
-['sg','tt'].forEach(id=>$(id).addEventListener('input',draw4b));
-$('half5').addEventListener('click',()=>{$('sg').value=0.5;draw4b()});
-$('play').addEventListener('click',()=>{
-  if(playT){cancelAnimationFrame(playT);playT=null;$('play').textContent='Animate from t = 0';return}
-  const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(reduce){$('tt').value=50;draw4b();return}
-  let T=1;$('play').textContent='Stop';
-  const step=()=>{T=Math.min(50,T+0.25);$('tt').value=T;draw4b();if(T<50)playT=requestAnimationFrame(step);else{playT=null;$('play').textContent='Animate from t = 0'}};
-  playT=requestAnimationFrame(step);
-});
-watch(s4b,draw4b);
-
-}
-</script>
-</body>
+                /* ---------- 4b. walk ---------- */
+                const s4b = $("s4b");
+                let playT = null;
+                function refine(sg, a, b) {
+                    // golden-section search for min |zeta| on [a,b]
+                    const gr = (Math.sqrt(5) - 1) / 2;
+                    let c = b - gr * (b - a),
+                        d = a + gr * (b - a),
+                        fc = C.abs(zeta([sg, c])),
+                        fd = C.abs(zeta([sg, d]));
+                    for (let i = 0; i < 40; i++) {
+                        if (fc < fd) {
+                            b = d;
+                            d = c;
+                            fd = fc;
+                            c = b - gr * (b - a);
+                            fc = C.abs(zeta([sg, c]));
+                        } else {
+                            a = c;
+                            c = d;
+                            fc = fd;
+                            d = a + gr * (b - a);
+                            fd = C.abs(zeta([sg, d]));
+                        }
+                    }
+                    return Math.min(fc, fd);
+                }
+                function draw4b() {
+                    const sg = +$("sg").value,
+                        T = +$("tt").value;
+                    $("sgv").textContent = sg.toFixed(2);
+                    $("ttv").textContent = T.toFixed(1);
+                    const dt = 0.01,
+                        pts = [];
+                    for (let t = 0; t <= T + 1e-9; t += dt) {
+                        pts.push([t, zeta([sg, t])]);
+                    }
+                    const [W, H] = sized(s4b),
+                        xr = [-2.5, 5],
+                        yr = [-3.5, 3.5],
+                        u = Math.min(W / (xr[1] - xr[0]), H / (yr[1] - yr[0]));
+                    const ox = (W - u * (xr[1] - xr[0])) / 2,
+                        oy = (H - u * (yr[1] - yr[0])) / 2,
+                        X = x => ox + (x - xr[0]) * u,
+                        Y = y => oy + (yr[1] - y) * u;
+                    let g = "";
+                    for (let k = -2; k <= 5; k++)
+                        g += `<line x1="${X(k)}" x2="${X(k)}" y1="${Y(yr[1])}" y2="${Y(yr[0])}" stroke="var(--grid)"/>`;
+                    for (let k = -3; k <= 3; k++)
+                        g += `<line x1="${X(xr[0])}" x2="${X(xr[1])}" y1="${Y(k)}" y2="${Y(k)}" stroke="var(--grid)"/>`;
+                    g += `<line x1="${X(xr[0])}" x2="${X(xr[1])}" y1="${Y(0)}" y2="${Y(0)}" stroke="var(--soft)"/><line x1="${X(0)}" x2="${X(0)}" y1="${Y(yr[1])}" y2="${Y(yr[0])}" stroke="var(--soft)"/>`;
+                    const cl = v => Math.max(-9, Math.min(9, v));
+                    const d = pts
+                        .map((p, i) => (i ? "L" : "M") + X(cl(p[1][0])).toFixed(1) + " " + Y(cl(p[1][1])).toFixed(1))
+                        .join("");
+                    const onLine = Math.abs(sg - 0.5) < 1e-9;
+                    g =
+                        `<defs><clipPath id="cp4"><rect x="${X(xr[0])}" y="${Y(yr[1])}" width="${(xr[1] - xr[0]) * u}" height="${(yr[1] - yr[0]) * u}"/></clipPath></defs>` +
+                        g;
+                    g += `<path d="${d}" fill="none" stroke="${onLine ? "var(--acc)" : "var(--hot)"}" stroke-width="1.6" clip-path="url(#cp4)"/>`;
+                    g += `<circle cx="${X(0)}" cy="${Y(0)}" r="5" fill="none" stroke="var(--ink)" stroke-width="2"/><text x="${X(0) + 8}" y="${Y(0) - 8}">0</text>`;
+                    const last = pts.at(-1)[1];
+                    g += `<circle cx="${X(cl(last[0]))}" cy="${Y(cl(last[1]))}" r="5" fill="${onLine ? "var(--acc)" : "var(--hot)"}"/>`;
+                    // closest approaches
+                    let hits = 0,
+                        best = Infinity,
+                        near = 0;
+                    for (let i = 1; i < pts.length - 1; i++) {
+                        const a = C.abs(pts[i - 1][1]),
+                            b = C.abs(pts[i][1]),
+                            c = C.abs(pts[i + 1][1]);
+                        if (b <= a && b <= c && b < 0.4) {
+                            near++;
+                            const m = refine(sg, pts[i - 1][0], pts[i + 1][0]);
+                            best = Math.min(best, m);
+                            if (m < 1e-6) hits++;
+                        }
+                    }
+                    s4b.innerHTML = g;
+                    const zc = ZEROS.filter(z => z <= T).length;
+                    $("r4").innerHTML = onLine
+                        ? `Zeros with imaginary part up to ${T.toFixed(1)}: <b>${zc}</b><br>Times the curve passes through the origin: <b>${hits}</b><br>Closest approach to the origin: ${best < 1e-6 ? "less than 0.000001" : best.toFixed(4)}`
+                        : `Times the curve comes near the origin: ${near}<br>Times it passes through the origin: <span class="hot">${hits}</span><br>Closest approach to the origin: <span class="hot">${isFinite(best) ? best.toFixed(4) : "none in this range"}</span>`;
+                }
+                ["sg", "tt"].forEach(id => $(id).addEventListener("input", draw4b));
+                $("half5").addEventListener("click", () => {
+                    $("sg").value = 0.5;
+                    draw4b();
+                });
+                $("play").addEventListener("click", () => {
+                    if (playT) {
+                        cancelAnimationFrame(playT);
+                        playT = null;
+                        $("play").textContent = "Animate from t = 0";
+                        return;
+                    }
+                    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+                    if (reduce) {
+                        $("tt").value = 50;
+                        draw4b();
+                        return;
+                    }
+                    let T = 1;
+                    $("play").textContent = "Stop";
+                    const step = () => {
+                        T = Math.min(50, T + 0.25);
+                        $("tt").value = T;
+                        draw4b();
+                        if (T < 50) playT = requestAnimationFrame(step);
+                        else {
+                            playT = null;
+                            $("play").textContent = "Animate from t = 0";
+                        }
+                    };
+                    playT = requestAnimationFrame(step);
+                });
+                watch(s4b, draw4b);
+            }
+        </script>
+    </body>
 </html>
