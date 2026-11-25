@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Riemann Proof Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600;7..72,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE work: a careful explainer for a journalist, clinical and exact
+   IDEA a scientific plate: one large working diagram whose numbered parts are the sections below
+   PICTURE the proof's machine drawn twice (claimed vs actual); every box and arrow jumps to its section
+   COLOUR white ground; prussian = geometry side, carmine = zeta side
+   TYPE Literata display + Literata text, JetBrains Mono for code
+   LAYOUT title, diagram, summary; then sections numbered exactly like the diagram */
+:root{color-scheme:light dark;--bg:light-dark(#ffffff,#0f1217);--ink:light-dark(#10131a,#e7e9ee);--muted:light-dark(#5a6170,#9aa3b2);--rule:light-dark(#dcdfe6,#2a303c);--panel:light-dark(#f5f7fa,#151a23);--codebg:light-dark(#f6f7f9,#12161e);--geo:light-dark(#0b4f8a,#6aa8ec);--zeta:light-dark(#c1121f,#ff6b6f);--geoT:light-dark(#e6eef7,#16273b);--zetaT:light-dark(#fbe8e9,#3a1a1d);--ok:light-dark(#1f7a3d,#5fd08a);--okT:light-dark(#e6f4ea,#13281b)}
+:root[data-theme=light]{color-scheme:light}
+:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{scroll-padding-top:24px;scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 Literata,Georgia,serif;overflow-x:clip}
+.band{padding-block:clamp(28px,4vw,56px);padding-left:max(5vw,16px);padding-right:max(5vw,16px)}
+.wrap{max-width:1200px;margin:0 auto}
+h1{font-size:clamp(34px,5vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0 0 12px;font-weight:700;text-wrap:balance}
+h2{font-size:clamp(26px,3.2vw,34px);line-height:1.1;letter-spacing:-.015em;margin:0 0 10px;text-wrap:balance}
+h3{font-size:clamp(21px,2.4vw,26px);line-height:1.2;margin:0;font-weight:700;text-wrap:balance}
+h4{font-size:17px;margin:0 0 8px}
+p{margin:0 0 12px;max-width:68ch}
+a{color:var(--geo)}
+a.ref{color:inherit;text-decoration:underline;text-decoration-color:color-mix(in srgb,var(--geo) 60%,transparent);text-underline-offset:3px}
+a.ref:hover{color:var(--geo)}
+a.src{text-decoration:underline dotted;text-decoration-color:var(--geo);text-underline-offset:3px}
+a.src code{color:var(--geo)}
+a.src:hover code{background:var(--geoT)}
+.deck{font-size:18px;color:var(--muted);max-width:62ch}
+.nav{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:18px;font-size:15px}
+.nav a{text-decoration:none;border-bottom:1px solid var(--rule)}
+.geo{color:var(--geo)}.zeta{color:var(--zeta)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:15px;margin:6px 0 4px}
+.hint{font-size:14.5px;color:var(--muted);margin:0}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.bphead{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:12px;margin-top:22px}
+.seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:999px;padding:3px;gap:3px;user-select:none;-webkit-user-select:none}
+.seg button{font:600 15px Literata,serif;border:0;border-radius:999px;padding:10px 16px;min-height:44px;background:transparent;color:var(--ink);cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.seg button:focus-visible,.sw2:focus-visible,.cp:focus-visible,.cap a:focus-visible{outline:3px solid var(--geo);outline-offset:2px}
+.fig{position:relative;min-height:370px;border:1px solid var(--rule);border-radius:14px;background:var(--panel);margin-top:12px;user-select:none;-webkit-user-select:none}
+.fig>svg{position:absolute;inset:0;width:100%;height:100%}
+svg text{paint-order:stroke;stroke:var(--panel);stroke-width:4px;font-family:Literata,serif;pointer-events:none}
+svg a{cursor:pointer;outline:none}
+svg a .nd{transition:stroke-width .15s,filter .15s}
+svg a:hover .nd,svg a:focus-visible .nd{stroke-width:5px}
+svg a:hover .edge,svg a:focus-visible .edge{stroke-width:5px}
+svg a:hover .bdg,svg a:focus-visible .bdg{stroke-width:3.5px}
+svg a:focus-visible .nd{stroke-dasharray:none}
+.edge{transition:stroke-width .2s}.edge.on{stroke-width:4.5px}
+.cap{list-style:none;padding:0;margin:14px 0 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(12.5em,1fr));gap:10px}
+.cap li{border-top:2px solid var(--rule);padding-top:8px;font-size:15px;transition:border-color .2s}
+.cap li.on{border-color:var(--ink)}
+.cap a{display:block;color:var(--ink);text-decoration:none;border-radius:6px;padding:2px 4px 4px;margin:-2px -4px 0}
+.cap a:hover{background:var(--bg)}
+.cap a strong{text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px}
+.cap a span{display:block;color:var(--muted);font-size:14px}
+.bd{display:inline-grid;place-items:center;flex:none;width:26px;height:26px;border-radius:50%;border:2px solid currentColor;font:700 13px Literata,serif;margin-right:6px;user-select:none;-webkit-user-select:none;vertical-align:1px}
+.bd.lg{width:44px;height:44px;font-size:19px;border-width:2.5px;margin:0}
+.c-g{color:var(--geo)}.c-z{color:var(--zeta)}.c-k{color:var(--ink)}.c-d{color:var(--muted)}
+.summary{background:var(--panel);border-block:1px solid var(--rule)}
+.summary h2{margin-bottom:28px}
+.summary p{font-size:18px;line-height:1.75;max-width:76ch}
+a.cl{color:inherit;text-decoration:none;border-bottom:2px solid var(--rule);transition:background .15s}
+a.cl:hover,a.cl:focus-visible{background:var(--geoT)}
+a.cl.z:hover,a.cl.z:focus-visible{background:var(--zetaT)}
+a.cl.g{border-color:color-mix(in srgb,var(--geo) 55%,transparent)}
+a.cl.z{border-color:color-mix(in srgb,var(--zeta) 55%,transparent)}
+a.cl .bd{width:21px;height:21px;font-size:11.5px;margin:0 0 0 4px;border-width:1.5px;vertical-align:2px}
+.glh{font-size:18px;margin:26px 0 10px;color:var(--muted);font-weight:600}
+#glossary summary{list-style:none;cursor:pointer;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;user-select:none;-webkit-user-select:none;border-radius:8px;padding:4px 0}
+#glossary summary::-webkit-details-marker{display:none}
+#glossary summary h2{margin:0;display:inline-flex;align-items:center;gap:12px}
+#glossary summary h2::before{content:"";width:12px;height:12px;border-right:3px solid currentColor;border-bottom:3px solid currentColor;transform:rotate(-45deg);transition:transform .2s;margin-right:4px}
+#glossary details[open] summary h2::before{transform:rotate(45deg)}
+#glossary summary:hover h2{color:var(--geo)}
+#glossary summary:focus-visible{outline:3px solid var(--geo);outline-offset:4px}
+.gsub{color:var(--muted);font-size:15px}
+.gl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,19em),1fr));gap:4px 32px;margin:0}
+.gl div{border-top:1px solid var(--rule);padding:10px 0}
+.gl dt{font-weight:700;margin-bottom:2px}
+.gl dd{margin:0;font-size:15.5px;line-height:1.5}
+.part{border-top:3px solid var(--ink);padding-top:18px;margin-top:34px}
+.part p{color:var(--muted)}
+.step{padding:40px 0 10px}
+.sh{display:flex;gap:14px;align-items:center;margin-bottom:18px;border-radius:10px;padding:6px 8px;margin-inline:-8px}
+.step:target .sh{animation:tgt 2.2s ease-out}
+@keyframes tgt{0%,30%{background:var(--geoT)}100%{background:transparent}}
+.step.z:target .sh{animation-name:tgtz}
+@keyframes tgtz{0%,30%{background:var(--zetaT)}100%{background:transparent}}
+.kick{font-size:14px;color:var(--muted);margin:0 0 2px}
+.sub{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:clamp(18px,3vw,40px);padding:14px 0 22px}
+.note{font-size:14.5px;color:var(--muted)}
+.code{border:1px solid var(--rule);border-radius:10px;background:var(--codebg);margin-bottom:14px;overflow:hidden}
+.ch{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:6px 8px 6px 12px;border-bottom:1px solid var(--rule);font-size:13.5px;color:var(--muted)}
+.ch span{overflow-wrap:anywhere}
+.ch a{color:var(--geo);text-underline-offset:2px;white-space:nowrap}
+.ch a:hover{color:var(--ink)}
+.ch b{font-weight:600;font-size:12.5px;border-radius:4px;padding:1px 6px;margin-right:6px;white-space:nowrap}
+.ch b.ok{color:var(--ok);background:var(--okT)}
+.ch b.pp{color:var(--zeta);background:var(--zetaT)}
+.cp{font:600 13px Literata,serif;border:1px solid var(--rule);background:var(--bg);color:var(--ink);border-radius:6px;padding:6px 10px;min-height:32px;cursor:pointer;flex:none}
+pre{font-variant-ligatures:none;margin:0;padding:12px 14px;overflow-x:auto;font:13.5px/1.6 "JetBrains Mono",ui-monospace,monospace}
+code{font-variant-ligatures:none;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.88em;overflow-wrap:anywhere}
+pre code{font-size:inherit;overflow-wrap:normal}
+.cm{color:var(--muted)}
+mark{color:inherit;border-radius:3px;padding:0 2px}
+mark.z{background:var(--zetaT);box-shadow:inset 0 -2px 0 var(--zeta)}
+mark.g{background:var(--geoT);box-shadow:inset 0 -2px 0 var(--geo)}
+.mini{margin-top:14px;border:1px solid var(--rule);border-radius:12px;background:var(--panel);padding:16px;position:relative;overflow:hidden;user-select:none;-webkit-user-select:none}
+.mini .lbl{font-size:13px;color:var(--muted);margin-top:8px}
+.obj{border:2px solid var(--geo);border-radius:10px;background:var(--bg);padding:10px 12px;font-size:14.5px}
+.obj.dead{border-style:dashed;border-color:var(--muted)}
+.obj h4{margin:0 0 6px;font-size:15px;color:var(--geo)}
+.obj.dead h4{color:var(--muted)}
+.row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;padding:3px 0;border-top:1px dotted var(--rule)}
+.row .v{font-family:"JetBrains Mono",monospace;font-size:13.5px}
+.row .v.q2{color:var(--geo)}
+.row .v.bad{color:var(--zeta);font-weight:600;animation:flash 4s infinite}
+@keyframes flash{0%,70%{background:transparent}78%{background:var(--zetaT)}100%{background:transparent}}
+.pill{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--geo);color:var(--geo);border-radius:999px;padding:6px 14px;font-weight:600;background:var(--bg);white-space:nowrap}
+.pill.z{border-color:var(--zeta);color:var(--zeta)}
+.big{font-size:22px}
+.measure{display:grid;grid-template-columns:auto minmax(40px,1fr) auto;align-items:center;gap:10px}
+.ruler{height:10px;border-radius:5px;background:repeating-linear-gradient(90deg,var(--geo) 0 8px,transparent 8px 14px);animation:march 1s linear infinite}
+.ruler.z{background:repeating-linear-gradient(90deg,var(--zeta) 0 8px,transparent 8px 14px)}
+@keyframes march{to{background-position:14px 0}}
+.box{border:2px solid var(--ink);border-radius:8px;padding:10px 12px;font-family:"JetBrains Mono",monospace;font-size:13.5px;background:var(--bg);white-space:nowrap}
+.nl{position:relative;height:96px;margin:6px 8px}
+.nl .track{position:absolute;left:0;right:0;top:38px;height:3px;background:var(--muted);border-radius:2px}
+.nl .zone{position:absolute;top:30px;height:19px;left:20%;right:20%;border-inline:3px solid var(--zeta);background:var(--zetaT)}
+.nl .lim{position:absolute;top:56px;transform:translateX(-50%);font-size:13px;color:var(--zeta);text-align:center;line-height:1.25;white-space:nowrap}
+.nl .dot{position:absolute;top:22px;width:34px;height:34px;margin-left:-17px;border-radius:50%;background:var(--geo);color:#fff;display:grid;place-items:center;font-weight:700;animation:slide 3.2s ease-in-out infinite alternate}
+.nl .dot.z{background:var(--zeta)}
+.nl .dl{position:absolute;top:0;left:50%;transform:translateX(-50%);font-size:13px;font-weight:600;white-space:nowrap}
+@keyframes slide{from{left:30%}to{left:70%}}
+.chain{display:flex;flex-direction:column;gap:6px}
+.chain span{border:1.5px solid var(--rule);border-radius:8px;padding:6px 10px;font-size:14.5px;background:var(--bg);animation:lit 6s infinite;animation-delay:calc(var(--i)*1.1s)}
+.chain i{font-style:normal;color:var(--muted);font-size:13px;padding-left:12px}
+@keyframes lit{0%{border-color:var(--rule)}4%,16%{border-color:var(--geo);background:var(--geoT)}22%,100%{border-color:var(--rule);background:var(--bg)}}
+.machine{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto auto;align-items:center;gap:8px;font-size:14.5px}
+.inchip{border:1.5px dashed var(--muted);border-radius:8px;padding:8px 10px;text-align:center;transition:opacity .25s}
+.out{font-family:"JetBrains Mono",monospace;font-weight:600;color:var(--ok);border:2px solid var(--ok);border-radius:8px;padding:8px 10px}
+.out.pulse{animation:pop .5s}
+@keyframes pop{50%{transform:scale(1.15)}}
+.arr{color:var(--muted)}
+.lem{list-style:none;padding:0;margin:12px 0 0;font-size:13.5px}
+.lem li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;border-top:1px dotted var(--rule);padding:4px 0}
+.lem code{word-break:break-all}
+.lem em{font-style:normal;font-weight:600;white-space:nowrap}
+.lem.dead em{color:var(--zeta)}
+.lem.live em{color:var(--geo)}
+.fx{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font-size:15px}
+.fx .t{border:2px solid var(--zeta);color:var(--zeta);border-radius:8px;padding:5px 10px;background:var(--bg);font-weight:600}
+.paste{position:relative;height:120px}
+.paste .src{position:absolute;left:0;top:10px}
+.paste .slot{position:absolute;right:0;top:44px;width:11em;height:56px;border:2px dashed var(--geo);border-radius:10px;display:grid;place-items:center;font-weight:600}
+.paste .slot small{position:absolute;top:-22px;left:0;font-size:13px;color:var(--geo);font-weight:600}
+.paste .zero{color:var(--geo);font-family:"JetBrains Mono",monospace;font-size:20px;animation:zero 4.5s infinite}
+.paste .fly{position:absolute;top:10px;left:0;animation:fly 4.5s infinite ease-in-out}
+@keyframes fly{0%,15%{left:0;top:10px;opacity:0}20%{opacity:1}55%,92%{left:calc(100% - 10.6em);top:55px;opacity:1}100%{left:calc(100% - 10.6em);top:55px;opacity:0}}
+@keyframes zero{0%,45%{opacity:1}55%,100%{opacity:0}}
+.eqn{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:14.5px}
+.eqn .side{position:relative;border:2px solid var(--zeta);border-radius:8px;padding:8px 12px;background:var(--bg);min-width:12.5em;height:44px}
+.eqn .side span{position:absolute;inset:8px 12px;white-space:nowrap}
+.eqn .a1{color:var(--geo);animation:x1 5s infinite}
+.eqn .a2{color:var(--zeta);opacity:0;animation:x2 5s infinite}
+@keyframes x1{0%,30%{opacity:1}40%,100%{opacity:0}}
+@keyframes x2{0%,30%{opacity:0}40%,100%{opacity:1}}
+.stamp{font:700 15px Literata,serif;color:var(--zeta);border:2.5px solid var(--zeta);border-radius:6px;padding:4px 10px;transform:rotate(-6deg);opacity:0;animation:stamp 5s infinite}
+@keyframes stamp{0%,48%{opacity:0;transform:rotate(-6deg) scale(1.6)}55%,100%{opacity:1;transform:rotate(-6deg) scale(1)}}
+.sw2{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;font:15px Literata,serif;color:var(--ink);background:var(--bg);border:1.5px solid var(--rule);border-radius:10px;padding:10px 12px;min-height:52px;cursor:pointer;margin-bottom:8px}
+.sw2 .knob{flex:none;width:46px;height:26px;border-radius:13px;background:var(--muted);position:relative;transition:background .2s}
+.sw2 .knob::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .2s}
+.sw2[aria-pressed=true] .knob{background:var(--ink)}
+.sw2[aria-pressed=true] .knob::after{left:23px}
+.sw2 small{display:block;color:var(--muted);font-size:13px}
+.lamp{border-radius:10px;padding:12px 14px;font-weight:600;border:2px solid}
+.lamp.ok{color:var(--ok);border-color:var(--ok)}
+.lamp.bad{color:var(--zeta);border-color:var(--zeta);background:var(--zetaT)}
+.loop{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:14px;font-size:14.5px}
+.loop span{border:2px solid var(--zeta);border-radius:999px;padding:4px 12px;color:var(--zeta);font-weight:600;background:var(--bg)}
+footer{font-size:14.5px;color:var(--muted)}
+footer a{overflow-wrap:anywhere}
+@media(max-width:860px){.sub{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:680px){.fig{min-height:640px}}
+@media(max-width:600px){.machine{grid-template-columns:minmax(0,1fr) auto;row-gap:6px}.machine .arr{display:none}.paste .slot{width:9.5em}.sh{align-items:flex-start}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation:none!important;transition:none!important}.eqn .a2,.stamp{opacity:1}.eqn .a1,.paste .zero{opacity:0}.paste .fly{left:calc(100% - 10.6em);top:55px}.nl .dot{left:50%}}
+</style>
+</head>
+<body>
+
+<header class="band"><div class="wrap">
+<h1>Riemann proves Riemann</h1>
+<p class="deck">A step-by-step walk through <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33">J.&nbsp;L. Nielsen&#39;s critique</a> (25&nbsp;Nov&nbsp;2026) of <a class="ref" href="https://alpo.ge/remark.pdf">Alpöge&#39;s Lean proof</a> of the Riemann Hypothesis. Every step in the diagram is a section below, with the Lean source behind it.</p>
+<nav class="nav" aria-label="Sections"><a href="#picture">Diagram</a><a href="#summary">Summary</a><a href="#glossary">Glossary</a><a href="#claims">What the proof claims</a><a href="#actual">What the code does</a></nav>
+
+<div class="bphead" id="picture">
+ <div>
+  <h2>The machine, drawn twice</h2>
+  <div class="legend"><span><i class="sw" style="background:var(--geo)"></i>geometry side (should be independent)</span><span><i class="sw" style="background:var(--zeta)"></i>zeta side (the analytic formulas)</span></div>
+  <p class="hint">Click any box, arrow or number to jump to its section.</p>
+ </div>
+ <div class="seg" role="group" aria-label="Diagram mode"><button id="mClaim" aria-pressed="true">What the proof claims</button><button id="mAct" aria-pressed="false">What the code does</button></div>
+</div>
+<div class="fig" id="bp"><svg role="img" aria-label="Diagram of the proof's route; each part links to its section"></svg></div>
+<ol class="cap" id="cap"></ol>
+</div></header>
+
+<section class="band summary" id="summary"><div class="wrap">
+<h2>Summary</h2>
+<p>Alpöge <a class="ref" href="https://alpo.ge/remark.pdf">published</a> a program in <a class="ref" href="https://lean-lang.org/">Lean</a>, a language where a computer checks every step of a proof. The plan: <a class="cl g" href="#c1">build a geometric object and measure a number from it, its “height”<span class="bd c-g">1</span></a>, <a class="cl g" href="#c2">hand that number to a check<span class="bd c-g">2</span></a> <a class="cl z" href="#c3">against two limits that come from the zeta-function side<span class="bd c-z">3</span></a>. <a class="cl" href="#c4">If the measured number always fits, zeta can have no zeros off the critical line, which is exactly the Riemann Hypothesis (RH). The program ends there, and Lean accepts it.<span class="bd c-k">4</span></a></p>
+<p><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33">Nielsen says</a> the program never does the measuring: <a class="cl" href="#ax">the geometric object is empty, the check meant to confirm it answers “yes” to anything, and the height starts at zero<span class="bd c-d">✕</span></a>. Instead, <a class="cl z" href="#a1">the program takes a formula from the zeta side, pastes it into the height field, and confirms the height field matches the formula, which of course it does<span class="bd c-z">1</span></a>. <a class="cl z" href="#a2">That pasted number is what goes into the check<span class="bd c-z">2</span></a>, <a class="cl z" href="#a3">where it meets limits from the same zeta side<span class="bd c-z">3</span></a>. <a class="cl z" href="#a4">So the key comparison sets the zeta side against itself, and the whole proof rests on that copy: Riemann proves Riemann.<span class="bd c-k">4</span></a></p>
+</div></section>
+
+<section class="band" id="glossary"><div class="wrap">
+<details id="glossaryBox">
+<summary><h2>Glossary</h2><span class="gsub">Lean terms and the names used on this page</span></summary>
+<h3 class="glh">Lean basics</h3><dl class="gl"><div><dt><a class="ref" href="https://lean-lang.org/">Lean</a></dt><dd>A programming language for writing mathematical proofs that a computer checks step by step.</dd></div><div><dt>Lean accepts</dt><dd>Lean's kernel, its small checking core, found no step that fails to follow. It checks that the steps fit together, not what the names mean.</dd></div><div><dt><a class="ref" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/">Mathlib</a></dt><dd>Lean's standard library of mathematics. It holds the official statement <a class="src" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/NumberTheory/LSeries/RiemannZeta.lean#L185"><code>RiemannHypothesis</code></a> that the program proves.</dd></div><div><dt>RH</dt><dd>The Riemann Hypothesis: every non-trivial zero of the zeta function ζ has real part ½, so it lies on the critical line.</dd></div><div><dt>Dirichlet L-function</dt><dd>A family of functions that generalise ζ, one for each character χ. At modulus one the L-function is ζ itself. <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/CharacterBoxes/EveryCharacter.lean#L13"><code>EveryCharacter</code></a> says none of them has a zero with real part above ½.</dd></div><div><dt><code>rfl</code></dt><dd>“Equal by definition.” Proves an equation when both sides unfold to the same expression.</dd></div><div><dt><code>True</code>, <code>trivial</code></dt><dd><code>True</code> is the statement that always holds, and <code>trivial</code> is its proof. A check defined as <code>True</code> passes for any input.</dd></div><div><dt><code>sorry</code>, axiom</dt><dd>A <code>sorry</code> is a placeholder for a missing proof; an axiom is a statement accepted without proof. The code uses neither, beyond Lean's three standard axioms.</dd></div><div><dt>commit</dt><dd>A saved version of the code, named by a hash such as <code>712a6aef</code>. Every code link on this page points to that version.</dd></div></dl><h3 class="glh">Names used on this page</h3><dl class="gl"><div><dt>geometric object</dt><dd>What the proof should measure: a variety with sections, volumes and positivity properties. In the code: a “divisor datum”, of type <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/DataDIV.lean#L418"><code>DivX D</code></a>.</dd></div><div><dt>height <i>h</i>, height field</dt><dd>The number the proof should measure from the geometric object, one real number per word <code>u</code>. It is stored in the height field <code>div.h</code>.</dd></div><div><dt>zeta side</dt><dd>Everything built from the analytic formulas for ζ and the L-functions. The code calls it the “row side”.</dd></div><div><dt>zeta formula <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L25"><code>hExpl6</code></a></dt><dd>The zeta-side formula that the code writes into the height field.</dd></div><div><dt>the check (<a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128"><code>WordFacts</code></a>)</dt><dd>The condition that the height lies between a lower and an upper limit, for every word <code>u</code>.</dd></div><div><dt>lower and upper limit</dt><dd>Lower: a pairing height <i>P</i>, built from <code>Bk</code>, must be at most <i>h</i>. Upper: μ + <i>h</i> − Fo must be at most MAIN + error. Both are zeta-side.</dd></div><div><dt>geometry check</dt><dd>The test that the geometric object is real. <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L16"><code>geoOf</code></a> is a real one; <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L19"><code>anyGeometry</code></a> always returns <code>True</code>. <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotGeoClFalse.lean#L21"><code>GeoCl</code></a> wraps either.</dd></div><div><dt>certificate</dt><dd>The proof that a geometry check passed. With <code>anyGeometry</code> it is just <code>trivial</code>.</dd></div><div><dt><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean#L25"><code>setDiv</code></a></dt><dd>Rebuilds a geometric object with a new value in its height field.</dd></div><div><dt>measuring lemmas</dt><dd>Six lemmas written to get geometric facts out of the object, listed in section 1. None is ever used.</dd></div><div><dt>removal test</dt><dd><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=14">Nielsen&#39;s experiment</a>: take out one part and see whether the program still compiles.</dd></div></dl>
+</details>
+</div></section>
+
+<main class="band"><div class="wrap">
+
+<div class="part" id="claims"><h2>What the proof claims</h2><p>Sections 1 to 4 match the diagram in “What the proof claims” mode.</p></div>
+
+<article class="step" id="c1">
+ <div class="sh c-g"><span class="bd lg">1</span><div><p class="kick">What the proof claims · step 1</p><h3>Build a geometric object and measure its height h</h3></div></div>
+ <div class="sub">
+  <div>
+   <h4>The geometric object</h4>
+   <p>In the code the geometric object is a “divisor datum” <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/DataDIV.lean#L418"><code>X : DivX D</code></a>. Its geometric part should describe an actual variety: its function field, sections, volumes, positivity properties and surfaces.</p>
+   <p>A genuine test for this exists: <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L16"><code>geoOf</code></a>. It requires a natural number <code>c &gt; 0</code> tying <code>X</code> to a geometric family (<a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/LargeFor.lean#L78"><code>IsGeoOf</code></a>), and genuine surfaces (<a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/SecondChernDegreeVanishesTrueSurfaces.lean#L346"><code>HasTrueSurf</code></a>).</p>
+   <div class="mini"><div class="obj"><h4>X : DivX D, geometric part (intended)</h4>
+    <div class="row"><span>function field</span><span class="v q2">of a real variety</span></div>
+    <div class="row"><span>global sections</span><span class="v q2">a real subspace</span></div>
+    <div class="row"><span>volume, norms</span><span class="v q2">measured values</span></div>
+    <div class="row"><span>nef, big, …</span><span class="v q2">proved facts</span></div>
+    <div class="row"><span>lattice → sections</span><span class="v q2">a real map</span></div></div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean">…/AutomorphicMembership/OverIx.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L14-L17" title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean at commit 712a6aef">lines 14–17</a></span><button class="cp">Copy</button></div><pre><code>abbrev GeoP : Type 1 := ∀ D : D7, Formalism.L2.Pj.Core D → <mark class="g">DivX D</mark> → Prop
+
+def <mark class="g">geoOf</mark> (Q : ∀ D : D7, GlobalTheory.ShFam.KitClass D) : GeoP := fun D J X =&gt;
+  (∃ c : ℕ, 0 &lt; c ∧ GlobalTheory.ShFam.IsGeoOf (Q D) J c X) ∧ GlobalTheory.ShFam.Pad.HasTrueSurf X</code></pre></div>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4>The height</h4>
+   <p>Each geometric object carries a <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/DataArith.lean#L139"><code>DivData</code></a> record. Its field <code>h</code> is the height field: it holds the height, one real number for each word <code>u</code> (type <code>B.Word → ℝ</code>).</p>
+   <p>In the intended proof this number is <i>measured</i> from the geometry, resting on degree and Chern-number results. These lemmas exist for that job:</p>
+   <ul class="lem live"><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotLamAreShift.lean#L30"><code>geoOf_surf</code></a><em>surface data</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/SecondChernDegreeVanishesTrueSurfaces.lean#L355"><code>HasTrueSurf.secondChernDegree_vanishes_trueSurfaces</code></a><em>Chern degree</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/SecondChernDegreeVanishesTrueSurfaces.lean#L364"><code>HasTrueSurf.degCh2_eq_zero</code></a><em>same, per prime</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/GeoTiedP.lean#L136"><code>GeoTiedP.geoTied</code></a><em>tie to a family</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/GeoTiedP.lean#L140"><code>GeoTiedP.formsTieX</code></a><em>forms ↔ sections</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/Divisibility/PlaceRankTwoOne.lean#L349"><code>degree_value_of_determinant</code></a><em>degree</em></li></ul>
+   <div class="mini"><div class="measure"><div class="obj" style="padding:8px"><h4 style="margin:0">object</h4></div><div class="ruler" aria-hidden="true"></div><span class="pill big">h = ?</span></div><div class="lbl">Intended: the height is read off the geometric object.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean">…/IwasawaDecomposition/ExistsDivStageOfPk.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L91-L94" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean at commit 712a6aef">lines 91–94</a></span><button class="cp">Copy</button></div><pre><code>  let Dd : DivData B.LL B.Word :=
+    { RR := RR, Nu := Nu, Bk := bkOf (p.what₂ e W₀ n η hη) p.cR, <mark class="g">h := h</mark>,
+      HH := sFrame Nu h + RR.muMax, HH_ge := le_rfl, etaF := etaF, Dall := p.Dall, delP := p.delp,
+      delP_le_one := p.delp_le_one }</code></pre></div>
+   <p class="note">Here <code>h</code> is a parameter of <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L76"><code>exists_divStage_of_pk</code></a>, declared as <code>(h : B.Word → ℝ)</code> on <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L76">line 76 of the same file</a>. Section ✕ shows what the callers pass in.</p>
+  </div>
+ </div>
+</article>
+
+<article class="step" id="c2">
+ <div class="sh c-g"><span class="bd lg">2</span><div><p class="kick">What the proof claims · step 2</p><h3>Send the measured h to the check</h3></div></div>
+ <div class="sub">
+  <div>
+   <p>The check is called <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128"><code>WordFacts</code></a>. It must hold for every word <code>u</code>. The height enters it as <code>D.div.h u</code> (highlighted in blue), in two of its three clauses.</p>
+   <p>If <code>h</code> really is a measurement of the geometric object, this is where geometry meets analysis.</p>
+   <div class="mini"><div class="measure"><span class="pill big">h</span><div class="ruler" aria-hidden="true"></div><span class="box">WordFacts</span></div><div class="lbl">Intended: the measured height goes into the check.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean">…/Divisibility/RecBridge.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128-L133" title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean at commit 712a6aef">lines 128–133</a></span><button class="cp">Copy</button></div><pre><code>def WordFacts {D : D7} (L : SizeData₂ D) (C Cabs : ℝ) (u : D.what₂.Word) : Prop :=
+  (D.div.Nu u).L.map ((D.div.Bk u).restrictScalars (𝓞 D.what₂.LL)) ≤ D.div.cc ∧
+  (D.div.Bk u ≠ 0 → Formalism.HN.htMap (D.div.Nu u).b (D.div.Nu u).X D.div.RR.dualB D.div.RR.dualX (D.div.Bk u) ≤
+    <mark class="g">D.div.h u</mark>) ∧
+  D.div.RR.muDual + <mark class="g">D.div.h u</mark> - L.Fo ≤ L.MAIN u +
+    C * (D.host.TT.card : ℝ) * L.sc.a * L.La + C * (D.R.m : ℝ) * (L.B0 + L.Nc) * L.sc.x ^ (Cabs * L.sc.eps)</code></pre></div>
+  </div>
+ </div>
+</article>
+
+<article class="step z" id="c3">
+ <div class="sh c-z"><span class="bd lg">3</span><div><p class="kick">What the proof claims · step 3</p><h3>The zeta side supplies a lower and an upper limit</h3></div></div>
+ <div class="sub">
+  <div>
+   <p>The same <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128"><code>WordFacts</code></a> clauses, now looking at what surrounds <code>h</code> (highlighted in red). Everything else comes from the zeta side.</p>
+   <p><b>Lower limit:</b> a pairing height, <code>htMap … (D.div.Bk u)</code>, must be at most <code>h</code>. Call it <i>P</i>.<br><b>Upper limit:</b> <code>muDual + h − Fo</code> must be at most <code>MAIN u</code> plus an error term.</p>
+   <p>In short: <i>P</i> ≤ <i>h</i> and μ + <i>h</i> − Fo ≤ MAIN + error. The first clause of <code>WordFacts</code> is a lattice condition that doesn't involve <code>h</code>.</p>
+   <div class="mini"><div class="nl" aria-hidden="true"><div class="track"></div><div class="zone"></div><span class="lim" style="left:20%">lower limit<br>(zeta side)</span><span class="lim" style="left:80%">upper limit<br>(zeta side)</span><span class="dot">h</span></div><div class="lbl">Intended: an independently measured <span class="geo">h</span> lands between two <span class="zeta">zeta-side</span> limits.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean">…/Divisibility/RecBridge.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128-L133" title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean at commit 712a6aef">lines 128–133</a></span><button class="cp">Copy</button></div><pre><code>def WordFacts {D : D7} (L : SizeData₂ D) (C Cabs : ℝ) (u : D.what₂.Word) : Prop :=
+  (D.div.Nu u).L.map ((D.div.Bk u).restrictScalars (𝓞 D.what₂.LL)) ≤ D.div.cc ∧
+  (D.div.Bk u ≠ 0 → <mark class="z">Formalism.HN.htMap (D.div.Nu u).b (D.div.Nu u).X D.div.RR.dualB D.div.RR.dualX (D.div.Bk u)</mark> ≤
+    D.div.h u) ∧
+  <mark class="z">D.div.RR.muDual</mark> + D.div.h u - <mark class="z">L.Fo</mark> ≤ <mark class="z">L.MAIN u +</mark>
+    <mark class="z">C * (D.host.TT.card : ℝ) * L.sc.a * L.La + C * (D.R.m : ℝ) * (L.B0 + L.Nc) * L.sc.x ^ (Cabs * L.sc.eps)</mark></code></pre></div>
+  </div>
+ </div>
+</article>
+
+<article class="step" id="c4">
+ <div class="sh c-k"><span class="bd lg">4</span><div><p class="kick">What the proof claims · step 4</p><h3>If h always fits, zeta has no zeros off the line: RH</h3></div></div>
+ <div class="sub">
+  <div>
+   <p>If the check holds for every word, the code passes it, together with four other links, into <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/GlobalTheoremInputs.lean#L162"><code>LinkGLOBAL</code></a>. That yields <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/GlobalSchurBounds/TieGlobal.lean#L97"><code>ChainTied</code></a>, which is turned into a window inequality for each character. The conclusion is <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/CharacterBoxes/EveryCharacter.lean#L13"><code>EveryCharacter</code></a>: no Dirichlet L-function has a zero with real part above ½.</p>
+   <p><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/GammaFactorNonvanishing/CritLine.lean#L29"><code>rh_of_every</code></a> then takes the character of modulus one, whose L-function <i>is</i> ζ, and rewrites with <a class="src" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/NumberTheory/LSeries/DirichletContinuation.lean#L67"><code>LFunction_modOne_eq</code></a> to get the Riemann Hypothesis. <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Main.lean#L4"><code>Main.lean</code></a> states it with <a class="ref" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/">Mathlib</a>'s own <a class="src" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/NumberTheory/LSeries/RiemannZeta.lean#L185"><code>RiemannHypothesis</code></a>, and Lean accepts the file.</p>
+   <div class="mini"><div class="chain">
+    <span style="--i:0">h fits between the limits, for every word u</span><i>↓ LinkGLOBAL → ChainTied</i>
+    <span style="--i:1">no zeros with Re s &gt; ½, every character (EveryCharacter)</span><i>↓ modulus one: the L-function is ζ</i>
+    <span style="--i:2">RiemannHypothesis (Mathlib)</span><i>↓ Lean checks the file</i>
+    <span style="--i:3">✓ accepted</span></div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/SharpRestriction/GlobalTheoremInputs.lean">…/SharpRestriction/GlobalTheoremInputs.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/GlobalTheoremInputs.lean#L162-L164" title="src/Formalism/SharpRestriction/GlobalTheoremInputs.lean at commit 712a6aef">lines 162–164</a></span><button class="cp">Copy</button></div><pre><code>def LinkGLOBAL {eps : ℝ} (Fm : FamP eps) (Cabs CH C0 eD eL : ℝ) : Prop :=
+  ChosenE Fm C0 CH → GlobalTheoremInputs Fm Cabs CH C0 →
+    ∃ K cHH eK CL x0 : ℝ, ∀ x ≥ x0, x ∈ Fm.Win → ChainTied Fm eD eL K cHH eK CL x</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/GammaFactorNonvanishing/CritLine.lean">…/GammaFactorNonvanishing/CritLine.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/GammaFactorNonvanishing/CritLine.lean#L29-L32" title="src/Formalism/GammaFactorNonvanishing/CritLine.lean at commit 712a6aef">lines 29–32</a></span><button class="cp">Copy</button></div><pre><code>theorem Formalism.VW.rh_of_every (h : UpperTheory.EveryCharacter) : RiemannHypothesis :=
+  Formalism.VW.rh_of_right fun s hs hs1 =&gt; by
+    have := h 1 (1 : DirichletCharacter ℂ 1) s hs (Or.inr hs1)
+    rwa [<mark class="g">LFunction_modOne_eq</mark>] at this</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Supplements/Kernels/MainTheorems.lean">…/Kernels/MainTheorems.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Supplements/Kernels/MainTheorems.lean#L7-L9" title="src/Supplements/Kernels/MainTheorems.lean at commit 712a6aef">lines 7–9</a> · <span title="src/Main.lean">src/Main.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Main.lean#L4" title="src/Main.lean at commit 712a6aef">line 4</a></span><button class="cp">Copy</button></div><pre><code>theorem allChi : UpperTheory.EveryCharacter := UpperTheory.FinalTheorems.everyCharacter
+
+theorem rhOfAll : RiemannHypothesis := Formalism.VW.rh_of_every allChi
+
+theorem <mark class="g">riemannHypothesis : RiemannHypothesis</mark> := rhOfAll</code></pre></div>
+  </div>
+ </div>
+</article>
+
+<div class="part" id="actual"><h2>What the code does</h2><p>Sections ✕ and 1 to 4 match the diagram in “What the code does” mode. Watch the colours: the geometry side turns into the zeta side.</p></div>
+
+<article class="step z" id="ax">
+ <div class="sh c-d"><span class="bd lg">✕</span><div><p class="kick">What the code does · ✕</p><h3>Nothing is measured</h3></div></div>
+ <div class="sub">
+  <div>
+   <h4>The geometric object is empty</h4>
+   <p>The geometric object built for the proof is <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean#L829"><code>divXFl</code></a>, and its geometry is <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean#L241"><code>geoDegenerate</code></a>. Every field is a placeholder:</p>
+   <ul class="note" style="padding-left:20px;margin-top:0">
+    <li>the function field is just the base field <code>F</code>;</li>
+    <li>the sections are everything (<code>⊤</code>);</li>
+    <li>volumes and norms are 0;</li>
+    <li>positivity properties are simply <code>True</code>;</li>
+    <li>points and metrics are one-point types (<code>PUnit</code>).</li>
+   </ul>
+   <p>The map meant to tie the lattice to the geometry, <code>iMj</code>, is the zero map. The only real numbers inside are flag-variety degrees (<a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean#L221"><code>flagDegZ</code></a>, <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/DegreeFormula/FlagDegFormula.lean#L9"><code>dimFl</code></a>), with no variety behind them.</p>
+   <div class="mini"><div class="obj dead"><h4>X : DivX D, geometric part (actual)</h4>
+    <div class="row"><span>function field</span><span class="v bad">F (base field)</span></div>
+    <div class="row"><span>global sections</span><span class="v bad">⊤ (everything)</span></div>
+    <div class="row"><span>volume, norms</span><span class="v bad">0</span></div>
+    <div class="row"><span>nef, big, …</span><span class="v bad">True</span></div>
+    <div class="row"><span>lattice → sections</span><span class="v bad">zero map</span></div></div><div class="lbl">Same rows as section 1, filled the way the code fills them.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean">…/LatticeGeometry/Inhabited.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean#L241-L283" title="src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean at commit 712a6aef">lines 241–283</a></span><button class="cp">Copy</button></div><pre><code>@[reducible] def geoDegenerate (F : Type) [Field F] [NumberField F] [StarRing F] (Tau : Type) [Fintype Tau] : DV.Geo F where
+  ⋯
+  Fn := fun _ =&gt; <mark class="z">F</mark>
+  ⋯
+  Eff := fun _ _ =&gt; <mark class="z">True</mark>
+  ⋯
+  H0 := fun _ _ =&gt; <mark class="z">⊤</mark>
+  ⋯
+  inter := fun N v =&gt; if h : 0 &lt; Formalism.DegreeFormula.dimFl Tau N then flagDegZ Tau N (v ⟨0, h⟩) else flagDegZ Tau N 0
+  nef := fun _ _ =&gt; <mark class="z">True</mark>
+  big := fun _ _ =&gt; <mark class="z">True</mark>
+  ⋯
+  pts := fun _ _ =&gt; <mark class="z">PUnit</mark>
+  ⋯
+  vol := fun _ _ =&gt; <mark class="z">0</mark>
+  ⋯
+  pn := fun _ _ _ _ _ _ =&gt; <mark class="z">0</mark></code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean">…/LatticeGeometry/Inhabited.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean#L829-L861" title="src/Formalism/LocalToGlobal/LatticeGeometry/Inhabited.lean at commit 712a6aef">lines 829–861</a></span><button class="cp">Copy</button></div><pre><code>def divXFl : DivX D :=
+  { X0 with
+    geo := <mark class="z">geoDegenerate</mark> D.what₂.LL D.what₂.Tau
+    ⋯
+    degHH := fun _ _ _ =&gt; <mark class="z">0</mark>
+    ⋯
+    iMj := fun j _ =&gt; <mark class="z">(0 : (X0.MjH j).V →ₗ[D.what₂.LL] D.what₂.LL)</mark>
+    iMj_mem := fun _ _ _ =&gt; Submodule.mem_top }</code></pre></div>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4>The check says True to anything</h4>
+   <p>The proof doesn't use the real geometry check <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L16"><code>geoOf</code></a> from section 1. It uses <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L19"><code>anyGeometry</code></a>, which ignores its three inputs and returns <code>True</code>. The wrapper <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotGeoClFalse.lean#L21"><code>GeoCl</code></a> accepts any proof of that, so the certificate is the single word <code>trivial</code>. <code>anyGeometry</code> appears on 118 lines across 24 files.</p>
+   <p><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean#L211"><code>divEx_of_ox</code></a> takes three hypotheses named after published results and discards them (<code>fun _ _ _</code>). On the live route, <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/TopPlug.lean#L12"><code>zero_free_all_of_green_v_win</code></a> fills two inputs with <code>trivial</code>. Its third input, <code>h</code>, comes from <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean#L44"><code>nonempty_hyps_definite_side_of_closed_bound</code></a>, which passes <code>geoCl anyGeometry</code>.</p>
+   <p><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=4">Nielsen&#39;s test</a>: any filler keeps this compiling. Only a check that is always <code>False</code> would stop it.</p>
+   <div class="mini"><div class="machine"><div class="inchip" id="chkIn">a real surface</div><span class="arr">→</span><div class="box">anyGeometry</div><span class="arr">→</span><div class="out" id="chkOut">True</div></div><div class="lbl">Whatever goes in, the answer is True.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean">…/AutomorphicMembership/OverIx.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean#L19" title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/OverIx.lean at commit 712a6aef">line 19</a> · <span title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotGeoClFalse.lean">…/AutomorphicMembership/NotGeoClFalse.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotGeoClFalse.lean#L21-L24" title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotGeoClFalse.lean at commit 712a6aef">lines 21–24</a></span><button class="cp">Copy</button></div><pre><code>def <mark class="z">anyGeometry</mark> : GeoP := fun _ _ _ =&gt; <mark class="z">True</mark>
+
+inductive GeoCl (Γ : GeoP) : ∀ D : D7, Formalism.L2.Pj.Core D → DivX D → Prop
+  | base {D : D7} {J : Formalism.L2.Pj.Core D} {X : DivX D} : Γ D J X → GeoCl Γ D J X
+  | step {D : D7} (N : ∀ u, Submodule (𝓞 D.what₂.LL) (D.div.Nu u).V) (h : D.what₂.Word → ℝ)
+      {J : Formalism.L2.Pj.Core D} {X : DivX D} : GeoCl Γ D J X → GeoCl Γ (setDiv D N h) (coreS N h J) (divTr N h X)</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean">…/IwasawaDecomposition/TupPinsOfMuIsW.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean#L204-L213" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean at commit 712a6aef">lines 204–213</a></span><button class="cp">Copy</button></div><pre><code>theorem divEx_prov (𝒮 : Slots) (hOx : 𝒮.Ox = OX <mark class="z">anyGeometry</mark>) : DivEx 𝒮 :=
+  StepW.of_all fun _ _ _ _ w _ _ hpin Z l =&gt;
+    let ⟨Y, h1, h2, h3, h4⟩ := exists_divT w hpin.some Z l
+    ⟨Y, h1, h2, h3, fun O t hX hp ht =&gt; by
+      rw [hOx]
+      exact ⟨⟨<mark class="z">trivial</mark>, lamAre_heq hp ht (hX ▸ h4)⟩⟩⟩
+
+theorem divEx_of_ox : GlobalTheory.NT.RayField → GlobalTheory.Published.PrincipalIdealSt → GlobalTheory.Published.CMCurveGoodOutsidePrimeSt → ∀ 𝒮 : Slots,
+    𝒮.Ox = OX anyGeometry → DivEx 𝒮 :=
+  fun <mark class="z">_ _ _</mark> 𝒮 hOx =&gt; divEx_prov 𝒮 hOx</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/TopPlug.lean">…/ThirdPlaceSeries/TopPlug.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/TopPlug.lean#L12-L15" title="src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/TopPlug.lean at commit 712a6aef">lines 12–15</a> · <span title="src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean">…/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean#L44" title="src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean at commit 712a6aef">line 44</a>, <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean#L67" title="src/Development/AutomorphicArithmetic/ThetaCorrespondence/ThetaPairLifts/ThirdPlaceSeries/SiegelEisensteinSecondTermHypotheses.lean at commit 712a6aef">line 67</a></span><button class="cp">Copy</button></div><pre><code>theorem UpperTheory.Top.zero_free_all_of_green_v_win (hG : GlobalTheory.GLq.Green) (hV : UpperTheory.Top.VWin)
+    (h : Nonempty (_root_.GlobalTheory.Fc.HypsAlt (fun 𝒞 =&gt; Closed 𝒞 fun Fm _ =&gt; LinkN Fm) _root_.GlobalTheory.Fc.DefiniteSideCondition)) : Formalism.HC.ZeroFreeAll :=
+  h.elim fun h =&gt; UpperTheory.Top.zeroFreeAll_of_topG (la := 3 / 2) (by norm_num)
+    (_root_.GlobalTheory.Fc.forall_goal_of_shape_of_hyps _ _ _ _ (_root_.UpperTheory.Top.shape_closed_link_n_of_green hG) <mark class="z">trivial trivial</mark> <mark class="z">h</mark>) fun ψ =&gt; UpperTheory.Top.supplyChi ψ (hV ψ)
+
+theorem nonempty_hyps_definite_side_of_closed_bound : ⋯ := by
+  ⋯
+    SExt.none (<mark class="z">geoCl anyGeometry</mark>) (fun _ _ _ _ _ _ _ _ _ _ _ _ _ x =&gt; ⟨x.1.1.1⟩) hOpenA</code></pre></div>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4>The height starts at 0, and the measuring lemmas are never called</h4>
+   <p>When the families are first built, the height argument is zero: <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L76"><code>exists_divStage_of_pk</code></a> receives <code>(fun _ =&gt; 0)</code> as its <code>h</code>. Two other constructors, <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/ExistsDivStage.lean#L334"><code>DivModel.exists_divStage</code></a> (shown on the right) and <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/LatticeEmbeddingMemUnitGroup.lean#L282"><code>DivInhab.exists_divStage</code></a>, write <code>h := fun _ =&gt; 0</code> directly. Section 1 replaces this zero, but not with a measurement.</p>
+   <p>Each of the six measuring lemmas from section 1 appears exactly once in the 175,188 files: at its own definition. Nothing calls them.</p>
+   <p>One rule, <code>degHH_def</code>, is meant to fix a degree from a section's norm. Because norms are 0 here, it only applies if 0 = <i>r</i>² with <i>r</i> &gt; 0, which never happens. It holds automatically and constrains nothing.</p>
+   <div class="mini"><span class="pill big">h = 0</span>
+    <ul class="lem dead"><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/NotLamAreShift.lean#L30"><code>geoOf_surf</code></a><em>never called</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/SecondChernDegreeVanishesTrueSurfaces.lean#L355"><code>…secondChernDegree_vanishes_trueSurfaces</code></a><em>never called</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/SecondChernDegreeVanishesTrueSurfaces.lean#L364"><code>HasTrueSurf.degCh2_eq_zero</code></a><em>never called</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/GeoTiedP.lean#L136"><code>GeoTiedP.geoTied</code></a><em>never called</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/LatticeGeometry/GeoTiedP.lean#L140"><code>GeoTiedP.formsTieX</code></a><em>never called</em></li><li><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/Divisibility/PlaceRankTwoOne.lean#L349"><code>degree_value_of_determinant</code></a><em>never called</em></li></ul></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/StartStateUntwistedEmptyLocal.lean">…/IwasawaDecomposition/StartStateUntwistedEmptyLocal.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/StartStateUntwistedEmptyLocal.lean#L54-L55" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/StartStateUntwistedEmptyLocal.lean at commit 712a6aef">lines 54–55</a></span><button class="cp">Copy</button></div><pre><code>  obtain ⟨V, hV, -, -, hη, -, hB⟩ := exists_divStage_of_pk B w.C (Gc B w.px) P.q.p P.q.e P.q.W₀ P.q.n (fun _ _ =&gt; 0)
+    (fun _ _ =&gt; le_rfl) (frames_unit P.q.t) (fun u =&gt; ((w.C.fm u).lat 0).L) <mark class="z">(fun _ =&gt; 0)</mark> (6 * K.s.x ^ (-K.C.P.CF))
+<span class="cm">-- argument order (ExistsDivStageOfPk.lean line 77): B C G p e W₀ n η hη hXo Ln h etaF</span>
+<span class="cm">-- so (fun _ _ =&gt; 0) is η, a weight; the highlighted (fun _ =&gt; 0) is the height h</span></code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/ExistsDivStage.lean">…/AutomorphicMembership/ExistsDivStage.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/ExistsDivStage.lean#L347-L348" title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/ExistsDivStage.lean at commit 712a6aef">lines 347–348</a></span><button class="cp">Copy</button></div><pre><code>                     Bk := fun _ =&gt; 0
+                     <mark class="z">h := fun _ =&gt; 0</mark></code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/SharpRestriction/Divisibility/PlaceRankTwoOne.lean">…/Divisibility/PlaceRankTwoOne.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/SharpRestriction/Divisibility/PlaceRankTwoOne.lean#L142-L146" title="src/Formalism/SharpRestriction/Divisibility/PlaceRankTwoOne.lean at commit 712a6aef">lines 142–146</a></span><button class="cp">Copy</button></div><pre><code>  degHH_def : ∀ j, 1 ≤ j → j ≤ D.R.m → ∀ c τ (s : X.geo.Fn (X.Yv j c)), IsNV X j c τ s →
+    ∀ (r : (D.what₂.LL →+* ℂ) → ℝ) (ρ : D.what₂.places.Pl → ℝ), (∀ σ, <mark class="z">0 &lt; r σ</mark>) →
+      (∀ σ y, <mark class="z">X.geo.pn</mark> (X.Yv j c) σ _ (metH j c τ σ) (X.geo.cx (X.Yv j c) σ s) y = <mark class="z">r σ ^ 2</mark>) →
+      (∀ w y, vF j c τ w s y = ρ w) → (Function.support ρ).Finite →
+      X.degHH j c τ = degLine D r ρ</code></pre></div>
+   <p class="note">The two grey lines starting <code>--</code> are added explanations, not source.</p>
+  </div>
+ </div>
+</article>
+
+<article class="step z" id="a1">
+ <div class="sh c-z"><span class="bd lg">1</span><div><p class="kick">What the code does · step 1</p><h3>The zeta formula is pasted into h</h3></div></div>
+ <div class="sub">
+  <div>
+   <h4>The zeta formula</h4>
+   <p>The number that ends up in the height field is <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L25"><code>hExpl6</code></a>. It is built entirely from zeta-side quantities: <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/DataDIVDefs.lean#L83"><code>SZbP</code></a>, kernel-place mean bounds, <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L16"><code>L6lo</code></a> terms, and the log of <code>kapR</code>.</p>
+   <p>The only thing it reads from the geometric object is <code>kapR</code>, and that is itself a copy of the zeta-side constant <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/DataKap.lean#L225"><code>kapSharp</code></a>. The object's lattices <code>MjH</code> are copies too (<a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/MapSeqIndAll.lean#L134"><code>mjLat R F j</code></a>, the zeta-side lattice). That is why the conditions saying they “match the zeta side” are proved by <code>rfl</code>.</p>
+   <div class="mini"><div class="fx"><span class="t">SZbP</span>+<span class="t">∑ kernel-place means</span>−<span class="t">∑ L6lo</span>−<span class="t">log kapR</span></div><div class="lbl">Every ingredient of hExpl6 is zeta-side; even kapR is a copied constant.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean">…/LocalRingCardinality/KernelPlaceMeanBound.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L25-L27" title="src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean at commit 712a6aef">lines 25–27</a></span><button class="cp">Copy</button></div><pre><code>def <mark class="z">hExpl6</mark> (D : D7) (L : SizeData₂ D) (X : DivX D) (C : ℝ) (u : D.what₂.Word) : ℝ :=
+  <mark class="z">SZbP D L C u</mark> + (∑ j ∈ SizeData₂.lifts D, <mark class="z">kernelPlaceMeanBound D L C u j</mark>) - (∑ j ∈ SizeData₂.lifts D, <mark class="z">L6lo D L C j</mark>) -
+    meanE D (fun e =&gt; Real.log (<mark class="z">X.kapR e</mark>))</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean">…/IwasawaDecomposition/TupPinsOfMuIsW.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean#L84" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean at commit 712a6aef">line 84</a>, <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean#L114" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/TupPinsOfMuIsW.lean at commit 712a6aef">line 114</a> · <span title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/MapSeqIndAll.lean">…/AutomorphicMembership/MapSeqIndAll.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/MapSeqIndAll.lean#L137" title="src/Development/AbelianVarietyTheory/Definitions/AutomorphicMembership/MapSeqIndAll.lean at commit 712a6aef">line 137</a></span><button class="cp">Copy</button></div><pre><code>  MjH := mjH Z
+  kapR := fun _ =&gt; <mark class="z">kapSharp D</mark>
+
+def mjH (_Z : ReadL R F X0 Y) (j : ℕ) : HLat D.what₂.LL := <mark class="z">mjLat R F j</mark></code></pre></div>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4>The paste</h4>
+   <p><code>ht</code> is defined as the zeta formula. <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean#L25"><code>setDiv</code></a> rebuilds the geometric object with its height field replaced: <code>h := h</code>. <code>pt</code> calls <code>setDiv</code> with <code>p.ht</code>. The height field, meant for an independent measurement, now holds the zeta formula the check will compare against.</p>
+   <div class="mini"><div class="paste" aria-hidden="true"><span class="src pill z">hExpl6 (zeta)</span><span class="fly pill z">hExpl6 (zeta)</span><div class="slot"><small>div.h (height field)</small><span class="zero">0</span></div></div><div class="lbl">The zeta formula is pasted over the zero in the height field.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean">…/GlobalTwisting/SetUnipotentTranslate.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean#L25-L30" title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean at commit 712a6aef">lines 25–30</a></span><button class="cp">Copy</button></div><pre><code>@[reducible] def setDiv (D : D7) (N : ∀ u, Submodule (𝓞 D.what₂.LL) (D.div.Nu u).V) (h : D.what₂.Word → ℝ) : D7 :=
+  { D with
+    div := { D.div with
+      Nu := fun u =&gt; { D.div.Nu u with L := N u }
+      <mark class="z">h := h</mark>
+      HH := max 1 (sFrame (fun u =&gt; { D.div.Nu u with L := N u }) h + D.div.RR.muMax)</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean">…/GlobalTwisting/SetUnipotentTranslate.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean#L379-L382" title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean at commit 712a6aef">lines 379–382</a></span><button class="cp">Copy</button></div><pre><code>def ht : D.what₂.Word → ℝ := <mark class="z">DV.hExpl6 D p.L Y.X C.Csz</mark>
+
+def pt : Pt C where
+  D := <mark class="z">setDiv D (nPrime p.L) p.ht</mark></code></pre></div>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4>The self-check</h4>
+   <p>The code must now prove “height = formula”. The formula was just written into the height, so Lean unfolds the left side, finds exactly the right side, and accepts <code>rfl</code> (“equal by definition”).</p>
+   <p><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=9">Nielsen checks</a> the four places that build this data: two use <code>rfl</code> and two copy the equation from an earlier family. None derives the height from geometry.</p>
+   <div class="mini"><div class="eqn" aria-hidden="true"><div class="side"><span class="a1">div.h u</span><span class="a2">hExpl6 … u</span></div><span>=</span><div class="side"><span style="color:var(--zeta)">hExpl6 … u</span></div><span class="stamp">rfl</span></div><div class="lbl">Unfold the left side and it is literally the right side.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean">…/GlobalTwisting/SetUnipotentTranslate.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean#L394-L400" title="src/Development/AbelianVarietyTheory/Definitions/GlobalTwisting/SetUnipotentTranslate.lean at commit 712a6aef">lines 394–400</a></span><button class="cp">Copy</button></div><pre><code>  xa :=
+    { ties := { Y.ties with }
+      X := divTr (nPrime p.L) p.ht Y.X
+      nuDef := p.nuDef
+      nprimeDef := fun _ =&gt; rfl
+      rrDef := Y.rrDef
+      <mark class="z">h_eq := fun _ =&gt; rfl</mark></code></pre></div>
+  </div>
+ </div>
+</article>
+
+<article class="step z" id="a2">
+ <div class="sh c-z"><span class="bd lg">2</span><div><p class="kick">What the code does · step 2</p><h3>The pasted h goes to the check</h3></div></div>
+ <div class="sub">
+  <div>
+   <p>The equation from section 1 is read back as <code>hhx</code>: “the height equals <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L25"><code>hExpl6</code></a>”.</p>
+   <p><a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L320"><code>slope_bound_of_word_facts</code></a> takes the check <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L128"><code>WordFacts</code></a>, which bounds <code>D.div.h u</code>, and turns it into the bound it needs on <code>hExpl6</code> with <code>rw [← hh u]</code>. The same move happens in <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L327"><code>linkDIV_at_words</code></a>.</p>
+   <p>The only thing the “height” contributes to the check is the pasted zeta formula.</p>
+   <div class="mini"><div class="measure"><span class="pill z big">h = hExpl6</span><div class="ruler z" aria-hidden="true"></div><span class="box">WordFacts</span></div><div class="lbl">Same picture as claim 2, but what goes in is the zeta formula.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean">…/Divisibility/RecBridge.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L565" title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean at commit 712a6aef">line 565</a>, <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L687" title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean at commit 712a6aef">line 687</a></span><button class="cp">Copy</button></div><pre><code>  have hhx : ∀ u, (Fm.D x i).div.h u = <mark class="z">hExpl6 (Fm.D x i) (Fm.L x i) (Fm.X x i) Fm.Csz u</mark> := Fm.h_eq x hx1 i</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean">…/Divisibility/RecBridge.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean#L320-L325" title="src/Formalism/LocalToGlobal/Divisibility/RecBridge.lean at commit 712a6aef">lines 320–325</a></span><button class="cp">Copy</button></div><pre><code>theorem slope_bound_of_word_facts (L : SizeData₂ D) (Z : DivX D) (N : NChoice D) (T : ThData D) (Csz C Cabs : ℝ)
+    (hh : ∀ u, D.div.h u = hExpl6 D L Z Csz u) (hW : ∀ u, WordFacts L C Cabs u) (h5 : Compl3 L Z Csz C) :
+    Formalism.MainNotions.LocalQuadraticParts.Conclusion1 D L Z N T Csz C Cabs := by
+  refine ⟨fun u =&gt; (hW u).1, fun u hu =&gt; ?_, fun _ u =&gt; ?_, h5⟩
+  · <mark class="z">rw [← hh u]</mark>; exact (hW u).2.1 hu
+  · <mark class="z">rw [← hh u]</mark>; exact (hW u).2.2</code></pre></div>
+  </div>
+ </div>
+</article>
+
+<article class="step z" id="a3">
+ <div class="sh c-z"><span class="bd lg">3</span><div><p class="kick">What the code does · step 3</p><h3>The zeta side supplies the limits</h3></div></div>
+ <div class="sub">
+  <div>
+   <p>The limits are the same as in claim 3, and they really are zeta-side. The lower limit is built from <code>Bk</code>, set to <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L33"><code>bkOf …</code></a>, the zeta side's own period pairing (or <code>0</code>, which switches the clause off).</p>
+   <p><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=10">According to Nielsen</a>, the clauses are proved by <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/ConstantGeTwentyEight.lean#L184"><code>divClausesR_of</code></a> from about 40 zeta-side matrix estimates in <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/ConstantGeTwentyEight.lean#L105"><code>DivInputsR</code></a>: operator norms, covolumes, valuations. None of them opens the geometric certificate.</p>
+   <div class="mini"><div class="nl" aria-hidden="true"><div class="track"></div><div class="zone"></div><span class="lim" style="left:20%">lower limit<br>(zeta side)</span><span class="lim" style="left:80%">upper limit<br>(zeta side)</span><span class="dot z">h</span></div><div class="lbl">The limits are zeta-side, as claimed; what changed is the dot.</div></div>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean">…/IwasawaDecomposition/ExistsDivStageOfPk.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean#L92" title="src/Development/AbelianVarietyTheory/Proofs/IwasawaDecomposition/ExistsDivStageOfPk.lean at commit 712a6aef">line 92</a></span><button class="cp">Copy</button></div><pre><code>    { RR := RR, Nu := Nu, <mark class="z">Bk := bkOf (p.what₂ e W₀ n η hη) p.cR</mark>, h := h,</code></pre></div>
+   <div class="code"><div class="ch"><span><b class="ok">source</b><span title="src/Formalism/LocalToGlobal/Divisibility/ConstantGeTwentyEight.lean">…/Divisibility/ConstantGeTwentyEight.lean</span> · <a href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalToGlobal/Divisibility/ConstantGeTwentyEight.lean#L184" title="src/Formalism/LocalToGlobal/Divisibility/ConstantGeTwentyEight.lean at commit 712a6aef">line 184</a></span><button class="cp">Copy</button></div><pre><code>theorem <mark class="z">divClausesR_of</mark> [IsTotallyComplex K] {Pl : Type} [Fintype Pl] [DecidableEq Pl] (wf0 : Df0.WF) (wf1 : Df1.WF)
+  ⋯</code></pre></div>
+   <p class="note">The count of “about 40 estimates” is <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=10">Nielsen&#39;s</a>; it was not recounted here.</p>
+  </div>
+ </div>
+</article>
+
+<article class="step z" id="a4">
+ <div class="sh c-k"><span class="bd lg">4</span><div><p class="kick">What the code does · step 4</p><h3>Zeta formula vs zeta limits: Riemann proves Riemann</h3></div></div>
+ <div class="sub">
+  <div>
+   <h4>The comparison</h4>
+   <p>Put sections 1–3 together. With <i>h</i> = <a class="src" href="https://github.com/leanprover-community/riemann-hypothesis/blob/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9/src/Formalism/LocalRingCardinality/KernelPlaceMeanBound.lean#L25"><code>hExpl6</code></a>, the check reads <i>P</i> ≤ hExpl6 and μ + hExpl6 − Fo ≤ MAIN + error. Cancel the middle term and what is left is μ + <i>P</i> − Fo ≤ MAIN + error: zeta-side quantities on both sides. Nothing independent is squeezed.</p>
+   <p>This then flows through the same route as claim 4 to <a class="src" href="https://github.com/leanprover-community/mathlib4/blob/0df444a360eaa60ab8c11dca51a86af692955474/Mathlib/NumberTheory/LSeries/RiemannZeta.lean#L185"><code>RiemannHypothesis</code></a>. In <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=16">Nielsen&#39;s words</a>, the formal comparison is “Riemann to Riemann”.</p>
+   <div class="mini"><div class="nl" aria-hidden="true"><div class="track"></div><div class="zone"></div><span class="lim" style="left:20%">lower limit<br>(zeta side)</span><span class="lim" style="left:80%">upper limit<br>(zeta side)</span><span class="dot z">h</span><span class="dl zeta">h = hExpl6 (zeta side)</span></div><div class="lbl">Claim 3's picture again; every part is now zeta-side.</div></div>
+  </div>
+  <div>
+   <h4><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=14">Nielsen&#39;s removal test</a></h4>
+   <p>Take out the fake geometry check and the program still compiles, so it was doing nothing. Take out the pasted height and the program breaks, and nothing else supplies one. Try it:</p>
+   <div class="mini">
+    <button class="sw2" id="tGeo" aria-pressed="true"><span>Geometry check<small>anyGeometry, certified by trivial (section ✕)</small></span><span class="knob"></span></button>
+    <button class="sw2" id="tPaste" aria-pressed="true"><span>Pasted height<small>setDiv … hExpl6, h_eq := rfl (section 1)</small></span><span class="knob"></span></button>
+    <div class="lamp ok" id="lamp" aria-live="polite">Compiles. The proof goes through.</div>
+    <div class="loop"><span>zeta formula</span>→<span>pasted into h</span>→<span>compared with zeta limits</span>→<span>“RH”</span></div>
+   </div>
+   <p class="note" style="margin-top:10px">These outcomes are <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=14">Nielsen&#39;s reported results</a>; they were not rebuilt here.</p>
+  </div>
+ </div>
+ <div class="sub">
+  <div>
+   <h4><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=16">Nielsen&#39;s toy version</a></h4>
+   <p>A 30-line program with the same pattern: a geometry check that is always true, a height set to the target number, and an equation closed by <code>rfl</code>. Lean accepts it with no extra axioms.</p>
+   <p>Note the highlighted <code>hRH</code>: the toy theorem takes RH as an input and hands it back. It shows the copy pattern; it is not a fake proof of RH built from nothing.</p>
+  </div>
+  <div>
+   <div class="code"><div class="ch"><span><b class="pp">from the paper</b><a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=16">Nielsen, Appendix A, pages 16–17</a> (not in the repository)</span><button class="cp">Copy</button></div><pre><code>import Mathlib.NumberTheory.LSeries.RiemannZeta
+
+def anyGeometry : ∀ (_ : Nat), Prop := fun _ =&gt; <mark class="z">True</mark>
+def targetFormula : Nat := 42
+
+structure DegenerateModel where
+  vol : Nat := 0
+  height : Nat
+  h_eq : height = targetFormula
+
+structure Bundle where
+  geoOk : anyGeometry 0
+  model : DegenerateModel
+
+def buildBundle : Bundle :=
+  { geoOk := <mark class="z">trivial</mark>
+    model :=
+      { vol := 0
+        <mark class="z">height := 42</mark>          -- &lt;-- the assignment (chop this out)
+        <mark class="z">h_eq := rfl</mark> } }       -- &lt;-- closes by definition
+
+private lemma valid_bundle_of_manufactured (b : Bundle) :
+    anyGeometry 0 ∧ b.model.height = targetFormula :=
+  ⟨b.geoOk, b.model.h_eq⟩
+
+theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
+    (∃ b : Bundle, anyGeometry 0 ∧ b.model.height = targetFormula) ∧ RiemannHypothesis := by
+  let b := buildBundle
+  exact ⟨⟨b, valid_bundle_of_manufactured b⟩, hRH⟩
+
+#print axioms claimed_rh</code></pre></div>
+   
+  </div>
+ </div>
+</article>
+
+</div></main>
+
+<footer class="band" style="border-top:1px solid var(--rule)"><div class="wrap">
+<p>Source: J. L. Nielsen, <i>The Invalidity of Alpöge's Proof of the Riemann Hypothesis</i>, 25 Nov 2026, <a href="https://philarchive.org/archive/NIEIOT-2v33">philarchive.org/archive/NIEIOT-2v33</a>.</p>
+<p>Lean code on this page is copied from commit <a href="https://github.com/leanprover-community/riemann-hypothesis/tree/712a6aef8fe265fb6f3a5fa1f3101a017aec8fe9">712a6aef of leanprover-community/riemann-hypothesis</a>, the version <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33#page=16">Nielsen cites</a> (under the repository's earlier name, Deicyde/riemann-hypothesis). Each “source” label links to the exact file and lines at that commit; <code>⋯</code> marks lines left out.</p>
+</div></footer>
+
+<script>
+{
+const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const fig=document.getElementById('bp'),svg=fig.querySelector('svg'),capEl=document.getElementById('cap');
+let mode='claim';
+const NODES={
+ claim:{G:['Geometric object','a real variety','g','c1'],H:['height h','measured from it','g','c1'],C:['h between','the limits?','k','c2'],R:['RH accepted','by Lean','k','c4'],Z:['Zeta side','analytic formulas','z','c3']},
+ act:{G:['Geometric object','empty shell','dead','ax'],H:['height h','pasted zeta formula','z','a1'],C:['zeta formula vs','zeta limits','z','a4'],R:['RH accepted','by Lean','k','a4'],Z:['Zeta side','analytic formulas','z','a3']}
+};
+const EDGES={
+ claim:[['G','H','g','1','c1'],['H','C','g','2','c2'],['Z','C','z','3','c3'],['C','R','k','4','c4']],
+ act:[['G','H','dead','✕','ax'],['Z','H','z','1','a1'],['H','C','z','2','a2'],['Z','C','z','3','a3'],['C','R','k','4','a4']]
+};
+const CAPS={
+ claim:[['1','g','Build a geometric object and measure its height h','The height should be read off a real variety.','c1'],['2','g','Send the measured h to the check','h enters the check WordFacts.','c2'],['3','z','The zeta side supplies a lower and an upper limit','P ≤ h and μ + h − Fo ≤ MAIN + error.','c3'],['4','k','If h always fits, zeta has no zeros off the line: RH','Two independent sources meet at the check.','c4']],
+ act:[['✕','dead','Nothing is measured','The object is empty, its check says True to anything, and h starts at 0.','ax'],['1','z','The zeta formula is pasted into h','hExpl6 overwrites the height; “h = formula” is proved by rfl.','a1'],['2','z','The pasted h goes to the check','The check sees the zeta formula, not a measurement.','a2'],['3','z','The zeta side supplies the limits','Same limits as claimed, zeta-side.','a3'],['4','k','Zeta formula vs zeta limits: Riemann proves Riemann','One source on both sides of the check.','a4']]
+};
+const col=k=>k==='g'?'var(--geo)':k==='z'?'var(--zeta)':k==='dead'?'var(--muted)':'var(--ink)';
+const tint=k=>k==='g'?'var(--geoT)':k==='z'?'var(--zetaT)':'var(--bg)';
+const clip=(a,b,hw,hh)=>{const dx=b[0]-a[0],dy=b[1]-a[1];const t=Math.min(dx?hw/Math.abs(dx):1e9,dy?hh/Math.abs(dy):1e9);return[a[0]+dx*t,a[1]+dy*t];};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const title=id=>{const c=CAPS[mode].find(x=>x[4]===id);return c?esc('Go to '+c[0]+': '+c[2]):'';};
+const draw=()=>{
+ const W=fig.clientWidth,H=fig.clientHeight,v=W<680;
+ let nw,nh,P;
+ if(!v){nw=Math.min(180,W*.19);nh=68;const yT=H*.34,yB=H*.8;P={G:[W*.12,yT],H:[W*.37,yT],C:[W*.62,yT],R:[W*.88,yT],Z:[W*.495,yB]};}
+ else{nw=Math.min(200,W*.44);nh=62;const x1=W*.29,x2=W*.75;P={G:[x1,H*.12],H:[x1,H*.37],C:[x1,H*.63],R:[x1,H*.89],Z:[x2,H*.5]};}
+ const N=NODES[mode],E=EDGES[mode];
+ let s='<defs>'+['g','z','k','dead'].map(k=>`<marker id="ar-${k}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:${col(k)}"/></marker>`).join('')+'</defs>';
+ E.forEach(([a,b,k,n,id])=>{
+  const pa=clip(P[a],P[b],nw/2+6,nh/2+6),pb=clip(P[b],P[a],nw/2+8,nh/2+8);
+  const dash=k==='dead'?'stroke-dasharray:6 6;':'';
+  const mx=(pa[0]+pb[0])/2,my=(pa[1]+pb[1])/2;
+  s+=`<a href="#${id}" aria-label="${title(id)}"><title>${title(id)}</title><path d="M${pa[0]} ${pa[1]}L${pb[0]} ${pb[1]}" style="fill:none;stroke:transparent;stroke-width:24px"/><path class="edge" id="e${a}${b}" d="M${pa[0]} ${pa[1]}L${pb[0]} ${pb[1]}" style="fill:none;stroke:${col(k)};stroke-width:2.5px;${dash}" marker-end="url(#ar-${k})"/><circle class="bdg" cx="${mx}" cy="${my}" r="13" style="fill:var(--panel);stroke:${col(k)};stroke-width:2px"/><text x="${mx}" y="${my+4.5}" text-anchor="middle" style="font-size:13px;font-weight:700;fill:${col(k)};stroke-width:0">${esc(n)}</text></a>`;
+ });
+ Object.entries(N).forEach(([key,[l1,l2,k,id]])=>{
+  const [x,y]=P[key];
+  const dash=k==='dead'?'stroke-dasharray:7 5;':'';
+  s+=`<a href="#${id}" aria-label="${title(id)}"><title>${title(id)}</title><rect class="nd" x="${x-nw/2}" y="${y-nh/2}" width="${nw}" height="${nh}" rx="10" style="fill:${k==='dead'?'var(--panel)':tint(k)};stroke:${col(k)};stroke-width:2.5px;${dash}"/>`;
+  s+=`<text x="${x}" y="${y-4}" text-anchor="middle" style="font-size:15px;font-weight:600;fill:${col(k)}">${esc(l1)}</text><text x="${x}" y="${y+16}" text-anchor="middle" style="font-size:13px;fill:${k==='k'?'var(--muted)':col(k)}">${esc(l2)}</text></a>`;
+ });
+ if(mode==='act'){
+  const [gx,gy]=P.G;const bx=v?W*.75:gx,by=v?gy:gy-nh/2-22;
+  const lines=v?['geometry check:','always True']:['geometry check: True'];const bw=v?Math.min(150,W*.42):170,bh=v?46:28;
+  s+=`<a href="#ax" aria-label="${title('ax')}"><title>${title('ax')}</title><rect class="nd" x="${bx-bw/2}" y="${by-bh/2}" width="${bw}" height="${bh}" rx="14" style="fill:var(--zetaT);stroke:var(--zeta);stroke-width:2px"/>`+lines.map((t,k)=>`<text x="${bx}" y="${by+5+(k-(lines.length-1)/2)*17}" text-anchor="middle" style="font-size:13px;font-weight:700;fill:var(--zeta);stroke-width:0">${esc(t)}</text>`).join('')+`</a>`;
+ }
+ s+='<circle id="tok" r="8" cx="-20" cy="-20" style="opacity:0;stroke:var(--panel);stroke-width:2px;pointer-events:none"/>';
+ svg.innerHTML=s;
+};
+const renderCaps=()=>{capEl.innerHTML=CAPS[mode].map(([n,k,t,d,h],i)=>`<li data-i="${i}"><a href="#${h}"><b class="bd ${k==='g'?'c-g':k==='z'?'c-z':k==='dead'?'c-d':'c-k'}">${esc(n)}</b><strong>${esc(t)}</strong><span>${esc(d)}</span></a></li>`).join('');};
+let t0=performance.now();
+const setMode=m=>{mode=m;document.getElementById('mClaim').setAttribute('aria-pressed',m==='claim');document.getElementById('mAct').setAttribute('aria-pressed',m==='act');t0=performance.now();draw();renderCaps();};
+document.getElementById('mClaim').addEventListener('click',()=>setMode('claim'));
+document.getElementById('mAct').addEventListener('click',()=>setMode('act'));
+const ro=new ResizeObserver(draw);ro.observe(fig);
+const ease=f=>f<.5?2*f*f:1-((-2*f+2)**2)/2;
+const tick=now=>{
+ const seq=EDGES[mode].filter(e=>e[2]!=='dead');const per=1500,total=seq.length*per+900;
+ const t=Math.max(0,now-t0)%total,i=Math.floor(t/per);const tok=svg.querySelector('#tok');
+ const offset=mode==='act'?1:0;
+ capEl.querySelectorAll('li').forEach(li=>li.classList.toggle('on',+li.dataset.i===(i<seq.length?i+offset:-1)));
+ if(tok){
+  svg.querySelectorAll('.edge').forEach(e=>e.classList.remove('on'));
+  if(i<seq.length){const p=svg.querySelector('#e'+seq[i][0]+seq[i][1]);
+   if(p){const f=ease(Math.min(1,(t-i*per)/(per*.8)));const L=p.getTotalLength();const pt=p.getPointAtLength(L*f);
+    tok.setAttribute('cx',pt.x);tok.setAttribute('cy',pt.y);tok.style.fill=col(seq[i][2]);tok.style.opacity=1;p.classList.add('on');}}
+  else tok.style.opacity=0;
+ }
+ requestAnimationFrame(tick);
+};
+renderCaps();draw();
+if(!RM)requestAnimationFrame(tick);
+
+/* a link into Part 2 from the summary switches the diagram to "what the code does" for consistency */
+const syncMode=()=>{const h=location.hash.slice(1);if(/^a[x1-4]$/.test(h)&&mode!=='act')setMode('act');else if(/^c[1-4]$/.test(h)&&mode!=='claim')setMode('claim');};
+window.addEventListener('hashchange',syncMode);syncMode();
+
+/* the glossary starts collapsed; opening it from a link expands it */
+const gbox=document.getElementById('glossaryBox');
+const openGloss=()=>{if(location.hash==='#glossary')gbox.open=true;};
+window.addEventListener('hashchange',openGloss);openGloss();
+document.querySelectorAll('a[href="#glossary"]').forEach(a=>a.addEventListener('click',()=>{gbox.open=true;}));
+
+/* the always-True checker */
+const ins=['a real surface','random junk','nothing at all','the empty object','a cat picture','literally anything'];
+const cin=document.getElementById('chkIn'),cout=document.getElementById('chkOut');let ci=0;
+if(!RM)setInterval(()=>{ci=(ci+1)%ins.length;cin.style.opacity=0;setTimeout(()=>{cin.textContent=ins[ci];cin.style.opacity=1;cout.classList.remove('pulse');void cout.offsetWidth;cout.classList.add('pulse');},250);},1800);
+
+/* removal test */
+const st={geo:true,paste:true};
+const lamp=document.getElementById('lamp');
+const upd=()=>{
+ document.getElementById('tGeo').setAttribute('aria-pressed',st.geo);
+ document.getElementById('tPaste').setAttribute('aria-pressed',st.paste);
+ if(!st.paste){lamp.className='lamp bad';lamp.textContent='Fails to compile. Nothing else in the code supplies the height.';}
+ else if(!st.geo){lamp.className='lamp ok';lamp.textContent='Still compiles. The geometry check was doing nothing.';}
+ else{lamp.className='lamp ok';lamp.textContent='Compiles. The proof goes through.';}
+};
+document.getElementById('tGeo').addEventListener('click',()=>{st.geo=!st.geo;upd();});
+document.getElementById('tPaste').addEventListener('click',()=>{st.paste=!st.paste;upd();});
+
+/* copy buttons */
+document.querySelectorAll('.cp').forEach(b=>b.addEventListener('click',()=>{
+ const txt=b.closest('.code').querySelector('pre').innerText;
+ const done=m=>{b.textContent=m;setTimeout(()=>b.textContent='Copy',1600);};
+ try{navigator.clipboard.writeText(txt).then(()=>done('Copied'),()=>done('Select to copy'));}catch(e){done('Select to copy');}
+}));
+}
+</script>
+</body>
+</html>
