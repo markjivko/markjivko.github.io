@@ -3,7 +3,7 @@
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <title>Riemann proves Riemann</title>
+        <title>Riemann proves Riemann?</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
@@ -558,6 +558,27 @@
             .note {
                 font-size: 14.5px;
                 color: var(--muted);
+            }
+            .disclaimer {
+                border: 2px solid var(--ok);
+                border-left-width: 8px;
+                background: var(--okT);
+                border-radius: 10px;
+                padding: 14px 18px;
+                margin: 30px 0 -4px;
+            }
+            .disclaimer p {
+                margin: 0 0 8px;
+                max-width: none;
+            }
+            .disclaimer p:last-child {
+                margin: 0;
+            }
+
+            .disclaimer .f {
+                font-family: "JetBrains Mono", monospace;
+                font-size: 0.92em;
+                white-space: nowrap;
             }
             .code {
                 border: 1px solid var(--rule);
@@ -1240,16 +1261,30 @@
                     A step-by-step walk through
                     <a class="ref" href="https://philarchive.org/archive/NIEIOT-2v33">J.&nbsp;L. Nielsen&#39;s critique</a>
                     (25&nbsp;Nov&nbsp;2026) of <a class="ref" href="https://alpo.ge/remark.pdf">Alpöge&#39;s Lean proof</a> of the
-                    Riemann Hypothesis. Every step in the diagram is a section below, with the Lean source behind it. (<a
-                        href="https://youtu.be/s1HzPQpwXDk"
-                        >YouTube video</a
-                    >)
+                    Riemann Hypothesis. Every step in the diagram is a section below, with the Lean source behind it.
                 </p>
                 <nav class="nav" aria-label="Sections">
                     <a href="#picture">Diagram</a><a href="#summary">Summary</a><a href="#claims">What the proof claims</a
                     ><a href="#actual">What the code does</a><a href="#route">Main route</a><a href="#glossary">Glossary</a>
                 </nav>
 
+                <aside class="disclaimer" role="note" aria-label="Disclaimer">
+                    <p>
+                        <strong>This scaffolding does not reduce the proof to a tautology.</strong> Nielsen&#39;s findings about
+                        the code are correct: the geometric object is an empty shell, and its height is a pasted zeta formula. But
+                        take both away and what remains is a real inequality between different quantities,
+                        <span class="f">μ + P − Fo ≤ MAIN + error</span>, which roughly 40 analytic estimates have to prove.
+                    </p>
+                    <p>
+                        And they do.
+                        <a class="ref" href="https://math.mit.edu/~drew/grh/">Every independent kernel check</a> accepts the
+                        proof, and the Lean FRO and the Mathlib Initiative have
+                        <a class="ref" href="https://leanprover-community.github.io/blog/posts/riemann-hypothesis/"
+                            >certified both the statement and the proof</a
+                        >. So the geometry is decoration, and the Riemann Hypothesis may well have been proven by mathematical
+                        analysis alone, by a route nobody has explained yet.
+                    </p>
+                </aside>
                 <div class="bphead" id="picture">
                     <div>
                         <h2>The machine, drawn twice</h2>
@@ -3460,6 +3495,7 @@ theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
                 draw();
                 if (!RM) requestAnimationFrame(tick);
 
+                /* a link into Part 2 from the summary switches the diagram to "what the code does" for consistency */
                 const syncMode = () => {
                     const h = location.hash.slice(1);
                     if (/^a[x1-4]$/.test(h) && mode !== "act") setMode("act");
@@ -3468,6 +3504,7 @@ theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
                 window.addEventListener("hashchange", syncMode);
                 syncMode();
 
+                /* the glossary starts collapsed; opening it from a link expands it */
                 const gbox = document.getElementById("glossaryBox");
                 const openGloss = () => {
                     if (location.hash === "#glossary") gbox.open = true;
@@ -3480,6 +3517,7 @@ theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
                     })
                 );
 
+                /* the always-True checker */
                 const ins = [
                     "a real surface",
                     "random junk",
@@ -3504,6 +3542,7 @@ theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
                         }, 250);
                     }, 1800);
 
+                /* removal test */
                 const st = { geo: true, paste: true };
                 const lamp = document.getElementById("lamp");
                 const upd = () => {
@@ -3529,6 +3568,7 @@ theorem claimed_rh (<mark class="g">hRH : RiemannHypothesis</mark>) :
                     upd();
                 });
 
+                /* copy buttons */
                 document.querySelectorAll(".cp").forEach(b =>
                     b.addEventListener("click", () => {
                         const txt = b.closest(".code").querySelector("pre").innerText;
