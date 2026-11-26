@@ -9,12 +9,6 @@
             href="https://fonts.googleapis.com/css2?family=Spectral:wght@500;600&family=Inter:wght@400;500;600&display=swap"
             rel="stylesheet" />
         <style>
-            /* VOICE everyday learning: a patient, exact explainer for non-mathematicians
-   IDEA a journal article with working figures: each idea gets a live diagram you can poke
-   PICTURE the complex plane itself, coloured by zeta, with the critical line you can click on
-   COLOUR white ground, near-black ink, ultramarine for the critical line and its zeros, magenta for anything off the line
-   TYPE Spectral for headings, Inter for text
-   LAYOUT laptop: text beside its figure in each band; phone: title, figure, controls, text */
             :root {
                 color-scheme: light dark;
                 --bg: light-dark(#ffffff, #0d0e18);
@@ -849,7 +843,7 @@
                     224.983325, 227.421444, 229.337413, 231.250189, 231.987235, 233.693404, 236.52423
                 ];
 
-                /* ---------- complex arithmetic and zeta ---------- */
+                /* complex arithmetic and zeta */
                 const C = {
                     add: (a, b) => [a[0] + b[0], a[1] + b[1]],
                     sub: (a, b) => [a[0] - b[0], a[1] - b[1]],
@@ -926,7 +920,7 @@
                     return C.mul(r, zetaRight(one));
                 }
 
-                /* ---------- helpers ---------- */
+                /* helpers */
                 const $ = id => document.getElementById(id);
                 const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
                 const f = (v, d = 2) => {
@@ -946,7 +940,7 @@
                     return ro;
                 }
 
-                /* ---------- 1. complex plane primer ---------- */
+                /* 1. complex plane primer */
                 const P1 = { s: [0.5, 2.5], snap: { re: false, im: false } };
                 const s1 = $("s1");
                 function draw1() {
@@ -1017,7 +1011,7 @@
                 );
                 watch(s1, draw1);
 
-                /* ---------- 2. partial sums ---------- */
+                /* 2. partial sums */
                 function draw2() {
                     const n = +$("nt").value;
                     let s = 0;
@@ -1029,7 +1023,7 @@
                 $("nt").addEventListener("input", draw2);
                 draw2();
 
-                /* ---------- 3. domain-coloured map ---------- */
+                /* 3. domain-coloured map */
                 const V3 = { x0: -5, x1: 3, y0: -4, y1: 52 };
                 const S3 = { s: [0.5, 14.134725] };
                 const c3 = $("c3"),
@@ -1214,7 +1208,7 @@
                 });
                 watch(s3b, draw3);
 
-                /* ---------- 4a. mirror diagram ---------- */
+                /* 4a. mirror diagram */
                 const s4a = $("s4a");
                 function draw4a() {
                     const [W, H] = sized(s4a),
@@ -1237,7 +1231,7 @@
                 }
                 watch(s4a, draw4a);
 
-                /* ---------- 4b. walk ---------- */
+                /* 4b. walk */
                 const s4b = $("s4b");
                 let playT = null;
                 function refine(sg, a, b) {
