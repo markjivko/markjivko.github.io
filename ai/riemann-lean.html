@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>grh-lean: a different Lean proof of the Riemann hypothesis</title>
+        <style>
+            :root {
+                color-scheme: light;
+                --page: #f9f9f9;
+                --surface: #ffffff;
+                --ink: #191919;
+                --ink2: #666666;
+                --ink3: #8a8a8a;
+                --rule: #e6e6e6;
+                --grid: #eeeeee;
+                --chip: #f1f1f1;
+                --s1: #257de0;
+                --s1b: #84b9f3;
+                --s2: #f47230;
+                --s3: #00b894;
+                --muted: #c9c9c9;
+                --bad: #dc3c3d;
+                --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+                --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+            }
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    color-scheme: dark;
+                    --page: #0b0b0b;
+                    --surface: #191919;
+                    --ink: #efefef;
+                    --ink2: #9c9c9c;
+                    --ink3: #7a7a7a;
+                    --rule: #2c2c2c;
+                    --grid: #262626;
+                    --chip: #242424;
+                    --s1: #338ced;
+                    --s1b: #1b64be;
+                    --s2: #e76624;
+                    --s3: #00a888;
+                    --muted: #4a4a4a;
+                    --bad: #e66767;
+                }
+            }
+            * {
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                margin: 0;
+                background: var(--page);
+                color: var(--ink);
+                font: 15.5px/1.7 var(--sans);
+                -webkit-font-smoothing: antialiased;
+            }
+            a {
+                color: var(--s1);
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            code {
+                font: 13px var(--mono);
+                background: var(--chip);
+                padding: 1px 5px;
+                border-radius: 4px;
+            }
+            .wrap {
+                max-width: 1000px;
+                margin: 0 auto;
+                padding: 0 32px;
+            }
+            header.wrap {
+                padding-top: 112px;
+                padding-bottom: 56px;
+            }
+            .eyebrow {
+                margin-bottom: 6px;
+                font: 12px var(--mono);
+                letter-spacing: 0.06em;
+                text-transform: uppercase;
+                color: var(--ink2);
+            }
+            h1 {
+                font-size: 34px;
+                line-height: 1.22;
+                margin: 0 0 22px;
+                font-weight: 650;
+                letter-spacing: -0.01em;
+            }
+            .lede {
+                color: var(--ink2);
+                max-width: 780px;
+                margin: 0;
+                font-size: 16.5px;
+                line-height: 1.75;
+            }
+            nav {
+                position: sticky;
+                top: 0;
+                z-index: 5;
+                background: color-mix(in srgb, var(--page) 92%, transparent);
+                backdrop-filter: blur(6px);
+                border-bottom: 1px solid var(--rule);
+            }
+            nav .wrap {
+                display: flex;
+                gap: 6px;
+                overflow-x: auto;
+                padding-top: 12px;
+                padding-bottom: 12px;
+            }
+            nav a {
+                white-space: nowrap;
+                font-size: 13px;
+                color: var(--ink2);
+                padding: 5px 10px;
+                border-radius: 999px;
+            }
+            nav a:hover,
+            nav a.on {
+                background: var(--chip);
+                color: var(--ink);
+                text-decoration: none;
+            }
+            section {
+                padding: 88px 0 16px;
+            }
+            h2 {
+                font-size: 23px;
+                margin: 0 0 14px;
+                font-weight: 650;
+                letter-spacing: -0.005em;
+            }
+            .sub {
+                color: var(--ink2);
+                margin: 0 0 28px;
+                max-width: 780px;
+            }
+            .card {
+                background: var(--surface);
+                border: 1px solid var(--rule);
+                border-radius: 12px;
+                padding: 28px 30px 24px;
+                margin: 24px 0;
+            }
+            .grid4 {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 20px;
+            }
+            @media (max-width: 820px) {
+                .grid4 {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            .stat {
+                background: var(--surface);
+                border: 1px solid var(--rule);
+                border-radius: 12px;
+                padding: 22px 24px;
+            }
+            .stat .k {
+                font-size: 12px;
+                color: var(--ink2);
+            }
+            .stat .v {
+                font-size: 28px;
+                font-weight: 650;
+                font-variant-numeric: tabular-nums;
+                letter-spacing: -0.01em;
+                margin-top: 6px;
+            }
+            .stat .d {
+                font-size: 12.5px;
+                color: var(--ink2);
+                margin-top: 6px;
+                line-height: 1.55;
+            }
+            .sw {
+                display: inline-block;
+                width: 10px;
+                height: 10px;
+                border-radius: 3px;
+                margin-right: 6px;
+                vertical-align: -1px;
+            }
+            .controls {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px 18px;
+                align-items: center;
+                margin-bottom: 20px;
+            }
+            .seg {
+                display: inline-flex;
+                background: var(--chip);
+                border-radius: 8px;
+                padding: 2px;
+            }
+            .seg button {
+                border: 0;
+                background: transparent;
+                color: var(--ink2);
+                font: 12.5px var(--sans);
+                padding: 5px 10px;
+                border-radius: 6px;
+                cursor: pointer;
+            }
+            .seg button.on {
+                background: var(--surface);
+                color: var(--ink);
+                box-shadow: 0 0 0 1px var(--rule);
+            }
+            .lab {
+                font-size: 12px;
+                color: var(--ink2);
+            }
+            .chart svg {
+                display: block;
+                width: 100%;
+                height: auto;
+                overflow: visible;
+            }
+            .note {
+                font-size: 12.5px;
+                color: var(--ink2);
+                margin: 18px 0 0;
+                line-height: 1.65;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                font-size: 13.5px;
+                font-variant-numeric: tabular-nums;
+            }
+            th,
+            td {
+                text-align: left;
+                padding: 13px 14px;
+                border-bottom: 1px solid var(--rule);
+                vertical-align: top;
+            }
+            th {
+                font-size: 12px;
+                font-weight: 600;
+                color: var(--ink2);
+            }
+            td.n,
+            th.n {
+                text-align: right;
+            }
+            tbody tr:hover {
+                background: color-mix(in srgb, var(--chip) 60%, transparent);
+            }
+            .tscroll {
+                overflow-x: auto;
+            }
+            .points {
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            .points li {
+                padding: 16px 0;
+                border-bottom: 1px solid var(--rule);
+                display: grid;
+                grid-template-columns: 200px 1fr;
+                gap: 20px;
+            }
+            .points li:last-child {
+                border-bottom: 0;
+            }
+            .points b {
+                font-weight: 650;
+            }
+            @media (max-width: 700px) {
+                .points li {
+                    grid-template-columns: 1fr;
+                    gap: 4px;
+                }
+            }
+            .no {
+                color: var(--bad);
+                font-weight: 600;
+                white-space: nowrap;
+            }
+            .na {
+                color: var(--ink2);
+                white-space: nowrap;
+            }
+            #tip {
+                position: fixed;
+                pointer-events: none;
+                z-index: 20;
+                background: var(--ink);
+                color: var(--surface);
+                font-size: 12.5px;
+                line-height: 1.4;
+                padding: 7px 9px;
+                border-radius: 6px;
+                max-width: 300px;
+                opacity: 0;
+                transition: opacity 0.08s;
+            }
+            footer.wrap {
+                padding-top: 96px;
+                padding-bottom: 120px;
+                color: var(--ink2);
+                font-size: 13px;
+                line-height: 1.7;
+            }
+            footer li {
+                margin: 8px 0;
+            }
+            .mono {
+                font-family: var(--mono);
+                font-size: 12.5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="tip"></div>
+
+        <header class="wrap">
+            <h1>grh-lean: a different Lean proof of the Riemann hypothesis, in 300,000 lines of code instead of 15.5 million</h1>
+            <p class="lede">
+                On 20 November 2026 Levent Alpöge published a machine-checked proof of the Riemann hypothesis and GRH for
+                Dirichlet L-functions, generated with Claude: 15.5 million lines of Lean code. On 25 November
+                <a href="https://github.com/lsernau/grh-lean">grh-lean</a> proved the same five theorems in 300,000 lines of code.
+                The evidence points to a substantially different proof rather than a trimmed copy. How it was produced has not
+                been disclosed. All counts on this page are lines of code, excluding comments and blank lines.
+            </p>
+        </header>
+
+        <nav>
+            <div class="wrap">
+                <a href="#different">A different proof</a><a href="#size">Size</a><a href="#undisclosed">Not disclosed</a
+                ><a href="#verified">Verified, not understood</a><a href="#authors">Authors</a><a href="#sources">Sources</a>
+            </div>
+        </nav>
+
+        <main class="wrap">
+            <section style="padding-top: 56px">
+                <div class="grid4">
+                    <div class="stat">
+                        <div class="k">Original proof</div>
+                        <div class="v">15.5M</div>
+                        <div class="d">lines of code · 175,187 files</div>
+                    </div>
+                    <div class="stat">
+                        <div class="k">Original, all dead and placeholder code removed</div>
+                        <div class="v">11.4–12.4M</div>
+                        <div class="d">what pruning alone achieves</div>
+                    </div>
+                    <div class="stat">
+                        <div class="k">grh-lean, readable edition</div>
+                        <div class="v">300k</div>
+                        <div class="d">lines of code · 52× smaller</div>
+                    </div>
+                    <div class="stat">
+                        <div class="k">grh-lean, compact edition</div>
+                        <div class="v">76k</div>
+                        <div class="d">same proof, compressed for size, not for reading</div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="different">
+                <h2>A different proof, not a pruned one</h2>
+                <p class="sub">
+                    Removing everything the original never used, plus code that only feeds its placeholder objects, cuts it by
+                    23–31%. The remaining 40× reduction comes from replacing the core of the argument.
+                </p>
+                <div class="card chart">
+                    <div class="controls">
+                        <span class="lab">Lines of code</span>
+                        <div class="seg" id="scaleSeg">
+                            <button data-v="lin" class="on">Linear</button><button data-v="log">Log</button>
+                        </div>
+                    </div>
+                    <div id="pathChart"></div>
+                    <p class="note">
+                        The pruning figure is measured on the original's full kernel export (1,468,418 declarations), walked from
+                        the five theorems. The range comes from names that could not be matched with certainty.
+                    </p>
+                </div>
+                <div class="card">
+                    <ul class="points">
+                        <li>
+                            <b>The core changed</b
+                            ><span
+                                >No Ferrero–Washington, no dependence on Vandiver's conjecture, no abelian varieties. Abelian
+                                variety theory was 7.3M lines of code, 47% of the original. No file in grh-lean mentions it.</span
+                            >
+                        </li>
+                        <li>
+                            <b>Lemmas were rewritten, not carried over</b
+                            ><span
+                                >Only 8–14% of declaration names occur in the original, and matching names often state different
+                                theorems.</span
+                            >
+                        </li>
+                        <li>
+                            <b>What stayed</b
+                            ><span
+                                >The five theorem statements (byte-identical) and the top-level strategy. The authors say the
+                                rewrite "follows that proof's method; many steps are proved by other arguments".</span
+                            >
+                        </li>
+                        <li>
+                            <b>Placeholder objects are gone</b
+                            ><span
+                                >The original contains definitions whose fields are trivially <code>True</code> or zero
+                                (<code>geoDegenerate</code>, <code>anyGeometry</code>). These are the objects J. L. Nielsen's
+                                critique of the original refers to. Neither grh-lean edition contains them or anything of that
+                                kind.</span
+                            >
+                        </li>
+                        <li>
+                            <b>Open</b
+                            ><span
+                                >Whether the new route was found by learning from the original, by avoiding its weak points, or
+                                independently is not stated.</span
+                            >
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section id="size">
+                <h2>300,000 lines of code is the number that matters</h2>
+                <p class="sub">
+                    The readable edition is the version a person could work through. It has 299,902 lines of code; its 138,466
+                    comment lines and 38,756 blank lines come on top, for 477,124 lines in total. The compact edition is the same
+                    argument compressed to 76,151 lines of code: inlined lemmas, heavy automation, 72-character lines. It is
+                    smaller, but harder to read. The original has no comments: its 17.4 million total lines are 15.5 million lines
+                    of code plus 1.8 million blank lines. No mathematician has read either edition through.
+                </p>
+                <div class="card tscroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Measure</th>
+                                <th class="n">Original</th>
+                                <th class="n">Readable</th>
+                                <th class="n">Compact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>Lines of code</b></td>
+                                <td class="n"><b>15,531,759</b></td>
+                                <td class="n"><b>299,902</b></td>
+                                <td class="n"><b>76,151</b></td>
+                            </tr>
+                            <tr>
+                                <td>+ Comment lines</td>
+                                <td class="n">0</td>
+                                <td class="n">138,466</td>
+                                <td class="n">20,331</td>
+                            </tr>
+                            <tr>
+                                <td>+ Blank lines</td>
+                                <td class="n">1,842,456</td>
+                                <td class="n">38,756</td>
+                                <td class="n">16,345</td>
+                            </tr>
+                            <tr>
+                                <td>= Total lines</td>
+                                <td class="n">17,374,215</td>
+                                <td class="n">477,124</td>
+                                <td class="n">112,827</td>
+                            </tr>
+                            <tr>
+                                <td>Declarations</td>
+                                <td class="n">~1,060,800</td>
+                                <td class="n">23,822</td>
+                                <td class="n">10,933</td>
+                            </tr>
+                            <tr>
+                                <td>Files</td>
+                                <td class="n">175,187</td>
+                                <td class="n">803</td>
+                                <td class="n">794</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="note">
+                        The only extended human-readable account of grh-lean is a 1,356-page write-up of the compact edition
+                        generated by AI agents (Bartosz Naskręcki, in progress), not yet refereed by a human.
+                    </p>
+                </div>
+            </section>
+
+            <section id="undisclosed">
+                <h2>What has not been disclosed</h2>
+                <p class="sub">
+                    The repository is a single commit with a README. Nothing about how the proof was produced has been published.
+                </p>
+                <div class="card tscroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Status</th>
+                                <th>What is known</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Method, tooling, prompts</td>
+                                <td class="no">Not disclosed</td>
+                                <td>
+                                    One second-hand description: unroll into one flat proof, simplify across modules, rebuild.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Model versions</td>
+                                <td class="no">Not disclosed</td>
+                                <td>"Claude".</td>
+                            </tr>
+                            <tr>
+                                <td>Division of work, people vs Claude</td>
+                                <td class="no">Not disclosed</td>
+                                <td>Claude wrote the Lean text; colleagues are unnamed.</td>
+                            </tr>
+                            <tr>
+                                <td>Why the route changed</td>
+                                <td class="no">Not disclosed</td>
+                                <td>README says "many steps are proved by other arguments".</td>
+                            </tr>
+                            <tr>
+                                <td>Start date and time taken</td>
+                                <td class="no">Not disclosed</td>
+                                <td>Published 5.2 days after the original's release.</td>
+                            </tr>
+                            <tr>
+                                <td>Compute, tokens, cost</td>
+                                <td class="no">Not disclosed</td>
+                                <td>No published estimate. My lower bound: reading the original once is roughly 290M tokens.</td>
+                            </tr>
+                            <tr>
+                                <td>Drafts and failed attempts</td>
+                                <td class="no">Not disclosed</td>
+                                <td>Single commit; no history.</td>
+                            </tr>
+                            <tr>
+                                <td>Cost of the original proof</td>
+                                <td class="no">Not disclosed</td>
+                                <td>Third-party estimates range from $6k to $605k.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section id="verified">
+                <h2>Verified by machine, understood by no one</h2>
+                <p class="sub">
+                    Andrew Sutherland (MIT) checked the original and both editions; Michael Rubinstein (Waterloo) checked the
+                    original and the compact edition. Every check passed. Each proof was built from source and re-checked by six
+                    independently written proof checkers. Its statements were matched against an independently written challenge
+                    file, and it uses only Lean's three standard axioms. These checks establish that the theorems are proved. They
+                    do not establish that anyone understands the proof.
+                </p>
+                <div class="card tscroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cost to check</th>
+                                <th class="n">Original</th>
+                                <th class="n">Readable</th>
+                                <th class="n">Compact</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Full end-to-end check</td>
+                                <td class="n">64–123 h</td>
+                                <td class="n">4 h 10 min</td>
+                                <td class="n">2 h 11 min</td>
+                            </tr>
+                            <tr>
+                                <td>Memory needed</td>
+                                <td class="n">~100 GB</td>
+                                <td class="n">&gt; 128 GB</td>
+                                <td class="n">≤ 128 GB</td>
+                            </tr>
+                            <tr>
+                                <td>Expanded proof checked</td>
+                                <td class="n">61.6 GB</td>
+                                <td class="n">4.49 GB</td>
+                                <td class="n">5.17 GB</td>
+                            </tr>
+                            <tr>
+                                <td>Cloud cost of one full check*</td>
+                                <td class="n">$984–$1,883</td>
+                                <td class="n">~$64</td>
+                                <td class="n">~$34</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="note">
+                        * At $15.34/h, AWS r8a.48xlarge on demand (192 cores, 1.5 TB), the machine used for the editions. The
+                        original's figure assumes the same machine; its check is single-threaded, so a smaller machine would cost
+                        less.
+                    </p>
+                </div>
+            </section>
+
+            <section id="authors">
+                <h2>Authors</h2>
+                <div class="card tscroll">
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>grh-lean</td>
+                                <td>
+                                    Luke Sernau (Anthropic), "in collaboration with my colleagues at Anthropic, and Claude".
+                                    Single commit, 25 Nov 2026. Lean text written by Claude.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Original proof</td>
+                                <td>Levent Alpöge (Anthropic), with Claude.</td>
+                            </tr>
+                            <tr>
+                                <td>Independent checks</td>
+                                <td>Andrew Sutherland (MIT), Michael Rubinstein (Waterloo).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+
+        <footer class="wrap" id="sources">
+            <h2 style="color: var(--ink)">Sources</h2>
+            <p>
+                Line, declaration and name counts, and the dependency analysis, are my own measurements on the original archive
+                (sha256 matching Sutherland's) and its kernel export, and on grh-lean commit 72fead10. Check timings are from
+                Sutherland's and Rubinstein's pages.
+            </p>
+            <ul>
+                <li><a href="https://github.com/lsernau/grh-lean">lsernau/grh-lean</a></li>
+                <li>
+                    <a href="https://math.mit.edu/~drew/shortgrh/">Sutherland: checks of grh-lean</a> ·
+                    <a href="https://math.mit.edu/~drew/grh/">checks of the original</a>
+                </li>
+                <li><a href="https://www.math.uwaterloo.ca/~mrubinst/alpoge_claude_grh/">Rubinstein: Alpöge/Claude GRH</a></li>
+                <li><a href="https://alpo.ge/remark.pdf">Alpöge: remark.pdf</a></li>
+                <li><a href="https://github.com/nasqret/riemann-rev">Naskręcki: riemann-rev</a></li>
+                <li><a href="https://digg.com/ai/81ivl2ep">Sernau's notes, relayed second-hand</a></li>
+                <li>
+                    Cost estimates for the original:
+                    <a href="https://x.com/SemiAnalysis_/status/2124006831567642877">SemiAnalysis</a>,
+                    <a href="https://www.thepricer.org/how-much-did-it-cost-to-prove-the-riemann-hypothesis/">ThePricer</a>,
+                    <a href="https://wpnews.pro/news/how-much-did-proving-the-riemann-hypothesis-cost">wpnews</a> · Instance
+                    price: <a href="https://instances.vantage.sh/aws/ec2/r8a.48xlarge">Vantage</a>
+                </li>
+            </ul>
+        </footer>
+
+        <script>
+            (function () {
+                const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+                const NS = "http://www.w3.org/2000/svg",
+                    tip = document.getElementById("tip");
+                function el(t, a, p) {
+                    const e = document.createElementNS(NS, t);
+                    for (const k in a) e.setAttribute(k, a[k]);
+                    if (p) p.appendChild(e);
+                    return e;
+                }
+                function tx(p, x, y, s, a) {
+                    const t = el(
+                        "text",
+                        Object.assign({ x, y, "font-size": 12, "fill": css("--ink2"), "font-family": "inherit" }, a || {}),
+                        p
+                    );
+                    t.textContent = s;
+                    return t;
+                }
+                function mv(e) {
+                    const w = tip.offsetWidth,
+                        h = tip.offsetHeight;
+                    let x = e.clientX + 14,
+                        y = e.clientY + 14;
+                    if (x + w > innerWidth - 8) x = e.clientX - w - 14;
+                    if (y + h > innerHeight - 8) y = e.clientY - h - 14;
+                    tip.style.left = x + "px";
+                    tip.style.top = y + "px";
+                }
+                function hv(n, h) {
+                    n.addEventListener("mouseenter", e => {
+                        tip.innerHTML = h;
+                        tip.style.opacity = 1;
+                        mv(e);
+                    });
+                    n.addEventListener("mousemove", mv);
+                    n.addEventListener("mouseleave", () => (tip.style.opacity = 0));
+                }
+                const full = n => n.toLocaleString("en-US");
+                const rows = [
+                    {
+                        name: "Original",
+                        lo: 15531759,
+                        hi: 15531759,
+                        c: "--s1",
+                        label: "15,531,759",
+                        tip: "Alpöge, 20 Nov. 175,187 files."
+                    },
+                    {
+                        name: "Original after pruning",
+                        lo: 11433932,
+                        hi: 12423618,
+                        c: "--s1",
+                        label: "11.4–12.4M · pruning: 1.25–1.36× smaller",
+                        tip: "Original minus dead code (15–22%) and code used only through placeholder objects (at least 8.8%)."
+                    },
+                    {
+                        name: "grh-lean, readable",
+                        lo: 299902,
+                        hi: 299902,
+                        c: "--s2",
+                        label: "299,902 · a further 38–41× smaller",
+                        tip: "Different core: no Ferrero–Washington, no Vandiver, no abelian varieties."
+                    },
+                    {
+                        name: "grh-lean, compact",
+                        lo: 76151,
+                        hi: 76151,
+                        c: "--s3",
+                        label: "76,151 · readable edition compressed for size",
+                        tip: "Same argument as the readable edition, written for brevity."
+                    }
+                ];
+                let scale = "lin";
+                function draw() {
+                    const box = document.getElementById("pathChart");
+                    box.innerHTML = "";
+                    const W = 900,
+                        rowH = 52,
+                        padL = 170,
+                        padR = 40,
+                        H = rowH * rows.length + 28;
+                    const svg = el(
+                        "svg",
+                        {
+                            "viewBox": `0 0 ${W} ${H}`,
+                            "role": "img",
+                            "aria-label": "Lines of code: original, original after pruning, readable and compact editions"
+                        },
+                        box
+                    );
+                    const max = 15531759,
+                        lo = 4,
+                        hi = Math.log10(max);
+                    const X = v =>
+                        scale === "lin"
+                            ? padL + ((W - padL - padR) * v) / max
+                            : padL + ((W - padL - padR) * (Math.log10(v) - lo)) / (hi - lo);
+                    const ticks = scale === "lin" ? [0, 4e6, 8e6, 12e6] : [1e4, 1e5, 1e6, 1e7];
+                    ticks.forEach(t => {
+                        const x = scale === "lin" ? X(t) : X(t);
+                        el("line", { x1: x, x2: x, y1: 0, y2: H - 22, stroke: css("--grid") }, svg);
+                        tx(svg, x, H - 6, t === 0 ? "0" : t >= 1e6 ? t / 1e6 + "M" : t / 1e3 + "k", {
+                            "text-anchor": "middle",
+                            "font-size": 11
+                        });
+                    });
+                    const x0 = scale === "lin" ? padL : X(1e4);
+                    rows.forEach((r, i) => {
+                        const y = i * rowH + 6;
+                        tx(svg, padL - 12, y + 19, r.name, { "text-anchor": "end", "fill": css("--ink"), "font-size": 12.5 });
+                        const wlo = Math.max(2, X(r.lo) - x0);
+                        el("rect", { x: x0, y: y + 5, width: wlo, height: 22, rx: 4, fill: css(r.c) }, svg);
+                        if (r.hi > r.lo) {
+                            el(
+                                "rect",
+                                {
+                                    x: X(r.lo) + 1,
+                                    y: y + 5,
+                                    width: Math.max(1, X(r.hi) - X(r.lo) - 1),
+                                    height: 22,
+                                    rx: 2,
+                                    fill: css("--s1b")
+                                },
+                                svg
+                            );
+                        }
+                        const lx = X(r.hi) + 8,
+                            fits = lx < W - 260;
+                        tx(svg, fits ? lx : X(r.hi) - 8, fits ? y + 20 : y + 42, r.label, {
+                            "fill": css("--ink"),
+                            "font-size": 12,
+                            "text-anchor": fits ? "start" : "end"
+                        });
+                        const hit = el("rect", { x: 0, y: y, width: W, height: rowH - 4, fill: "transparent" }, svg);
+                        hv(
+                            hit,
+                            `<b>${r.name}</b><br>${r.lo === r.hi ? full(r.lo) : full(r.lo) + " – " + full(r.hi)} lines of code<br>${r.tip}`
+                        );
+                    });
+                }
+                const seg = document.getElementById("scaleSeg");
+                seg.onclick = e => {
+                    if (!e.target.dataset.v) return;
+                    scale = e.target.dataset.v;
+                    [...seg.children].forEach(b => b.classList.toggle("on", b.dataset.v === scale));
+                    draw();
+                };
+                draw();
+                const links = [...document.querySelectorAll("nav a")];
+                const obs = new IntersectionObserver(
+                    es => {
+                        es.forEach(e => {
+                            if (e.isIntersecting) {
+                                links.forEach(a => a.classList.toggle("on", a.getAttribute("href") === "#" + e.target.id));
+                            }
+                        });
+                    },
+                    { rootMargin: "-40% 0px -55% 0px" }
+                );
+                document.querySelectorAll("section[id],footer[id]").forEach(s => obs.observe(s));
+                if (window.matchMedia) matchMedia("(prefers-color-scheme: dark)").addEventListener("change", draw);
+            })();
+        </script>
+    </body>
+</html>
