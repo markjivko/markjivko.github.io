@@ -612,22 +612,22 @@
                 <div class="tiles" aria-live="polite">
                     <div class="tile logi">
                         <p class="k">Logistic ceiling, 80% horizon</p>
-                        <p class="v" id="tK">–</p>
+                        <p class="v" id="tK">-</p>
                         <p class="s">where the curve levels off</p>
                     </div>
                     <div class="tile logi">
                         <p class="k">Halfway to the ceiling</p>
-                        <p class="v" id="tMid">–</p>
+                        <p class="v" id="tMid">-</p>
                         <p class="s">the curve's turning point</p>
                     </div>
                     <div class="tile logi">
                         <p class="k">Logistic's fit advantage</p>
-                        <p class="v" id="tA">–</p>
+                        <p class="v" id="tA">-</p>
                         <p class="s" id="tAS">ΔAIC, extra parameter already charged</p>
                     </div>
                     <div class="tile">
                         <p class="k">Typical miss per model</p>
-                        <p class="v" id="tR">–</p>
+                        <p class="v" id="tR">-</p>
                         <p class="s">logistic vs exponential</p>
                     </div>
                 </div>
@@ -811,7 +811,7 @@
                                 <td class="iss">Small, network-recruited baseline pool</td>
                                 <td>
                                     The human times come from about 140 people making 563 attempts, recruited mostly through METR
-                                    staff&#x27;s own networks. They were paid $50–$100/hr plus $25–$150/hr in bonuses.
+                                    staff&#x27;s own networks. They were paid $50-$100/hr plus $25-$150/hr in bonuses.
                                 </td>
                                 <td class="srcc">
                                     <q>are primarily recruited via the professional networks of METR employees</q
@@ -837,7 +837,7 @@
                                 <td class="inum">4</td>
                                 <td class="iss">Human times are inflated compared with real experts</td>
                                 <td>
-                                    In METR&#x27;s own test, contractors were 5–18x slower than the repos&#x27; maintainers.
+                                    In METR&#x27;s own test, contractors were 5-18x slower than the repos&#x27; maintainers.
                                     Failed attempts were dropped (286 kept out of about 460), and 21 tasks used researcher
                                     estimates instead of measured times.
                                 </td>
@@ -1090,7 +1090,7 @@
                             <a href="https://arxiv.org/html/2503.17354v1"
                                 >people recruited mainly through METR staff's professional networks</a
                             >, paid hourly plus bonuses. In METR's own test,
-                            <a href="https://arxiv.org/html/2503.14499">contractors took 5–18x longer than repo maintainers</a>.
+                            <a href="https://arxiv.org/html/2503.14499">contractors took 5-18x longer than repo maintainers</a>.
                             If long-task times run long, the AI horizons built on them run long too.
                         </p>
                     </div>
@@ -1134,7 +1134,7 @@
                     </p>
                     <p>
                         <strong>How much the choices matter.</strong> In total, <span data-k="gt"></span> combinations were tried
-                        of start year (2019–2025), record-setters vs. all models, Mythos in or out, the four data options and two
+                        of start year (2019-2025), record-setters vs. all models, Mythos in or out, the four data options and two
                         weightings. The logistic fits better in <span data-k="gf"></span> of them, and by more than 2 AIC points
                         in <span data-k="gf2"></span>. Those are mainly the 2024-onward windows used here. With METR's own
                         convention (record-setters, 2019 onward, Mythos included) the exponential is ahead by
@@ -1156,7 +1156,7 @@
                     </li>
                     <li>
                         <a href="https://arxiv.org/html/2503.14499">Kwa et al., Measuring AI Ability to Complete Long Tasks</a>
-                        (5–18x contractor vs. maintainer gap)
+                        (5-18x contractor vs. maintainer gap)
                     </li>
                     <li><a href="https://arxiv.org/html/2503.17354v1">Rein et al., HCAST</a> (baseliner recruitment and pay)</li>
                     <li>
@@ -3216,7 +3216,7 @@
                     toYrs = s => (Date.parse(s) - T0) / (365.25 * 864e5);
                 const TODAY = toYrs("2026-11-14");
                 function fmt(m) {
-                    if (m == null || !isFinite(m)) return "–";
+                    if (m == null || !isFinite(m)) return "-";
                     if (m < 1) {
                         const s = m * 60;
                         return (s < 10 ? s.toFixed(1) : Math.round(s)) + " s";
@@ -3256,15 +3256,15 @@
   <td class="num">${s.rmse_log.toFixed(2)}x</td><td class="num">${s.rmse_exp.toFixed(2)}x</td><td class="num">+${WITH_MYTHOS[s.short].toFixed(1)}</td></tr>`
                 ).join("");
                 const inFit = new Set(m0.points.map(p => p.name));
-                const ci = (lo, hi) => `<span class="ci">${fmt(lo)}–${fmt(hi)}</span>`;
+                const ci = (lo, hi) => `<span class="ci">${fmt(lo)}-${fmt(hi)}</span>`;
                 document.querySelector("#modelTable tbody").innerHTML = D.models
                     .map(
                         m => `<tr class="${inFit.has(m.name) ? "front" : ""}">
   <td>${esc(m.name)}</td><td>${fmtDate(m.date)}</td>
   <td class="num">${fmt(m.p50)} ${ci(m.p50_lo, m.p50_hi)}</td><td class="num">${fmt(m.p80)} ${ci(m.p80_lo, m.p80_hi)}</td>
   <td>${inFit.has(m.name) ? '<span class="pill yes">Yes</span>' : `<span class="pill">${m.name.includes("Mythos") ? "Unreleased" : "Before 2024"}</span>`}</td>
-  <td class="num">${m.adj2 != null ? fmt(m.adj2) + " " + ci(m.adj2_lo, m.adj2_hi) : "–"}</td>
-  <td class="num">${m.adj5 != null ? fmt(m.adj5) + " " + ci(m.adj5_lo, m.adj5_hi) : "–"}</td></tr>`
+  <td class="num">${m.adj2 != null ? fmt(m.adj2) + " " + ci(m.adj2_lo, m.adj2_hi) : "-"}</td>
+  <td class="num">${m.adj5 != null ? fmt(m.adj5) + " " + ci(m.adj5_lo, m.adj5_hi) : "-"}</td></tr>`
                     )
                     .join("");
                 const tot = D.dist.reduce((a, b) => a + b.n, 0);
@@ -3272,7 +3272,7 @@
                     D.dist
                         .map(
                             d =>
-                                `<tr><td>${d.bucket}</td><td class="num">${d.n}</td><td class="num">${d.round}</td><td class="num">${d.n ? Math.round((100 * d.round) / d.n) + "%" : "–"}</td></tr>`
+                                `<tr><td>${d.bucket}</td><td class="num">${d.n}</td><td class="num">${d.round}</td><td class="num">${d.n ? Math.round((100 * d.round) / d.n) + "%" : "-"}</td></tr>`
                         )
                         .join("") +
                     `<tr><td><b>All tasks</b></td><td class="num"><b>${tot}</b></td><td class="num"><b>${D.dist.reduce((a, b) => a + b.round, 0)}</b></td><td class="num"></td></tr>`;
@@ -3418,7 +3418,7 @@
                         const show = () => {
                             const p = hits[+h.dataset.j];
                             const sx = box.getBoundingClientRect().width / W;
-                            tip.innerHTML = `<b>${esc(p.name)}</b> · ${fmtDate(p.date)}<br>80% horizon ${fmt(p.v)}${p.hi > p.lo * 1.0001 ? ` (95% CI ${fmt(p.lo)}–${fmt(p.hi)})` : ""}${p.inFit ? "" : " · not in this fit"}${p.name.includes("Mythos") ? "<br><b>UNVERIFIED</b>: unreleased snapshot; METR flags results above 16 h as unreliable" : ""}`;
+                            tip.innerHTML = `<b>${esc(p.name)}</b> · ${fmtDate(p.date)}<br>80% horizon ${fmt(p.v)}${p.hi > p.lo * 1.0001 ? ` (95% CI ${fmt(p.lo)}-${fmt(p.hi)})` : ""}${p.inFit ? "" : " · not in this fit"}${p.name.includes("Mythos") ? "<br><b>UNVERIFIED</b>: unreleased snapshot; METR flags results above 16 h as unreliable" : ""}`;
                             tip.style.left = x(p.t) * sx + "px";
                             tip.style.top = y(p.v) * sx + "px";
                             tip.style.opacity = 1;

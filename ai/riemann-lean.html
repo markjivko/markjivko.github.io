@@ -339,8 +339,9 @@
 
         <nav>
             <div class="wrap">
-                <a href="#different">A different proof</a><a href="#size">Size</a><a href="#undisclosed">Not disclosed</a
-                ><a href="#verified">Verified, not understood</a><a href="#authors">Authors</a><a href="#sources">Sources</a>
+                <a href="#different">A different proof</a><a href="#size">Size</a><a href="#maintainers">Maintainers</a
+                ><a href="#undisclosed">Not disclosed</a><a href="#verified">Verified, not understood</a
+                ><a href="#authors">Authors</a><a href="#sources">Sources</a>
             </div>
         </nav>
 
@@ -353,9 +354,9 @@
                         <div class="d">lines of code · 175,187 files</div>
                     </div>
                     <div class="stat">
-                        <div class="k">Original, all dead and placeholder code removed</div>
-                        <div class="v">11.4–12.4M</div>
-                        <div class="d">what pruning alone achieves</div>
+                        <div class="k">Original, live code only</div>
+                        <div class="v">9.2-10.2M</div>
+                        <div class="d">what remains after removing boilerplate, dead code and placeholders</div>
                     </div>
                     <div class="stat">
                         <div class="k">grh-lean, readable edition</div>
@@ -365,7 +366,7 @@
                     <div class="stat">
                         <div class="k">grh-lean, compact edition</div>
                         <div class="v">76k</div>
-                        <div class="d">same proof, compressed for size, not for reading</div>
+                        <div class="d">essentially the same argument, compressed for size, not for reading</div>
                     </div>
                 </div>
             </section>
@@ -373,8 +374,9 @@
             <section id="different">
                 <h2>A different proof, not a pruned one</h2>
                 <p class="sub">
-                    Removing everything the original never used, plus code that only feeds its placeholder objects, cuts it by
-                    23–31%. The remaining 40× reduction comes from replacing the core of the argument.
+                    About 5.4-6.4 million lines of the original are overhead: file boilerplate, dead code, and code used only
+                    through placeholder objects. Removing all of it leaves 9.2-10.2 million lines of code the proof actually uses.
+                    Getting from there to 300,000, roughly 31-34× smaller, required replacing the core of the argument.
                 </p>
                 <div class="card chart">
                     <div class="controls">
@@ -385,8 +387,58 @@
                     </div>
                     <div id="pathChart"></div>
                     <p class="note">
-                        The pruning figure is measured on the original's full kernel export (1,468,418 declarations), walked from
-                        the five theorems. The range comes from names that could not be matched with certainty.
+                        Live code is measured on the original's full kernel export (1,468,418 declarations), walked from the five
+                        theorems. The range comes from names that could not be matched with certainty.
+                    </p>
+                </div>
+                <div class="card tscroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Lines of code in the original</th>
+                                <th class="n">Abelian-variety branch</th>
+                                <th class="n">Everything else</th>
+                                <th class="n">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>File boilerplate (imports, namespaces, options)</td>
+                                <td class="n">1.34M</td>
+                                <td class="n">0.94M</td>
+                                <td class="n">2.29M</td>
+                            </tr>
+                            <tr>
+                                <td>Dead code (never used by the five theorems)</td>
+                                <td class="n">0.99-1.55M</td>
+                                <td class="n">0.94-1.38M</td>
+                                <td class="n">1.94-2.93M</td>
+                            </tr>
+                            <tr>
+                                <td>Used only through placeholder objects</td>
+                                <td class="n">≥ 0.60M</td>
+                                <td class="n">≥ 0.57M</td>
+                                <td class="n">≥ 1.17M</td>
+                            </tr>
+                            <tr>
+                                <td><b>Live code, used by the proof</b></td>
+                                <td class="n"><b>3.86-4.41M</b></td>
+                                <td class="n"><b>5.31-5.75M</b></td>
+                                <td class="n"><b>9.17-10.16M</b></td>
+                            </tr>
+                            <tr>
+                                <td>Total</td>
+                                <td class="n">7.34M</td>
+                                <td class="n">8.20M</td>
+                                <td class="n">15.53M</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="note">
+                        The first three rows could be removed without new mathematics; for the third, that assumes the
+                        placeholders do no real work. Boilerplate is mostly an artifact of splitting the original into 175,187
+                        small files; the readable edition has 803. The live code could not be removed, only rewritten or replaced.
+                        Categories come from separate measurements and agree with the totals to within 0.2%.
                     </p>
                 </div>
                 <div class="card">
@@ -394,15 +446,17 @@
                         <li>
                             <b>The core changed</b
                             ><span
-                                >No Ferrero–Washington, no dependence on Vandiver's conjecture, no abelian varieties. Abelian
-                                variety theory was 7.3M lines of code, 47% of the original. No file in grh-lean mentions it.</span
+                                >No Ferrero-Washington and no dependence on Vandiver's conjecture. The abelian-variety branch,
+                                7.3M lines of code and 47% of the original, is almost entirely gone. Abelian varieties still
+                                appear, as abelian schemes within the Shimura-variety background: 24,422 lines in the readable
+                                edition, of which 1,409 are basic abelian-scheme theory.</span
                             >
                         </li>
                         <li>
                             <b>Lemmas were rewritten, not carried over</b
                             ><span
-                                >Only 8–14% of declaration names occur in the original, and matching names often state different
-                                theorems.</span
+                                >Only 8-14% of declaration names occur in the original, and even matching names can state
+                                different theorems.</span
                             >
                         </li>
                         <li>
@@ -415,10 +469,10 @@
                         <li>
                             <b>Placeholder objects are gone</b
                             ><span
-                                >The original contains definitions whose fields are trivially <code>True</code> or zero
+                                >The original contains placeholder definitions that are trivially <code>True</code> or zero
                                 (<code>geoDegenerate</code>, <code>anyGeometry</code>). These are the objects J. L. Nielsen's
-                                critique of the original refers to. Neither grh-lean edition contains them or anything of that
-                                kind.</span
+                                critique of the original refers to. Neither grh-lean edition contains them, and a scan of both
+                                found no definitions of that kind.</span
                             >
                         </li>
                         <li>
@@ -436,10 +490,11 @@
                 <h2>300,000 lines of code is the number that matters</h2>
                 <p class="sub">
                     The readable edition is the version a person could work through. It has 299,902 lines of code; its 138,466
-                    comment lines and 38,756 blank lines come on top, for 477,124 lines in total. The compact edition is the same
-                    argument compressed to 76,151 lines of code: inlined lemmas, heavy automation, 72-character lines. It is
-                    smaller, but harder to read. The original has no comments: its 17.4 million total lines are 15.5 million lines
-                    of code plus 1.8 million blank lines. No mathematician has read either edition through.
+                    comment lines and 38,756 blank lines come on top, for 477,124 lines in total. The compact edition is
+                    essentially the same argument compressed to 76,151 lines of code: inlined lemmas, heavy automation,
+                    72-character lines. Some steps are proved differently. It is smaller, but harder to read. The original has no
+                    comments: its 17.4 million total lines are 15.5 million lines of code plus 1.8 million blank lines. No
+                    mathematician has read either edition through.
                 </p>
                 <div class="card tscroll">
                     <table>
@@ -497,6 +552,57 @@
                 </div>
             </section>
 
+            <section id="maintainers">
+                <h2>Harder to work with, according to the people cleaning it up</h2>
+                <p class="sub">
+                    A maintainer of the community effort to clean up the Lean code reports three things about the new version. It
+                    needs a lot more compilation. It feels more "magic". And it relies on many more results from outside Mathlib,
+                    which also have to be checked. He preferred working on the original, ugly and verbose as it is. The code
+                    supports the second and third points directly; on compilation, the picture is mixed.
+                </p>
+                <div class="card tscroll">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Maintainer's observation</th>
+                                <th>What the code shows</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Much more compilation</td>
+                                <td>
+                                    Both editions import all of Mathlib (<code>import Mathlib</code>) at their base, so every
+                                    build needs the whole library compiled or downloaded. The original imported 344 specific
+                                    Mathlib modules. The new proof also relies on automation that re-runs on every build. Measured
+                                    end to end, however, it still builds much faster: 32-34 minutes on a 16-core machine, against
+                                    about 21 hours reported for the original on unspecified hardware.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>More "magic"</td>
+                                <td>
+                                    Steps are found by automated search at build time instead of being written out. Per 1,000
+                                    lines of code, the compact edition uses <code>grind</code> 36 times and <code>aesop</code> 17
+                                    times; the original uses each less than once per 10,000 lines.
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Many more results from outside Mathlib</td>
+                                <td>
+                                    59% of the readable edition (177,492 lines of code) is background theory built inside the
+                                    project rather than taken from Mathlib. That includes class field theory, theta
+                                    correspondences and Siegel-Weil, discrete series, Galois representations, p-adic Hodge theory
+                                    and Shimura varieties. Its reference list compares 228 literature citations, with 66 places
+                                    confirmed. All of it is proved in Lean, with no extra axioms. Whether each result matches the
+                                    published theorem it cites is a separate question that the proof checkers do not answer.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
             <section id="undisclosed">
                 <h2>What has not been disclosed</h2>
                 <p class="sub">
@@ -542,7 +648,9 @@
                             <tr>
                                 <td>Compute, tokens, cost</td>
                                 <td class="no">Not disclosed</td>
-                                <td>No published estimate. My lower bound: reading the original once is roughly 290M tokens.</td>
+                                <td>
+                                    No published estimate. For scale: reading the original once would take roughly 290M tokens.
+                                </td>
                             </tr>
                             <tr>
                                 <td>Drafts and failed attempts</td>
@@ -552,7 +660,7 @@
                             <tr>
                                 <td>Cost of the original proof</td>
                                 <td class="no">Not disclosed</td>
-                                <td>Third-party estimates range from $6k to $605k.</td>
+                                <td>Third-party estimates range from $6k to $605k (the top figure includes labour).</td>
                             </tr>
                         </tbody>
                     </table>
@@ -563,10 +671,10 @@
                 <h2>Verified by machine, understood by no one</h2>
                 <p class="sub">
                     Andrew Sutherland (MIT) checked the original and both editions; Michael Rubinstein (Waterloo) checked the
-                    original and the compact edition. Every check passed. Each proof was built from source and re-checked by six
-                    independently written proof checkers. Its statements were matched against an independently written challenge
-                    file, and it uses only Lean's three standard axioms. These checks establish that the theorems are proved. They
-                    do not establish that anyone understands the proof.
+                    original and the compact edition. Every check passed. Each proof was built from source and re-checked by
+                    Lean's own kernel and several independently written proof checkers. Its statements were matched against a
+                    separate challenge file containing only the statements, and it uses only Lean's three standard axioms. These
+                    checks establish that the stated theorems are proved. They do not establish that anyone understands the proof.
                 </p>
                 <div class="card tscroll">
                     <table>
@@ -581,7 +689,7 @@
                         <tbody>
                             <tr>
                                 <td>Full end-to-end check</td>
-                                <td class="n">64–123 h</td>
+                                <td class="n">64-123 h</td>
                                 <td class="n">4 h 10 min</td>
                                 <td class="n">2 h 11 min</td>
                             </tr>
@@ -599,7 +707,7 @@
                             </tr>
                             <tr>
                                 <td>Cloud cost of one full check*</td>
-                                <td class="n">$984–$1,883</td>
+                                <td class="n">$984-$1,883</td>
                                 <td class="n">~$64</td>
                                 <td class="n">~$34</td>
                             </tr>
@@ -716,20 +824,20 @@
                         tip: "Alpöge, 20 Nov. 175,187 files."
                     },
                     {
-                        name: "Original after pruning",
-                        lo: 11433932,
-                        hi: 12423618,
+                        name: "Original, live code only",
+                        lo: 9166133,
+                        hi: 10155819,
                         c: "--s1",
-                        label: "11.4–12.4M · pruning: 1.25–1.36× smaller",
-                        tip: "Original minus dead code (15–22%) and code used only through placeholder objects (at least 8.8%)."
+                        label: "9.2-10.2M · used by the proof",
+                        tip: "Original minus file boilerplate (2.29M lines), dead code (1.94-2.93M) and code used only through placeholder objects (at least 1.17M)."
                     },
                     {
                         name: "grh-lean, readable",
                         lo: 299902,
                         hi: 299902,
                         c: "--s2",
-                        label: "299,902 · a further 38–41× smaller",
-                        tip: "Different core: no Ferrero–Washington, no Vandiver, no abelian varieties."
+                        label: "299,902 · a further 31-34× smaller",
+                        tip: "Different core: no Ferrero-Washington, no Vandiver, and the 7.3M-line abelian-variety branch reduced to a few thousand lines."
                     },
                     {
                         name: "grh-lean, compact",
@@ -737,7 +845,7 @@
                         hi: 76151,
                         c: "--s3",
                         label: "76,151 · readable edition compressed for size",
-                        tip: "Same argument as the readable edition, written for brevity."
+                        tip: "Essentially the same argument as the readable edition, written for brevity; some steps proved differently."
                     }
                 ];
                 let scale = "lin";
@@ -804,7 +912,7 @@
                         const hit = el("rect", { x: 0, y: y, width: W, height: rowH - 4, fill: "transparent" }, svg);
                         hv(
                             hit,
-                            `<b>${r.name}</b><br>${r.lo === r.hi ? full(r.lo) : full(r.lo) + " – " + full(r.hi)} lines of code<br>${r.tip}`
+                            `<b>${r.name}</b><br>${r.lo === r.hi ? full(r.lo) : full(r.lo) + " - " + full(r.hi)} lines of code<br>${r.tip}`
                         );
                     });
                 }
